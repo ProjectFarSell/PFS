@@ -29,24 +29,22 @@ class RegisterController extends Controller
             'intent' => ['nullable', 'in:buyer,seller,rider'],
         ]);
 
-        $role = match ($data['intent'] ?? 'buyer') {
-            'seller' => UserRole::Seller,
-            'rider' => UserRole::Rider,
-            default => UserRole::Buyer,
-        };
+        // Role stays Buyer at registration. Seller/Rider access is granted only
+        // after the relevant application is actually approved, not on signup intent.
+        $intent = $data['intent'] ?? 'buyer';
 
         $user = User::query()->create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => $data['password'],
-            'role' => $role,
+            'role' => UserRole::Buyer,
         ]);
 
         event(new Registered($user));
         Auth::login($user);
         GuestSession::forget();
 
-        if ($role === UserRole::Rider) {
+        if ($intent === 'rider') {
             return redirect()->route('rider.register');
         }
 

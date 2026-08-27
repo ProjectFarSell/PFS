@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Rider;
 
 use App\Enums\RiderStatus;
-use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\RiderProfile;
 use Illuminate\Http\RedirectResponse;
@@ -31,6 +30,10 @@ class RiderRegistrationController extends Controller
 
         $user = $request->user();
 
+        // Role is NOT changed here. A submitted application only creates/updates
+        // the RiderProfile with status Pending. The user's role only becomes
+        // Rider once an admin actually approves the application (see admin
+        // approval action, which should set role => Rider alongside status => Approved).
         $user->riderProfile()->updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -39,10 +42,6 @@ class RiderRegistrationController extends Controller
                 'reviewed_at' => null,
             ]
         );
-
-        if ($user->role !== UserRole::Admin) {
-            $user->update(['role' => UserRole::Rider]);
-        }
 
         return redirect()->route('rider.profile')->with('status', 'Application submitted. We will review it shortly.');
     }

@@ -14,27 +14,32 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::query()->create([
-            'name' => 'FarSell Admin',
-            'email' => 'admin@farsell.test',
-            'password' => Hash::make('password'),
-            'role' => UserRole::Admin,
-        ]);
+        // Seeder is idempotent: containers re-run `migrate --seed` on every
+        // restart since the DB volume persists. firstOrCreate/firstOrCreateMany
+        // avoid duplicate-key crashes on restart instead of failing the boot.
+        User::query()->firstOrCreate(
+            ['email' => 'admin@farsell.test'],
+            [
+                'name' => 'FarSell Admin',
+                'password' => Hash::make('password'),
+                'role' => UserRole::Admin,
+            ]
+        );
 
-        $buyer = User::factory()->create([
-            'name' => 'Guest Buyer',
-            'email' => 'buyer@farsell.test',
-        ]);
+        $buyer = User::query()->firstOrCreate(
+            ['email' => 'buyer@farsell.test'],
+            User::factory()->raw(['name' => 'Guest Buyer'])
+        );
 
-        $seller = User::factory()->seller()->create([
-            'name' => 'Demo Seller',
-            'email' => 'seller@farsell.test',
-        ]);
+        $seller = User::query()->firstOrCreate(
+            ['email' => 'seller@farsell.test'],
+            User::factory()->seller()->raw(['name' => 'Demo Seller'])
+        );
 
-        User::factory()->rider()->create([
-            'name' => 'Demo Rider',
-            'email' => 'rider@farsell.test',
-        ]);
+        User::query()->firstOrCreate(
+            ['email' => 'rider@farsell.test'],
+            User::factory()->rider()->raw(['name' => 'Demo Rider'])
+        );
 
         $categories = collect([
             ['name' => "Women's", 'icon' => 'W', 'sort_order' => 1],
@@ -45,35 +50,41 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Sports', 'icon' => 'S', 'sort_order' => 6],
             ['name' => 'Gadgets', 'icon' => 'G', 'sort_order' => 7],
             ['name' => 'Surplus', 'icon' => 'X', 'sort_order' => 8],
-        ])->map(fn (array $row) => Category::query()->create([
-            ...$row,
-            'slug' => \Illuminate\Support\Str::slug($row['name']),
-        ]));
+        ])->map(fn (array $row) => Category::query()->firstOrCreate(
+            ['slug' => \Illuminate\Support\Str::slug($row['name'])],
+            $row
+        ));
 
-        $shop = Shop::query()->create([
-            'user_id' => $seller->id,
-            'name' => 'Tokyo Surplus Co.',
-            'slug' => 'tokyo-surplus',
-            'tagline' => 'Japan auction lots, priced for PH.',
-            'city' => 'Osaka / Manila',
-            'is_active' => true,
-        ]);
+        $shop = Shop::query()->firstOrCreate(
+            ['slug' => 'tokyo-surplus'],
+            [
+                'user_id' => $seller->id,
+                'name' => 'Tokyo Surplus Co.',
+                'tagline' => 'Japan auction lots, priced for PH.',
+                'city' => 'Osaka / Manila',
+                'is_active' => true,
+            ]
+        );
 
-        Product::factory()
-            ->count(24)
-            ->create([
-                'shop_id' => $shop->id,
-                'category_id' => $categories->random()->id,
+        if ($shop->products()->count() === 0) {
+            Product::factory()
+                ->count(24)
+                ->create([
+                    'shop_id' => $shop->id,
+                    'category_id' => $categories->random()->id,
+                ]);
+        }
+
+        if ($buyer->addresses()->count() === 0) {
+            $buyer->addresses()->create([
+                'label' => 'Home',
+                'line1' => '123 Sample Street',
+                'city' => 'Quezon City',
+                'region' => 'NCR',
+                'postal_code' => '1100',
+                'phone' => '09171234567',
+                'is_default' => true,
             ]);
-
-        $buyer->addresses()->create([
-            'label' => 'Home',
-            'line1' => '123 Sample Street',
-            'city' => 'Quezon City',
-            'region' => 'NCR',
-            'postal_code' => '1100',
-            'phone' => '09171234567',
-            'is_default' => true,
-        ]);
+        }
     }
 }
