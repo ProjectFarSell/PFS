@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Account\AddressController;
 use App\Http\Controllers\Auth\GuestSessionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -38,4 +39,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/rider/apply', [RiderRegistrationController::class, 'create'])->name('rider.register');
     Route::post('/rider/apply', [RiderRegistrationController::class, 'store']);
     Route::get('/rider/profile', [RiderRegistrationController::class, 'profile'])->name('rider.profile');
+
+    Route::resource('account/addresses', AddressController::class)
+        ->except(['show'])
+        ->names('account.addresses');
 });
