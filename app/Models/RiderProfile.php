@@ -41,6 +41,11 @@ class RiderProfile extends Model
         return $this->hasMany(Order::class, 'rider_id');
     }
 
+    public function documents(): HasMany
+    {
+        return $this->hasMany(RiderDocument::class);
+    }
+
     public function isApproved(): bool
     {
         return $this->status === RiderStatus::Approved;
