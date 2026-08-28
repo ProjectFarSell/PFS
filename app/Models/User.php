@@ -2,20 +2,25 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
         'email',
         'password',
         'role',
+        'phone',
     ];
 
     protected $hidden = [
@@ -28,21 +33,37 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
         ];
     }
 
-    public function rider()
+    public function shop(): HasOne
     {
-        return $this->hasOne(Rider::class);
+        return $this->hasOne(Shop::class);
     }
 
-    public function vendor()
+    public function riderProfile(): HasOne
     {
-        return $this->hasOne(Vendor::class);
+        return $this->hasOne(RiderProfile::class);
     }
 
-    public function guest()
+    public function orders(): HasMany
     {
-        return $this->hasOne(Guest::class, 'converted_user_id');
+        return $this->hasMany(Order::class);
+    }
+
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    public function isSeller(): bool
+    {
+        return $this->role === UserRole::Seller || $this->role === UserRole::Admin;
+    }
+
+    public function isRider(): bool
+    {
+        return $this->role === UserRole::Rider || $this->riderProfile !== null;
     }
 }
