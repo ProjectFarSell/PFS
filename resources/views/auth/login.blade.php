@@ -1,47 +1,26 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.app')
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+@section('title', 'Log in · FarSell')
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+@section('content')
+    <div class="max-w-sm mx-auto rounded-2xl bg-white border border-stone-200 p-5">
+        <h1 class="text-lg font-semibold">Welcome back</h1>
+        <p class="text-sm text-stone-500 mt-1">Or skip an account and keep shopping.</p>
+        <form method="post" action="{{ route('guest.start') }}" class="mt-3">
+            @csrf
+            <button class="w-full rounded-full border border-orange-500 text-orange-600 text-sm py-2">Continue as guest</button>
+        </form>
+        <form method="post" action="{{ route('login') }}" class="mt-4 space-y-3">
+            @csrf
+            <input type="email" name="email" value="{{ old('email') }}" required placeholder="Email" class="w-full rounded-lg border-stone-200 text-sm">
+            <input type="password" name="password" required placeholder="Password" class="w-full rounded-lg border-stone-200 text-sm">
+            <label class="flex items-center gap-2 text-sm text-stone-600">
+                <input type="checkbox" name="remember" class="rounded border-stone-300"> Remember me
             </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+            @error('email') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+            <button class="w-full rounded-full bg-orange-500 text-white text-sm py-2.5">Log in</button>
+        </form>
+        <p class="text-sm text-center mt-4">New here? <a class="text-orange-600" href="{{ route('register') }}">Create account</a></p>
+        <p class="text-xs text-stone-400 text-center mt-2">Demo: buyer@farsell.test / password</p>
+    </div>
+@endsection

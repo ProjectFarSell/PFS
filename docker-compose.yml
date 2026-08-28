@@ -1,0 +1,55 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${APP_PORT:-80}:80"
+    environment:
+      WWWUSER: "${WWWUSER:-1000}"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - farsell
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "${FORWARD_DB_PORT:-3307}:3306"
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE:-farsell}"
+      MYSQL_USER: "${DB_USERNAME:-farsell}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:-secret}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD:-secret}"
+    volumes:
+      - farsell-mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD:-secret}"]
+      retries: 10
+      interval: 5s
+      timeout: 5s
+    networks:
+      - farsell
+
+  vite:
+    image: node:20-alpine
+    working_dir: /var/www/html
+    command: sh -c "npm install && npm run dev -- --host"
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - farsell
+
+networks:
+  farsell:
+    driver: bridge
+
+volumes:
+  farsell-mysql:
