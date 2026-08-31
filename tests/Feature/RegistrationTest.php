@@ -65,7 +65,7 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasErrors('email', null, 'register');
         $this->assertGuest();
     }
 
@@ -78,7 +78,7 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'different',
         ]);
 
-        $response->assertSessionHasErrors('password');
+        $response->assertSessionHasErrors('password', null, 'register');
         $this->assertGuest();
     }
 }

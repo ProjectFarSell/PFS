@@ -10,6 +10,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
@@ -22,12 +23,14 @@ class RegisterController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $data = $request->validate([
+        // Use a named 'register' error bag so the portal can distinguish
+        // login errors from registration errors in the same view.
+        $data = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:180', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::defaults()],
             'intent' => ['nullable', 'in:buyer,seller,rider'],
-        ]);
+        ])->validateWithBag('register');
 
         // Role stays Buyer at registration. Seller/Rider access is granted only
         // after the relevant application is actually approved, not on signup intent.
