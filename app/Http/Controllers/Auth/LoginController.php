@@ -24,7 +24,10 @@ class LoginController extends Controller
         ]);
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-            return back()->withErrors(['email' => 'Those credentials do not match our records.'])->onlyInput('email');
+            // Use a named error bag so portal form can distinguish login vs register errors.
+            return back()
+                ->withErrors(['email' => 'Those credentials do not match our records.'], 'login')
+                ->onlyInput('email');
         }
 
         $request->session()->regenerate();

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\UserRole;
 use App\Models\Category;
+use App\Models\PsgcBarangay;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
@@ -14,6 +15,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(PsgcGeographySeeder::class);
+
         // Idempotent: containers/local runs may re-seed on restart, so use
         // firstOrCreate to avoid duplicate-key crashes instead of failing.
         User::query()->firstOrCreate(
@@ -55,31 +58,56 @@ class DatabaseSeeder extends Seeder
         ));
 
         $shop = Shop::query()->firstOrCreate(
-            ['slug' => 'tokyo-surplus'],
+            ['slug' => 'metro-surplus'],
             [
                 'user_id' => $seller->id,
-                'name' => 'Tokyo Surplus Co.',
-                'tagline' => 'Japan auction lots, priced for PH.',
-                'city' => 'Osaka / Manila',
+                'name' => 'Metro Surplus Co.',
+                'tagline' => 'Auction lots, priced for PH.',
+                'city' => 'Quezon City',
                 'is_active' => true,
             ]
         );
 
         if ($shop->products()->count() === 0) {
-            Product::factory()
+            $products = Product::factory()
                 ->count(24)
                 ->create([
                     'shop_id' => $shop->id,
                     'category_id' => $categories->random()->id,
                 ]);
+
+            // Give roughly half the products a size-variant spread, and every
+            // product at least one gallery image — staff-seeded dev data only.
+            $products->each(function (Product $product) {
+                if (fake()->boolean(50)) {
+                    \App\Models\ProductVariant::factory()
+                        ->count(fake()->numberBetween(2, 4))
+                        ->create(['product_id' => $product->id]);
+                }
+
+                \App\Models\ProductImage::factory()
+                    ->count(fake()->numberBetween(1, 3))
+                    ->sequence(fn ($sequence) => ['sort_order' => $sequence->index])
+                    ->create(['product_id' => $product->id]);
+            });
         }
 
         if ($buyer->addresses()->count() === 0) {
+            $barangay = PsgcBarangay::query()
+                ->with('cityMunicipality.province.region')
+                ->where('name', 'Central')
+                ->whereHas('cityMunicipality', fn ($query) => $query->where('name', 'Quezon City'))
+                ->first();
+
             $buyer->addresses()->create([
                 'label' => 'Home',
                 'line1' => '123 Sample Street',
                 'city' => 'Quezon City',
                 'region' => 'NCR',
+                'psgc_region_id' => $barangay?->cityMunicipality->province->region->id,
+                'psgc_province_id' => $barangay?->cityMunicipality->province->id,
+                'psgc_city_municipality_id' => $barangay?->cityMunicipality->id,
+                'psgc_barangay_id' => $barangay?->id,
                 'postal_code' => '1100',
                 'phone' => '09171234567',
                 'is_default' => true,

@@ -16,6 +16,10 @@ class Address extends Model
         'line1',
         'city',
         'region',
+        'psgc_region_id',
+        'psgc_province_id',
+        'psgc_city_municipality_id',
+        'psgc_barangay_id',
         'postal_code',
         'phone',
         'is_default',
@@ -31,5 +35,37 @@ class Address extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function psgcRegion(): BelongsTo
+    {
+        return $this->belongsTo(PsgcRegion::class);
+    }
+
+    public function psgcProvince(): BelongsTo
+    {
+        return $this->belongsTo(PsgcProvince::class);
+    }
+
+    public function psgcCityMunicipality(): BelongsTo
+    {
+        return $this->belongsTo(PsgcCityMunicipality::class);
+    }
+
+    public function psgcBarangay(): BelongsTo
+    {
+        return $this->belongsTo(PsgcBarangay::class);
+    }
+
+    public function formatted(): string
+    {
+        return collect([
+            $this->line1,
+            $this->psgcBarangay?->name,
+            $this->psgcCityMunicipality?->name ?? $this->city,
+            $this->psgcProvince?->name,
+            $this->psgcRegion?->name ?? $this->region,
+            $this->postal_code,
+        ])->filter()->implode(', ');
     }
 }

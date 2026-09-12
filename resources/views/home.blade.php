@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'FarSell — Japan surplus marketplace')
+@section('title', 'FarSell — Surplus marketplace')
 
 @section('content')
     <section class="rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 text-white p-5 mb-4">
