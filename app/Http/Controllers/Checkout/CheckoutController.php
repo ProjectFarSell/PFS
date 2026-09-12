@@ -2,36 +2,52 @@
 
 namespace App\Http\Controllers\Checkout;
 
+use App\Contracts\DeliveryFeeService;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\Product;
+use App\Services\Orders\StockReservationService;
 use App\Support\Cart;
-use App\Support\GuestSession;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
 {
-    public function create(): View|RedirectResponse
+    public function __construct(
+        private readonly DeliveryFeeService $deliveryFees,
+        private readonly StockReservationService $stock,
+    ) {}
+
+    public function create(Request $request): View|RedirectResponse
     {
         if (Cart::count() === 0) {
             return redirect()->route('cart.index')->with('status', 'Your cart is empty.');
         }
 
-        GuestSession::start();
+        $addresses = $request->user()->addresses()
+            ->with(['psgcRegion', 'psgcProvince', 'psgcCityMunicipality', 'psgcBarangay'])
+            ->orderByDesc('is_default')
+            ->latest()
+            ->get();
+
+        if ($addresses->isEmpty()) {
+            return redirect()->route('account.addresses.create')
+                ->with('status', 'Add a delivery address before checking out.');
+        }
+
+        $lines = Cart::hydrated();
+        $shipping = $this->deliveryFees->calculate($addresses->first(), $lines);
 
         return view('checkout.create', [
-            'lines' => Cart::hydrated(),
-            'subtotal' => Cart::subtotal(),
-            'shipping' => 49,
-            'guest' => auth()->guest(),
+            'addresses' => $addresses,
+            'lines' => $lines,
+            'subtotal' => (float) $lines->sum('line_total'),
+            'shipping' => $shipping,
         ]);
     }
 
@@ -42,95 +58,68 @@ class CheckoutController extends Controller
         }
 
         $data = $request->validate([
-            'guest_name' => [auth()->check() ? 'nullable' : 'required', 'string', 'max:120'],
-            'guest_email' => [auth()->check() ? 'nullable' : 'required', 'email', 'max:180'],
-            'ship_to' => ['required', 'string', 'max:500'],
-            'phone' => ['required', 'string', 'max:40'],
-            'payment_method' => ['required', 'in:cod,gateway_stub'],
+            'address_id' => [
+                'required',
+                'integer',
+                Rule::exists('addresses', 'id')->where('user_id', $request->user()->id),
+            ],
+            'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
         ]);
 
-        $subtotal = Cart::subtotal();
-        $shipping = 49.00;
+        $address = $request->user()->addresses()
+            ->with(['psgcRegion', 'psgcProvince', 'psgcCityMunicipality', 'psgcBarangay'])
+            ->findOrFail($data['address_id']);
         $paymentMethod = PaymentMethod::from($data['payment_method']);
-        $lines = Cart::hydrated();
-
-        // COD isn't actually paid yet at order placement — only gateway payments
-        // that clear immediately should be marked Paid here. COD stays
-        // PendingPayment until payment is collected on delivery.
         $initialStatus = $paymentMethod === PaymentMethod::Cod
             ? OrderStatus::PendingPayment
             : OrderStatus::Paid;
+        $lines = Cart::hydrated();
 
-        $order = DB::transaction(function () use ($lines, $subtotal, $shipping, $paymentMethod, $initialStatus, $data) {
-            // Lock and re-check stock inside the transaction so two concurrent
-            // checkouts can't both oversell the last units of a product.
-            foreach ($lines as $line) {
-                $product = Product::query()->lockForUpdate()->find($line->product->id);
-
-                if (! $product || $product->stock < $line->qty) {
-                    throw ValidationException::withMessages([
-                        'cart' => $line->product->name.' no longer has enough stock. Please update your cart.',
-                    ]);
-                }
-            }
+        $order = DB::transaction(function () use ($lines, $address, $paymentMethod, $initialStatus): Order {
+            $lockedLines = $this->stock->lockAndPrepare($lines);
+            $subtotal = (float) $lockedLines->sum('line_total');
+            $shipping = $this->deliveryFees->calculate($address, $lockedLines);
 
             $order = Order::query()->create([
                 'user_id' => auth()->id(),
+                'address_id' => $address->id,
                 'number' => 'FS'.now()->format('ymd').Str::upper(Str::random(6)),
                 'status' => $initialStatus,
                 'payment_method' => $paymentMethod,
-                'guest_email' => $data['guest_email'] ?? auth()->user()?->email,
-                'guest_name' => $data['guest_name'] ?? auth()->user()?->name,
-                'ship_to' => $data['ship_to'].' · '.$data['phone'],
+                'guest_email' => auth()->user()->email,
+                'guest_name' => auth()->user()->name,
+                'ship_to' => $address->formatted().($address->phone ? ' · '.$address->phone : ''),
                 'subtotal' => $subtotal,
                 'shipping_fee' => $shipping,
                 'total' => $subtotal + $shipping,
+                'stock_reserved_at' => now(),
             ]);
 
-            foreach ($lines as $line) {
+            foreach ($lockedLines as $line) {
                 $order->items()->create([
                     'product_id' => $line->product->id,
                     'name' => $line->product->name,
                     'qty' => $line->qty,
-                    'unit_price' => $line->product->price,
+                    'unit_price' => $line->unit_price,
                     'line_total' => $line->line_total,
                 ]);
-
-                $line->product->decrement('stock', $line->qty);
             }
+
+            $this->stock->reserve($lockedLines);
 
             return $order;
         });
 
         Cart::clear();
 
-        if (auth()->guest()) {
-            $ids = Session::get('farsell.guest_orders', []);
-            $ids[] = $order->id;
-            Session::put('farsell.guest_orders', $ids);
-        }
-
         return redirect()->route('orders.show', $order)->with('status', 'Order placed.');
     }
 
     public function show(Order $order): View
     {
-        $this->authorizeView($order);
+        $this->authorize('view', $order);
         $order->load('items');
 
         return view('orders.show', compact('order'));
-    }
-
-    private function authorizeView(Order $order): void
-    {
-        if (auth()->check() && $order->user_id === auth()->id()) {
-            return;
-        }
-
-        if (auth()->guest() && in_array($order->id, Session::get('farsell.guest_orders', []), true)) {
-            return;
-        }
-
-        abort_unless(auth()->user()?->role?->value === 'admin', 403);
     }
 }

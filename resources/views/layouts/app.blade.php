@@ -40,6 +40,8 @@
         @yield('content')
     </main>
 
+    @stack('scripts')
+
     <nav class="fixed bottom-0 inset-x-0 z-30 border-t border-stone-200 bg-white">
         <div class="mx-auto max-w-5xl grid grid-cols-5 text-[11px] text-stone-500">
             <a href="{{ route('home') }}" class="flex flex-col items-center py-2 {{ request()->routeIs('home') ? 'text-orange-600 font-semibold' : '' }}">Home</a>

@@ -58,13 +58,13 @@
                 </h1>
             </div>
             <p class="text-base text-orange-50 max-w-sm leading-relaxed">
-                Browse Japan auction lots, buy in minutes, or grow your business by selling
+                Browse surplus auction lots, buy in minutes, or grow your business by selling
                 on FarSell. Riders earn on every delivery in your city.
             </p>
 
             {{-- Feature pills --}}
             <div class="flex flex-wrap gap-2">
-                @foreach (['🛍 Shop Japan surplus', '🏪 Open your store', '🛵 Deliver & earn', '👤 Guest checkout'] as $pill)
+                @foreach (['🛍 Shop surplus lots', '🏪 Open your store', '🛵 Deliver & earn', '👤 Guest checkout'] as $pill)
                     <span class="rounded-full border border-white/30 bg-white/10 backdrop-blur-sm
                                  px-3 py-1.5 text-xs font-medium text-white">
                         {{ $pill }}

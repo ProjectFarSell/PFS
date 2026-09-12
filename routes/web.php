@@ -32,9 +32,6 @@ Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
 
 // ── Checkout & orders ─────────────────────────────────────────────────────────
-Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::get('/orders/{order}', [CheckoutController::class, 'show'])->name('orders.show');
 
 // ── Guest-only auth routes ────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -49,9 +46,17 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/orders/{order}', [CheckoutController::class, 'show'])->name('orders.show');
+
     Route::get('/rider/apply', [RiderRegistrationController::class, 'create'])->name('rider.register');
     Route::post('/rider/apply', [RiderRegistrationController::class, 'store']);
     Route::get('/rider/profile', [RiderRegistrationController::class, 'profile'])->name('rider.profile');
+
+    Route::get('account/addresses/locations/provinces', [AddressController::class, 'provinces'])->name('account.addresses.locations.provinces');
+    Route::get('account/addresses/locations/cities-municipalities', [AddressController::class, 'citiesMunicipalities'])->name('account.addresses.locations.cities-municipalities');
+    Route::get('account/addresses/locations/barangays', [AddressController::class, 'barangays'])->name('account.addresses.locations.barangays');
 
     Route::resource('account/addresses', AddressController::class)
         ->except(['show'])
