@@ -4,6 +4,7 @@
 
 @section('content')
     <div class="max-w-lg mx-auto">
+        <a href="{{ route('account.profile') }}" class="inline-block text-sm text-orange-600 mb-3">← My Profile</a>
         <div class="flex items-center justify-between mb-3">
             <h1 class="text-lg font-semibold">My addresses</h1>
             <a href="{{ route('account.addresses.create') }}" class="text-sm text-orange-600">Add new</a>

@@ -43,7 +43,7 @@
     @stack('scripts')
 
     <nav class="fixed bottom-0 inset-x-0 z-30 border-t border-stone-200 bg-white">
-        <div class="mx-auto max-w-5xl grid grid-cols-5 text-[11px] text-stone-500">
+        <div class="mx-auto max-w-5xl grid {{ auth()->check() ? 'grid-cols-6' : 'grid-cols-5' }} text-[11px] text-stone-500">
             <a href="{{ route('home') }}" class="flex flex-col items-center py-2 {{ request()->routeIs('home') ? 'text-orange-600 font-semibold' : '' }}">Home</a>
             <a href="{{ route('catalog.index') }}" class="flex flex-col items-center py-2 {{ request()->routeIs('catalog.*') ? 'text-orange-600 font-semibold' : '' }}">Search</a>
             <a href="{{ route('cart.index') }}" class="flex flex-col items-center py-2 relative {{ request()->routeIs('cart.*') ? 'text-orange-600 font-semibold' : '' }}">
@@ -54,6 +54,8 @@
             </a>
             <a href="{{ auth()->check() ? (auth()->user()->riderProfile ? route('rider.profile') : route('rider.register')) : route('register', ['intent' => 'rider']) }}" class="flex flex-col items-center py-2 {{ request()->routeIs('rider.*') ? 'text-orange-600 font-semibold' : '' }}">Rider</a>
             @auth
+                <a href="{{ route('account.profile') }}" @if(request()->routeIs('account.profile')) aria-current="page" @elseif(request()->routeIs('orders.*', 'account.addresses.*')) aria-current="true" @endif
+                   class="flex flex-col items-center py-2 {{ request()->routeIs('account.profile', 'orders.*', 'account.addresses.*') ? 'text-orange-600 font-semibold' : '' }}">Profile</a>
                 <form method="post" action="{{ route('logout') }}" class="flex flex-col items-center py-2">
                     @csrf
                     <button type="submit" class="text-[11px]">Logout</button>

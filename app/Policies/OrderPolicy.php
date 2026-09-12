@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Order;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class OrderPolicy
 {
@@ -19,10 +18,8 @@ class OrderPolicy
     /**
      * Determine whether the user can view the model.
      *
-     * Note: guest order access (via session-stored order IDs) is handled
-     * separately in CheckoutController::authorizeView(), since guests have
-     * no User instance for a Policy to check against. This method covers
-     * the authenticated-user case only — e.g. a future "my orders" page.
+     * Owners and administrators may view details. The My Orders list is
+     * independently scoped to the signed-in user's purchases.
      */
     public function view(User $user, Order $order): bool
     {

@@ -3,6 +3,7 @@
 @section('title', 'Order '.$order->number)
 
 @section('content')
+    <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-orange-600">← My Orders</a>
     @php
         $steps = [
             'pending_payment' => 'Placed',

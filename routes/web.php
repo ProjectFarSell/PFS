@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Account\AddressController;
+use App\Http\Controllers\Account\OrderController;
+use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Auth\GuestSessionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -46,8 +48,10 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::get('/account/profile', [ProfileController::class, 'show'])->name('account.profile');
     Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [CheckoutController::class, 'show'])->name('orders.show');
 
     Route::get('/rider/apply', [RiderRegistrationController::class, 'create'])->name('rider.register');

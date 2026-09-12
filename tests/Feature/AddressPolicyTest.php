@@ -67,6 +67,23 @@ class AddressPolicyTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
+    public function test_location_endpoints_return_each_level_for_the_selected_parent(): void
+    {
+        [$region, $province, $city, $barangay] = $this->location();
+        $this->actingAs(User::factory()->create());
+        $this->getJson(route('account.addresses.locations.provinces', ['region_id' => $region->id]))
+            ->assertOk()->assertExactJson([['id' => $province->id, 'name' => $province->name]]);
+        $this->getJson(route('account.addresses.locations.cities-municipalities', ['province_id' => $province->id]))
+            ->assertOk()->assertExactJson([['id' => $city->id, 'name' => $city->name]]);
+        $this->getJson(route('account.addresses.locations.barangays', ['city_municipality_id' => $city->id]))
+            ->assertOk()->assertExactJson([['id' => $barangay->id, 'name' => $barangay->name]]);
+        $this->getJson(route('account.addresses.locations.provinces', ['region_id' => 99999]))
+            ->assertUnprocessable();
+        $this->get(route('account.addresses.create'))->assertOk()
+            ->assertSee('data-address-location-form', false)
+            ->assertSee('/js/address-location.js', false);
+    }
+
     /** @return array{PsgcRegion, PsgcProvince, PsgcCityMunicipality, PsgcBarangay} */
     private function location(): array
     {

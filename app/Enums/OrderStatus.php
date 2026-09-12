@@ -12,6 +12,19 @@ enum OrderStatus: string
     case Delivered = 'delivered';
     case Cancelled = 'cancelled';
 
+    public function label(): string
+    {
+        return match ($this) {
+            self::PendingPayment => 'Awaiting payment',
+            self::Paid => 'Paid',
+            self::Packed => 'Packed',
+            self::Assigned => 'Rider assigned',
+            self::InTransit => 'Out for delivery',
+            self::Delivered => 'Delivered',
+            self::Cancelled => 'Cancelled',
+        };
+    }
+
     /** @return list<self> */
     public function allowedTransitions(): array
     {
