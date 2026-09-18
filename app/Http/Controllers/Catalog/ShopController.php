@@ -8,6 +8,15 @@ use Illuminate\View\View;
 
 class ShopController extends Controller
 {
+    public function index(): View
+    {
+        $shops = Shop::query()->where('is_active', true)
+            ->withCount(['products' => fn ($query) => $query->where('is_active', true)])
+            ->orderBy('name')->orderBy('id')->paginate(12);
+
+        return view('shop.index', compact('shops'));
+    }
+
     public function show(Shop $shop): View
     {
         abort_unless($shop->is_active, 404);

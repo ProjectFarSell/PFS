@@ -21,6 +21,8 @@ class RiderProfile extends Model
         'city',
         'bio',
         'reviewed_at',
+        'reviewed_by',
+        'review_note',
     ];
 
     protected function casts(): array
@@ -49,5 +51,19 @@ class RiderProfile extends Model
     public function isApproved(): bool
     {
         return $this->status === RiderStatus::Approved;
+    }
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function reviewToken(): string
+    {
+        // Detect edits/uploads since the admin opened the review page.
+        return hash('sha256', json_encode([
+            $this->getAttributes(),
+            $this->documents()->orderBy('id')->get()->toArray(),
+        ], JSON_THROW_ON_ERROR));
     }
 }

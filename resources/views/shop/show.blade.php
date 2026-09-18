@@ -3,15 +3,18 @@
 @section('title', $shop->name.' · FarSell')
 
 @section('content')
-    <div class="rounded-2xl bg-white border border-stone-200 p-4 mb-4">
+    <a href="{{ route('shops.index') }}" class="inline-block mb-3 text-sm text-accent hover:underline">← All shops</a>
+    <div class="rounded-2xl bg-surface border border-surface-border p-4 mb-4">
         <h1 class="text-xl font-semibold">{{ $shop->name }}</h1>
-        <p class="text-sm text-stone-600">{{ $shop->tagline }}</p>
-        <p class="text-xs text-stone-500 mt-1">{{ $shop->city }}</p>
+        <p class="text-sm text-text-muted">{{ $shop->tagline }}</p>
+        <p class="text-xs text-text-muted mt-1">{{ $shop->city }}</p>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        @foreach ($products as $product)
+        @forelse ($products as $product)
             @include('catalog.partials.card', ['product' => $product])
-        @endforeach
+        @empty
+            <p class="text-sm text-text-muted col-span-2 sm:col-span-4">This shop has no products available yet.</p>
+        @endforelse
     </div>
     <div class="mt-4">{{ $products->links() }}</div>
 @endsection

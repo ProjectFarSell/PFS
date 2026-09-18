@@ -3,6 +3,8 @@
 use App\Http\Controllers\Account\AddressController;
 use App\Http\Controllers\Account\OrderController;
 use App\Http\Controllers\Account\ProfileController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\RiderApplicationController;
 use App\Http\Controllers\Auth\GuestSessionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -12,7 +14,10 @@ use App\Http\Controllers\Catalog\ProductController;
 use App\Http\Controllers\Catalog\ShopController;
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Rider\DashboardController as RiderDashboardController;
 use App\Http\Controllers\Rider\RiderRegistrationController;
+use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
+use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Support\Facades\Route;
 
 // ── Portal / entry point ──────────────────────────────────────────────────────
@@ -26,6 +31,7 @@ Route::get('/home', HomeController::class)->name('home');
 // ── Public catalog ────────────────────────────────────────────────────────────
 Route::get('/search', [ProductController::class, 'index'])->name('catalog.index');
 Route::get('/p/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/shops', [ShopController::class, 'index'])->name('shops.index');
 Route::get('/shop/{shop}', [ShopController::class, 'show'])->name('shops.show');
 
 // ── Cart (open to guests and authenticated users) ─────────────────────────────
@@ -46,9 +52,28 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 
+Route::get('/admin', DashboardController::class)
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.dashboard');
+
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/riders')->name('admin.riders.')->group(function () {
+    Route::get('/', [RiderApplicationController::class, 'index'])->name('index');
+    Route::get('/{riderProfile}', [RiderApplicationController::class, 'show'])->name('show');
+    Route::post('/{riderProfile}/review', [RiderApplicationController::class, 'review'])->name('review');
+    Route::get('/{riderProfile}/documents/{document}', [RiderApplicationController::class, 'document'])->name('document');
+});
+
+Route::get('/seller', SellerDashboardController::class)
+    ->middleware(['auth', EnsureUserHasRole::class.':seller'])
+    ->name('seller.dashboard');
+
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
     Route::get('/account/profile', [ProfileController::class, 'show'])->name('account.profile');
+    Route::get('/account/profile/edit', [ProfileController::class, 'edit'])->name('account.profile.edit');
+    Route::patch('/account/profile', [ProfileController::class, 'update'])->middleware('throttle:10,1')->name('account.profile.update');
+    Route::put('/account/profile/password', [ProfileController::class, 'password'])->middleware('throttle:10,1')->name('account.profile.password');
+    Route::delete('/account/profile', [ProfileController::class, 'destroy'])->middleware('throttle:5,1')->name('account.profile.destroy');
     Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
@@ -57,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/rider/apply', [RiderRegistrationController::class, 'create'])->name('rider.register');
     Route::post('/rider/apply', [RiderRegistrationController::class, 'store']);
     Route::get('/rider/profile', [RiderRegistrationController::class, 'profile'])->name('rider.profile');
+    Route::get('/rider/dashboard', RiderDashboardController::class)->name('rider.dashboard');
 
     Route::get('account/addresses/locations/provinces', [AddressController::class, 'provinces'])->name('account.addresses.locations.provinces');
     Route::get('account/addresses/locations/cities-municipalities', [AddressController::class, 'citiesMunicipalities'])->name('account.addresses.locations.cities-municipalities');

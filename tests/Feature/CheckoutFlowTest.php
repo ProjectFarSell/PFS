@@ -17,6 +17,18 @@ class CheckoutFlowTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_checkout_template_renders_inside_the_layout_with_the_saved_address_and_total(): void
+    {
+        $user = User::factory()->create();
+        $address = Address::factory()->create(['user_id' => $user->id, 'label' => 'Demo Home']);
+        $product = Product::factory()->create(['price' => 100, 'stock' => 5]);
+
+        $this->actingAs($user)->withSession([Cart::SESSION_KEY => [$product->id => 2]])
+            ->get(route('checkout.create'))->assertOk()
+            ->assertSee('Place order')->assertSee('Demo Home')->assertSee('249.00')
+            ->assertSee(route('checkout.store'), false)->assertDontSee("@section('content')", false);
+    }
+
     public function test_checkout_uses_owned_saved_address_and_reserves_stock_transactionally(): void
     {
         $user = User::factory()->create();

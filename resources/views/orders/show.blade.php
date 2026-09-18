@@ -3,7 +3,7 @@
 @section('title', 'Order '.$order->number)
 
 @section('content')
-    <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-orange-600">← My Orders</a>
+    <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-accent hover:text-accent">← My Orders</a>
     @php
         $steps = [
             'pending_payment' => 'Placed',
@@ -20,17 +20,17 @@
         }
     @endphp
     <h1 class="text-lg font-semibold">Order {{ $order->number }}</h1>
-    <p class="text-sm text-stone-500 mt-1">{{ $steps[$order->status->value] ?? $order->status->value }} · {{ strtoupper($order->payment_method->value) }}</p>
+    <p class="text-sm text-text-muted mt-1">{{ $steps[$order->status->value] ?? $order->status->value }} · {{ strtoupper($order->payment_method->value) }}</p>
     <ol class="mt-4 space-y-2 text-sm">
         @foreach ($steps as $key => $label)
             @php $done = array_search($key, $keys, true) <= $current; @endphp
-            <li class="flex items-center gap-2 {{ $done ? 'text-stone-900' : 'text-stone-400' }}">
-                <span class="h-2 w-2 rounded-full {{ $done ? 'bg-orange-500' : 'bg-stone-300' }}"></span>
+            <li class="flex items-center gap-2 {{ $done ? 'text-text-base' : 'text-text-muted' }}">
+                <span class="h-2 w-2 rounded-full {{ $done ? 'bg-violet-600' : 'bg-stone-300' }}"></span>
                 {{ $label }}
             </li>
         @endforeach
     </ol>
-    <ul class="mt-4 rounded-xl bg-white border border-stone-200 divide-y">
+    <ul class="mt-4 rounded-xl bg-surface border border-surface-border divide-y">
         @foreach ($order->items as $item)
             <li class="px-3 py-2 text-sm flex justify-between">
                 <span>{{ $item->name }} × {{ $item->qty }}</span>
@@ -39,5 +39,5 @@
         @endforeach
     </ul>
     <p class="mt-3 font-semibold">Total ₱{{ number_format((float) $order->total, 2) }}</p>
-    <p class="text-xs text-stone-500 mt-2">Ship to {{ $order->ship_to }}</p>
+    <p class="text-xs text-text-muted mt-2">Ship to {{ $order->ship_to }}</p>
 @endsection

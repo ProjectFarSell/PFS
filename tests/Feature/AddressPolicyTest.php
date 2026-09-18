@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\Address;
+use App\Models\Product;
 use App\Models\PsgcBarangay;
 use App\Models\PsgcCityMunicipality;
 use App\Models\PsgcProvince;
 use App\Models\PsgcRegion;
 use App\Models\User;
+use App\Support\Cart;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -45,6 +47,22 @@ class AddressPolicyTest extends TestCase
         $response = $this->actingAs($intruder)->get("/account/addresses/{$address->id}/edit");
 
         $response->assertForbidden();
+    }
+
+    public function test_saving_an_address_resumes_checkout_only_when_requested_and_cart_is_present(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+        [$region, $province, $city, $barangay] = $this->location();
+        $this->actingAs($user)->withSession([Cart::SESSION_KEY => [$product->id => 1]])
+            ->get(route('checkout.create'))->assertRedirect(route('account.addresses.create'));
+        $this->post(route('account.addresses.store'), [
+            'line1' => '123 Test Street',
+            'psgc_region_id' => $region->id, 'psgc_province_id' => $province->id,
+            'psgc_city_municipality_id' => $city->id, 'psgc_barangay_id' => $barangay->id,
+        ])->assertRedirect(route('checkout.create'))->assertSessionMissing('checkout.needs_address');
+        $this->get(route('checkout.create'))->assertOk()->assertSee('123 Test Street')->assertSee('Place order');
+        $this->assertSame([$product->id => 1], session(Cart::SESSION_KEY));
     }
 
     public function test_user_cannot_delete_another_users_address(): void

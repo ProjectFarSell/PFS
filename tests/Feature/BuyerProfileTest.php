@@ -45,12 +45,14 @@ class BuyerProfileTest extends TestCase
             $response = $this->get(route($route))->assertOk()
                 ->assertSee('← My Profile')->assertSee(route('account.profile'), false);
 
-            preg_match('/<nav\b[^>]*>(.*?)<\/nav>/s', $response->getContent(), $matches);
+            preg_match('/<nav\b[^>]*aria-label="Mobile navigation"[^>]*>(.*?)<\/nav>/s', $response->getContent(), $matches);
             $this->assertNotEmpty($matches);
             $this->assertStringContainsString(route('account.profile'), $matches[1]);
             $this->assertStringContainsString('aria-current="true"', $matches[1]);
             $this->assertStringNotContainsString(route('orders.index'), $matches[1]);
             $this->assertStringNotContainsString('My Orders', $matches[1]);
+            preg_match('/<header\b[^>]*>(.*?)<\/header>/s', $response->getContent(), $header);
+            $this->assertStringNotContainsString(route('orders.index'), $header[1]);
         }
     }
 }

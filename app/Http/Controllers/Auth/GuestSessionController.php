@@ -12,6 +12,9 @@ class GuestSessionController extends Controller
     {
         GuestSession::start();
 
-        return redirect()->intended(route('home'))->with('status', 'Browsing as guest. Cart is saved on this device.');
+        // Browsing as a guest must not bounce back into an authenticated route.
+        session()->forget('url.intended');
+
+        return redirect()->route('home')->with('status', 'Browsing as guest. Cart is saved on this device.');
     }
 }

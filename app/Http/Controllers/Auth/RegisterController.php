@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\CheckoutIntent;
 use App\Support\GuestSession;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -18,7 +19,7 @@ class RegisterController extends Controller
 {
     public function create(): View
     {
-        return view('auth.register');
+        return view('auth.register', ['checkoutIntent' => CheckoutIntent::active()]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -45,7 +46,12 @@ class RegisterController extends Controller
 
         event(new Registered($user));
         Auth::login($user);
+        $request->session()->regenerate();
         GuestSession::forget();
+
+        if (CheckoutIntent::active()) {
+            return redirect()->intended(route('checkout.create'));
+        }
 
         if ($intent === 'rider') {
             return redirect()->route('rider.register');

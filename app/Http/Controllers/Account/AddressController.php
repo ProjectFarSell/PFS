@@ -8,11 +8,12 @@ use App\Models\PsgcBarangay;
 use App\Models\PsgcCityMunicipality;
 use App\Models\PsgcProvince;
 use App\Models\PsgcRegion;
+use App\Support\Cart;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class AddressController extends Controller
 {
@@ -50,7 +51,10 @@ class AddressController extends Controller
                 ->update(['is_default' => false]);
         }
 
-        return redirect()->route('account.addresses.index')->with('status', 'Address saved.');
+        $resumeCheckout = $request->session()->pull('checkout.needs_address', false) && Cart::count() > 0;
+
+        return redirect()->route($resumeCheckout ? 'checkout.create' : 'account.addresses.index')
+            ->with('status', 'Address saved.');
     }
 
     public function edit(Address $address): View

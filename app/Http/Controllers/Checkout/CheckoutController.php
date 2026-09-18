@@ -36,9 +36,13 @@ class CheckoutController extends Controller
             ->get();
 
         if ($addresses->isEmpty()) {
+            $request->session()->put('checkout.needs_address', true);
+
             return redirect()->route('account.addresses.create')
                 ->with('status', 'Add a delivery address before checking out.');
         }
+
+        $request->session()->forget('checkout.needs_address');
 
         $lines = Cart::hydrated();
         $shipping = $this->deliveryFees->calculate($addresses->first(), $lines);

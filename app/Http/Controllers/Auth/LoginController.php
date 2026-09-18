@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Support\CheckoutIntent;
 use App\Support\GuestSession;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,15 +15,23 @@ class LoginController extends Controller
 {
     public function create(): View
     {
-        return view('auth.login');
+        return view('auth.login', ['checkoutIntent' => CheckoutIntent::active()]);
     }
 
     public function store(Request $request): RedirectResponse
     {
+        $identifier = $request->input('email');
+        $isAdminAlias = is_string($identifier) && strcasecmp(trim($identifier), 'admin') === 0;
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email' => $isAdminAlias ? ['required', 'string'] : ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
+
+        // The demo alias still requires the account's real password and admin role.
+        if ($isAdminAlias) {
+            $credentials['email'] = 'admin@farsell.test';
+            $credentials['role'] = UserRole::Admin->value;
+        }
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             // Use a named error bag so portal form can distinguish login vs register errors.
@@ -33,7 +43,7 @@ class LoginController extends Controller
         $request->session()->regenerate();
         GuestSession::forget();
 
-        return redirect()->intended(route('home'));
+        return redirect()->intended(route($request->user()->role === UserRole::Admin ? 'admin.dashboard' : 'home'));
     }
 
     public function destroy(Request $request): RedirectResponse
