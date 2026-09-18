@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="max-w-lg mx-auto rounded-2xl bg-white border border-stone-200 p-5">
-        <p class="text-xs uppercase tracking-wide text-orange-600">Courier card</p>
+        <p class="text-xs uppercase tracking-wide text-violet-600 font-semibold">Courier card</p>
         <h1 class="text-xl font-semibold mt-1">{{ auth()->user()->name }}</h1>
         <p class="text-sm text-stone-500">{{ $profile->city }} · {{ $profile->vehicle_type }}</p>
         <p class="mt-3 inline-flex rounded-full px-3 py-1 text-xs font-medium
@@ -41,6 +41,6 @@
             </div>
         @endif
 
-        <a href="{{ route('rider.register') }}" class="inline-block mt-4 text-sm text-orange-600">Update application</a>
+        <a href="{{ route('rider.register') }}" class="inline-block mt-4 text-sm text-violet-600 hover:text-violet-700 font-medium">Update application</a>
     </div>
 @endsection

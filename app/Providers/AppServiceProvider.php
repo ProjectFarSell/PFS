@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Contracts\DeliveryFeeService;
+use App\Models\Category;
 use App\Services\Checkout\FlatRateDeliveryFeeService;
 use App\Support\Cart;
 use App\Support\GuestSession;
@@ -20,9 +21,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        View::composer('layouts.app', function ($view) {
+        View::composer('layouts.app', function ($view): void {
             $view->with('cartCount', Cart::count());
             $view->with('isGuestBrowse', GuestSession::active());
+            $view->with('navCategories', Category::query()->orderBy('sort_order')->get());
         });
     }
 }

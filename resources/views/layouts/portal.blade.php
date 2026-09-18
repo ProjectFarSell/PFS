@@ -9,8 +9,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Apply stored theme before first paint --}}
+    <script>
+        (function () {
+            var t = localStorage.getItem('farsell_theme');
+            var d = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (t === 'dark' || (!t && d)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 </head>
-<body class="h-full font-sans antialiased">
+<body class="h-full font-sans antialiased transition-colors duration-200"
+      style="background-color: rgb(var(--color-surface)); color: rgb(var(--color-text-base));">
     @yield('content')
 </body>
 </html>

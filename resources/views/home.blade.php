@@ -3,23 +3,23 @@
 @section('title', 'FarSell — Surplus marketplace')
 
 @section('content')
-    <section class="rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 text-white p-5 mb-4">
-        <p class="text-xs uppercase tracking-wide text-orange-100">Doorzo-style lots · Shopee-fast checkout</p>
-        <h1 class="text-2xl font-semibold mt-1">Auction surplus. Everyday prices.</h1>
-        <p class="text-sm text-orange-50 mt-2 max-w-xl">Browse as a guest, check out in minutes, or apply as a rider and deliver FarSell orders in your city.</p>
-        <div class="mt-4 flex flex-wrap gap-2">
-            @guest
-                <form method="post" action="{{ route('guest.start') }}">
-                    @csrf
-                    <button class="rounded-full bg-white text-orange-600 text-sm font-medium px-4 py-2">Continue as guest</button>
-                </form>
-                <a href="{{ route('register') }}" class="rounded-full border border-white/70 text-sm px-4 py-2">Create account</a>
-            @endguest
-            @auth
-                <a href="{{ route('rider.register') }}" class="rounded-full bg-white text-orange-600 text-sm font-medium px-4 py-2">Become a rider</a>
-            @endauth
-        </div>
-    </section>
+<section class="rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white p-5 mb-4">
+    <p class="text-xs uppercase tracking-wide text-violet-200">Doorzo-style lots · Shopee-fast checkout</p>
+    <h1 class="text-2xl font-semibold mt-1">Auction surplus. Everyday prices.</h1>
+    <p class="text-sm text-violet-100 mt-2 max-w-xl">Browse as a guest, check out in minutes, or apply as a rider and deliver FarSell orders in your city.</p>
+    <div class="mt-4 flex flex-wrap gap-2">
+        @guest
+            <form method="post" action="{{ route('guest.start') }}">
+                @csrf
+                <button class="rounded-full bg-white text-violet-600 text-sm font-medium px-4 py-2">Continue as guest</button>
+            </form>
+            <a href="{{ route('register') }}" class="rounded-full border border-white/70 text-sm px-4 py-2">Create account</a>
+        @endguest
+        @auth
+            <a href="{{ route('rider.register') }}" class="rounded-full bg-white text-violet-600 text-sm font-medium px-4 py-2">Become a rider</a>
+        @endauth
+    </div>
+</section>
 
     <div class="flex gap-3 overflow-x-auto pb-3 -mx-1">
         @foreach ($categories as $category)

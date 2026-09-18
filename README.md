@@ -1,58 +1,359 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# FarSell
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-powered marketplace for Japan auction surplus goods, built for fast checkout and multi-role operation (buyers, sellers, riders, and admins).
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Table of Contents
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Local Setup](#local-setup)
+- [Environment Configuration](#environment-configuration)
+- [Test Accounts](#test-accounts)
+- [Directory Structure](#directory-structure)
+- [User Roles](#user-roles)
+- [Platform Guidelines & Terms](#platform-guidelines--terms)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Layer | Technology |
+|---|---|
+| Backend framework | Laravel 13 (PHP 8.3+) |
+| Auth | Custom controllers — no Breeze views |
+| Frontend CSS | Tailwind CSS v3 + `@tailwindcss/forms` |
+| Frontend JS | Alpine.js v3 |
+| Build tool | Vite 5 via `laravel-vite-plugin` |
+| Database | SQLite (default) · MySQL supported |
+| Sessions / Cache / Queue | Database driver (default) |
+| Font | Figtree (Google Fonts) |
+| API auth | Laravel Sanctum |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Prerequisites
 
-## Agentic Development
+Before cloning, make sure the following are installed:
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+| Tool | Minimum version | Check |
+|---|---|---|
+| PHP | 8.4 | `php -v` |
+| Composer | 2.x | `composer -V` |
+| Node.js | 18 LTS or 20 LTS | `node -v` |
+| npm | 9+ | `npm -v` |
+| SQLite extension | bundled with PHP | `php -m \| grep sqlite` |
+
+> For MySQL instead of SQLite, also install MySQL 8.0+ and update your `.env` (see [Environment Configuration](#environment-configuration)).
+
+---
+
+## Local Setup
+
+### 1 — Clone the repository
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repository-url>
+cd PFS-main
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2 — Install PHP dependencies
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3 — Copy and configure environment
 
-## Code of Conduct
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Open `.env` and set at minimum:
 
-## Security Vulnerabilities
+```dotenv
+APP_NAME=FarSell
+APP_URL=http://localhost:8000
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+See the full variable reference in [Environment Configuration](#environment-configuration).
 
-## License
+### 4 — Create the SQLite database file
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+# SQLite only — skip if using MySQL
+touch database/database.sqlite
+```
+
+### 5 — Run migrations and seed test data
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+This creates all tables and seeds four demo accounts, eight product categories, one demo shop, and 24 sample products. See [Test Accounts](#test-accounts).
+
+### 6 — Install JS dependencies and build assets
+
+```bash
+npm install
+npm run build      # production build
+# or
+npm run dev        # hot-reload Vite dev server (run in a separate terminal)
+```
+
+### 7 — Start the development server
+
+```bash
+php artisan serve
+```
+
+Visit [http://localhost:8000](http://localhost:8000).
+
+---
+
+### One-shot setup (shortcut)
+
+The `composer.json` includes a `setup` script that chains the above steps:
+
+```bash
+composer run setup
+```
+
+Then start the dev server manually with `php artisan serve`.
+
+---
+
+## Environment Configuration
+
+| Variable | Default | Description |
+|---|---|---|
+| `APP_NAME` | `Laravel` | Change to `FarSell` |
+| `APP_ENV` | `local` | `local` / `staging` / `production` |
+| `APP_KEY` | _(empty)_ | Generated by `artisan key:generate` |
+| `APP_DEBUG` | `true` | Set to `false` in production |
+| `APP_URL` | `http://localhost:8000` | Full URL including scheme |
+| `DB_CONNECTION` | `sqlite` | `sqlite` or `mysql` |
+| `DB_HOST` | `127.0.0.1` | MySQL host (MySQL only) |
+| `DB_PORT` | `3306` | MySQL port (MySQL only) |
+| `DB_DATABASE` | _(path to .sqlite file)_ | Database name (MySQL) or file path (SQLite) |
+| `DB_USERNAME` | _(empty)_ | MySQL username |
+| `DB_PASSWORD` | _(empty)_ | MySQL password |
+| `SESSION_DRIVER` | `database` | `database` / `redis` / `file` |
+| `SESSION_LIFETIME` | `120` | Session expiry in minutes |
+| `CACHE_STORE` | `database` | `database` / `redis` / `file` |
+| `QUEUE_CONNECTION` | `database` | `database` / `redis` / `sync` |
+| `MAIL_MAILER` | `log` | `log` (dev) / `smtp` / `ses` (prod) |
+| `MAIL_HOST` | `127.0.0.1` | SMTP host |
+| `MAIL_PORT` | `2525` | SMTP port |
+| `MAIL_USERNAME` | _(empty)_ | SMTP username |
+| `MAIL_PASSWORD` | _(empty)_ | SMTP password |
+| `MAIL_FROM_ADDRESS` | `hello@example.com` | Sender address for all outgoing mail |
+| `AWS_ACCESS_KEY_ID` | _(empty)_ | AWS key — for S3 file storage in production |
+| `AWS_SECRET_ACCESS_KEY` | _(empty)_ | AWS secret |
+| `AWS_DEFAULT_REGION` | `us-east-1` | AWS region |
+| `AWS_BUCKET` | _(empty)_ | S3 bucket name |
+| `VITE_APP_NAME` | `"${APP_NAME}"` | Passed to the Vite frontend build |
+
+### Switching to MySQL
+
+1. Create a MySQL database: `CREATE DATABASE farsell CHARACTER SET utf8mb4;`
+2. Update `.env`:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=farsell
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+```
+
+3. Re-run migrations: `php artisan migrate:fresh --seed`
+
+---
+
+## Test Accounts
+
+All seeded accounts use the password `password`.
+
+| Role | Email | Name | Notes |
+|---|---|---|---|
+| Admin | `admin@farsell.test` | FarSell Admin | Full platform access |
+| Buyer | `buyer@farsell.test` | Guest Buyer | Default shopping account, has a saved address |
+| Seller | `seller@farsell.test` | Demo Seller | Owns "Tokyo Surplus Co." shop with 24 products |
+| Rider | `rider@farsell.test` | Demo Rider | Rider profile and documents seeded |
+
+> Seeding is **idempotent** — re-running `migrate:fresh --seed` recreates accounts cleanly without errors.
+
+### Registering a new account
+
+New registrations always start as **Buyer**. The `intent` field on the registration form controls the post-signup redirect only:
+
+- `buyer` / `seller` → redirected to `/` (home)
+- `rider` → redirected to `/rider/apply` (rider application form)
+
+Seller and Rider roles are granted by an admin after profile/document review.
+
+---
+
+## Directory Structure
+
+```
+PFS-main/
+├── app/
+│   ├── Enums/                    # UserRole, OrderStatus, PaymentMethod, RiderStatus
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Account/          # Address CRUD
+│   │   │   ├── Api/V1/           # Catalog API (Sanctum-protected)
+│   │   │   ├── Auth/             # Login, Register, GuestSession controllers
+│   │   │   ├── Cart/             # Session-based cart
+│   │   │   ├── Catalog/          # Product browse & shop pages
+│   │   │   ├── Checkout/         # Order placement & confirmation
+│   │   │   └── Rider/            # Rider application & profile
+│   │   ├── Middleware/
+│   │   │   └── EnsureUserHasRole # Role-gating middleware
+│   │   └── Requests/             # Form request validation
+│   ├── Models/                   # Eloquent models
+│   ├── Policies/                 # Address, Order, Shop authorization
+│   ├── Providers/
+│   │   └── AppServiceProvider    # View composers (cartCount, isGuestBrowse)
+│   └── Support/
+│       ├── Cart.php              # Session cart helper
+│       └── GuestSession.php      # Guest UUID session helper
+├── bootstrap/
+│   ├── app.php                   # Laravel 13 application bootstrap
+│   └── providers.php
+├── config/                       # Framework configuration files
+├── database/
+│   ├── factories/                # Model factories for seeding & testing
+│   ├── migrations/               # Database schema migrations
+│   └── seeders/
+│       └── DatabaseSeeder.php    # Idempotent seed with demo data
+├── docker/
+│   ├── Dockerfile
+│   └── entrypoint.sh
+├── resources/
+│   ├── css/app.css               # Tailwind entry point
+│   ├── js/app.js                 # Alpine.js entry point
+│   └── views/
+│       ├── layouts/app.blade.php # Shared HTML shell — header, bottom nav, assets
+│       ├── components/           # Blade component classes
+│       ├── auth/                 # Login & Register views
+│       ├── catalog/              # Product browse, detail, card partial
+│       ├── cart/                 # Cart page
+│       ├── checkout/             # Checkout form
+│       ├── orders/               # Order confirmation
+│       ├── rider/                # Rider application & profile
+│       ├── account/addresses/    # Saved address management
+│       ├── shop/                 # Shop storefront
+│       └── home.blade.php        # Landing page / homepage
+├── routes/
+│   └── web.php                   # All HTTP routes
+├── tailwind.config.js
+├── vite.config.js
+├── composer.json
+└── package.json
+```
+
+---
+
+## User Roles
+
+| Role | Value | Description |
+|---|---|---|
+| `buyer` | `UserRole::Buyer` | Default role for all new registrations. Can browse, cart, and checkout. |
+| `seller` | `UserRole::Seller` | Can manage a shop and list products. Granted by admin post-review. |
+| `rider` | `UserRole::Rider` | Can accept and fulfil delivery orders. Granted after document review. |
+| `admin` | `UserRole::Admin` | Full platform access. Passes all role checks automatically. |
+
+Role is stored as a string column in `users.role` and cast to the `UserRole` enum. The `EnsureUserHasRole` middleware enforces role-based access on protected routes.
+
+---
+
+## Platform Guidelines & Terms
+
+### Acceptable Use
+
+- FarSell is a marketplace platform connecting buyers, sellers, and riders.
+- Users must provide accurate personal and business information during registration.
+- Sellers may only list items they legitimately own or are authorised to sell.
+- Fraudulent listings, counterfeit goods, and prohibited items (weapons, controlled substances, stolen property) are strictly banned and will result in immediate account suspension.
+
+### Buyer Responsibilities
+
+- Buyers are responsible for reviewing product descriptions, images, and seller ratings before purchase.
+- Disputes must be raised within 7 days of delivery confirmation.
+- Abuse of the refund or dispute system may result in account suspension.
+
+### Seller Responsibilities
+
+- Sellers must fulfil orders within the agreed dispatch window stated in their shop settings.
+- Product descriptions must be accurate — misrepresentation is grounds for suspension.
+- Sellers are responsible for correctly declaring item condition (new, used, surplus lot, etc.).
+
+### Rider Responsibilities
+
+- Riders must complete the identity verification and document upload process before activating deliveries.
+- Riders are responsible for safe and timely delivery. Repeated failed or cancelled deliveries may affect rider status.
+- Riders must not open, tamper with, or damage packages.
+
+### Data Handling
+
+- User data (name, email, address, phone) is collected solely to facilitate marketplace transactions.
+- Passwords are stored as bcrypt hashes and are never logged or transmitted in plain text.
+- Session data and cart contents are stored server-side in the application database.
+- FarSell does not sell user data to third parties.
+- Users may request account deletion by contacting the platform administrator.
+
+### Intellectual Property
+
+- Sellers retain ownership of their product images and descriptions.
+- By listing on FarSell, sellers grant the platform a non-exclusive licence to display that content to buyers.
+
+### Limitation of Liability
+
+- FarSell acts as a marketplace intermediary and is not the buyer or seller of any item.
+- The platform is not liable for disputes between buyers and sellers beyond the scope of its dispute resolution process.
+
+### Changes to These Terms
+
+Platform guidelines may be updated at any time. Continued use of the platform after a change constitutes acceptance of the updated terms.
+
+---
+
+## Docker (optional)
+
+A `docker-compose.yml` and `docker/Dockerfile` are included for containerised local development. The entrypoint script (`docker/entrypoint.sh`) runs migrations and seeding automatically on container start.
+
+```bash
+docker compose up --build
+```
+
+The app will be available at [http://localhost:8000](http://localhost:8000).
+
+---
+
+## Useful Artisan Commands
+
+```bash
+php artisan migrate:fresh --seed   # Reset and re-seed the database
+php artisan tinker                 # Interactive REPL
+php artisan route:list             # Print all registered routes
+php artisan config:clear           # Clear configuration cache
+php artisan view:clear             # Clear compiled Blade templates
+php artisan pail                   # Tail application logs in real time
+```
+
+---
+
+## Code Style
+
+PHP code follows [Laravel Pint](https://laravel.com/docs/pint) (PSR-12 based). Run the linter with:
+
+```bash
+./vendor/bin/pint
+```

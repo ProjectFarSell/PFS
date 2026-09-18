@@ -12,26 +12,26 @@
         <form method="post" action="{{ route('rider.register') }}" enctype="multipart/form-data" class="mt-4 space-y-3">
             @csrf
             <label class="block text-sm">Vehicle
-                <select name="vehicle_type" class="mt-1 w-full rounded-lg border-stone-200 text-sm">
+                <select name="vehicle_type" class="mt-1 w-full rounded-lg border-stone-200 text-sm focus:border-violet-500 focus:ring-violet-500">
                     <option value="motorcycle">Motorcycle</option>
                     <option value="bicycle">Bicycle</option>
                     <option value="car">Car</option>
                     <option value="van">Van</option>
                 </select>
             </label>
-            <input name="plate_number" placeholder="Plate number" class="w-full rounded-lg border-stone-200 text-sm" value="{{ old('plate_number', $profile->plate_number ?? '') }}">
-            <input name="license_no" required placeholder="License / ID number" class="w-full rounded-lg border-stone-200 text-sm" value="{{ old('license_no', $profile->license_no ?? '') }}">
-            <input name="city" required placeholder="City" class="w-full rounded-lg border-stone-200 text-sm" value="{{ old('city', $profile->city ?? '') }}">
-            <textarea name="bio" rows="3" placeholder="Short bio" class="w-full rounded-lg border-stone-200 text-sm">{{ old('bio', $profile->bio ?? '') }}</textarea>
+            <input name="plate_number" placeholder="Plate number" class="w-full rounded-lg border-stone-200 text-sm focus:border-violet-500 focus:ring-violet-500" value="{{ old('plate_number', $profile->plate_number ?? '') }}">
+            <input name="license_no" required placeholder="License / ID number" class="w-full rounded-lg border-stone-200 text-sm focus:border-violet-500 focus:ring-violet-500" value="{{ old('license_no', $profile->license_no ?? '') }}">
+            <input name="city" required placeholder="City" class="w-full rounded-lg border-stone-200 text-sm focus:border-violet-500 focus:ring-violet-500" value="{{ old('city', $profile->city ?? '') }}">
+            <textarea name="bio" rows="3" placeholder="Short bio" class="w-full rounded-lg border-stone-200 text-sm focus:border-violet-500 focus:ring-violet-500">{{ old('bio', $profile->bio ?? '') }}</textarea>
 
             <label class="block text-sm">Driver's license (photo/scan)
-                <input type="file" name="license_document" accept="image/*,.pdf" class="mt-1 w-full text-sm">
+                <input type="file" name="license_document" accept="image/*,.pdf" class="mt-1 w-full text-sm text-stone-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer">
             </label>
             <label class="block text-sm">Valid ID
-                <input type="file" name="id_document" accept="image/*,.pdf" class="mt-1 w-full text-sm">
+                <input type="file" name="id_document" accept="image/*,.pdf" class="mt-1 w-full text-sm text-stone-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer">
             </label>
             <label class="block text-sm">Vehicle registration (OR/CR, if applicable)
-                <input type="file" name="vehicle_reg_document" accept="image/*,.pdf" class="mt-1 w-full text-sm">
+                <input type="file" name="vehicle_reg_document" accept="image/*,.pdf" class="mt-1 w-full text-sm text-stone-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 cursor-pointer">
             </label>
             <p class="text-xs text-stone-500">Accepted: JPG, PNG, PDF. Max 5MB each.</p>
 
@@ -42,7 +42,7 @@
                     @endforeach
                 </ul>
             @endif
-            <button class="w-full rounded-full bg-orange-500 text-white text-sm py-2.5">Submit application</button>
+            <button class="w-full rounded-full bg-violet-600 hover:bg-violet-700 text-white text-sm py-2.5 transition-colors">Submit application</button>
         </form>
     </div>
 @endsection

@@ -3,7 +3,7 @@
 @section('title', 'Order '.$order->number)
 
 @section('content')
-    <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-orange-600">← My Orders</a>
+    <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-violet-600 hover:text-violet-700">← My Orders</a>
     @php
         $steps = [
             'pending_payment' => 'Placed',
@@ -25,7 +25,7 @@
         @foreach ($steps as $key => $label)
             @php $done = array_search($key, $keys, true) <= $current; @endphp
             <li class="flex items-center gap-2 {{ $done ? 'text-stone-900' : 'text-stone-400' }}">
-                <span class="h-2 w-2 rounded-full {{ $done ? 'bg-orange-500' : 'bg-stone-300' }}"></span>
+                <span class="h-2 w-2 rounded-full {{ $done ? 'bg-violet-600' : 'bg-stone-300' }}"></span>
                 {{ $label }}
             </li>
         @endforeach

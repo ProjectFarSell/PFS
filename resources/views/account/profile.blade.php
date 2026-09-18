@@ -25,12 +25,12 @@
         </section>
 
         <div class="mt-4 space-y-3">
-            <a href="{{ route('orders.index') }}" class="block rounded-xl border border-stone-200 bg-white p-4 hover:border-orange-500">
-                <span class="font-semibold text-orange-600">My Orders</span>
+            <a href="{{ route('orders.index') }}" class="block rounded-xl border border-stone-200 bg-white p-4 hover:border-violet-500">
+                <span class="font-semibold text-violet-600">My Orders</span>
                 <span class="block mt-1 text-sm text-stone-500">View your purchases, order status, and details.</span>
             </a>
-            <a href="{{ route('account.addresses.index') }}" class="block rounded-xl border border-stone-200 bg-white p-4 hover:border-orange-500">
-                <span class="font-semibold text-orange-600">My Addresses</span>
+            <a href="{{ route('account.addresses.index') }}" class="block rounded-xl border border-stone-200 bg-white p-4 hover:border-violet-500">
+                <span class="font-semibold text-violet-600">My Addresses</span>
                 <span class="block mt-1 text-sm text-stone-500">Manage your saved delivery addresses.</span>
             </a>
         </div>

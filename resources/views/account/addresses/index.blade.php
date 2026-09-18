@@ -4,10 +4,10 @@
 
 @section('content')
     <div class="max-w-lg mx-auto">
-        <a href="{{ route('account.profile') }}" class="inline-block text-sm text-orange-600 mb-3">← My Profile</a>
+        <a href="{{ route('account.profile') }}" class="inline-block text-sm text-violet-600 hover:text-violet-700 mb-3">← My Profile</a>
         <div class="flex items-center justify-between mb-3">
             <h1 class="text-lg font-semibold">My addresses</h1>
-            <a href="{{ route('account.addresses.create') }}" class="text-sm text-orange-600">Add new</a>
+            <a href="{{ route('account.addresses.create') }}" class="text-sm text-violet-600 hover:text-violet-700">Add new</a>
         </div>
 
         @if (session('status'))
@@ -20,7 +20,7 @@
                         <p class="text-sm font-medium">
                             {{ $address->label }}
                             @if ($address->is_default)
-                                <span class="ml-1 text-[10px] uppercase text-orange-600">Default</span>
+                                <span class="ml-1 text-[10px] uppercase text-violet-600 font-semibold">Default</span>
                             @endif
                         </p>
                         <p class="text-sm text-stone-600 mt-1">{{ $address->line1 }}</p>
@@ -30,11 +30,11 @@
                         @endif
                     </div>
                     <div class="flex gap-2 text-xs">
-                        <a href="{{ route('account.addresses.edit', $address) }}" class="text-orange-600">Edit</a>
+                        <a href="{{ route('account.addresses.edit', $address) }}" class="text-violet-600 hover:text-violet-700">Edit</a>
                         <form method="post" action="{{ route('account.addresses.destroy', $address) }}" onsubmit="return confirm('Remove this address?')">
                             @csrf
                             @method('delete')
-                            <button class="text-stone-400">Delete</button>
+                            <button class="text-stone-400 hover:text-stone-600">Delete</button>
                         </form>
                     </div>
                 </div>
