@@ -6,18 +6,10 @@
 <section class="rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white p-5 mb-4">
     <p class="text-xs uppercase tracking-wide text-violet-200">Doorzo-style lots · Shopee-fast checkout</p>
     <h1 class="text-2xl font-semibold mt-1">Auction surplus. Everyday prices.</h1>
-    <p class="text-sm text-violet-100 mt-2 max-w-xl">Browse as a guest, check out in minutes, or apply as a rider and deliver FarSell orders in your city.</p>
+    <p class="text-sm text-violet-100 mt-2 max-w-xl">Discover surplus finds from local shops. Browse freely and sign in when you are ready to place an order.</p>
     <div class="mt-4 flex flex-wrap gap-2">
-        @guest
-            <form method="post" action="{{ route('guest.start') }}">
-                @csrf
-                <button class="rounded-full bg-surface text-accent text-sm font-medium px-4 py-2">Continue as guest</button>
-            </form>
-            <a href="{{ route('register') }}" class="rounded-full border border-white/70 text-sm px-4 py-2">Create account</a>
-        @endguest
-        @auth
-            <a href="{{ route('rider.register') }}" class="rounded-full bg-surface text-accent text-sm font-medium px-4 py-2">Become a rider</a>
-        @endauth
+        <a href="{{ route('catalog.index') }}" class="rounded-full bg-surface text-accent text-sm font-medium px-4 py-2">Browse products</a>
+        <a href="{{ route('shops.index') }}" class="rounded-full border border-white/70 text-sm px-4 py-2">Explore shops</a>
     </div>
 </section>
 
@@ -41,8 +33,10 @@
 
     <h2 class="text-base font-semibold mt-2 mb-2">For you</h2>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        @foreach ($products as $product)
+        @forelse ($products as $product)
             @include('catalog.partials.card', ['product' => $product])
-        @endforeach
+        @empty
+            <p class="col-span-full rounded-xl border border-surface-border bg-surface p-6 text-sm text-text-muted">No products are available yet. Check back soon for new listings.</p>
+        @endforelse
     </div>
 @endsection

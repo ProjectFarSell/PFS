@@ -80,8 +80,8 @@ class CheckoutSignInTest extends TestCase
 
     public function test_regular_guest_browsing_remains_available_and_cannot_loop_into_checkout(): void
     {
-        $this->get(route('login'))->assertOk()->assertSee('Continue as guest');
-        $this->get(route('welcome'))->assertOk()->assertSee('Continue as guest');
+        $this->get(route('login'))->assertOk()->assertSee('Back to browsing')->assertDontSee('Continue as guest');
+        $this->get(route('welcome'))->assertOk()->assertSee('Browse products')->assertDontSee('Continue as guest');
         $this->get(route('checkout.create'));
         $this->post(route('guest.start'))->assertRedirect(route('home'))
             ->assertSessionMissing('url.intended');

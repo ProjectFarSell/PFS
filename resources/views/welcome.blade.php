@@ -355,7 +355,7 @@
                                 <label for="reg_intent" class="fs-label">I want to…</label>
                                 <select id="reg_intent" name="intent" class="fs-input">
                                     <option value="buyer">Shop (buyer)</option>
-                                    <option value="seller">Sell products (seller)</option>
+                                    <option value="seller" @selected(old('intent', request('intent')) === 'seller')>Sell products (seller)</option>
                                     <option value="rider" @selected(request('intent') === 'rider')>
                                         Deliver orders (rider)
                                     </option>

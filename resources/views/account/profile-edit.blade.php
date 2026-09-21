@@ -68,9 +68,9 @@
                 </ul>
             @endif
             @if($deletionBlocked)
-                <p class="mt-2 text-sm text-text-muted">Self-deletion is unavailable for admin, seller, or rider accounts, or accounts with orders, a shop, or a rider application. Contact an administrator for help preserving marketplace records.</p>
+                <p class="mt-2 text-sm text-text-muted">Self-deletion is unavailable for admin, seller, or rider accounts, or accounts with orders, a shop, or seller/rider applications. Contact an administrator for help preserving marketplace records.</p>
             @else
-                <p class="mt-2 text-sm text-text-muted">Permanently deletes your account and saved addresses and signs you out. This cannot be undone. Only buyer accounts without orders, shops, or rider applications can self-delete.</p>
+                <p class="mt-2 text-sm text-text-muted">Permanently deletes your account and saved addresses and signs you out. This cannot be undone. Only buyer accounts without orders, shops, or seller/rider applications can self-delete.</p>
                 <form method="post" action="{{ route('account.profile.destroy') }}" class="mt-4 space-y-4">
                     @csrf
                     @method('DELETE')

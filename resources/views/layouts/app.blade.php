@@ -267,7 +267,7 @@
              style="display:none; background-color: rgb(var(--color-surface)); border-color: rgb(var(--color-surface-border) / 0.4);">
             <nav class="mx-auto max-w-7xl px-4 pt-3 space-y-1" aria-label="Mobile navigation">
                 <a href="{{ route('home') }}" class="dropdown-item rounded-xl"
-                   @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
+                   @if(request()->routeIs('home', 'welcome')) aria-current="page" @endif>Home</a>
                 <a href="{{ route('catalog.index') }}" class="dropdown-item rounded-xl"
                    @if(request()->routeIs('catalog.*')) aria-current="page" @endif>Browse All</a>
                 <a href="{{ route('shops.index') }}" class="dropdown-item rounded-xl"
@@ -325,16 +325,6 @@
             </nav>
         </div>
 
-        {{-- Guest browse banner --}}
-        @if (!empty($isGuestBrowse) && auth()->guest() && empty($checkoutIntent))
-            <div class="border-t py-1.5 text-center text-xs"
-                 style="background-color: rgb(var(--color-accent-subtle)); border-color: rgb(var(--color-surface-border) / 0.4); color: rgb(var(--color-accent));">
-                Guest mode — cart is saved on this device ·
-                <a href="{{ route('register') }}" class="font-semibold underline underline-offset-2">
-                    Create an account
-                </a>
-            </div>
-        @endif
     </header>
 
     {{-- ── Flash status ────────────────────────────────────────────── --}}
@@ -422,7 +412,7 @@
                                     : route('register', ['intent' => 'rider']) }}"
                                class="hover:text-white transition-colors">{{ auth()->check() && auth()->user()->isRider() ? 'Rider Dashboard' : 'Become a Rider' }}</a>
                         </li>
-                        <li><a href="{{ route('register') }}" class="hover:text-white transition-colors">Sell on FarSell</a></li>
+                            <li><a href="{{ auth()->check() ? (auth()->user()->role === \App\Enums\UserRole::Seller ? route('seller.dashboard') : route('account.profile')) : route('register', ['intent' => 'seller']) }}" class="hover:text-white transition-colors">Sell on FarSell</a></li>
                         <li><span class="text-xs">Buyer Protection (coming soon)</span></li>
                         <li><span class="text-xs">Help Center (coming soon)</span></li>
                     </ul>

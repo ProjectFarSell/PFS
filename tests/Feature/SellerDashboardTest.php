@@ -23,7 +23,7 @@ class SellerDashboardTest extends TestCase
             $user = User::factory()->create(['role' => $role]);
             Shop::factory()->create(['user_id' => $user->id]);
             $this->actingAs($user)->get(route('seller.dashboard'))->assertForbidden();
-            $this->get(route('account.profile'))->assertDontSee(route('seller.dashboard'), false);
+            $this->get(route('account.profile'))->assertDontSee('href="'.route('seller.dashboard').'"', false);
         }
     }
 

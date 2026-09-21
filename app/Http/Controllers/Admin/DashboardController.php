@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\RiderProfile;
+use App\Models\SellerApplication;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -37,6 +38,7 @@ class DashboardController extends Controller
         $lowStockProducts = $lowStockQuery->with('shop:id,name')->orderBy('stock')->orderBy('id')->limit(5)->get();
 
         return view('admin.dashboard', [
+            'pendingSellers' => SellerApplication::where('status', 'pending')->count(),
             'stats' => $stats,
             'orders' => $orders,
             'statuses' => OrderStatus::cases(),

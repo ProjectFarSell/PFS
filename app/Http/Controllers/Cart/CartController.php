@@ -27,7 +27,7 @@ class CartController extends Controller
             'qty' => ['nullable', 'integer', 'min:1', 'max:99'],
         ]);
 
-        $product = Product::query()->where('is_active', true)->findOrFail($data['product_id']);
+        $product = Product::query()->visible()->findOrFail($data['product_id']);
         $requested = (Cart::lines()[$product->id] ?? 0) + ($data['qty'] ?? 1);
 
         if ($requested > $product->stock) {
@@ -46,6 +46,8 @@ class CartController extends Controller
         $data = $request->validate([
             'qty' => ['required', 'integer', 'min:0', 'max:99'],
         ]);
+
+        abort_if($data['qty'] > 0 && (! $product->is_active || ! $product->shop?->is_active), 404);
 
         if ($data['qty'] > $product->stock) {
             throw ValidationException::withMessages([

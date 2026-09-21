@@ -6,12 +6,13 @@
     <section class="fs-card-raised p-5 sm:p-7">
         <p class="text-xs font-semibold uppercase tracking-widest text-accent">Seller Dashboard</p>
         <h1 class="mt-2 text-2xl font-semibold">{{ $shop?->name ?? 'Your seller workspace' }}</h1>
-        <p class="mt-2 text-sm text-text-muted">Read-only overview of your shop's inventory and order items. Editing and fulfillment actions are not available yet.</p>
+        <p class="mt-2 text-sm text-text-muted">Manage product listings and available stock, and review your shop's order items. Fulfillment actions are not available yet.</p>
         @if($shop)
             <div class="mt-4 flex flex-wrap items-center gap-3">
                 <span class="badge {{ $shop->is_active ? 'badge-success' : 'badge-neutral' }}">{{ $shop->is_active ? 'Shop active' : 'Shop inactive' }}</span>
                 @if($shop->is_active)
                     <a href="{{ route('shops.show', $shop) }}" class="text-sm text-accent underline">View storefront</a>
+                    @if(auth()->user()->role === \App\Enums\UserRole::Seller)<a href="{{ route('seller.products.create') }}" class="btn-accent">Add product</a>@endif
                 @else
                     <p class="text-sm text-text-muted">Your shop is not visible in the public directory.</p>
                 @endif
@@ -22,7 +23,8 @@
     @if(!$shop)
         <section class="fs-card mt-5 p-6">
             <h2 class="font-semibold">No shop linked to your account</h2>
-            <p class="mt-2 text-sm text-text-muted">Contact the project administrator to set up your shop. Self-service shop creation is not available yet.</p>
+            <p class="mt-2 text-sm text-text-muted">Submit your shop details for admin approval before listing products.</p>
+            @if(auth()->user()->role === \App\Enums\UserRole::Seller)<a href="{{ route('seller.apply') }}" class="btn-accent mt-4">Apply to open a shop</a>@endif
             <a href="{{ route('account.profile') }}" class="btn-outline mt-4">Back to profile</a>
         </section>
     @else
@@ -49,6 +51,7 @@
                             <th scope="col" class="px-4 py-3">Listing</th>
                             <th scope="col" class="px-4 py-3 text-right">Price</th>
                             <th scope="col" class="px-4 py-3 text-right">Stock</th>
+                            @if($shop->is_active && auth()->user()->role === \App\Enums\UserRole::Seller)<th scope="col" class="px-4 py-3">Manage</th>@endif
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-surface-border">
@@ -66,9 +69,10 @@
                                 <td class="px-4 py-3 text-right whitespace-nowrap {{ $product->stock <= 5 ? 'text-error font-semibold' : '' }}">
                                     {{ $product->stock }}{{ $product->stock === 0 ? ' · Out of stock' : ($product->stock <= 5 ? ' · Low stock' : '') }}
                                 </td>
+                                @if($shop->is_active && auth()->user()->role === \App\Enums\UserRole::Seller)<td class="px-4 py-3"><a href="{{ route('seller.products.edit', $product) }}" class="text-accent underline" aria-label="Edit {{ $product->name }}">Edit listing</a></td>@endif
                             </tr>
                         @empty
-                            <tr><td colspan="4" class="px-4 py-8 text-center text-text-muted">No products in your shop yet.</td></tr>
+                            <tr><td colspan="{{ $shop->is_active && auth()->user()->role === \App\Enums\UserRole::Seller ? 5 : 4 }}" class="px-4 py-8 text-center text-text-muted">No products in your shop yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

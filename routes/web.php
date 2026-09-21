@@ -5,10 +5,10 @@ use App\Http\Controllers\Account\OrderController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RiderApplicationController;
+use App\Http\Controllers\Admin\SellerApplicationController;
 use App\Http\Controllers\Auth\GuestSessionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\WelcomeController;
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Catalog\ProductController;
 use App\Http\Controllers\Catalog\ShopController;
@@ -16,16 +16,18 @@ use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Rider\DashboardController as RiderDashboardController;
 use App\Http\Controllers\Rider\RiderRegistrationController;
+use App\Http\Controllers\Seller\ApplicationController as SellerApplication;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
+use App\Http\Controllers\Seller\ProductController as SellerProducts;
 use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Support\Facades\Route;
 
 // ── Portal / entry point ──────────────────────────────────────────────────────
-// Guests see the login+register landing page; authenticated users are
-// redirected straight to the marketplace home feed.
-Route::get('/', WelcomeController::class)->name('welcome');
+// Browsing is public by default. Keep both route names/URLs compatible
+// with existing links; neither requires a guest-session entry step.
+Route::get('/', HomeController::class)->name('welcome');
 
-// ── Marketplace home feed (requires any session — guest or auth) ──────────────
+// Marketplace home feed (public, including first-time visitors).
 Route::get('/home', HomeController::class)->name('home');
 
 // ── Public catalog ────────────────────────────────────────────────────────────
@@ -67,8 +69,23 @@ Route::get('/seller', SellerDashboardController::class)
     ->middleware(['auth', EnsureUserHasRole::class.':seller'])
     ->name('seller.dashboard');
 
+Route::middleware(['auth', EnsureUserHasRole::class.':seller'])->prefix('seller/products')->name('seller.products.')->group(function () {
+    Route::get('/create', [SellerProducts::class, 'create'])->name('create');
+    Route::post('/', [SellerProducts::class, 'store'])->middleware('throttle:30,1')->name('store');
+    Route::get('/{product}/edit', [SellerProducts::class, 'edit'])->name('edit');
+    Route::put('/{product}', [SellerProducts::class, 'update'])->middleware('throttle:30,1')->name('update');
+});
+
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/sellers')->name('admin.sellers.')->group(function () {
+    Route::get('/', [SellerApplicationController::class, 'index'])->name('index');
+    Route::get('/{application}', [SellerApplicationController::class, 'show'])->name('show');
+    Route::post('/{application}/review', [SellerApplicationController::class, 'review'])->middleware('throttle:30,1')->name('review');
+});
+
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::get('/seller/apply', [SellerApplication::class, 'show'])->name('seller.apply');
+    Route::post('/seller/apply', [SellerApplication::class, 'store'])->middleware('throttle:10,1')->name('seller.apply.store');
     Route::get('/account/profile', [ProfileController::class, 'show'])->name('account.profile');
     Route::get('/account/profile/edit', [ProfileController::class, 'edit'])->name('account.profile.edit');
     Route::patch('/account/profile', [ProfileController::class, 'update'])->middleware('throttle:10,1')->name('account.profile.update');

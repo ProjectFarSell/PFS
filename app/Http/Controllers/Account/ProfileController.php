@@ -105,7 +105,7 @@ class ProfileController extends Controller
             $this->checkPassword($account, $data['current_password'], 'deletion');
             if ($this->deletionBlocked($account)) {
                 throw ValidationException::withMessages([
-                    'account' => 'Self-deletion is limited to buyer accounts without orders, a shop, or a rider application. Contact an administrator for help.',
+                    'account' => 'Self-deletion is limited to buyer accounts without orders, a shop, or seller/rider applications. Contact an administrator for help.',
                 ])->errorBag('deletion');
             }
             $this->clearPasswordResetTokens($account);
@@ -123,7 +123,7 @@ class ProfileController extends Controller
     private function deletionBlocked(User $user): bool
     {
         return $user->role !== UserRole::Buyer || $user->orders()->exists()
-            || $user->shop()->exists() || $user->riderProfile()->exists();
+            || $user->shop()->exists() || $user->riderProfile()->exists() || $user->sellerApplication()->exists();
     }
 
     private function checkPassword(User $user, string $password, string $bag): void

@@ -15,7 +15,7 @@ class HomeController extends Controller
 
         $flash = Product::query()
             ->with(['shop', 'category'])
-            ->where('is_active', true)
+            ->visible()
             ->where('is_flash', true)
             ->latest()
             ->take(8)
@@ -23,7 +23,7 @@ class HomeController extends Controller
 
         $products = Product::query()
             ->with(['shop', 'category'])
-            ->where('is_active', true)
+            ->visible()
             ->latest()
             ->take(16)
             ->get();

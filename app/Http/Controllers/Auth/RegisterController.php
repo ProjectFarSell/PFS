@@ -57,6 +57,10 @@ class RegisterController extends Controller
             return redirect()->route('rider.register');
         }
 
+        if ($intent === 'seller') {
+            return redirect()->route('seller.apply');
+        }
+
         return redirect()->route('home');
     }
 }

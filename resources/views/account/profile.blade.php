@@ -26,6 +26,12 @@
         </section>
 
         <div class="mt-4 space-y-3">
+            @if($user->role === \App\Enums\UserRole::Buyer)
+                <a href="{{ route('seller.apply') }}" class="block fs-card p-4 hover:border-accent">
+                    <span class="font-semibold text-accent">{{ $user->sellerApplication ? 'Seller Application' : 'Open a shop' }}</span>
+                    <span class="mt-1 block text-sm text-text-muted">{{ $user->sellerApplication ? 'Status: '.ucfirst($user->sellerApplication->status).'. View or update your application.' : 'Apply for admin approval to list and sell your products.' }}</span>
+                </a>
+            @endif
             @if($user->isRider())
                 <a href="{{ route('rider.dashboard') }}" class="block fs-card p-4 hover:border-accent">
                     <span class="font-semibold text-accent">Rider Dashboard</span>

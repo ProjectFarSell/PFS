@@ -8,12 +8,8 @@
         @if($checkoutIntent)
             <p class="text-sm text-text-muted mt-1">Sign in or create an account to place your order. Your cart will be kept.</p>
         @else
-            <p class="text-sm text-text-muted mt-1">Or skip an account and keep shopping.</p>
-
-        <form method="post" action="{{ route('guest.start') }}" class="mt-3">
-            @csrf
-            <button class="w-full btn-outline rounded-full py-2">Continue as guest</button>
-        </form>
+            <p class="text-sm text-text-muted mt-1">Sign in to manage your account and orders.</p>
+            <a href="{{ route('welcome') }}" class="mt-3 inline-block text-sm text-accent underline">Back to browsing</a>
         @endif
 
         <form method="post" action="{{ route('login') }}" class="mt-4 space-y-3">

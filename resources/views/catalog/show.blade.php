@@ -5,7 +5,11 @@
 @section('content')
     <div class="grid md:grid-cols-2 gap-6">
         <div class="aspect-square rounded-2xl bg-surface border border-surface-border flex items-center justify-center text-text-muted">
-            {{ $product->category?->name }}
+            @if($product->image_path)
+                <img src="{{ asset('storage/'.$product->image_path) }}" alt="{{ $product->name }}" class="h-full w-full rounded-2xl object-cover">
+            @else
+                {{ $product->category?->name }}
+            @endif
         </div>
         <div>
             <a href="{{ route('shops.show', $product->shop) }}" class="text-xs text-accent hover:text-accent font-medium">{{ $product->shop->name }}</a>
@@ -20,8 +24,8 @@
             <form method="post" action="{{ route('cart.store') }}" class="mt-4 flex gap-2" x-data="{ qty: 1 }">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
-                <input type="number" name="qty" x-model="qty" min="1" max="99" class="w-20 rounded-lg border-surface-border text-sm focus:border-accent focus:ring-accent">
-                <button class="rounded-full bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium px-5 py-2 transition-colors">Add to cart</button>
+                <input type="number" name="qty" x-model="qty" min="1" max="{{ min(99, $product->stock) }}" @disabled($product->stock < 1) class="w-20 rounded-lg border-surface-border text-sm focus:border-accent focus:ring-accent">
+                <button @disabled($product->stock < 1) class="rounded-full bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-sm font-medium px-5 py-2 transition-colors">{{ $product->stock > 0 ? 'Add to cart' : 'Out of stock' }}</button>
             </form>
         </div>
     </div>

@@ -22,7 +22,7 @@ class StockReservationService
         return $lines->map(function (object $line): object {
             $product = Product::query()->lockForUpdate()->find($line->product->id);
 
-            if (! $product || ! $product->is_active || $product->stock < $line->qty) {
+            if (! $product || ! $product->is_active || ! $product->shop?->is_active || $product->stock < $line->qty) {
                 throw ValidationException::withMessages([
                     'cart' => $line->product->name.' no longer has enough stock. Please update your cart.',
                 ]);

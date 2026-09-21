@@ -21,7 +21,7 @@
             @else
             <select name="intent" class="fs-input">
                 <option value="buyer" class="bg-surface text-text-base">I want to shop</option>
-                <option value="seller" class="bg-surface text-text-base">I want to sell</option>
+                <option value="seller" @selected(old('intent', request('intent')) === 'seller') class="bg-surface text-text-base">I want to sell</option>
                 <option value="rider" @selected(request('intent') === 'rider') class="bg-surface text-text-base">I want to deliver</option>
             </select>
             @endif

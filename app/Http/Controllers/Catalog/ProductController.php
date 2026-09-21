@@ -14,7 +14,7 @@ class ProductController extends Controller
     {
         $query = Product::query()
             ->with(['shop', 'category'])
-            ->where('is_active', true);
+            ->visible();
 
         if ($search = $request->string('q')->toString()) {
             $query->where('name', 'like', '%'.$search.'%');
@@ -34,13 +34,13 @@ class ProductController extends Controller
 
     public function show(Product $product): View
     {
-        abort_unless($product->is_active, 404);
+        abort_unless($product->is_active && $product->shop?->is_active, 404);
 
         $product->load(['shop', 'category']);
 
         $related = Product::query()
             ->with('shop')
-            ->where('is_active', true)
+            ->visible()
             ->where('category_id', $product->category_id)
             ->whereKeyNot($product->id)
             ->take(8)

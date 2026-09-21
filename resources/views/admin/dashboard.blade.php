@@ -20,6 +20,11 @@
     </dl>
 
     <section class="fs-card mb-5 flex flex-wrap items-center justify-between gap-3 p-4">
+        <div><h2 class="font-semibold">Seller applications</h2><p class="mt-1 text-sm text-text-muted">{{ $pendingSellers }} pending review. Approve applicants to create their shops and enable listings.</p></div>
+        <a href="{{ route('admin.sellers.index') }}" class="btn-accent">Review seller applications</a>
+    </section>
+
+    <section class="fs-card mb-5 flex flex-wrap items-center justify-between gap-3 p-4">
         <div>
             <h2 class="font-semibold">Rider applications</h2>
             <p class="mt-1 text-sm text-text-muted">{{ $stats['pendingRiders'] }} pending review. Review details before granting rider access.</p>

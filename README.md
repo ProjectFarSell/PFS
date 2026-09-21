@@ -186,7 +186,7 @@ All seeded accounts use the password `password`.
 
 | Role | Email | Name | Notes |
 |---|---|---|---|
-| Admin | `admin@farsell.test` | FarSell Admin | Read-only admin dashboard and authorized order details |
+| Admin | `admin@farsell.test` | FarSell Admin | Marketplace dashboard, seller/rider application reviews, and authorized order details |
 | Buyer | `buyer@farsell.test` | Guest Buyer | Default shopping account, has a saved address |
 | Seller | `seller@farsell.test` | Demo Seller | Owns "Metro Surplus Co." shop with 24 products |
 | Rider | `rider@farsell.test` | Demo Rider | Rider account; profile/documents are submitted through onboarding |
@@ -199,14 +199,33 @@ The local demo admin also accepts username **admin**, password **password**, and
 
 New registrations always start as **Buyer**. The `intent` field on the registration form controls the post-signup redirect only:
 
-- `buyer` / `seller` → redirected to `/home`
+- `buyer` → redirected to `/home`
+- `seller` → redirected to `/seller/apply` to submit shop details for admin approval
 - `rider` → redirected to `/rider/apply` (rider application form)
 
 Rider approvals are available from **Admin Dashboard → Review rider applications** (`/admin/riders`). Applicants submit at `/rider/apply`; admins review details and private document downloads, then approve or reject with a note. Approval atomically changes the profile to `approved` and account role to `rider`. Rejection leaves the role unchanged and allows resubmission. Seller/admin accounts cannot be converted to riders through this action.
 
-Run `php artisan migrate --env=local` for the review metadata fields when using the local environment. Duplicate/stale reviews are blocked. Approved/suspended applications cannot be reset through onboarding. Uploads remain optional in this MVP and application approval does not mark individual documents verified; formal document requirements and verification controls remain follow-up work. Only the latest review metadata is stored and is cleared on resubmission, not a permanent review history. Seller approval, dispatch, and fulfillment actions are still planned.
+Run `php artisan migrate --env=local` for the review metadata fields when using the local environment. Duplicate/stale reviews are blocked. Approved/suspended rider applications cannot be reset through onboarding. Rider uploads remain optional in this MVP and application approval does not mark individual documents verified; formal document requirements and verification controls remain follow-up work. Only the latest review metadata is stored and is cleared on resubmission, not a permanent review history. Dispatch and fulfillment actions are still planned.
+
+### Seller onboarding and product listings
+
+1. Register with **I want to sell**, or open **My Profile → Open a shop**. Submit the proposed shop name, city, optional tagline, and what you will sell at `/seller/apply`. The account stays a buyer while awaiting review. Registration from checkout still returns to checkout; seller application is accessible afterward from Profile.
+2. Admin opens **Admin Dashboard → Review seller applications** (`/admin/sellers`). Approval transactionally creates one active shop and grants the seller role. Rejection requires an applicant-visible note and permits resubmission. Stale/duplicate reviews and conversion of rider/admin accounts are blocked.
+3. Seller opens **Seller Dashboard → Add product**. Enter category, description, PHP price, available stock, and an optional JPG/PNG/WebP photo (max 4 MB). Save as unpublished draft or publish immediately. Existing seller accounts with active shops retain access and do not need a replacement application.
+4. Use **Edit listing** to change details, replace the photo, adjust available stock, or unpublish. Only the owning seller may mutate listings, even when URLs or submitted shop IDs are tampered with. Admin dashboard access does not grant seller product-editing access.
+5. A buyer can find published products on Home, Browse, or the shop storefront, add to cart, and use existing checkout. Orders reserve stock; sellers see only their relevant order items. Unpublished products and inactive shops cannot receive new purchases, including through a previously saved cart.
+
+Run `php artisan migrate --env=local` and `php artisan storage:link --env=local` for local setup; use the appropriate environment in other installations. The storage link serves **public product photos**, not private rider documents. Category records must exist before creating products; the editor explains this if none are configured. Do not run a fresh migration or reseed an existing working database just to enable this feature.
+
+Stock in the editor is **available stock excluding reservations**. Saving an outdated edit is rejected if stock or listing data changed, and conflict reloads use current values. Products are unpublished rather than hard-deleted to retain order ownership/history. No seller product-transfer or deletion endpoint exists. Replaced images are retained on disk for now; cleanup can be added separately. Product variants, galleries, seller fulfillment/dispatch controls, real payment processing, payout accounting, and business-document verification are not included in this MVP.
 
 ---
+
+## Guest-first storefront
+
+Opening `/` now displays the marketplace directly, for both visitors and signed-in users. `/home` remains compatible and renders the same storefront. Visitors can browse products/shops and add to cart without signing in or starting a guest-mode session. Header/mobile navigation still provides login and registration; checkout, account/order pages, and seller/rider applications continue to require authentication. Checkout login/registration preserves the cart and intended checkout destination.
+
+The homepage and login page no longer show **Continue as guest**, and the old guest-mode banner is removed. The homepage instead offers **Browse products** and **Explore shops**, with an empty-catalogue message when no listings are available. The previous portal template/controller is retained but no longer routed; `/guest` remains a legacy-compatible endpoint rather than a required browsing step.
 
 ## Profile management
 
@@ -284,9 +303,9 @@ PFS-main/
 | Role | Value | Description |
 |---|---|---|
 | `buyer` | `UserRole::Buyer` | Default role for all new registrations. Can browse, cart, and checkout. |
-| `seller` | `UserRole::Seller` | Read-only `/seller` dashboard for owned products, stock, and scoped order items. Editing and approval workflows are not complete. |
+| `seller` | `UserRole::Seller` | Admin-approved shop setup; `/seller` includes owned product creation/editing, photos, stock and publish/unpublish controls, plus read-only scoped order items. |
 | `rider` | `UserRole::Rider` | `/rider/dashboard` shows application status; approved rider accounts see only their active assignments and delivery counts. Dispatch/fulfillment actions are planned. |
-| `admin` | `UserRole::Admin` | Marketplace overview, authorized order details, and rider application approve/reject controls. Seller Dashboard shortcuts are hidden for admin accounts. |
+| `admin` | `UserRole::Admin` | Marketplace overview, authorized order details, and seller/rider application approve/reject controls. Seller Dashboard shortcuts are hidden for admin accounts. |
 
 Role is stored as a string column in `users.role` and cast to the `UserRole` enum. The `EnsureUserHasRole` middleware enforces role-based access on protected routes.
 

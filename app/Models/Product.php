@@ -68,6 +68,16 @@ class Product extends Model
         return 'PHP '.number_format((float) $this->price, 2);
     }
 
+    public function editVersion(): string
+    {
+        return hash('sha256', json_encode($this->getAttributes(), JSON_THROW_ON_ERROR));
+    }
+
+    public function scopeVisible($query)
+    {
+        return $query->where('is_active', true)->whereHas('shop', fn ($shop) => $shop->where('is_active', true));
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';

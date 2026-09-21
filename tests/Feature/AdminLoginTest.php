@@ -55,13 +55,13 @@ class AdminLoginTest extends TestCase
         $this->assertDatabaseCount('users', 1);
     }
 
-    public function test_both_login_forms_accept_text_but_registration_still_requires_email(): void
+    public function test_login_accepts_admin_alias_but_storefront_does_not_require_auth_and_registration_requires_email(): void
     {
         $this->get(route('login'))->assertOk()->assertSee('Email or admin username')
             ->assertSee('id="login-identifier" type="text"', false)
             ->assertSee('autocomplete="username"', false);
-        $this->get(route('welcome'))->assertOk()->assertSee('Email or admin username')
-            ->assertSee('you@example.com or admin');
+        $this->get(route('welcome'))->assertOk()->assertViewIs('home')
+            ->assertDontSee('Email or admin username')->assertSee(route('login'), false);
         $this->post(route('register'), [
             'name' => 'Admin attempt', 'email' => 'admin', 'password' => 'password', 'password_confirmation' => 'password',
         ])->assertSessionHasErrors(['email'], null, 'register');
