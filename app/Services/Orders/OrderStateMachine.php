@@ -17,6 +17,10 @@ class OrderStateMachine
             /** @var Order $lockedOrder */
             $lockedOrder = Order::query()->lockForUpdate()->findOrFail($order->id);
 
+            if ($lockedOrder->fulfillments()->exists()) {
+                throw new DomainException('Update individual shop fulfillments for this order.');
+            }
+
             if (! $lockedOrder->status->canTransitionTo($next)) {
                 throw new DomainException("Order cannot transition from {$lockedOrder->status->value} to {$next->value}.");
             }

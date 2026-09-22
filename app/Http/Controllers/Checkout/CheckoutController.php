@@ -7,6 +7,7 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\Orders\FulfillmentService;
 use App\Services\Orders\StockReservationService;
 use App\Support\Cart;
 use Illuminate\Http\RedirectResponse;
@@ -110,6 +111,7 @@ class CheckoutController extends Controller
             }
 
             $this->stock->reserve($lockedLines);
+            app(FulfillmentService::class)->createForOrder($order);
 
             return $order;
         });
@@ -122,7 +124,7 @@ class CheckoutController extends Controller
     public function show(Order $order): View
     {
         $this->authorize('view', $order);
-        $order->load('items');
+        $order->load(['items', 'fulfillments.items', 'fulfillments.events', 'fulfillments.rider.user']);
 
         return view('orders.show', compact('order'));
     }

@@ -33,6 +33,7 @@
                 </select>
             </label>
 
+            <p class="text-xs text-text-muted">Each shop confirms and ships its items separately. The delivery fee is split across shipments. Rejected items and their delivery allocation are removed from the amount due.</p>
             @if ($errors->any())
                 <ul class="text-sm text-red-600 list-disc pl-4">
                     @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach

@@ -32,7 +32,7 @@ class OrderHistoryTest extends TestCase
 
         $this->actingAs($buyer)->get(route('orders.index', ['user_id' => $other->user_id]))
             ->assertOk()->assertSee($owned->number)->assertDontSee($other->number)
-            ->assertSee('2 items')->assertSee('Awaiting payment')
+            ->assertSee('2 items')->assertSee('Awaiting seller confirmation')
             ->assertSee('149.00')->assertSee(route('orders.show', $owned), false);
         $this->get(route('orders.show', $owned))->assertOk()->assertSee('Test purchase')
             ->assertSee(route('orders.index'), false);

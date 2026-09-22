@@ -29,6 +29,7 @@ class RiderProfile extends Model
     {
         return [
             'status' => RiderStatus::class,
+            'is_available' => 'boolean',
             'reviewed_at' => 'datetime',
         ];
     }

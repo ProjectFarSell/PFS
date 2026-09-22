@@ -67,7 +67,7 @@
                     <span class="font-semibold text-accent">Rider Application</span>
                     <span class="block mt-1 text-sm text-text-muted">View your rider details or complete your application.</span>
                 </a>
-            @else
+            @elseif($user->role === \App\Enums\UserRole::Buyer)
             <a href="{{ route('orders.index') }}" class="block rounded-xl border border-surface-border bg-surface p-4 hover:border-accent">
                 <span class="font-semibold text-accent">My Orders</span>
                 <span class="block mt-1 text-sm text-text-muted">View your purchases, order status, and details.</span>

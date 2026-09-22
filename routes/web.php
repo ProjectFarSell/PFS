@@ -13,8 +13,10 @@ use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Catalog\ProductController;
 use App\Http\Controllers\Catalog\ShopController;
 use App\Http\Controllers\Checkout\CheckoutController;
+use App\Http\Controllers\FulfillmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Rider\DashboardController as RiderDashboardController;
+use App\Http\Controllers\Rider\DeliveryRequestController;
 use App\Http\Controllers\Rider\RiderRegistrationController;
 use App\Http\Controllers\Seller\ApplicationController as SellerApplication;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
@@ -84,6 +86,10 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/se
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::post('/rider/availability', [DeliveryRequestController::class, 'availability'])->middleware('throttle:30,1')->name('rider.availability');
+    Route::get('/rider/delivery-requests', [DeliveryRequestController::class, 'index'])->middleware('throttle:30,1')->name('rider.delivery-requests');
+    Route::get('/fulfillments', [FulfillmentController::class, 'index'])->name('fulfillments.index');
+    Route::post('/fulfillments/{fulfillment}', [FulfillmentController::class, 'update'])->middleware('throttle:60,1')->name('fulfillments.update');
     Route::get('/seller/apply', [SellerApplication::class, 'show'])->name('seller.apply');
     Route::post('/seller/apply', [SellerApplication::class, 'store'])->middleware('throttle:10,1')->name('seller.apply.store');
     Route::get('/account/profile', [ProfileController::class, 'show'])->name('account.profile');

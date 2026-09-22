@@ -37,6 +37,22 @@
             @endif
         </section>
     @else
+        @if(auth()->user()->role === \App\Enums\UserRole::Rider)
+            <section class="fs-card p-5 mt-5">
+                <h2 class="font-semibold">Delivery requests</h2>
+                <p class="text-sm text-text-muted mt-2">Requests match your registered city: {{ $profile->city }}. Going unavailable does not cancel accepted deliveries.</p>
+                <form method="post" action="{{ route('rider.availability') }}" class="my-4">
+                    @csrf
+                    <p class="text-sm mb-2">You are currently {{ $profile->is_available ? 'available' : 'unavailable' }}.</p>
+                    <button name="is_available" value="{{ $profile->is_available ? '0' : '1' }}" class="btn-accent">{{ $profile->is_available ? 'Go unavailable' : 'Go available' }}</button>
+                </form>
+                @if($errors->any())<div role="alert" class="text-error">@foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>@endif
+                <p data-request-refresh-status class="text-xs text-text-muted mb-3">Loading delivery requests…</p>
+                <div data-delivery-requests data-url="{{ route('rider.delivery-requests') }}"></div>
+                <noscript><p>Enable JavaScript to receive live delivery requests.</p></noscript>
+            </section>
+        @endif
+        <a href="{{ route('fulfillments.index') }}" class="btn-accent mt-4">Manage pickups and deliveries</a>
         <dl class="my-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
             @foreach($stats as $label => $count)
                 <div class="fs-card p-4">
@@ -69,6 +85,14 @@
                 <p role="alert" class="mt-3 text-sm text-error">{{ $message }}</p>
             @enderror
             <div class="mt-4 space-y-3">
+                @foreach($shipments as $shipment)
+                    <article class="rounded-xl border border-surface-border p-4">
+                        <h3 class="font-semibold">{{ $shipment->order->number }} · {{ $shipment->shop_name }}</h3>
+                        <p class="mt-2 text-sm">{{ $shipment->status->label() }}</p>
+                        <a href="{{ route('fulfillments.index') }}" class="text-accent underline text-sm">Open pickup and delivery controls</a>
+                    </article>
+                @endforeach
+                {{ $shipments->links() }}
                 @forelse($deliveries as $delivery)
                     <article class="rounded-xl border border-surface-border p-4">
                         <div class="flex flex-wrap items-center justify-between gap-2">
@@ -80,7 +104,7 @@
                         <p class="mt-1 text-sm break-words whitespace-pre-line">{{ $delivery->ship_to }}</p>
                     </article>
                 @empty
-                    <p class="py-6 text-sm text-text-muted">{{ $selectedStatus ? 'No deliveries match this status.' : 'No active deliveries assigned to you yet.' }}</p>
+                    @if($shipments->isEmpty())<p class="py-6 text-sm text-text-muted">{{ $selectedStatus ? 'No deliveries match this status.' : 'No active deliveries assigned to you yet.' }}</p>@endif
                 @endforelse
             </div>
             @if($deliveries->hasPages())
@@ -90,5 +114,9 @@
         </section>
     @endif
 
-    <p class="mt-4 text-xs text-text-muted">Read-only dashboard. Applications are reviewed by an administrator. Dispatch, status updates, live tracking, and payment collection controls are not implemented yet.</p>
+    <p class="mt-4 text-xs text-text-muted">Open Manage pickups and deliveries to record shipment progress and COD collection. Location tracking is not available.</p>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/rider-requests.js') }}" defer></script>
+@endpush

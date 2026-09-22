@@ -6,6 +6,8 @@ enum OrderStatus: string
 {
     case PendingPayment = 'pending_payment';
     case Paid = 'paid';
+    case Confirmed = 'confirmed';
+    case Completed = 'completed';
     case Packed = 'packed';
     case Assigned = 'assigned';
     case InTransit = 'in_transit';
@@ -15,9 +17,11 @@ enum OrderStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::PendingPayment => 'Awaiting payment',
-            self::Paid => 'Paid',
-            self::Packed => 'Packed',
+            self::PendingPayment => 'Awaiting seller confirmation',
+            self::Paid => 'Demo paid / Awaiting seller confirmation',
+            self::Confirmed => 'Preparing items',
+            self::Completed => 'Completed',
+            self::Packed => 'Ready for pickup',
             self::Assigned => 'Rider assigned',
             self::InTransit => 'Out for delivery',
             self::Delivered => 'Delivered',
@@ -34,7 +38,9 @@ enum OrderStatus: string
             self::Packed => [self::Assigned, self::Cancelled],
             self::Assigned => [self::InTransit, self::Cancelled],
             self::InTransit => [self::Delivered],
-            self::Delivered, self::Cancelled => [],
+            self::Confirmed => [self::Packed, self::Cancelled],
+            self::Delivered => [self::Completed],
+            self::Completed, self::Cancelled => [],
         };
     }
 

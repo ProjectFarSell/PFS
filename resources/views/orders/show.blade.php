@@ -4,32 +4,11 @@
 
 @section('content')
     <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-accent hover:text-accent">← My Orders</a>
-    @php
-        $steps = [
-            'pending_payment' => 'Placed',
-            'paid' => 'Paid / COD confirmed',
-            'packed' => 'Packed',
-            'assigned' => 'Rider assigned',
-            'in_transit' => 'Out for delivery',
-            'delivered' => 'Delivered',
-        ];
-        $keys = array_keys($steps);
-        $current = array_search($order->status->value, $keys, true);
-        if ($current === false) {
-            $current = 0;
-        }
-    @endphp
     <h1 class="text-lg font-semibold">Order {{ $order->number }}</h1>
-    <p class="text-sm text-text-muted mt-1">{{ $steps[$order->status->value] ?? $order->status->value }} · {{ strtoupper($order->payment_method->value) }}</p>
-    <ol class="mt-4 space-y-2 text-sm">
-        @foreach ($steps as $key => $label)
-            @php $done = array_search($key, $keys, true) <= $current; @endphp
-            <li class="flex items-center gap-2 {{ $done ? 'text-text-base' : 'text-text-muted' }}">
-                <span class="h-2 w-2 rounded-full {{ $done ? 'bg-violet-600' : 'bg-stone-300' }}"></span>
-                {{ $label }}
-            </li>
-        @endforeach
-    </ol>
+    <p class="text-sm text-text-muted mt-1">{{ $order->status->label() }} · {{ $order->payment_method === \App\Enums\PaymentMethod::Cod ? 'Cash on delivery' : 'Demo prepaid payment' }}</p>
+    @if($order->fulfillments->isNotEmpty())
+        @include('orders.fulfillments')
+    @else
     <ul class="mt-4 rounded-xl bg-surface border border-surface-border divide-y">
         @foreach ($order->items as $item)
             <li class="px-3 py-2 text-sm flex justify-between">
@@ -38,6 +17,7 @@
             </li>
         @endforeach
     </ul>
-    <p class="mt-3 font-semibold">Total ₱{{ number_format((float) $order->total, 2) }}</p>
+    @endif
+    <p class="mt-3 font-semibold">Original total ₱{{ number_format((float) $order->total, 2) }}</p>
     <p class="text-xs text-text-muted mt-2">Ship to {{ $order->ship_to }}</p>
 @endsection

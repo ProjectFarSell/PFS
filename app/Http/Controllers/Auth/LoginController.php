@@ -15,7 +15,7 @@ class LoginController extends Controller
 {
     public function create(): View
     {
-        return view('auth.login', ['checkoutIntent' => CheckoutIntent::active()]);
+        return view('welcome', ['checkoutIntent' => CheckoutIntent::active(), 'initialTab' => 'login']);
     }
 
     public function store(Request $request): RedirectResponse
@@ -43,7 +43,13 @@ class LoginController extends Controller
         $request->session()->regenerate();
         GuestSession::forget();
 
-        return redirect()->intended(route($request->user()->role === UserRole::Admin ? 'admin.dashboard' : 'home'));
+        $destination = match ($request->user()->role) {
+            UserRole::Admin => 'admin.dashboard',
+            UserRole::Rider => 'rider.dashboard',
+            default => 'home',
+        };
+
+        return redirect()->intended(route($destination));
     }
 
     public function destroy(Request $request): RedirectResponse

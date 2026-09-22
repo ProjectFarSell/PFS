@@ -4,8 +4,10 @@
 
 @section('content')
 @php
-    $defaultTab = ($errors->register->isNotEmpty() || old('_form') === 'register')
-        ? 'register' : 'login';
+    $checkoutIntent = $checkoutIntent ?? false;
+    $defaultTab = $errors->register->isNotEmpty() ? 'register'
+        : ($errors->login->isNotEmpty() ? 'login'
+            : ($errors->any() && in_array(old('_form'), ['login', 'register'], true) ? old('_form') : ($initialTab ?? 'login')));
 @endphp
 
 <div class="min-h-screen flex flex-col lg:flex-row"
@@ -101,7 +103,7 @@
 
             {{-- Feature pill row --}}
             <div class="flex flex-wrap gap-2">
-                @foreach (['Shop lots', 'Sell online', 'Rider earnings', 'Guest checkout'] as $pill)
+                @foreach (['Shop lots', 'Sell online', 'Rider earnings', 'Browse freely'] as $pill)
                     <span class="rounded-full border border-white/25 bg-white/10
                                  px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm">
                         {{ $pill }}
@@ -162,31 +164,30 @@
 
                 {{-- Tab switcher --}}
                 <div class="flex border-b" style="border-color: rgb(var(--color-surface-border) / 0.5);">
-                    <button type="button" @click="tab = 'login'"
-                            class="flex-1 py-4 text-sm font-medium transition-colors duration-150
-                                   focus:outline-none relative"
-                            :class="tab === 'login' ? '' : ''"
+                    <a href="{{ route('login') }}" @click.prevent="tab = 'login'"
+                            class="flex flex-1 items-center justify-center px-3 py-4 text-center text-sm font-medium transition-colors duration-150
+                                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] relative"
                             :style="tab === 'login'
                                 ? 'color:rgb(var(--color-accent)); border-bottom: 2px solid rgb(var(--color-accent));'
                                 : 'color:rgb(var(--color-text-muted));'"
-                            aria-label="Log in tab">
+                            aria-label="Log in tab" :aria-current="tab === 'login' ? 'page' : null">
                         Log in
-                    </button>
-                    <button type="button" @click="tab = 'register'"
-                            class="flex-1 py-4 text-sm font-medium transition-colors duration-150
-                                   focus:outline-none"
+                    </a>
+                    <a href="{{ route('register') }}" @click.prevent="tab = 'register'"
+                            class="flex flex-1 items-center justify-center px-3 py-4 text-center text-sm font-medium transition-colors duration-150
+                                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px]"
                             :style="tab === 'register'
                                 ? 'color:rgb(var(--color-accent)); border-bottom: 2px solid rgb(var(--color-accent));'
                                 : 'color:rgb(var(--color-text-muted));'"
-                            aria-label="Create account tab">
+                            aria-label="Create account tab" :aria-current="tab === 'register' ? 'page' : null">
                         Create account
-                    </button>
+                    </a>
                 </div>
 
                 <div class="p-7 sm:p-8">
 
                     {{-- ══ LOGIN ══════════════════════════════════════ --}}
-                    <div x-show="tab === 'login'"
+                    <div x-show="tab === 'login'" style="{{ $defaultTab === 'login' ? '' : 'display:none;' }}"
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 translate-y-1"
                          x-transition:enter-end="opacity-100 translate-y-0"
@@ -195,9 +196,9 @@
                          x-transition:leave-end="opacity-0">
 
                         <h2 class="text-xl font-bold mb-1"
-                            style="color: rgb(var(--color-text-base));">Welcome back</h2>
+                            style="color: rgb(var(--color-text-base));">{{ $checkoutIntent ? 'Log in to checkout' : 'Welcome back' }}</h2>
                         <p class="text-sm mb-6" style="color: rgb(var(--color-text-muted));">
-                            Sign in to your FarSell account.
+                            {{ $checkoutIntent ? 'Sign in or create an account to place your order. Your cart will be kept.' : 'Sign in to your FarSell account.' }}
                         </p>
 
                         @if ($errors->login->isNotEmpty())
@@ -216,8 +217,8 @@
                             <input type="hidden" name="_form" value="login">
 
                             <div>
-                                <label for="login_email" class="fs-label">Email or admin username</label>
-                                <input id="login_email" type="text" name="email"
+                                <label for="login-identifier" class="fs-label">Email or admin username</label>
+                                <input id="login-identifier" type="text" name="email"
                                        value="{{ old('email') }}" required
                                        autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="you@example.com or admin"
                                        class="fs-input @error('email') ring-1 ring-red-400 @enderror">
@@ -268,13 +269,12 @@
                                  style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
                         </div>
 
-                        {{-- Guest CTA --}}
-                        <form method="POST" action="{{ route('guest.start') }}">
-                            @csrf
-                            <button type="submit" class="btn-outline w-full py-2.5">
-                                Continue as guest
-                            </button>
-                        </form>
+                        @if($checkoutIntent)
+                            <a href="{{ route('register') }}" class="btn-outline w-full py-2.5">Create an account</a>
+                            <a href="{{ route('cart.index') }}" class="block mt-3 text-center text-sm underline">Back to cart</a>
+                        @else
+                            <a href="{{ route('welcome') }}" class="btn-outline w-full py-2.5">Back to browsing</a>
+                        @endif
 
                         <p class="mt-5 text-center text-xs"
                            style="color: rgb(var(--color-text-muted));">
@@ -290,7 +290,7 @@
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100"
                          x-transition:leave-end="opacity-0"
-                         style="display:none;">
+                         style="{{ $defaultTab === 'register' ? '' : 'display:none;' }}">
 
                         <h2 class="text-xl font-bold mb-1"
                             style="color: rgb(var(--color-text-base));">Join FarSell</h2>
@@ -351,12 +351,15 @@
                                        autocomplete="new-password" placeholder="Repeat password"
                                        class="fs-input">
                             </div>
+                            @if($checkoutIntent)
+                                <input type="hidden" name="intent" value="buyer">
+                            @else
                             <div>
                                 <label for="reg_intent" class="fs-label">I want to…</label>
                                 <select id="reg_intent" name="intent" class="fs-input">
                                     <option value="buyer">Shop (buyer)</option>
                                     <option value="seller" @selected(old('intent', request('intent')) === 'seller')>Sell products (seller)</option>
-                                    <option value="rider" @selected(request('intent') === 'rider')>
+                                    <option value="rider" @selected(old('intent', request('intent')) === 'rider')>
                                         Deliver orders (rider)
                                     </option>
                                 </select>
@@ -365,10 +368,11 @@
                                     All accounts start as Buyer. Seller/Rider access granted after review.
                                 </p>
                             </div>
+                            @endif
 
                             <button type="submit" :disabled="registerLoading"
                                     class="btn-accent w-full py-3">
-                                <span x-show="!registerLoading">Create account</span>
+                                <span x-show="!registerLoading">{{ $checkoutIntent ? 'Create account and continue' : 'Create account' }}</span>
                                 <span x-show="registerLoading" style="display:none;"
                                       class="flex items-center justify-center gap-2">
                                     <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">

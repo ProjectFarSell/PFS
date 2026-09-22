@@ -6,7 +6,8 @@
     <section class="fs-card-raised p-5 sm:p-7">
         <p class="text-xs font-semibold uppercase tracking-widest text-accent">Seller Dashboard</p>
         <h1 class="mt-2 text-2xl font-semibold">{{ $shop?->name ?? 'Your seller workspace' }}</h1>
-        <p class="mt-2 text-sm text-text-muted">Manage product listings and available stock, and review your shop's order items. Fulfillment actions are not available yet.</p>
+        <p class="mt-2 text-sm text-text-muted">Manage listings, confirm incoming orders, and prepare shipments for pickup.</p>
+        <a href="{{ route('fulfillments.index') }}" class="btn-accent mt-4">Manage shop orders</a>
         @if($shop)
             <div class="mt-4 flex flex-wrap items-center gap-3">
                 <span class="badge {{ $shop->is_active ? 'badge-success' : 'badge-neutral' }}">{{ $shop->is_active ? 'Shop active' : 'Shop inactive' }}</span>

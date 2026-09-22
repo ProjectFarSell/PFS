@@ -205,7 +205,7 @@ New registrations always start as **Buyer**. The `intent` field on the registrat
 
 Rider approvals are available from **Admin Dashboard → Review rider applications** (`/admin/riders`). Applicants submit at `/rider/apply`; admins review details and private document downloads, then approve or reject with a note. Approval atomically changes the profile to `approved` and account role to `rider`. Rejection leaves the role unchanged and allows resubmission. Seller/admin accounts cannot be converted to riders through this action.
 
-Run `php artisan migrate --env=local` for the review metadata fields when using the local environment. Duplicate/stale reviews are blocked. Approved/suspended rider applications cannot be reset through onboarding. Rider uploads remain optional in this MVP and application approval does not mark individual documents verified; formal document requirements and verification controls remain follow-up work. Only the latest review metadata is stored and is cleared on resubmission, not a permanent review history. Dispatch and fulfillment actions are still planned.
+Run `php artisan migrate --env=local` for the review metadata fields when using the local environment. Duplicate/stale reviews are blocked. Approved/suspended rider applications cannot be reset through onboarding. Rider uploads remain optional in this MVP and application approval does not mark individual documents verified; formal document requirements and verification controls remain follow-up work. Only the latest review metadata is stored and is cleared on resubmission, not a permanent review history. Dispatch and fulfillment are available through the workflow below.
 
 ### Seller onboarding and product listings
 
@@ -217,15 +217,36 @@ Run `php artisan migrate --env=local` for the review metadata fields when using 
 
 Run `php artisan migrate --env=local` and `php artisan storage:link --env=local` for local setup; use the appropriate environment in other installations. The storage link serves **public product photos**, not private rider documents. Category records must exist before creating products; the editor explains this if none are configured. Do not run a fresh migration or reseed an existing working database just to enable this feature.
 
-Stock in the editor is **available stock excluding reservations**. Saving an outdated edit is rejected if stock or listing data changed, and conflict reloads use current values. Products are unpublished rather than hard-deleted to retain order ownership/history. No seller product-transfer or deletion endpoint exists. Replaced images are retained on disk for now; cleanup can be added separately. Product variants, galleries, seller fulfillment/dispatch controls, real payment processing, payout accounting, and business-document verification are not included in this MVP.
+Stock in the editor is **available stock excluding reservations**. Saving an outdated edit is rejected if stock or listing data changed, and conflict reloads use current values. Products are unpublished rather than hard-deleted to retain order ownership/history. No seller product-transfer or deletion endpoint exists. Replaced images are retained on disk for now; cleanup can be added separately. Product variants, galleries, real payment processing, payout accounting, and business-document verification are not included in this MVP.
 
 ---
+
+## Order fulfillment and delivery
+
+Run `php artisan migrate` for the additive fulfillment migration (use `--env=local` only if that is your configured environment). Existing orders are grouped by their products' shops and retain their stock, totals, and delivery state. Items whose products were deleted are kept under an unavailable shop; they need administrator investigation rather than being reassigned automatically. Existing ready/in-transit shipments have no historical pickup address or proof of COD collection; those facts are not invented during migration.
+
+Every new checkout creates one shipment per shop with item ownership and shop-name snapshots. The existing flat delivery fee is split evenly in cents across shipments, with remainder cents assigned in item order. Original order totals remain as purchase history. Rejecting a shipment releases only its reserved items once and waives its allocated delivery fee; the buyer sees the adjusted total. Other shops continue independently.
+
+1. **Seller Dashboard → Manage shop orders**: accept or reject a pending shipment. Rejection requires a buyer-visible reason. After acceptance, supply the exact pickup address and contact, then mark ready for pickup.
+2. **Rider Dashboard → Go available**: approved rider-role accounts receive in-app delivery requests for ready shipments in their registered city. City matching ignores case and repeated spaces, but does not resolve aliases or use GPS. Requests refresh every 15 seconds while the dashboard is open. The system offers each shipment to one matching rider at a time, prioritizing the fewest active deliveries and outstanding offers, then rider ID. The rider must accept within two minutes. Declines, expiry, or loss of availability/approval advance to another eligible rider. Riders already tried for that shipment are not repeatedly prompted; if the pool is exhausted, a new eligible rider or admin assignment is needed. Going unavailable pauses new requests without cancelling accepted deliveries. **Admin Dashboard → Dispatch shipments** remains a manual fallback, including for legacy shipments without a pickup city.
+3. **Rider Dashboard → Manage pickups and deliveries**: see only assigned active shipments, pickup details, delivery address, and the amount due for that shipment. Confirm pickup to mark out for delivery. Delivery requires a recipient/handover note and, for COD, confirmation of the displayed cash amount collected.
+4. **Buyer → My Orders → View details**: follow timestamped shipment history, see rejections and COD collection, and confirm receipt after delivery to complete that shipment. An order is completed when all non-rejected shipments are completed; all-rejected orders are cancelled. Otherwise its summary follows the least advanced active shipment.
+
+State changes are transactional and serialize on the parent order. Repeated actions, skipped steps, cross-shop access, unassigned riders, suspended riders, and non-owner completion attempts are rejected. The old whole-order state machine cannot bypass these rules for orders with shipments. Delivered shipments disappear from riders' active address views, while delivered/completed counts remain visible.
+
+Payment and delivery limits: card/e-wallet payments are still demos, and no real charge or refund is processed. COD records a rider's confirmation, not a bank settlement or seller payout. Delivery evidence is text, not photo/GPS verification. Reassignment, failed delivery/returns, disputes, live location tracking, and automatic completion are not included. Request notifications are in-app; there are no SMS, email, browser push, or closed-app alerts. Availability is manually controlled, not device-presence detection.
+
+The rider request migration defaults all riders to unavailable. Marking ready snapshots the shop city and triggers automatic offers; availability changes and dashboard polling also advance pending offers. The live queue shows only the current unexpired offer addressed to that rider. Claiming rechecks approval, availability, city and shipment state in the same parent-order transaction used by admin assignment. Before acceptance, requests expose only shop, shipment number and city; private contact, address and COD details remain restricted to assigned riders.
+
+Validation on Windows: `php -d extension=gd vendor/phpunit/phpunit/phpunit` enables GD for image-upload tests without changing `php.ini`. Also run `node --test tests/Frontend/*.test.cjs` and `npm.cmd run build`.
+
+Automatic offer timing: run `php artisan schedule:work` in a separate terminal for minute-by-minute dispatch even when rider dashboards are closed. Open dashboards also check every 15 seconds. Run `php artisan riders:dispatch` to trigger one dispatch pass manually. An expired offer can never be accepted, even if the next scheduler pass has not yet run. Apply all migrations before starting the scheduler.
 
 ## Guest-first storefront
 
 Opening `/` now displays the marketplace directly, for both visitors and signed-in users. `/home` remains compatible and renders the same storefront. Visitors can browse products/shops and add to cart without signing in or starting a guest-mode session. Header/mobile navigation still provides login and registration; checkout, account/order pages, and seller/rider applications continue to require authentication. Checkout login/registration preserves the cart and intended checkout destination.
 
-The homepage and login page no longer show **Continue as guest**, and the old guest-mode banner is removed. The homepage instead offers **Browse products** and **Explore shops**, with an empty-catalogue message when no listings are available. The previous portal template/controller is retained but no longer routed; `/guest` remains a legacy-compatible endpoint rather than a required browsing step.
+The homepage and login page no longer show **Continue as guest**, and the old guest-mode banner is removed. The homepage instead offers **Browse products** and **Explore shops**, with an empty-catalogue message when no listings are available. Login and Sign Up now open the previous combined portal at `/login` and `/register`, selecting the appropriate tab while retaining checkout intent; `/guest` remains a legacy-compatible endpoint rather than a required browsing step.
 
 ## Profile management
 
@@ -304,7 +325,7 @@ PFS-main/
 |---|---|---|
 | `buyer` | `UserRole::Buyer` | Default role for all new registrations. Can browse, cart, and checkout. |
 | `seller` | `UserRole::Seller` | Admin-approved shop setup; `/seller` includes owned product creation/editing, photos, stock and publish/unpublish controls, plus read-only scoped order items. |
-| `rider` | `UserRole::Rider` | `/rider/dashboard` shows application status; approved rider accounts see only their active assignments and delivery counts. Dispatch/fulfillment actions are planned. |
+| `rider` | `UserRole::Rider` | `/rider/dashboard` shows application status; approved rider accounts see only their active assignments and delivery counts. Pickup, delivery, and COD confirmation are available from Manage pickups and deliveries. |
 | `admin` | `UserRole::Admin` | Marketplace overview, authorized order details, and seller/rider application approve/reject controls. Seller Dashboard shortcuts are hidden for admin accounts. |
 
 Role is stored as a string column in `users.role` and cast to the `UserRole` enum. The `EnsureUserHasRole` middleware enforces role-based access on protected routes.

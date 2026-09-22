@@ -43,7 +43,7 @@ class AdminDashboardTest extends TestCase
 
         $this->actingAs($admin)->get(route('admin.dashboard'))->assertOk()
             ->assertSee('Marketplace overview')->assertSee($buyer->name)->assertSee($order->number)
-            ->assertSee(route('orders.show', $order), false)->assertSee('Awaiting payment')
+            ->assertSee(route('orders.show', $order), false)->assertSee('Awaiting seller confirmation')
             ->assertSee($low->name)->assertSee($out->name)->assertSee('Out of stock')
             ->assertDontSee($normal->name)->assertDontSee($inactive->name)
             ->assertViewHas('lowStockCount', 2)

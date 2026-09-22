@@ -50,7 +50,7 @@ class SellerDashboardTest extends TestCase
 
         $response = $this->actingAs($seller)->get(route('seller.dashboard', ['shop_id' => $other->shop_id, 'user_id' => $buyer->id]))
             ->assertOk()->assertSee($shop->name)->assertSee($own->name)->assertSee($inactive->name)
-            ->assertSee('OWN ORDER SNAPSHOT')->assertSee($order->number)->assertSee('Awaiting payment')
+            ->assertSee('OWN ORDER SNAPSHOT')->assertSee($order->number)->assertSee('Awaiting seller confirmation')
             ->assertDontSee($other->name)->assertDontSee('OTHER SELLER ORDER ITEM')->assertDontSee('DELETED PRODUCT SNAPSHOT')
             ->assertDontSee($buyer->name)->assertDontSee($buyer->email)->assertDontSee($buyer->phone)
             ->assertDontSee('PRIVATE DELIVERY ADDRESS')->assertDontSee('9,876.54')

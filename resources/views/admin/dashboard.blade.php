@@ -3,6 +3,7 @@
 @section('title', 'Admin Dashboard · FarSell')
 
 @section('content')
+    <a href="{{ route('fulfillments.index', ['status' => 'ready']) }}" class="btn-accent mb-4">Dispatch shipments</a>
     <section class="rounded-2xl bg-stone-900 p-5 text-white sm:p-7">
         <p class="text-xs font-semibold uppercase tracking-widest text-violet-300">FarSell administration</p>
         <h1 class="mt-2 text-2xl font-semibold">Marketplace overview</h1>

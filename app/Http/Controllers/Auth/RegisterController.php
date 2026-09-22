@@ -19,7 +19,7 @@ class RegisterController extends Controller
 {
     public function create(): View
     {
-        return view('auth.register', ['checkoutIntent' => CheckoutIntent::active()]);
+        return view('welcome', ['checkoutIntent' => CheckoutIntent::active(), 'initialTab' => 'register']);
     }
 
     public function store(Request $request): RedirectResponse

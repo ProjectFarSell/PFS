@@ -198,12 +198,6 @@
                                     My Profile
                                 </a>
 
-                                @if(!in_array(auth()->user()->role, [\App\Enums\UserRole::Seller, \App\Enums\UserRole::Rider], true))
-                                <a href="{{ route('account.addresses.index') }}" class="dropdown-item">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
-                                    My Addresses
-                                </a>
-                                @endif
                                 <div class="my-1 border-t" style="border-color: rgb(var(--color-surface-border) / 0.4);"></div>
                                 <form method="post" action="{{ route('logout') }}">
                                     @csrf
@@ -335,6 +329,14 @@
     @endif
 
     {{-- ── Page content ────────────────────────────────────────────── --}}
+    @if(auth()->check() && auth()->user()->role === \App\Enums\UserRole::Rider)
+        <nav aria-label="Rider workspace" class="mx-auto max-w-7xl px-4 pt-4 flex flex-wrap gap-3">
+            <a href="{{ route('rider.dashboard') }}" class="btn-outline" @if(request()->routeIs('rider.dashboard')) aria-current="page" @endif>Rider Dashboard</a>
+            @if(auth()->user()->riderProfile?->isApproved())
+                <a href="{{ route('fulfillments.index') }}" class="btn-accent" @if(request()->routeIs('fulfillments.*')) aria-current="page" @endif>Pickups &amp; deliveries</a>
+            @endif
+        </nav>
+    @endif
     <main class="mx-auto max-w-7xl px-4 py-5">
         @yield('content')
     </main>
@@ -391,7 +393,9 @@
                                 <li><a href="{{ route('seller.dashboard') }}" class="hover:text-white transition-colors">Seller Dashboard</a></li>
                             @elseif(auth()->user()->role === \App\Enums\UserRole::Rider)
                                 <li><a href="{{ route('rider.dashboard') }}" class="hover:text-white transition-colors">Rider Dashboard</a></li>
-                            @else
+                            @elseif(auth()->user()->role === \App\Enums\UserRole::Admin)
+                                <li><a href="{{ route('admin.dashboard') }}" class="hover:text-white transition-colors">Admin Dashboard</a></li>
+                            @elseif(auth()->user()->role === \App\Enums\UserRole::Buyer)
                                 <li><a href="{{ route('account.addresses.index') }}" class="hover:text-white transition-colors">My Addresses</a></li>
                             @endif
                             <li><a href="{{ route('cart.index') }}" class="hover:text-white transition-colors">Cart</a></li>
