@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.portal')
 @section('title', ($product->exists ? 'Edit listing' : 'Add product').' · FarSell')
 @section('content')
     <div class="mx-auto max-w-2xl">

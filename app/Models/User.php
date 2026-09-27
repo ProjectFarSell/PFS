@@ -64,11 +64,11 @@ class User extends Authenticatable
 
     public function isSeller(): bool
     {
-        return $this->role === UserRole::Seller || $this->role === UserRole::Admin;
+        return $this->role === UserRole::Seller;
     }
 
     public function isRider(): bool
     {
-        return $this->role === UserRole::Rider || $this->riderProfile !== null;
+        return $this->role === UserRole::Rider;
     }
 }

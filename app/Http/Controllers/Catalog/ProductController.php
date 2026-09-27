@@ -13,7 +13,20 @@ class ProductController extends Controller
 {
     public function index(Request $request): View
     {
-        $search = $request->string('q')->toString();
+        $filters = $request->validate([
+            'q' => ['nullable', 'string', 'max:120'],
+            'category' => ['nullable', 'integer', 'exists:categories,id'],
+            'shop' => ['nullable', 'array', 'max:50'],
+            'shop.*' => ['integer', 'distinct', 'exists:shops,id'],
+            'price_min' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
+            'price_max' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'gte:price_min'],
+        ]);
+
+        $search = trim((string) ($filters['q'] ?? ''));
+        $categoryId = isset($filters['category']) ? (int) $filters['category'] : null;
+        $shopIds = collect($filters['shop'] ?? [])->map(fn ($id) => (int) $id)->unique()->values()->all();
+        $priceMin = $filters['price_min'] ?? null;
+        $priceMax = $filters['price_max'] ?? null;
 
         $query = Product::query()
             ->with(['shop', 'category'])
@@ -23,21 +36,20 @@ class ProductController extends Controller
             $query->where('name', 'like', '%'.$search.'%');
         }
 
-        if ($category = $request->integer('category')) {
-            $query->where('category_id', $category);
+        if ($categoryId !== null) {
+            $query->where('category_id', $categoryId);
         }
 
         // Shop filter — array of shop IDs from the filter sidebar
-        $shopIds = array_values(array_filter((array) $request->input('shop', [])));
         if (! empty($shopIds)) {
             $query->whereIn('shop_id', $shopIds);
         }
 
         // Price range filter
-        if ($priceMin = $request->integer('price_min')) {
+        if ($priceMin !== null) {
             $query->where('price', '>=', $priceMin);
         }
-        if ($priceMax = $request->integer('price_max')) {
+        if ($priceMax !== null) {
             $query->where('price', '<=', $priceMax);
         }
 
@@ -53,11 +65,10 @@ class ProductController extends Controller
             'categories' => Category::query()->orderBy('sort_order')->get(),
             'shops' => $shops,
             'q' => $search,
-            'activeCategory' => $request->integer('category') ?: null,
+            'activeCategory' => $categoryId,
             'activeShops' => $shopIds,
-            'priceMin' => $request->integer('price_min') ?: '',
-            'priceMax' => $request->integer('price_max') ?: '',
-            'activeRatings' => $request->input('rating', []),
+            'priceMin' => $priceMin ?? '',
+            'priceMax' => $priceMax ?? '',
         ]);
     }
 

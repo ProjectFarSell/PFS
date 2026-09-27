@@ -1,4 +1,4 @@
-@extends('layouts.portal')
+@extends('layouts.auth')
 
 @section('title', 'FarSell — Auction surplus. Everyday prices.')
 

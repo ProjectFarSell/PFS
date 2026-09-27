@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $user = $request->user();
         $profile = $user->riderProfile()->first(['id', 'user_id', 'status', 'vehicle_type', 'city', 'is_available']);
         $canViewDeliveries = $profile !== null && $profile->isApproved()
-            && in_array($user->role, [UserRole::Rider, UserRole::Admin], true);
+            && $user->role === UserRole::Rider;
 
         if (! $canViewDeliveries) {
             // Applicants may see their own status, never any assignment data.

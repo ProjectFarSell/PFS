@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Address;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class AddressPolicy
 {
@@ -13,7 +13,7 @@ class AddressPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->role === UserRole::Buyer;
     }
 
     /**
@@ -21,7 +21,7 @@ class AddressPolicy
      */
     public function view(User $user, Address $address): bool
     {
-        return $user->id === $address->user_id;
+        return $user->role === UserRole::Buyer && $user->id === $address->user_id;
     }
 
     /**
@@ -29,7 +29,7 @@ class AddressPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->role === UserRole::Buyer;
     }
 
     /**
@@ -37,7 +37,7 @@ class AddressPolicy
      */
     public function update(User $user, Address $address): bool
     {
-        return $user->id === $address->user_id;
+        return $user->role === UserRole::Buyer && $user->id === $address->user_id;
     }
 
     /**
@@ -45,7 +45,7 @@ class AddressPolicy
      */
     public function delete(User $user, Address $address): bool
     {
-        return $user->id === $address->user_id;
+        return $user->role === UserRole::Buyer && $user->id === $address->user_id;
     }
 
     /**

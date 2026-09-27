@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends($isBuyerProfile ? 'layouts.app' : 'layouts.portal')
 
-@section('title', 'My Account · FarSell')
+@section('title', ($isBuyerProfile ? 'My Account' : ucfirst($user->role->value).' Profile').' · FarSell')
 
 @section('content')
 @php
@@ -16,14 +16,19 @@
 
     // Sidebar navigation definition
     $accountItems = [
-        ['key' => 'profile',   'label' => 'Profile',               'active' => true],
-        ['key' => 'addresses', 'label' => 'Addresses',              'active' => true],
-        ['key' => null,        'label' => 'Bank & Cards',           'active' => false],
-        ['key' => null,        'label' => 'Privacy Settings',       'active' => false],
-        ['key' => null,        'label' => 'Notification Settings',  'active' => false],
+        ['key' => 'profile', 'label' => 'My Profile', 'active' => true],
     ];
 
-    $purchaseItems = [
+    if ($isBuyerProfile) {
+        $accountItems = array_merge($accountItems, [
+            ['key' => 'addresses', 'label' => 'My Addresses',          'active' => true],
+            ['key' => null,        'label' => 'Bank & Cards',          'active' => false],
+            ['key' => null,        'label' => 'Privacy Settings',      'active' => false],
+            ['key' => null,        'label' => 'Notification Settings', 'active' => false],
+        ]);
+    }
+
+    $purchaseItems = $isBuyerProfile ? [
         ['key' => 'all',                 'label' => 'All'],
         ['key' => 'pending_payment',     'label' => 'To Pay'],
         ['key' => 'paid_packed',         'label' => 'To Ship'],
@@ -32,7 +37,7 @@
         ['key' => 'cancelled',           'label' => 'Cancelled'],
         ['key' => null,                  'label' => 'Return/Refund'],
         ['key' => 'review',              'label' => 'To Review'],
-    ];
+    ] : [];
 @endphp
 
 <div x-data="{ activeTab: 'profile' }" class="flex flex-col md:flex-row gap-5 items-start">
@@ -90,9 +95,10 @@
             @endif
         @endforeach
 
-        {{-- My Purchase group --}}
+        @if ($isBuyerProfile)
+        {{-- My Orders group --}}
         <p class="text-xs font-semibold uppercase tracking-widest px-3 py-2 mt-4 mb-1"
-           style="color:rgb(var(--color-text-muted));">My Purchase</p>
+           style="color:rgb(var(--color-text-muted));">My Orders</p>
 
         @foreach ($purchaseItems as $item)
             @if ($item['key'] !== null)
@@ -116,6 +122,7 @@
             </button>
             @endif
         @endforeach
+        @endif
 
         {{-- Role-specific shortcuts --}}
         @if ($user->role === \App\Enums\UserRole::Admin)
@@ -123,7 +130,7 @@
                 <a href="{{ route('admin.dashboard') }}"
                    class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors"
                    style="color:rgb(var(--color-accent));">
-                    Admin Panel
+                    Admin Dashboard
                 </a>
             </div>
         @elseif ($isSellerProfile)
@@ -210,9 +217,34 @@
                     View {{ $user->shop->name }} as customers see it.
                 </p>
             </a>
+            @elseif ($isSellerProfile && $user->shop)
+            <div class="fs-card p-4 mt-3">
+                <p class="font-semibold text-sm" style="color:rgb(var(--color-text-base));">Shop inactive</p>
+                <p class="mt-1 text-sm" style="color:rgb(var(--color-text-muted));">
+                    Your storefront is not public right now. Open the seller dashboard to review your listings.
+                </p>
+            </div>
+            @elseif ($isSellerProfile)
+            <div class="fs-card p-4 mt-3">
+                <p class="font-semibold text-sm" style="color:rgb(var(--color-text-base));">No shop linked yet</p>
+                <p class="mt-1 text-sm" style="color:rgb(var(--color-text-muted));">
+                    Open the seller dashboard to finish setting up your approved shop.
+                </p>
+            </div>
+            @endif
+
+            @if ($isRiderProfile)
+            <a href="{{ route('rider.profile') }}"
+               class="fs-card p-4 mt-3 block hover:border-accent transition-colors">
+                <p class="font-semibold text-sm" style="color:rgb(var(--color-accent));">Rider Application</p>
+                <p class="mt-1 text-sm" style="color:rgb(var(--color-text-muted));">
+                    View your application details and approval status.
+                </p>
+            </a>
             @endif
         </div>
 
+        @if ($isBuyerProfile)
         {{-- ── ADDRESSES panel ─────────────────────────────────────── --}}
         <div x-show="activeTab === 'addresses'" style="display:none;">
             <div class="fs-card p-5">
@@ -282,7 +314,7 @@
                     </p>
                     <p class="text-xs mt-0.5" style="color:rgb(var(--color-text-muted));">
                         {{ $order->created_at->format('M j, Y') }}
-                        · {{ $order->items->count() }} {{ Str::plural('item', $order->items->count()) }}
+                        · {{ $order->items_count }} {{ Str::plural('item', $order->items_count) }}
                     </p>
                 </div>
                 <span class="badge badge-accent shrink-0">{{ $order->status->label() }}</span>
@@ -292,6 +324,11 @@
                 <p class="text-sm" style="color:rgb(var(--color-text-muted));">No orders in this category.</p>
             </div>
             @endforelse
+            <a href="{{ route('orders.index') }}"
+               class="block text-center text-sm font-medium py-2"
+               style="color:rgb(var(--color-accent));">
+                View all orders →
+            </a>
         </div>
         @endforeach
 
@@ -304,6 +341,7 @@
                 </p>
             </div>
         </div>
+        @endif
 
     </div>{{-- /right content panel --}}
 

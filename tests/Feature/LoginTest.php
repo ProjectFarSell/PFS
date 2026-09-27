@@ -66,6 +66,14 @@ class LoginTest extends TestCase
             ->post('/login', $credentials)->assertRedirect(route('account.profile'));
     }
 
+    public function test_seller_login_defaults_to_seller_dashboard(): void
+    {
+        $seller = User::factory()->seller()->create(['password' => 'password123']);
+
+        $this->post('/login', ['email' => $seller->email, 'password' => 'password123'])
+            ->assertRedirect(route('seller.dashboard'));
+    }
+
     public function test_operational_profiles_omit_shopping_links(): void
     {
         foreach ([UserRole::Admin, UserRole::Rider] as $role) {

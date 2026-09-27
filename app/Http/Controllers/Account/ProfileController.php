@@ -21,6 +21,7 @@ class ProfileController extends Controller
     public function show(Request $request): View
     {
         $user = $request->user();
+        $isBuyerProfile = $user->role === UserRole::Buyer;
         $isSellerProfile = $user->role === UserRole::Seller;
         $isRiderProfile = $user->role === UserRole::Rider;
 
@@ -28,11 +29,20 @@ class ProfileController extends Controller
             $user->loadMissing('shop');
         }
 
-        // Eagerly load orders (with items for count) and addresses for the dashboard panels
-        $orders = $user->orders()->with('items')->latest()->get();
-        $addresses = $user->addresses()->get();
+        if ($isRiderProfile) {
+            $user->loadMissing('riderProfile');
+        }
 
-        return view('account.profile', compact('user', 'isSellerProfile', 'isRiderProfile', 'orders', 'addresses'));
+        if ($isBuyerProfile) {
+            $user->loadMissing('sellerApplication');
+            $orders = $user->orders()->withCount('items')->latest()->limit(10)->get();
+            $addresses = $user->addresses()->orderByDesc('is_default')->latest()->limit(3)->get();
+        } else {
+            $orders = collect();
+            $addresses = collect();
+        }
+
+        return view('account.profile', compact('user', 'isBuyerProfile', 'isSellerProfile', 'isRiderProfile', 'orders', 'addresses'));
     }
 
     public function edit(Request $request): View

@@ -46,6 +46,7 @@ class LoginController extends Controller
         $destination = match ($request->user()->role) {
             UserRole::Admin => 'admin.dashboard',
             UserRole::Rider => 'rider.dashboard',
+            UserRole::Seller => 'seller.dashboard',
             default => 'home',
         };
 

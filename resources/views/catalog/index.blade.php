@@ -8,7 +8,7 @@
 {{-- ── Category pill strip ─────────────────────────────────────────────────── --}}
 <div class="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-1 px-1"
      style="scrollbar-width:none; -ms-overflow-style:none;">
-    <a href="{{ route('catalog.index', array_filter(['q' => request('q'), 'price_min' => request('price_min'), 'price_max' => request('price_max')])) }}"
+    <a href="{{ route('catalog.index', request()->except(['category', 'page'])) }}"
        class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors
               {{ !$activeCategory
                   ? 'text-white'
@@ -19,7 +19,7 @@
         All
     </a>
     @foreach ($categories as $cat)
-    <a href="{{ route('catalog.index', array_filter(['category' => $cat->id, 'q' => request('q'), 'price_min' => request('price_min'), 'price_max' => request('price_max')])) }}"
+    <a href="{{ route('catalog.index', array_merge(request()->except(['category', 'page']), ['category' => $cat->id])) }}"
        class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors
               {{ $activeCategory === $cat->id
                   ? 'text-white'

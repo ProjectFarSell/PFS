@@ -16,15 +16,15 @@ class RiderDashboardTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guests_must_sign_in_and_accounts_without_profile_see_onboarding_only(): void
+    public function test_guests_must_sign_in_buyers_are_forbidden_and_riders_without_profile_see_onboarding(): void
     {
         $this->get(route('rider.dashboard'))->assertRedirect(route('login'));
-        foreach ([UserRole::Buyer, UserRole::Rider] as $role) {
-            $this->actingAs(User::factory()->create(['role' => $role]))
-                ->get(route('rider.dashboard'))->assertOk()->assertSee('Complete your rider application')
-                ->assertSee(route('rider.register'), false)->assertViewHas('canViewDeliveries', false)
-                ->assertViewMissing('deliveries');
-        }
+        $this->actingAs(User::factory()->create(['role' => UserRole::Buyer]))
+            ->get(route('rider.dashboard'))->assertForbidden();
+
+        $this->actingAs(User::factory()->rider()->create())
+            ->get(route('rider.dashboard'))->assertOk()->assertSee('Rider profile not found')
+            ->assertViewHas('canViewDeliveries', false)->assertViewMissing('deliveries');
     }
 
     public function test_pending_rejected_and_suspended_profiles_never_load_assignments(): void
@@ -46,9 +46,8 @@ class RiderDashboardTest extends TestCase
             $user = User::factory()->create(['role' => $role]);
             $profile = $this->profile($user);
             $order = $this->order($profile, OrderStatus::Assigned, 'ROLE BLOCKED ADDRESS');
-            $this->actingAs($user)->get(route('rider.dashboard'))->assertOk()
-                ->assertSee('Rider account activation needed')->assertDontSee($order->number)
-                ->assertDontSee('ROLE BLOCKED ADDRESS')->assertViewMissing('deliveries');
+            $this->actingAs($user)->get(route('rider.dashboard'))->assertForbidden()
+                ->assertDontSee($order->number)->assertDontSee('ROLE BLOCKED ADDRESS');
         }
     }
 
@@ -114,9 +113,8 @@ class RiderDashboardTest extends TestCase
         $this->profile($admin);
         $other = $this->profile(User::factory()->rider()->create());
         $foreign = $this->order($other, OrderStatus::Assigned, 'FOREIGN DELIVERY');
-        $this->actingAs($admin)->get(route('rider.dashboard', ['rider_id' => $other->id]))->assertOk()
-            ->assertDontSee($foreign->number)->assertDontSee('FOREIGN DELIVERY')
-            ->assertViewHas('stats', ['Assigned' => 0, 'In transit' => 0, 'Completed' => 0]);
+        $this->actingAs($admin)->get(route('rider.dashboard', ['rider_id' => $other->id]))->assertForbidden()
+            ->assertDontSee($foreign->number)->assertDontSee('FOREIGN DELIVERY');
     }
 
     private function profile(User $user, RiderStatus $status = RiderStatus::Approved): RiderProfile

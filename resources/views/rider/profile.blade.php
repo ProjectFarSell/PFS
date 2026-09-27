@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(auth()->user()->role === \App\Enums\UserRole::Rider ? 'layouts.portal' : 'layouts.app')
 
 @section('title', 'Rider profile · FarSell')
 

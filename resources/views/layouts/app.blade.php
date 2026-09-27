@@ -1,6 +1,13 @@
 @php
     $cartCount     = $cartCount     ?? 0;
     $navCategories = $navCategories ?? collect();
+    $storefrontUser = auth()->user();
+    $canUseCart = $storefrontUser === null || $storefrontUser->role === \App\Enums\UserRole::Buyer;
+    $canApplyAsRider = $storefrontUser === null || $storefrontUser->role === \App\Enums\UserRole::Buyer;
+    $riderApplicationUrl = $storefrontUser === null
+        ? route('register', ['intent' => 'rider'])
+        : ($storefrontUser->riderProfile ? route('rider.profile') : route('rider.register'));
+    $riderApplicationLabel = $storefrontUser?->riderProfile ? 'Rider Application' : 'Become a Rider';
 @endphp
 <!DOCTYPE html>
 <html lang="en" class="h-full">
@@ -138,14 +145,12 @@
                     <a href="{{ route('shops.index') }}"
                        class="nav-link px-3 py-1" @if(request()->routeIs('shops.*')) aria-current="page" @endif>Shops</a>
 
-                    {{-- Rider --}}
-                    <a href="{{ auth()->check()
-                            ? (auth()->user()->isRider() ? route('rider.dashboard') : route('rider.register'))
-                            : route('register', ['intent' => 'rider']) }}"
-                       class="nav-link px-3 py-1"
-                       @if(request()->routeIs('rider.*')) aria-current="page" @endif>
-                        {{ auth()->check() && auth()->user()->isRider() ? 'Rider Dashboard' : 'Become a Rider' }}
-                    </a>
+                    @if($canApplyAsRider)
+                        <a href="{{ $riderApplicationUrl }}" class="nav-link px-3 py-1"
+                           @if(request()->routeIs('rider.*')) aria-current="page" @endif>
+                            {{ $riderApplicationLabel }}
+                        </a>
+                    @endif
                 </nav>
 
                 {{-- ── Expandable search (flex-1 on desktop) ─────────── --}}
@@ -171,6 +176,7 @@
                 {{-- ── Right icons cluster ─────────────────────────────── --}}
                 <div class="flex items-center gap-1.5 shrink-0">
 
+                    @if($canUseCart)
                     {{-- Cart --}}
                     <a href="{{ route('cart.index') }}"
                        class="theme-toggle relative"
@@ -188,6 +194,7 @@
                             </span>
                         @endif
                     </a>
+                    @endif
 
                     {{-- Profile pill (auth, sm+) — desktop button same as utility bar pill above --}}
                     {{-- The utility bar pill already handles sm+; this slot is kept for icon-only on xs --}}
@@ -280,12 +287,14 @@
                     </div>
                 </div>
 
+                @if($canUseCart)
                 <a href="{{ route('cart.index') }}" class="dropdown-item rounded-xl"
                    @if(request()->routeIs('cart.*')) aria-current="page" @endif>
                     Cart @if($cartCount > 0)
                         <span class="ml-auto badge badge-accent">{{ $cartCount }}</span>
                     @endif
                 </a>
+                @endif
 
                 @auth
                                 @if(auth()->user()->isRider())
@@ -393,7 +402,9 @@
                             @elseif(auth()->user()->role === \App\Enums\UserRole::Buyer)
                                 <li><a href="{{ route('account.addresses.index') }}" class="hover:text-white transition-colors">My Addresses</a></li>
                             @endif
-                            <li><a href="{{ route('cart.index') }}" class="hover:text-white transition-colors">Cart</a></li>
+                            @if($canUseCart)
+                                <li><a href="{{ route('cart.index') }}" class="hover:text-white transition-colors">Cart</a></li>
+                            @endif
                         @else
                             <li><a href="{{ route('login') }}" class="hover:text-white transition-colors">Sign In</a></li>
                             <li><a href="{{ route('register') }}" class="hover:text-white transition-colors">Register</a></li>
@@ -405,12 +416,9 @@
                 <div>
                     <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-3">Services</h3>
                     <ul class="space-y-2 text-sm">
-                        <li>
-                            <a href="{{ auth()->check()
-                                    ? (auth()->user()->isRider() ? route('rider.dashboard') : route('rider.register'))
-                                    : route('register', ['intent' => 'rider']) }}"
-                               class="hover:text-white transition-colors">{{ auth()->check() && auth()->user()->isRider() ? 'Rider Dashboard' : 'Become a Rider' }}</a>
-                        </li>
+                        @if($canApplyAsRider)
+                            <li><a href="{{ $riderApplicationUrl }}" class="hover:text-white transition-colors">{{ $riderApplicationLabel }}</a></li>
+                        @endif
                             <li><a href="{{ auth()->check() ? (auth()->user()->role === \App\Enums\UserRole::Seller ? route('seller.dashboard') : route('account.profile')) : route('register', ['intent' => 'seller']) }}" class="hover:text-white transition-colors">Sell on FarSell</a></li>
                         <li><span class="text-xs">Buyer Protection (coming soon)</span></li>
                         <li><span class="text-xs">Help Center (coming soon)</span></li>
@@ -538,7 +546,7 @@
                             {{ auth()->user()->name }}
                         </p>
                         <p class="text-sm truncate" style="color: rgb(var(--color-text-muted));">
-                            @{{ Str::before(auth()->user()->email, '@') }}
+                            {{ Str::before(auth()->user()->email, '@') }}
                         </p>
                         <p class="text-xs mt-0.5" style="color: rgb(var(--color-text-muted));">
                             Member since {{ auth()->user()->created_at->year }}
@@ -572,6 +580,7 @@
                               style="background-color: rgb(var(--color-surface-muted)); color: rgb(var(--color-text-muted));">Soon</span>
                     </div>
 
+                    @if(auth()->user()->role === \App\Enums\UserRole::Buyer)
                     {{-- Order History --}}
                     <a href="{{ route('orders.index') }}"
                        @click="closeDrawer()"
@@ -598,6 +607,7 @@
                         </svg>
                         <span class="text-sm">Saved Addresses</span>
                     </a>
+                    @endif
 
                     {{-- My Profile --}}
                     <a href="{{ route('account.profile') }}"

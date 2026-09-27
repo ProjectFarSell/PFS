@@ -115,7 +115,7 @@
                 <div>
                     <label for="r_phone" class="fs-label">Phone number <span class="text-error">*</span></label>
                     <input id="r_phone" type="tel" name="phone"
-                           value="{{ old('phone', $profile?->phone ?? '') }}"
+                           value="{{ old('phone', auth()->user()->phone ?? '') }}"
                            placeholder="09XXXXXXXXX"
                            class="fs-input">
                     <p x-show="errors.phone !== ''" x-text="errors.phone"
@@ -176,14 +176,27 @@
                 <p class="text-xs" style="color:rgb(var(--color-text-muted));">
                     Accepted: JPG, PNG, PDF · Max 5 MB each
                 </p>
+                @if($profile?->documents->isNotEmpty())
+                    <p class="rounded-lg bg-surface-muted p-3 text-xs text-text-muted">
+                        Your current documents stay on file. Choose a new file only for the document you want to replace.
+                    </p>
+                @endif
 
                 @foreach([
-                    ['ref' => 'licenseInput',  'name' => 'license_document',     'label' => "Driver's license"],
-                    ['ref' => 'idInput',       'name' => 'id_document',           'label' => 'Valid government ID'],
-                    ['ref' => 'vehicleInput',  'name' => 'vehicle_reg_document',  'label' => 'Vehicle registration (OR/CR, if applicable)'],
+                    ['ref' => 'licenseInput',  'name' => 'license_document',     'type' => 'license',     'label' => "Driver's license"],
+                    ['ref' => 'idInput',       'name' => 'id_document',           'type' => 'id',          'label' => 'Valid government ID'],
+                    ['ref' => 'vehicleInput',  'name' => 'vehicle_reg_document',  'type' => 'vehicle_reg', 'label' => 'Vehicle registration (OR/CR, if applicable)'],
                 ] as $doc)
+                @php($currentDocument = $profile?->documents->where('document_type', $doc['type'])->sortByDesc('id')->first())
                 <div x-data="{ filename: null, dragging: false }">
-                    <label class="fs-label">{{ $doc['label'] }}</label>
+                    <div class="mb-1 flex items-center justify-between gap-3">
+                        <label class="fs-label mb-0">{{ $doc['label'] }}</label>
+                        @if($currentDocument)
+                            <span class="text-xs {{ $currentDocument->verified ? 'text-emerald-700' : 'text-amber-700' }}">
+                                Current: {{ $currentDocument->verified ? 'Verified' : 'Pending review' }}
+                            </span>
+                        @endif
+                    </div>
                     <div @dragover.prevent="dragging = true"
                          @dragleave.prevent="dragging = false"
                          @drop.prevent="
@@ -199,7 +212,7 @@
                                 transition-colors hover:border-accent">
                         <template x-if="!filename">
                             <p class="text-sm" style="color:rgb(var(--color-text-muted));">
-                                Drop file here or
+                                {{ $currentDocument ? 'Drop a replacement here or' : 'Drop file here or' }}
                                 <span style="color:rgb(var(--color-accent));" class="font-medium">browse</span>
                             </p>
                         </template>
@@ -247,7 +260,7 @@
                 </div>
                 <div x-show="step === 3" style="display:none;" class="ml-auto">
                     <button type="submit" class="btn-accent">
-                        Submit application
+                        {{ $profile ? 'Save application updates' : 'Submit application' }}
                     </button>
                 </div>
             </div>

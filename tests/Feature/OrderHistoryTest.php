@@ -60,15 +60,14 @@ class OrderHistoryTest extends TestCase
             ->assertSee('Browse products')->assertSee(route('home'), false);
     }
 
-    public function test_admin_my_orders_still_only_lists_their_own_purchases(): void
+    public function test_admin_cannot_use_buyer_history_but_can_open_order_details_for_oversight(): void
     {
         $admin = User::factory()->create(['role' => UserRole::Admin]);
-        $owned = $this->order($admin, ['status' => OrderStatus::Cancelled]);
         $other = $this->order(User::factory()->create());
         $this->actingAs($admin)->get(route('orders.index'))
-            ->assertOk()->assertSee($owned->number)->assertSee('Cancelled')->assertDontSee($other->number);
-        // Preserve existing administrator access to individual order details.
-        $this->get(route('orders.show', $other))->assertOk();
+            ->assertForbidden()->assertDontSee($other->number);
+        $this->get(route('orders.show', $other))->assertOk()
+            ->assertSee($other->number)->assertDontSee(route('orders.index'), false);
     }
 
     private function order(User $buyer, array $attributes = []): Order

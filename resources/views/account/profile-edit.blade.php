@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends($user->role === \App\Enums\UserRole::Buyer ? 'layouts.app' : 'layouts.portal')
 
 @section('title', 'Edit profile · FarSell')
 

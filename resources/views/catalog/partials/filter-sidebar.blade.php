@@ -1,7 +1,7 @@
 {{--
     Filter sidebar partial — shared between desktop (persistent aside) and mobile (bottom sheet).
     Parent view must provide x-data="{ filtersOpen: false }".
-    All filter variables must exist: $q, $activeCategory, $activeShops, $priceMin, $priceMax, $activeRatings, $shops.
+    All filter variables must exist: $q, $activeCategory, $activeShops, $priceMin, $priceMax, $shops.
 --}}
 
 {{-- Desktop: persistent left panel --}}

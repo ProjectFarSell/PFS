@@ -1,9 +1,11 @@
-@extends('layouts.app')
+@extends(auth()->user()->role === \App\Enums\UserRole::Admin ? 'layouts.portal' : 'layouts.app')
 
 @section('title', 'Order '.$order->number)
 
 @section('content')
-    <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-accent hover:text-accent">← My Orders</a>
+    @if(auth()->user()->role === \App\Enums\UserRole::Buyer)
+        <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-accent hover:text-accent">&larr; My Orders</a>
+    @endif
     <h1 class="text-lg font-semibold">Order {{ $order->number }}</h1>
     <p class="text-sm text-text-muted mt-1">{{ $order->status->label() }} · {{ $order->payment_method === \App\Enums\PaymentMethod::Cod ? 'Cash on delivery' : 'Demo prepaid payment' }}</p>
     @if($order->fulfillments->isNotEmpty())

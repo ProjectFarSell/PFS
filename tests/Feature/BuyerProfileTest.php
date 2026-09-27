@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -35,6 +36,23 @@ class BuyerProfileTest extends TestCase
     {
         $this->actingAs(User::factory()->create(['phone' => null]))
             ->get(route('account.profile'))->assertOk()->assertSee('Not provided');
+    }
+
+    public function test_non_buyer_profiles_do_not_show_buyer_purchase_or_address_tools(): void
+    {
+        foreach ([UserRole::Seller, UserRole::Rider, UserRole::Admin] as $role) {
+            $response = $this->actingAs(User::factory()->create(['role' => $role]))
+                ->get(route('account.profile'))
+                ->assertOk()
+                ->assertDontSee('My Purchases')
+                ->assertDontSee('My Orders')
+                ->assertDontSee('My Addresses')
+                ->assertDontSee('Order History')
+                ->assertDontSee('Saved Addresses');
+
+            $this->assertStringNotContainsString(route('orders.index'), $response->getContent());
+            $this->assertStringNotContainsString(route('account.addresses.index'), $response->getContent());
+        }
     }
 
     public function test_orders_and_addresses_link_back_to_profile_and_navigation_no_longer_has_orders_shortcut(): void

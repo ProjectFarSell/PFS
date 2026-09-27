@@ -21,12 +21,19 @@
             <p class="text-sm text-text-muted mt-4">{{ $product->description }}</p>
             <p class="text-xs text-text-muted mt-2">{{ $product->stock }} in stock</p>
 
-            <form method="post" action="{{ route('cart.store') }}" class="mt-4 flex gap-2" x-data="{ qty: 1 }">
-                @csrf
-                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                <input type="number" name="qty" x-model="qty" min="1" max="{{ min(99, $product->stock) }}" @disabled($product->stock < 1) class="w-20 rounded-lg border-surface-border text-sm focus:border-accent focus:ring-accent">
-                <button @disabled($product->stock < 1) class="rounded-full bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-sm font-medium px-5 py-2 transition-colors">{{ $product->stock > 0 ? 'Add to cart' : 'Out of stock' }}</button>
-            </form>
+            @if(auth()->user()?->role === \App\Enums\UserRole::Seller)
+                <div class="mt-4 rounded-xl border border-surface-border bg-surface-muted p-3 text-sm text-text-muted">
+                    Seller accounts can browse products, but purchasing is reserved for buyer accounts.
+                    <a href="{{ route('seller.dashboard') }}" class="font-semibold text-accent hover:underline">Return to Seller Dashboard</a>
+                </div>
+            @else
+                <form method="post" action="{{ route('cart.store') }}" class="mt-4 flex gap-2" x-data="{ qty: 1 }">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    <input type="number" name="qty" x-model="qty" min="1" max="{{ min(99, $product->stock) }}" @disabled($product->stock < 1) class="w-20 rounded-lg border-surface-border text-sm focus:border-accent focus:ring-accent">
+                    <button @disabled($product->stock < 1) class="rounded-full bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-sm font-medium px-5 py-2 transition-colors">{{ $product->stock > 0 ? 'Add to cart' : 'Out of stock' }}</button>
+                </form>
+            @endif
         </div>
     </div>
 

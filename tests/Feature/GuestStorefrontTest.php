@@ -66,13 +66,19 @@ class GuestStorefrontTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_signed_in_users_also_land_on_storefront_and_keep_their_account_navigation(): void
+    public function test_buyers_and_sellers_can_browse_while_private_roles_return_to_their_portals(): void
     {
-        foreach ([UserRole::Buyer, UserRole::Seller, UserRole::Rider, UserRole::Admin] as $role) {
+        foreach ([UserRole::Buyer, UserRole::Seller] as $role) {
             $user = User::factory()->create(['role' => $role]);
             $this->actingAs($user)->get('/')->assertOk()->assertViewIs('home')->assertSee($user->name)
                 ->assertSee(route('account.profile'), false)->assertDontSee('Continue as guest');
         }
+
+        $rider = User::factory()->rider()->create();
+        $this->actingAs($rider)->get('/')->assertRedirect(route('rider.dashboard'));
+
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $this->actingAs($admin)->get('/')->assertRedirect(route('admin.dashboard'));
     }
 
     public function test_empty_storefront_and_legacy_guest_sessions_need_no_guest_banner(): void

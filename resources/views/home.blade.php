@@ -70,11 +70,19 @@
          style="{{ $i > 0 ? 'display:none;' : '' }}">
         <h2 class="text-2xl lg:text-4xl font-bold leading-tight max-w-2xl">{{ $slide['title'] }}</h2>
         <p class="mt-2 text-sm lg:text-base text-white/80 max-w-xl">{{ $slide['subtitle'] }}</p>
-        <a href="{{ $slide['cta_href'] }}"
-           class="mt-4 self-start rounded-full bg-white/20 border border-white/40
-                  text-white text-sm font-semibold px-5 py-2.5 hover:bg-white/30 transition-colors">
-            {{ $slide['cta_text'] }}
-        </a>
+        <div class="mt-4 flex flex-wrap gap-2">
+            <a href="{{ $slide['cta_href'] }}"
+               class="rounded-full bg-white/20 border border-white/40
+                      text-white text-sm font-semibold px-5 py-2.5 hover:bg-white/30 transition-colors">
+                {{ $slide['cta_text'] }}
+            </a>
+            @if ($i === 0)
+                <a href="{{ route('shops.index') }}"
+                   class="rounded-full border border-white/60 text-white text-sm font-semibold px-5 py-2.5 hover:bg-white/20 transition-colors">
+                    Explore shops
+                </a>
+            @endif
+        </div>
     </div>
     @endforeach
 

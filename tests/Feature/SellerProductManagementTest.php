@@ -100,7 +100,7 @@ class SellerProductManagementTest extends TestCase
         $product = Product::sole();
         $this->get(route('home'))->assertDontSee($product->name);
         $this->get(route('products.show', $product))->assertNotFound();
-        $this->post(route('cart.store'), ['product_id' => $product->id])->assertNotFound();
+        $this->post(route('cart.store'), ['product_id' => $product->id])->assertRedirect(route('seller.dashboard'));
         $this->put(route('seller.products.update', $product), $this->data(['version' => $product->editVersion()]))->assertSessionHasNoErrors();
         $this->get(route('catalog.index'))->assertOk()->assertSee($product->name);
         $this->put(route('seller.products.update', $product), $this->data(['is_active' => 0, 'version' => $product->fresh()->editVersion()]))->assertSessionHasNoErrors();

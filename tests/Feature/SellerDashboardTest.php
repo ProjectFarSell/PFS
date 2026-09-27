@@ -64,13 +64,13 @@ class SellerDashboardTest extends TestCase
         $this->assertSame(OrderStatus::PendingPayment, $order->fresh()->status);
     }
 
-    public function test_admin_access_is_also_limited_to_their_own_shop(): void
+    public function test_admin_cannot_enter_the_seller_dashboard(): void
     {
         $admin = User::factory()->create(['role' => UserRole::Admin]);
-        $own = Shop::factory()->create(['user_id' => $admin->id, 'name' => 'Admin owned shop']);
+        Shop::factory()->create(['user_id' => $admin->id, 'name' => 'Admin owned shop']);
         $other = Product::factory()->create(['name' => 'OTHER SHOP PRIVATE INVENTORY']);
         $this->actingAs($admin)->get(route('seller.dashboard', ['shop_id' => $other->shop_id]))
-            ->assertOk()->assertSee($own->name)->assertDontSee($other->name);
+            ->assertForbidden();
     }
 
     public function test_inactive_shop_still_has_private_inventory_and_useful_empty_states(): void

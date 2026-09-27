@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Order;
 use App\Models\User;
 
@@ -12,7 +13,7 @@ class OrderPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->role === UserRole::Buyer;
     }
 
     /**
@@ -23,7 +24,8 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
-        return $user->id === $order->user_id || $user->role->value === 'admin';
+        return ($user->role === UserRole::Buyer && $user->id === $order->user_id)
+            || $user->role === UserRole::Admin;
     }
 
     /**

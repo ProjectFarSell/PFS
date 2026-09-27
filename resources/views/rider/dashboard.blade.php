@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.portal')
 
 @section('title', 'Rider Dashboard · FarSell')
 
@@ -19,9 +19,8 @@
     @if(!$canViewDeliveries)
         <section class="fs-card mt-5 p-5">
             @if(!$profile)
-                <h2 class="font-semibold">Complete your rider application</h2>
-                <p class="mt-2 text-sm text-text-muted">Submit your rider details for review. Applying does not automatically grant delivery access.</p>
-                <a href="{{ route('rider.register') }}" class="btn-accent mt-4">Apply as a rider</a>
+                <h2 class="font-semibold">Rider profile not found</h2>
+                <p class="mt-2 text-sm text-text-muted">Your account has rider access but no application profile. Contact an administrator to repair the account.</p>
             @elseif($profile->status === \App\Enums\RiderStatus::Pending)
                 <h2 class="font-semibold">Application pending review</h2>
                 <p class="mt-2 text-sm text-text-muted">Delivery details will be available after approval and rider access are granted.</p>

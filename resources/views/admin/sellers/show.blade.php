@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.portal')
 @section('title', 'Review seller application · FarSell')
 @section('content')
     <a href="{{ route('admin.sellers.index') }}" class="text-sm text-accent underline">Back to seller applications</a>
