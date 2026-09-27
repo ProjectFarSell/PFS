@@ -13,8 +13,11 @@
     {{-- Apply stored theme before first paint --}}
     <script src="{{ asset('js/theme.js') }}"></script>
 </head>
-<body class="h-full font-sans antialiased transition-colors duration-200"
+{{-- min-h-screen flex flex-col ensures the footer always pins to the bottom (Req 6) --}}
+<body class="min-h-screen flex flex-col font-sans antialiased transition-colors duration-200"
       style="background-color: rgb(var(--color-surface)); color: rgb(var(--color-text-base));">
-    @yield('content')
+    <main class="flex-1">
+        @yield('content')
+    </main>
 </body>
 </html>

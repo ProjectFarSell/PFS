@@ -57,7 +57,8 @@ export default {
             },
 
             boxShadow: {
-                card: '0 1px 4px 0 rgb(0 0 0 / .06), 0 1px 2px -1px rgb(0 0 0 / .06)',
+                'card-sm': '0 1px 4px 0 rgb(0 0 0 / .06), 0 1px 2px -1px rgb(0 0 0 / .06)',
+                card:      '0 1px 4px 0 rgb(0 0 0 / .06), 0 1px 2px -1px rgb(0 0 0 / .06)',
                 'card-md': '0 4px 14px 0 rgb(0 0 0 / .08)',
                 'accent-glow': '0 4px 18px 0 rgb(var(--color-accent) / .35)',
             },

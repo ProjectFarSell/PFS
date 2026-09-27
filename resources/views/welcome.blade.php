@@ -89,15 +89,15 @@
         <div class="relative z-10 space-y-5">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-white/60 mb-3">
-                    Doorzo-style lots · Shopee-fast checkout
+                    Quality lots · Quick & fast checkout
                 </p>
                 <h1 class="text-4xl xl:text-5xl font-bold leading-tight">
-                    Auction surplus.<br>
+                    Best surplus.<br>
                     <span class="text-white/80">Everyday prices.</span>
                 </h1>
             </div>
             <p class="text-base text-white/70 max-w-sm leading-relaxed">
-                Browse Japan auction lots at Philippine prices. Buy in minutes,
+                Browse quality lots and good deals. Buy in minutes,
                 sell your store, or ride with us and earn every delivery.
             </p>
 
@@ -135,7 +135,7 @@
             </a>
             <p class="text-xl font-bold" style="color: rgb(var(--color-text-base));">FarSell</p>
             <p class="text-sm mt-1" style="color: rgb(var(--color-text-muted));">
-                Auction surplus. Everyday prices.
+                Best surplus. Everyday prices.
             </p>
         </div>
 
