@@ -6,6 +6,7 @@
 .env.production
 .phpactor.json
 .phpunit.result.cache
+.kiro/specs/farsell-frontend-ui-refactor
 /.codex
 /.cursor/
 /.idea
