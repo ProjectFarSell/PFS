@@ -6,6 +6,7 @@ use App\Contracts\DeliveryFeeService;
 use App\Models\Category;
 use App\Services\Checkout\FlatRateDeliveryFeeService;
 use App\Support\Cart;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,5 +25,11 @@ class AppServiceProvider extends ServiceProvider
             $view->with('cartCount', Cart::count());
             $view->with('navCategories', Category::query()->orderBy('sort_order')->get());
         });
+    }
+    public function boot(): void
+    {
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }

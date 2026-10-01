@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Invalidate authenticated sessions whose password has since changed.
         $middleware->web(append: [AuthenticateSession::class]);
     })
+    ->withMiddleware(function (Middleware $middleware): void {
+    $middleware->trustProxies(at: '*');
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
