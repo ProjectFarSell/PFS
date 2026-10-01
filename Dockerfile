@@ -52,4 +52,4 @@ RUN mkdir -p /var/www/html/database \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
 # Run migrations and start Apache (dynamically binding Render's $PORT)
-CMD ["sh", "-c", "mkdir -p /var/www/html/database && touch /var/www/html/database/database.sqlite && (chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database || true) && (chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database || true) && php artisan optimize:clear && php artisan migrate --force && apache2-foreground"]
+CMD ["sh", "-c", "mkdir -p /var/www/html/database && touch /var/www/html/database/database.sqlite && php artisan config:clear && php artisan route:clear && php artisan view:clear && php artisan migrate --force && (chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database || true) && (chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database || true) && apache2-foreground"]
