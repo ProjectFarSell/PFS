@@ -21,15 +21,13 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         View::composer('layouts.app', function ($view): void {
             $view->with('cartCount', Cart::count());
             $view->with('navCategories', Category::query()->orderBy('sort_order')->get());
         });
-    }
-    public function boot(): void
-    {
-        if ($this->app->environment('production')) {
-            URL::forceScheme('https');
-        }
     }
 }
