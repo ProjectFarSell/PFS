@@ -1,0 +1,54 @@
+# Git & CI/CD
+.git
+.github
+.gitignore
+
+# Critical Vite hot-reloading artifact
+/public/hot
+/public/storage
+
+# Environment & Sensitive Credentials
+.env
+.env.*
+/storage/*.key
+/auth.json
+
+# Dependencies (built freshly inside the image)
+/node_modules
+/vendor
+npm-debug.log
+yarn-error.log
+
+# Agent & IDE Configurations
+.kiro
+.codex
+.cursor
+.idea
+.vscode
+.zed
+.nova
+.phpactor.json
+
+# Tests & Documentation
+tests
+phpunit.xml
+.phpunit.cache
+.phpunit.result.cache
+*.md
+
+# Local Laravel Framework & Runtime Cache
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/pail
+
+# Docker & Virtualization Configs
+Dockerfile*
+docker-compose*
+.dockerignore
+Homestead.json
+Homestead.yaml
+_ide_helper.php
+.DS_Store
+Thumbs.db
