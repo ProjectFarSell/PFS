@@ -1,6 +1,6 @@
 # FarSell
 
-A Laravel-powered marketplace for Japan auction surplus goods, built for fast checkout and multi-role operation (buyers, sellers, riders, and admins).
+A Laravel-powered marketplace for surplus goods, built for fast checkout and multi-role operation (buyers, sellers, riders, and admins).
 
 ---
 
