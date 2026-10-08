@@ -46,21 +46,17 @@ test('all toggles share state and persist both directions', () => {
 
 test('blocked local storage does not break initialization or toggles', () => {
     const ui = setup({ blocked: true, dark: true });
-    assert.equal(ui.theme.isDark, true);
+    assert.equal(ui.theme.isDark, false);
     assert.doesNotThrow(() => ui.theme.toggle());
-    assert.equal(ui.theme.isDark, false);
-});
-
-test('system theme is followed until a manual choice is made', () => {
-    const ui = setup({ saved: 'invalid' });
-    ui.events.os({ matches: true });
     assert.equal(ui.theme.isDark, true);
-    ui.theme.set('light');
-    ui.events.os({ matches: true });
+});
+
+test('light mode is the default even when the system uses dark mode', () => {
+    const ui = setup({ saved: 'invalid', dark: true });
     assert.equal(ui.theme.isDark, false);
 });
 
-test('storage changes synchronize other tabs and clearing reverts to the OS', () => {
+test('storage changes synchronize other tabs and clearing reverts to light mode', () => {
     const ui = setup();
     ui.events.storage({ key: 'farsell_theme', newValue: 'dark' });
     assert.equal(ui.theme.isDark, true);

@@ -1,6 +1,5 @@
 // Runs before paint and is shared by every Alpine theme toggle.
 (() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
     let choice = null;
     try {
         const saved = window.localStorage.getItem('farsell_theme');
@@ -8,7 +7,7 @@
     } catch { /* Storage may be blocked; theme switching must still work. */ }
 
     window.FarSellTheme = {
-        isDark: choice ? choice === 'dark' : media.matches,
+        isDark: choice === 'dark',
         apply() {
             document.documentElement.classList.toggle('dark', this.isDark);
         },
@@ -26,12 +25,9 @@
         },
     };
     window.FarSellTheme.apply();
-    media.addEventListener('change', (event) => {
-        if (!choice) window.FarSellTheme.set(event.matches ? 'dark' : 'light', false);
-    });
     window.addEventListener('storage', (event) => {
         if (event.key !== 'farsell_theme' && event.key !== null) return;
         choice = event.newValue === 'dark' || event.newValue === 'light' ? event.newValue : null;
-        window.FarSellTheme.set(choice || (media.matches ? 'dark' : 'light'), false);
+        window.FarSellTheme.set(choice || 'light', false);
     });
 })();
