@@ -39,12 +39,17 @@
                     <a href="{{ route('seller.dashboard') }}" class="nav-link px-3 py-2">Dashboard</a>
                     <a href="{{ route('seller.products.create') }}" class="nav-link px-3 py-2">Add Product</a>
                     <a href="{{ route('fulfillments.index') }}" class="nav-link px-3 py-2">Orders</a>
+                    <a href="{{ route('chat.index') }}" class="nav-link px-3 py-2">Chat @if($chatUnreadCount)<span class="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[10px] text-white">{{ $chatUnreadCount > 99 ? '99+' : $chatUnreadCount }}</span>@endif</a>
                     <a href="{{ route('home') }}" class="nav-link px-3 py-2">View Storefront</a>
                 @elseif($portalRole === \App\Enums\UserRole::Rider)
                     <a href="{{ route('rider.dashboard') }}" class="nav-link px-3 py-2">Dashboard</a>
                     <a href="{{ route('rider.delivery-requests') }}" class="nav-link px-3 py-2">Delivery Requests</a>
                     <a href="{{ route('fulfillments.index') }}" class="nav-link px-3 py-2">Deliveries</a>
                     <a href="{{ route('rider.profile') }}" class="nav-link px-3 py-2">Rider Profile</a>
+                @endif
+
+                @if($portalRole === \App\Enums\UserRole::Buyer)
+                    <a href="{{ route('chat.index') }}" class="nav-link px-3 py-2">Chat @if($chatUnreadCount)<span class="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[10px] text-white">{{ $chatUnreadCount > 99 ? '99+' : $chatUnreadCount }}</span>@endif</a>
                 @endif
 
                 <a href="{{ route('account.profile') }}" class="nav-link px-3 py-2">My Account</a>
@@ -72,5 +77,6 @@
     </main>
 
     @stack('scripts')
+    @include('chat.partials.dock')
 </body>
 </html>

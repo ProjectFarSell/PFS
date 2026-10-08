@@ -14,7 +14,7 @@
     <ul class="mt-4 rounded-xl bg-surface border border-surface-border divide-y">
         @foreach ($order->items as $item)
             <li class="px-3 py-2 text-sm flex justify-between">
-                <span>{{ $item->name }} × {{ $item->qty }}</span>
+                <span>{{ $item->name }}@if($item->variant_options) ({{ collect($item->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $item->qty }}</span>
                 <span>₱{{ number_format((float) $item->line_total, 2) }}</span>
             </li>
         @endforeach

@@ -41,16 +41,23 @@
                 <p class="text-xs mt-0.5" style="color:rgb(var(--color-text-muted));">
                     {{ $line->product->shop->name }}
                 </p>
+                @if($line->stale_variant)<p class="mt-1 text-xs text-error">This product's options changed. Remove it and choose an available option again.</p>@endif
+                @if($line->variant_options)<p class="text-xs mt-0.5 text-text-muted">{{ collect($line->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }}</p>@endif
                 <p class="text-sm font-semibold mt-1" style="color:rgb(var(--color-accent));">
                     ₱{{ number_format($line->line_total, 2) }}
                 </p>
             </div>
             <form method="post" action="{{ route('cart.update', $line->product) }}"
-                  class="flex flex-col items-end gap-1 shrink-0">
+                  class="flex flex-col items-end gap-1 shrink-0" x-data="quantityStepper({{ $line->qty }}, {{ min(99, $line->variant?->stock ?? $line->product->stock) }}, 0)">
                 @csrf
                 @method('patch')
-                <input type="number" name="qty" value="{{ $line->qty }}" min="0"
-                       class="fs-input w-16 py-1.5 text-center">
+                @if($line->variant)<input type="hidden" name="variant_id" value="{{ $line->variant->id }}">@endif
+                <div class="inline-flex h-9 overflow-hidden rounded-md border border-surface-border" role="group" aria-label="Quantity">
+                    <button type="button" @click="decrease()" x-bind:disabled="qty <= 0" class="w-9 border-r border-surface-border text-text-muted hover:bg-surface-muted disabled:opacity-40" aria-label="Decrease quantity">−</button>
+                    <input type="number" name="qty" x-model.number="qty" min="0" x-bind:max="max"
+                           class="h-full w-14 border-0 bg-transparent p-0 text-center text-sm focus:ring-0">
+                    <button type="button" @click="increase()" x-bind:disabled="qty >= max" class="w-9 border-l border-surface-border text-text-muted hover:bg-surface-muted disabled:opacity-40" aria-label="Increase quantity">+</button>
+                </div>
                 <button type="submit"
                         class="text-xs font-medium transition-colors hover:underline"
                         style="color:rgb(var(--color-text-muted));">

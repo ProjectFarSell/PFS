@@ -8,10 +8,12 @@ use App\Http\Controllers\Admin\RiderApplicationController;
 use App\Http\Controllers\Admin\SellerApplicationController;
 use App\Http\Controllers\Auth\GuestSessionController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Catalog\ProductController;
 use App\Http\Controllers\Catalog\ShopController;
+use App\Http\Controllers\Chat\ConversationController;
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\FulfillmentController;
 use App\Http\Controllers\HomeController;
@@ -46,6 +48,7 @@ Route::middleware(RedirectPrivateRolesFromStorefront::class)->group(function () 
 Route::middleware(EnsureBuyerOrGuest::class)->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+    Route::post('/cart/buy-now', [CartController::class, 'buyNow'])->name('cart.buy-now');
     Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
 });
 
@@ -53,6 +56,8 @@ Route::middleware(EnsureBuyerOrGuest::class)->group(function () {
 
 // ── Guest-only auth routes ────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
+    Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
@@ -92,6 +97,12 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/se
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::get('/chat', [ConversationController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('chat.index');
+    Route::get('/chat/widget/conversations', [ConversationController::class, 'widgetConversations'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('chat.widget.conversations');
+    Route::post('/chat/products/{product}', [ConversationController::class, 'start'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('chat.start');
+    Route::get('/chat/{conversation}', [ConversationController::class, 'show'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('chat.show');
+    Route::get('/chat/{conversation}/messages', [ConversationController::class, 'messages'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('chat.messages');
+    Route::post('/chat/{conversation}/messages', [ConversationController::class, 'send'])->middleware([EnsureUserHasRole::class.':buyer,seller', 'throttle:30,1'])->name('chat.send');
     Route::post('/rider/availability', [DeliveryRequestController::class, 'availability'])->middleware([EnsureUserHasRole::class.':rider', 'throttle:30,1'])->name('rider.availability');
     Route::get('/rider/delivery-requests', [DeliveryRequestController::class, 'index'])->middleware([EnsureUserHasRole::class.':rider', 'throttle:30,1'])->name('rider.delivery-requests');
     Route::get('/fulfillments', [FulfillmentController::class, 'index'])->middleware(EnsureUserHasRole::class.':admin,seller,rider')->name('fulfillments.index');

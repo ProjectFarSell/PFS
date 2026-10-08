@@ -51,7 +51,7 @@ class AddressController extends Controller
                 ->update(['is_default' => false]);
         }
 
-        $resumeCheckout = $request->session()->pull('checkout.needs_address', false) && Cart::count() > 0;
+        $resumeCheckout = $request->session()->pull('checkout.needs_address', false) && Cart::checkoutCount() > 0;
 
         return redirect()->route($resumeCheckout ? 'checkout.create' : 'account.addresses.index')
             ->with('status', 'Address saved.');

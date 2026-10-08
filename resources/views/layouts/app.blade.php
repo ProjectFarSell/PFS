@@ -297,6 +297,9 @@
                 @endif
 
                 @auth
+                                @if(in_array(auth()->user()->role, [\App\Enums\UserRole::Buyer, \App\Enums\UserRole::Seller], true))
+                                    <a href="{{ route('chat.index') }}" class="dropdown-item rounded-xl" @if(request()->routeIs('chat.*')) aria-current="page" @endif>Chat @if($chatUnreadCount)<span class="ml-auto rounded-full bg-accent px-2 py-0.5 text-[10px] text-white">{{ $chatUnreadCount > 99 ? '99+' : $chatUnreadCount }}</span>@endif</a>
+                                @endif
                                 @if(auth()->user()->isRider())
                                     <a href="{{ route('rider.dashboard') }}" class="dropdown-item" @if(request()->routeIs('rider.dashboard')) aria-current="page" @endif>Rider Dashboard</a>
                                 @endif
@@ -661,6 +664,8 @@
         @endauth
 
     </div>{{-- /drawer panel --}}
+
+    @include('chat.partials.dock')
 
 </body>
 </html>

@@ -14,7 +14,9 @@ class OrderItem extends Model
         'order_id',
         'fulfillment_id',
         'product_id',
+        'product_variant_id',
         'name',
+        'variant_options',
         'qty',
         'unit_price',
         'line_total',
@@ -25,6 +27,7 @@ class OrderItem extends Model
         return [
             'unit_price' => 'decimal:2',
             'line_total' => 'decimal:2',
+            'variant_options' => 'array',
         ];
     }
 
@@ -36,5 +39,10 @@ class OrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 }

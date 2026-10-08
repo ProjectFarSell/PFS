@@ -14,6 +14,7 @@ class ProductVariant extends Model
         'sku',
         'option_name',
         'option_value',
+        'options',
         'price_override',
         'stock',
         'is_active',
@@ -24,6 +25,7 @@ class ProductVariant extends Model
         return [
             'price_override' => 'decimal:2',
             'is_active' => 'boolean',
+            'options' => 'array',
         ];
     }
 

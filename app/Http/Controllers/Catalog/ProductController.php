@@ -76,7 +76,7 @@ class ProductController extends Controller
     {
         abort_unless($product->is_active && $product->shop?->is_active, 404);
 
-        $product->load(['shop', 'category']);
+        $product->load(['shop', 'category', 'variants' => fn ($q) => $q->where('is_active', true)->orderBy('id')]);
 
         $related = Product::query()
             ->with('shop')

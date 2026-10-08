@@ -46,7 +46,7 @@
         <div>
             @foreach ($lines as $line)
                 <div class="flex justify-between text-sm py-1">
-                    <span>{{ $line->product->name }} × {{ $line->qty }}</span>
+                    <span>{{ $line->product->name }}@if($line->variant_options) ({{ collect($line->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $line->qty }}</span>
                     <span>₱{{ number_format($line->line_total, 2) }}</span>
                 </div>
             @endforeach

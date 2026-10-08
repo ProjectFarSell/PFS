@@ -6,7 +6,7 @@
     @foreach($order->fulfillments as $part)
         <section class="fs-card p-5">
             <div class="flex flex-wrap justify-between gap-3"><h2 class="font-semibold">{{ $part->shop_name }} · Shipment #{{ $part->id }}</h2><span class="badge badge-neutral">{{ $part->status->label() }}</span></div>
-            <ul class="mt-3 text-sm space-y-2">@foreach($part->items as $item)<li class="flex justify-between gap-3"><span>{{ $item->name }} × {{ $item->qty }}</span><span>₱{{ number_format((float) $item->line_total, 2) }}</span></li>@endforeach</ul>
+            <ul class="mt-3 text-sm space-y-2">@foreach($part->items as $item)<li class="flex justify-between gap-3"><span>{{ $item->name }}@if($item->variant_options) ({{ collect($item->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $item->qty }}</span><span>₱{{ number_format((float) $item->line_total, 2) }}</span></li>@endforeach</ul>
             <p class="mt-3 text-sm">Shipment total: ₱{{ number_format($part->amount(), 2) }} (delivery allocation ₱{{ number_format((float) $part->shipping_fee, 2) }})</p>
             @if($part->rider)<p class="mt-2 text-sm">Rider: {{ $part->rider->user?->name ?? 'Unavailable account' }}</p>@endif
             @if($part->rejection_reason)<p class="mt-2 text-sm text-error">Reason: {{ $part->rejection_reason }}</p>@endif

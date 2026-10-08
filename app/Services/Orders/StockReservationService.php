@@ -4,6 +4,7 @@ namespace App\Services\Orders;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 
@@ -21,17 +22,23 @@ class StockReservationService
     {
         return $lines->map(function (object $line): object {
             $product = Product::query()->lockForUpdate()->find($line->product->id);
+            $variant = $line->variant ? ProductVariant::query()->lockForUpdate()->find($line->variant->id) : null;
 
-            if (! $product || ! $product->is_active || ! $product->shop?->is_active || $product->stock < $line->qty) {
+            if (! $product || ! $product->is_active || ! $product->shop?->is_active
+                || ($variant && ! $product->has_variants)
+                || ($product->has_variants && (! $variant || ! $variant->is_active || $variant->product_id !== $product->id || $variant->stock < $line->qty))
+                || (! $product->has_variants && $product->stock < $line->qty)) {
                 throw ValidationException::withMessages([
                     'cart' => $line->product->name.' no longer has enough stock. Please update your cart.',
                 ]);
             }
 
-            $unitPrice = (float) $product->price;
+            $unitPrice = $variant?->effectivePrice() ?? (float) $product->price;
 
             return (object) [
                 'product' => $product,
+                'variant' => $variant,
+                'variant_options' => $line->variant_options,
                 'qty' => (int) $line->qty,
                 'unit_price' => $unitPrice,
                 'line_total' => $unitPrice * (int) $line->qty,
@@ -43,7 +50,12 @@ class StockReservationService
     public function reserve(Collection $lines): void
     {
         foreach ($lines as $line) {
-            $line->product->decrement('stock', $line->qty);
+            if ($line->variant) {
+                $line->variant->decrement('stock', $line->qty);
+                $line->product->decrement('stock', $line->qty);
+            } else {
+                $line->product->decrement('stock', $line->qty);
+            }
         }
     }
 
@@ -56,7 +68,10 @@ class StockReservationService
         $order->loadMissing('items');
 
         foreach ($order->items as $item) {
-            if ($item->product_id) {
+            if ($item->product_variant_id) {
+                ProductVariant::query()->whereKey($item->product_variant_id)->increment('stock', $item->qty);
+                if ($item->product_id && $item->variant?->is_active) Product::query()->whereKey($item->product_id)->increment('stock', $item->qty);
+            } elseif ($item->product_id) {
                 Product::query()->whereKey($item->product_id)->increment('stock', $item->qty);
             }
         }

@@ -32,7 +32,7 @@
                 </div>
                 <p class="mt-2 text-sm">{{ $part->shop_name }}</p>
                 <ul class="mt-3 space-y-1 text-sm">
-                    @foreach($part->items as $item)<li>{{ $item->name }} × {{ $item->qty }} @if($isSeller || $isAdmin) · ₱{{ number_format((float) $item->line_total, 2) }} @endif</li>@endforeach
+                    @foreach($part->items as $item)<li>{{ $item->name }}@if($item->variant_options) ({{ collect($item->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $item->qty }} @if($isSeller || $isAdmin) · ₱{{ number_format((float) $item->line_total, 2) }} @endif</li>@endforeach
                 </ul>
                 @if(!$isSeller)
                     <p class="mt-3 text-sm font-semibold">Recipient: {{ $part->order->guest_name }}</p>

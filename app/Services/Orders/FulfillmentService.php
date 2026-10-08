@@ -68,7 +68,10 @@ class FulfillmentService
                     $part->rejection_reason = $note;
                     if ($order->stock_reserved_at && ! $order->stock_released_at && ! $part->stock_released_at) {
                         foreach ($part->items()->orderBy('product_id')->get() as $item) {
-                            if ($item->product_id) {
+                            if ($item->product_variant_id) {
+                                \App\Models\ProductVariant::query()->whereKey($item->product_variant_id)->increment('stock', $item->qty);
+                                if ($item->product_id && $item->variant?->is_active) Product::query()->whereKey($item->product_id)->increment('stock', $item->qty);
+                            } elseif ($item->product_id) {
                                 Product::query()->whereKey($item->product_id)->increment('stock', $item->qty);
                             }
                         }

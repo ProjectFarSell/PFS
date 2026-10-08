@@ -21,6 +21,7 @@ class Product extends Model
         'price',
         'compare_at_price',
         'stock',
+        'has_variants',
         'image_path',
         'is_flash',
         'is_active',
@@ -31,6 +32,7 @@ class Product extends Model
         return [
             'price' => 'decimal:2',
             'compare_at_price' => 'decimal:2',
+            'has_variants' => 'boolean',
             'is_flash' => 'boolean',
             'is_active' => 'boolean',
         ];
@@ -68,9 +70,23 @@ class Product extends Model
         return 'PHP '.number_format((float) $this->price, 2);
     }
 
+    public function availableStock(): int
+    {
+        if (! $this->has_variants) {
+            return (int) $this->stock;
+        }
+
+        return (int) ($this->relationLoaded('variants')
+            ? $this->variants->where('is_active', true)->sum('stock')
+            : $this->variants()->where('is_active', true)->sum('stock'));
+    }
+
     public function editVersion(): string
     {
-        return hash('sha256', json_encode($this->getAttributes(), JSON_THROW_ON_ERROR));
+        $variants = $this->variants()->orderBy('id')->get(['id', 'stock', 'is_active', 'price_override', 'options', 'updated_at'])
+            ->map(fn ($variant) => $variant->getAttributes())->all();
+
+        return hash('sha256', json_encode([$this->getAttributes(), $variants], JSON_THROW_ON_ERROR));
     }
 
     public function scopeVisible($query)

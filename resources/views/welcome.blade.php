@@ -260,6 +260,23 @@
                             </button>
                         </form>
 
+                        <div class="my-4 flex items-center gap-3">
+                            <div class="h-px flex-1" style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
+                            <span class="text-xs" style="color: rgb(var(--color-text-muted));">or</span>
+                            <div class="h-px flex-1" style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
+                        </div>
+                        @if(config('services.google.client_id') && config('services.google.client_secret'))
+                            <a href="{{ route('auth.google.redirect') }}" class="btn-outline flex w-full items-center justify-center gap-2 py-2.5">
+                                <span aria-hidden="true" class="font-bold">G</span> Continue with Google
+                            </a>
+                        @else
+                            <button type="button" disabled title="Google sign-in needs to be configured first" class="btn-outline flex w-full cursor-not-allowed items-center justify-center gap-2 py-2.5 opacity-60">
+                                <span aria-hidden="true" class="font-bold">G</span> Continue with Google
+                            </button>
+                            <p class="mt-1 text-center text-xs" style="color: rgb(var(--color-text-muted));">Google sign-in is not configured yet.</p>
+                        @endif
+                        @if($errors->has('google'))<p role="alert" class="mt-2 text-sm text-error">{{ $errors->first('google') }}</p>@endif
+
                         {{-- Divider --}}
                         <div class="my-5 flex items-center gap-3">
                             <div class="h-px flex-1"
@@ -385,6 +402,21 @@
                                 </span>
                             </button>
                         </form>
+                        <div class="my-4 flex items-center gap-3">
+                            <div class="h-px flex-1" style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
+                            <span class="text-xs" style="color: rgb(var(--color-text-muted));">or</span>
+                            <div class="h-px flex-1" style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
+                        </div>
+                        @if(config('services.google.client_id') && config('services.google.client_secret'))
+                            <a href="{{ route('auth.google.redirect') }}" class="btn-outline flex w-full items-center justify-center gap-2 py-2.5">
+                                <span aria-hidden="true" class="font-bold">G</span> Continue with Google
+                            </a>
+                        @else
+                            <button type="button" disabled title="Google sign-in needs to be configured first" class="btn-outline flex w-full cursor-not-allowed items-center justify-center gap-2 py-2.5 opacity-60">
+                                <span aria-hidden="true" class="font-bold">G</span> Continue with Google
+                            </button>
+                            <p class="mt-1 text-center text-xs" style="color: rgb(var(--color-text-muted));">Google sign-in is not configured yet.</p>
+                        @endif
                     </div>
 
                 </div>{{-- /card body --}}

@@ -26,7 +26,7 @@ class CheckoutController extends Controller
 
     public function create(Request $request): View|RedirectResponse
     {
-        if (Cart::count() === 0) {
+        if (Cart::checkoutCount() === 0) {
             return redirect()->route('cart.index')->with('status', 'Your cart is empty.');
         }
 
@@ -45,7 +45,7 @@ class CheckoutController extends Controller
 
         $request->session()->forget('checkout.needs_address');
 
-        $lines = Cart::hydrated();
+        $lines = Cart::forCheckout();
         $shipping = $this->deliveryFees->calculate($addresses->first(), $lines);
 
         return view('checkout.create', [
@@ -58,7 +58,7 @@ class CheckoutController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        if (Cart::count() === 0) {
+        if (Cart::checkoutCount() === 0) {
             return redirect()->route('cart.index');
         }
 
@@ -78,7 +78,7 @@ class CheckoutController extends Controller
         $initialStatus = $paymentMethod === PaymentMethod::Cod
             ? OrderStatus::PendingPayment
             : OrderStatus::Paid;
-        $lines = Cart::hydrated();
+        $lines = Cart::forCheckout();
 
         $order = DB::transaction(function () use ($lines, $address, $paymentMethod, $initialStatus): Order {
             $lockedLines = $this->stock->lockAndPrepare($lines);
@@ -103,7 +103,9 @@ class CheckoutController extends Controller
             foreach ($lockedLines as $line) {
                 $order->items()->create([
                     'product_id' => $line->product->id,
+                    'product_variant_id' => $line->variant?->id,
                     'name' => $line->product->name,
+                    'variant_options' => $line->variant_options,
                     'qty' => $line->qty,
                     'unit_price' => $line->unit_price,
                     'line_total' => $line->line_total,
@@ -116,7 +118,7 @@ class CheckoutController extends Controller
             return $order;
         });
 
-        Cart::clear();
+        Cart::clearCheckout();
 
         return redirect()->route('orders.show', $order)->with('status', 'Order placed.');
     }
