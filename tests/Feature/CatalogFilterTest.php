@@ -61,4 +61,98 @@ class CatalogFilterTest extends TestCase
         $this->get(route('catalog.index'))->assertOk()
             ->assertDontSee('name="rating[]"', false);
     }
+
+    public function test_sort_by_price_asc_returns_products_ordered_by_price(): void
+    {
+        $shop = Shop::factory()->create();
+        $category = Category::factory()->create();
+
+        $expensive = Product::factory()->create([
+            'shop_id' => $shop->id,
+            'category_id' => $category->id,
+            'name' => 'Expensive Product',
+            'price' => 500.00,
+        ]);
+        $cheap = Product::factory()->create([
+            'shop_id' => $shop->id,
+            'category_id' => $category->id,
+            'name' => 'Cheap Product',
+            'price' => 10.00,
+        ]);
+        $mid = Product::factory()->create([
+            'shop_id' => $shop->id,
+            'category_id' => $category->id,
+            'name' => 'Mid Product',
+            'price' => 250.00,
+        ]);
+
+        $response = $this->get(route('catalog.index', ['sort' => 'price_asc']));
+        $response->assertOk();
+
+        $products = $response->viewData('products');
+        $prices = $products->pluck('price')->map(fn ($p) => (float) $p)->values()->all();
+        $sorted = $prices;
+        sort($sorted);
+
+        $this->assertEquals($sorted, $prices);
+    }
+
+    public function test_sort_by_price_desc_returns_products_ordered_descending(): void
+    {
+        $shop = Shop::factory()->create();
+        $category = Category::factory()->create();
+
+        Product::factory()->create([
+            'shop_id' => $shop->id,
+            'category_id' => $category->id,
+            'name' => 'Product A',
+            'price' => 100.00,
+        ]);
+        Product::factory()->create([
+            'shop_id' => $shop->id,
+            'category_id' => $category->id,
+            'name' => 'Product B',
+            'price' => 400.00,
+        ]);
+        Product::factory()->create([
+            'shop_id' => $shop->id,
+            'category_id' => $category->id,
+            'name' => 'Product C',
+            'price' => 200.00,
+        ]);
+
+        $response = $this->get(route('catalog.index', ['sort' => 'price_desc']));
+        $response->assertOk();
+
+        $products = $response->viewData('products');
+        $prices = $products->pluck('price')->map(fn ($p) => (float) $p)->values()->all();
+        $sorted = $prices;
+        rsort($sorted);
+
+        $this->assertEquals($sorted, $prices);
+    }
+
+    public function test_fulltext_search_returns_matching_product(): void
+    {
+        $shop = Shop::factory()->create();
+        $category = Category::factory()->create();
+
+        $matching = Product::factory()->create([
+            'shop_id' => $shop->id,
+            'category_id' => $category->id,
+            'name' => 'Mango Shake Special',
+            'price' => 75.00,
+        ]);
+        Product::factory()->create([
+            'shop_id' => $shop->id,
+            'category_id' => $category->id,
+            'name' => 'Unrelated Item',
+            'price' => 50.00,
+        ]);
+
+        $this->get(route('catalog.index', ['q' => 'Mango']))
+            ->assertOk()
+            ->assertSee($matching->name)
+            ->assertDontSee('Unrelated Item');
+    }
 }

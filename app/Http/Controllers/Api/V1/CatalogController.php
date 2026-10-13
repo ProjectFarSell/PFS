@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CatalogController extends Controller
 {
@@ -21,11 +22,27 @@ class CatalogController extends Controller
             ->latest();
 
         if ($search = $request->string('q')->trim()->toString()) {
-            $query->where('name', 'like', '%'.$search.'%');
+            if (DB::getDriverName() !== 'sqlite') {
+                $query->whereFullText(['name', 'description'], $search);
+            } else {
+                $query->where('name', 'like', '%'.$search.'%');
+            }
         }
 
         if ($categoryId = $request->integer('category_id')) {
             $query->where('category_id', $categoryId);
+        }
+
+        if ($priceMin = $request->input('price_min')) {
+            $query->where('price', '>=', (float) $priceMin);
+        }
+
+        if ($priceMax = $request->input('price_max')) {
+            $query->where('price', '<=', (float) $priceMax);
+        }
+
+        if ($shopId = $request->integer('shop_id')) {
+            $query->where('shop_id', $shopId);
         }
 
         return response()->json($query->paginate(20)->through(fn (Product $product) => [

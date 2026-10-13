@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -20,6 +21,7 @@ class ProductController extends Controller
             'shop.*' => ['integer', 'distinct', 'exists:shops,id'],
             'price_min' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
             'price_max' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'gte:price_min'],
+            'sort' => ['nullable', 'string', 'in:relevance,price_asc,price_desc,newest'],
         ]);
 
         $search = trim((string) ($filters['q'] ?? ''));
@@ -27,13 +29,18 @@ class ProductController extends Controller
         $shopIds = collect($filters['shop'] ?? [])->map(fn ($id) => (int) $id)->unique()->values()->all();
         $priceMin = $filters['price_min'] ?? null;
         $priceMax = $filters['price_max'] ?? null;
+        $sort = $filters['sort'] ?? 'newest';
 
         $query = Product::query()
             ->with(['shop', 'category'])
             ->visible();
 
         if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%');
+            if (DB::getDriverName() !== 'sqlite') {
+                $query->whereFullText(['name', 'description'], $search);
+            } else {
+                $query->where('name', 'like', '%'.$search.'%');
+            }
         }
 
         if ($categoryId !== null) {
@@ -53,6 +60,14 @@ class ProductController extends Controller
             $query->where('price', '<=', $priceMax);
         }
 
+        // Apply sort ordering
+        match ($sort) {
+            'price_asc'  => $query->orderBy('price'),
+            'price_desc' => $query->orderByDesc('price'),
+            'relevance'  => $search !== '' ? $query->latest() : $query->latest(),
+            default      => $query->latest(), // newest
+        };
+
         // Shops for the sidebar brand list (active shops with active product counts)
         $shops = Shop::query()
             ->where('is_active', true)
@@ -61,7 +76,7 @@ class ProductController extends Controller
             ->get();
 
         return view('catalog.index', [
-            'products' => $query->latest()->paginate(16)->withQueryString(),
+            'products' => $query->paginate(16)->withQueryString(),
             'categories' => Category::query()->orderBy('sort_order')->get(),
             'shops' => $shops,
             'q' => $search,
@@ -69,6 +84,7 @@ class ProductController extends Controller
             'activeShops' => $shopIds,
             'priceMin' => $priceMin ?? '',
             'priceMax' => $priceMax ?? '',
+            'sort' => $sort,
         ]);
     }
 
