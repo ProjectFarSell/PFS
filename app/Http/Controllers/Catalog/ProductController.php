@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Catalog;
 
+use App\Contracts\DeliveryEtaService;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
@@ -13,6 +14,8 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
+    public function __construct(private readonly DeliveryEtaService $etaService) {}
+
     public function index(Request $request): View
     {
         $filters = $request->validate([
@@ -125,6 +128,14 @@ class ProductController extends Controller
             ->take(8)
             ->get();
 
-        return view('catalog.show', compact('product', 'related'));
+        $etaHours = null;
+        if (auth()->check()) {
+            $defaultAddress = auth()->user()->addresses()->where('is_default', true)->first();
+            if ($defaultAddress && $product->shop->psgc_city_municipality_id) {
+                $etaHours = $this->etaService->estimate($defaultAddress, (int) $product->shop->psgc_city_municipality_id);
+            }
+        }
+
+        return view('catalog.show', compact('product', 'related', 'etaHours'));
     }
 }

@@ -26,6 +26,14 @@
                 <p class="text-sm text-text-muted line-through">₱{{ number_format((float) $product->compare_at_price, 2) }}</p>
             @endif
 
+            @if(isset($etaHours) && $etaHours !== null)
+                <p class="mt-2 text-sm font-medium" style="color:rgb(var(--color-text-base));">
+                    <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold" style="background-color:rgb(var(--color-accent-subtle)); color:rgb(var(--color-accent));">
+                        🚚 Est. delivery: {{ $etaHours <= 4 ? '2–4 hours' : 'Next day' }}
+                    </span>
+                </p>
+            @endif
+
             @if (auth()->check() && auth()->user()->role === \App\Enums\UserRole::Buyer)
                 <div class="mt-3"
                      x-data="savedItem(@js($product->id), @js(auth()->user()->hasSavedProduct($product->id)))">
