@@ -33,12 +33,12 @@ class CatalogController extends Controller
             $query->where('category_id', $categoryId);
         }
 
-        if ($priceMin = $request->input('price_min')) {
-            $query->where('price', '>=', (float) $priceMin);
+        if ($request->filled('price_min')) {
+            $query->where('price', '>=', (float) $request->input('price_min'));
         }
 
-        if ($priceMax = $request->input('price_max')) {
-            $query->where('price', '<=', (float) $priceMax);
+        if ($request->has('price_max') && $request->input('price_max') !== null) {
+            $query->where('price', '<=', (float) $request->input('price_max'));
         }
 
         if ($shopId = $request->integer('shop_id')) {

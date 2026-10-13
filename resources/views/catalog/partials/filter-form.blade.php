@@ -102,7 +102,7 @@
     <button type="submit" class="btn-accent w-full">Apply filters</button>
 
     @if ($q || $activeCategory || $priceMin !== '' || $priceMax !== '' || !empty($activeShops) || $activeCityId)
-        <a href="{{ route('catalog.index') }}"
+        <a href="{{ route('catalog.index') }}{{ $activeCityId ? '?clear_city=1' : '' }}"
            class="block text-center text-sm transition-colors hover:underline"
            style="color:rgb(var(--color-text-muted));">
             Clear all filters

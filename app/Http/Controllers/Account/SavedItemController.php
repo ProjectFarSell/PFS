@@ -15,7 +15,11 @@ class SavedItemController extends Controller
     {
         $saved = $request->user()->savedItems()->with('product.shop')->latest()->paginate(16);
 
-        return view('account.saved.index', compact('saved'));
+        // Preload the set of saved product IDs for the current page so that
+        // card.blade.php does not fire a hasSavedProduct() query per card (N+1).
+        $savedProductIds = $saved->pluck('product_id')->all();
+
+        return view('account.saved.index', compact('saved', 'savedProductIds'));
     }
 
     public function store(Request $request, Product $product): Response

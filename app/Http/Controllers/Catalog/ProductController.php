@@ -39,7 +39,7 @@ class ProductController extends Controller
 
         // Resolve city_id: explicit param > authenticated user's default address city
         $cityId = isset($filters['city_id']) ? (int) $filters['city_id'] : null;
-        if ($cityId === null && auth()->check()) {
+        if ($cityId === null && auth()->check() && !$request->has('clear_city')) {
             $defaultCityId = auth()->user()->addresses()
                 ->where('is_default', true)
                 ->value('psgc_city_municipality_id');
@@ -83,12 +83,19 @@ class ProductController extends Controller
         }
 
         // Apply sort ordering
-        match ($sort) {
-            'price_asc'  => $query->orderBy('price'),
-            'price_desc' => $query->orderByDesc('price'),
-            'relevance'  => $search !== '' ? $query->latest() : $query->latest(),
-            default      => $query->latest(), // newest
-        };
+        // Note: 'relevance' with a search term intentionally skips an explicit orderBy so that
+        // MySQL's fulltext relevance score governs the order. Without a search term it falls
+        // back to ->latest() just like 'newest'.
+        if ($sort === 'price_asc') {
+            $query->orderBy('price');
+        } elseif ($sort === 'price_desc') {
+            $query->orderByDesc('price');
+        } elseif ($sort === 'relevance' && $search !== '') {
+            // Skip orderBy to let fulltext relevance scoring apply
+        } else {
+            // 'newest' or 'relevance' without search term
+            $query->latest();
+        }
 
         // Shops for the sidebar brand list (active shops with active product counts)
         $shops = Shop::query()

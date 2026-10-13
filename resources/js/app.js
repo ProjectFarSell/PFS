@@ -159,21 +159,33 @@ Alpine.data('quantityStepper', (initial = 1, max = 99, min = 1) => ({
 Alpine.data('savedItem', (productId, initialSaved) => ({
     saved: initialSaved,
     async toggle() {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+        if (!csrfToken) {
+            alert('Session expired. Please refresh the page.');
+            return;
+        }
+
         const url = `/account/saved/${productId}`;
         const method = this.saved ? 'DELETE' : 'POST';
         try {
             const res = await fetch(url, {
                 method,
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                    'X-CSRF-TOKEN': csrfToken,
                     Accept: 'application/json',
                 },
             });
             if (res.ok) {
                 const data = await res.json();
                 this.saved = data.saved;
+            } else {
+                console.error(`[savedItem] toggle failed: ${res.status} ${res.statusText} (product ${productId})`);
+                alert('Something went wrong. Please try again.');
             }
-        } catch (_) {}
+        } catch (err) {
+            console.error('[savedItem] toggle network error:', err);
+            alert('Something went wrong. Please try again.');
+        }
     },
 }));
 

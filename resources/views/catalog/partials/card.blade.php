@@ -32,9 +32,17 @@
 
         {{-- Heart / save toggle (buyers only) --}}
         @if (auth()->check() && auth()->user()->role === \App\Enums\UserRole::Buyer)
+            @php
+                // Use a preloaded ID set when available (e.g. saved-items index) to avoid
+                // a hasSavedProduct() query per card (N+1). Fall back to the helper
+                // elsewhere (catalog index, homepage, etc.).
+                $isSaved = isset($savedProductIds)
+                    ? in_array($product->id, $savedProductIds ?? [])
+                    : auth()->user()->hasSavedProduct($product->id);
+            @endphp
             <button
                 type="button"
-                x-data="savedItem(@js($product->id), @js(auth()->user()->hasSavedProduct($product->id)))"
+                x-data="savedItem(@js($product->id), @js($isSaved))"
                 @click.prevent="toggle()"
                 :aria-label="saved ? 'Remove from saved' : 'Save item'"
                 class="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 backdrop-blur-sm transition-colors"
