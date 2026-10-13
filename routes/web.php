@@ -3,6 +3,7 @@
 use App\Http\Controllers\Account\AddressController;
 use App\Http\Controllers\Account\OrderController;
 use App\Http\Controllers\Account\ProfileController;
+use App\Http\Controllers\Account\SavedItemController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RiderApplicationController;
 use App\Http\Controllers\Admin\SellerApplicationController;
@@ -118,6 +119,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store'])->middleware(EnsureUserHasRole::class.':buyer')->name('checkout.store');
     Route::get('/orders', [OrderController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer')->name('orders.index');
     Route::get('/orders/{order}', [CheckoutController::class, 'show'])->middleware(EnsureUserHasRole::class.':buyer,admin')->name('orders.show');
+
+    Route::get('/account/saved', [SavedItemController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer')->name('account.saved.index');
+    Route::post('/account/saved/{product}', [SavedItemController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:30,1'])->name('account.saved.store');
+    Route::delete('/account/saved/{product}', [SavedItemController::class, 'destroy'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:30,1'])->name('account.saved.destroy');
 
     Route::get('/rider/apply', [RiderRegistrationController::class, 'create'])->middleware(EnsureUserHasRole::class.':buyer')->name('rider.register');
     Route::post('/rider/apply', [RiderRegistrationController::class, 'store'])->middleware(EnsureUserHasRole::class.':buyer');

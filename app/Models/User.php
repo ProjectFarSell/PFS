@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
+use App\Models\SavedItem;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -80,6 +81,16 @@ class User extends Authenticatable
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
+    }
+
+    public function savedItems(): HasMany
+    {
+        return $this->hasMany(SavedItem::class);
+    }
+
+    public function hasSavedProduct(int $productId): bool
+    {
+        return $this->savedItems()->where('product_id', $productId)->exists();
     }
 
     public function isSeller(): bool

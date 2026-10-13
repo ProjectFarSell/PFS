@@ -155,6 +155,28 @@ Alpine.data('quantityStepper', (initial = 1, max = 99, min = 1) => ({
     increase() { this.qty = Math.min(this.max, Number(this.qty || 1) + 1); },
 }));
 
+// ── Saved item / wishlist heart toggle ────────────────────────────────────────
+Alpine.data('savedItem', (productId, initialSaved) => ({
+    saved: initialSaved,
+    async toggle() {
+        const url = `/account/saved/${productId}`;
+        const method = this.saved ? 'DELETE' : 'POST';
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                    Accept: 'application/json',
+                },
+            });
+            if (res.ok) {
+                const data = await res.json();
+                this.saved = data.saved;
+            }
+        } catch (_) {}
+    },
+}));
+
 Alpine.data('chatDock', (conversationsUrl, chatBaseUrl, canChat, initialUnread = 0, userId = 0) => ({
     open: false,
     canChat,
