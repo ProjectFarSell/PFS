@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Catalog;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\PsgcCityMunicipality;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,7 @@ class ProductController extends Controller
             'price_min' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
             'price_max' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'gte:price_min'],
             'sort' => ['nullable', 'string', 'in:relevance,price_asc,price_desc,newest'],
+            'city_id' => ['nullable', 'integer', 'exists:psgc_cities_municipalities,id'],
         ]);
 
         $search = trim((string) ($filters['q'] ?? ''));
@@ -30,6 +32,18 @@ class ProductController extends Controller
         $priceMin = $filters['price_min'] ?? null;
         $priceMax = $filters['price_max'] ?? null;
         $sort = $filters['sort'] ?? 'newest';
+        $sameDay = $request->boolean('same_day');
+
+        // Resolve city_id: explicit param > authenticated user's default address city
+        $cityId = isset($filters['city_id']) ? (int) $filters['city_id'] : null;
+        if ($cityId === null && auth()->check()) {
+            $defaultCityId = auth()->user()->addresses()
+                ->where('is_default', true)
+                ->value('psgc_city_municipality_id');
+            if ($defaultCityId !== null) {
+                $cityId = (int) $defaultCityId;
+            }
+        }
 
         $query = Product::query()
             ->with(['shop', 'category'])
@@ -60,6 +74,11 @@ class ProductController extends Controller
             $query->where('price', '<=', $priceMax);
         }
 
+        // City filter
+        if ($cityId !== null) {
+            $query->whereHas('shop', fn ($q) => $q->inCity($cityId));
+        }
+
         // Apply sort ordering
         match ($sort) {
             'price_asc'  => $query->orderBy('price'),
@@ -85,6 +104,10 @@ class ProductController extends Controller
             'priceMin' => $priceMin ?? '',
             'priceMax' => $priceMax ?? '',
             'sort' => $sort,
+            'cityId' => $cityId,
+            'activeCityId' => $cityId,
+            'cities' => PsgcCityMunicipality::orderBy('name')->get(),
+            'sameDay' => $sameDay,
         ]);
     }
 

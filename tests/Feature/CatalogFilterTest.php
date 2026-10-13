@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\PsgcCityMunicipality;
 use App\Models\Shop;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -154,5 +155,35 @@ class CatalogFilterTest extends TestCase
             ->assertOk()
             ->assertSee($matching->name)
             ->assertDontSee('Unrelated Item');
+    }
+
+    public function test_city_filter_returns_only_products_from_shops_in_that_city(): void
+    {
+        $city = PsgcCityMunicipality::factory()->create();
+        $category = Category::factory()->create();
+
+        $shopInCity = Shop::factory()->create([
+            'psgc_city_municipality_id' => $city->id,
+        ]);
+        $shopElsewhere = Shop::factory()->create([
+            'psgc_city_municipality_id' => null,
+        ]);
+
+        $productInCity = Product::factory()->create([
+            'shop_id' => $shopInCity->id,
+            'category_id' => $category->id,
+            'name' => 'City Product',
+        ]);
+        $productElsewhere = Product::factory()->create([
+            'shop_id' => $shopElsewhere->id,
+            'category_id' => $category->id,
+            'name' => 'Elsewhere Product',
+        ]);
+
+        $this->get(route('catalog.index', ['city_id' => $city->id]))
+            ->assertOk()
+            ->assertSee($productInCity->name)
+            ->assertDontSee($productElsewhere->name)
+            ->assertViewHas('products', fn ($products) => $products->total() === 1);
     }
 }

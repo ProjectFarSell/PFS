@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +19,7 @@ class Shop extends Model
         'slug',
         'tagline',
         'city',
+        'psgc_city_municipality_id',
         'is_active',
     ];
 
@@ -43,6 +45,16 @@ class Shop extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function psgcCityMunicipality(): BelongsTo
+    {
+        return $this->belongsTo(PsgcCityMunicipality::class);
+    }
+
+    public function scopeInCity(Builder $query, int $cityId): Builder
+    {
+        return $query->where('psgc_city_municipality_id', $cityId);
     }
 
     public function getRouteKeyName(): string
