@@ -98,4 +98,15 @@ class Product extends Model
     {
         return 'slug';
     }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        if ($field) {
+            return parent::resolveRouteBinding($value, $field);
+        }
+
+        return $this->where('slug', $value)
+            ->orWhere('id', $value)
+            ->first();
+    }
 }

@@ -110,4 +110,29 @@ class SavedItemTest extends TestCase
             ->assertOk()
             ->assertSee('No saved items yet.');
     }
+
+    public function test_buyer_can_save_and_unsave_product_using_numeric_id(): void
+    {
+        $buyer = $this->buyer();
+        $product = $this->activeProduct();
+
+        // Pass integer product ID as route parameter (e.g., from fetch /account/saved/{id})
+        $response = $this->actingAs($buyer)
+            ->postJson('/account/saved/'.$product->id);
+
+        $response->assertOk()->assertJson(['saved' => true]);
+        $this->assertDatabaseHas('saved_items', [
+            'user_id' => $buyer->id,
+            'product_id' => $product->id,
+        ]);
+
+        $deleteResponse = $this->actingAs($buyer)
+            ->deleteJson('/account/saved/'.$product->id);
+
+        $deleteResponse->assertOk()->assertJson(['saved' => false]);
+        $this->assertDatabaseMissing('saved_items', [
+            'user_id' => $buyer->id,
+            'product_id' => $product->id,
+        ]);
+    }
 }
