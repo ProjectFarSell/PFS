@@ -155,6 +155,40 @@ Alpine.data('quantityStepper', (initial = 1, max = 99, min = 1) => ({
     increase() { this.qty = Math.min(this.max, Number(this.qty || 1) + 1); },
 }));
 
+// ── Saved item / wishlist heart toggle ────────────────────────────────────────
+Alpine.data('savedItem', (productId, initialSaved) => ({
+    saved: initialSaved,
+    async toggle() {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+        if (!csrfToken) {
+            alert('Session expired. Please refresh the page.');
+            return;
+        }
+
+        const url = `/account/saved/${productId}`;
+        const method = this.saved ? 'DELETE' : 'POST';
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    Accept: 'application/json',
+                },
+            });
+            if (res.ok) {
+                const data = await res.json();
+                this.saved = data.saved;
+            } else {
+                console.error(`[savedItem] toggle failed: ${res.status} ${res.statusText} (product ${productId})`);
+                alert('Something went wrong. Please try again.');
+            }
+        } catch (err) {
+            console.error('[savedItem] toggle network error:', err);
+            alert('Something went wrong. Please try again.');
+        }
+    },
+}));
+
 Alpine.data('chatDock', (conversationsUrl, chatBaseUrl, canChat, initialUnread = 0, userId = 0) => ({
     open: false,
     canChat,

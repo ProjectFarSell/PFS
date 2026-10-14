@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Contracts\DeliveryEtaService;
 use App\Contracts\DeliveryFeeService;
 use App\Models\Category;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Services\Checkout\FlatRateDeliveryFeeService;
+use App\Services\Delivery\CityBasedDeliveryEtaService;
 use App\Support\Cart;
 use App\Enums\UserRole;
 use Illuminate\Support\Facades\URL;
@@ -20,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(DeliveryFeeService::class, fn () => new FlatRateDeliveryFeeService(
             (float) config('commerce.delivery_fee', 49.00)
         ));
+
+        $this->app->bind(DeliveryEtaService::class, CityBasedDeliveryEtaService::class);
     }
 
     public function boot(): void

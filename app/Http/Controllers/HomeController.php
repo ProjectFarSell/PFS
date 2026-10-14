@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\Product;
 use App\Support\Cart;
@@ -28,11 +29,16 @@ class HomeController extends Controller
             ->take(16)
             ->get();
 
+        $savedProductIds = (auth()->check() && auth()->user()->role === UserRole::Buyer)
+            ? auth()->user()->savedItems()->pluck('product_id')->all()
+            : [];
+
         return view('home', [
             'categories' => $categories,
             'flash' => $flash,
             'products' => $products,
             'cartCount' => Cart::count(),
+            'savedProductIds' => $savedProductIds,
         ]);
     }
 }

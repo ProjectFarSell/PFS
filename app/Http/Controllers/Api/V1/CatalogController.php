@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CatalogController extends Controller
 {
@@ -21,11 +22,38 @@ class CatalogController extends Controller
             ->latest();
 
         if ($search = $request->string('q')->trim()->toString()) {
-            $query->where('name', 'like', '%'.$search.'%');
+            if (DB::getDriverName() !== 'sqlite') {
+                $query->whereFullText(['name', 'description'], $search);
+            } else {
+                $query->where('name', 'like', '%'.$search.'%');
+            }
         }
 
         if ($categoryId = $request->integer('category_id')) {
             $query->where('category_id', $categoryId);
+        }
+
+        if ($request->filled('price_min')) {
+            $query->where('price', '>=', (float) $request->input('price_min'));
+        }
+
+        if ($request->has('price_max') && $request->input('price_max') !== null) {
+            $query->where('price', '<=', (float) $request->input('price_max'));
+        }
+
+        if ($shopId = $request->integer('shop_id')) {
+            $query->where('shop_id', $shopId);
+        }
+
+        if ($cityId = $request->integer('city_id')) {
+            $query->whereHas('shop', fn ($q) => $q->inCity($cityId));
+        }
+
+        $sort = $request->string('sort')->toString();
+        if ($sort === 'price_asc') {
+            $query->reorder()->orderBy('price');
+        } elseif ($sort === 'price_desc') {
+            $query->reorder()->orderByDesc('price');
         }
 
         return response()->json($query->paginate(20)->through(fn (Product $product) => [

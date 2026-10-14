@@ -1,0 +1,28 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Local serviceable-area filter: add psgc_city_municipality_id FK to shops table; update Shop model; add city_id filter to ProductController; wire the filter-form city picker and same-day delivery checkbox in Alpine. FEAT-001 must be committed before this runs (no hard dependency on FEAT-001 artifacts, but migrations must run in order).",
+  "status": "completed",
+  "steps": [
+    "Create database/migrations/2026_10_13_000002_add_psgc_city_to_shops.php. In up(): $table->foreignId('psgc_city_municipality_id')->nullable()->constrained('psgc_cities_municipalities')->nullOnDelete()->after('city'); $table->index('psgc_city_municipality_id'); In down(): $table->dropForeign(['psgc_city_municipality_id']); $table->dropColumn('psgc_city_municipality_id');",
+    "Modify app/Models/Shop.php: (a) Add 'psgc_city_municipality_id' to the $fillable array. (b) Add relationship: public function psgcCityMunicipality(): BelongsTo { return $this->belongsTo(PsgcCityMunicipality::class); }. Add 'use App\\Models\\PsgcCityMunicipality;' import. (c) Add scope: public function scopeInCity(Builder $query, int $cityId): Builder { return $query->where('psgc_city_municipality_id', $cityId); }. Add 'use Illuminate\\Database\\Eloquent\\Builder;' import.",
+    "Modify app/Http/Controllers/Catalog/ProductController.php @index: (a) Add 'city_id' to the validate() array: nullable, integer, exists:psgc_cities_municipalities,id. (b) Resolve $cityId: if no city_id param and user is authenticated, look up auth()->user()->addresses()->where('is_default', true)->value('psgc_city_municipality_id') as the auto-populated default (do not redirect, just silently apply). (c) Apply filter: if ($cityId !== null) { $query->whereHas('shop', fn ($q) => $q->inCity($cityId)); }. (d) Pass 'cityId' => $cityId, 'cities' => PsgcCityMunicipality::orderBy('name')->get() to the view. Add 'use App\\Models\\PsgcCityMunicipality;' import.",
+    "Modify resources/views/catalog/partials/filter-form.blade.php: (a) Add a City filter section before the Delivery section: a <select name='city_id'> populated from $cities (passed from controller), with an empty 'All cities' option and selected state based on $cityId. (b) Replace the disabled delivery checkboxes foreach block. The 'Same-day delivery' checkbox should now be a real enabled checkbox named 'same_day' — it filters products whose shop.psgc_city_municipality_id matches the buyer's default address city (note: the ProductController already applies city_id from the default address; 'same_day' is a UI convenience that sets city_id = buyer's city if not already set). Wire with Alpine: x-data=\"{ sameDay: {{ $sameDay ?? 'false' }} }\" on the Delivery div, and bind :checked / @change on the same-day checkbox. The 'FarSell Guaranteed' checkbox remains disabled with opacity-50 and title='Coming soon'. (c) Add the 'same_day' boolean to the hidden inputs preservation block at the top of the form if it is truthy. (d) Pass 'sameDay' => $request->boolean('same_day'), 'cityId' => $cityId back from ProductController. (e) Also pass 'activeCityId' => $cityId to the view and update the 'Clear all filters' link condition to include $cityId.",
+    "Add test to tests/Feature/CatalogFilterTest.php: test_city_filter_returns_only_products_from_shops_in_that_city(). Create a PsgcCityMunicipality, two shops (one with that city, one without), products in each, call GET /search?city_id={id}, assert only the city-shop product appears."
+  ],
+  "acceptance_criteria": [
+    "Migration runs: `php artisan migrate`",
+    "GET /search?city_id=X shows only products from shops with psgc_city_municipality_id = X",
+    "Authenticated buyer with a default address at city Y visiting /search sees city pre-applied without a param in the URL",
+    "Same-day delivery checkbox is enabled and submits the form with same_day=1",
+    "FarSell Guaranteed checkbox remains disabled/coming-soon",
+    "All existing CatalogFilterTest tests still pass",
+    "New city filter test passes"
+  ],
+  "verification": [
+    "php artisan migrate --force",
+    "php artisan test --filter=CatalogFilterTest"
+  ],
+  "blocked_reason": null,
+  "findings": "Migration 2026_10_13_000002_add_psgc_city_to_shops.php adds psgc_city_municipality_id FK (nullable, nullOnDelete) and index to the shops table. Shop model gains HasFactory, Builder import, PsgcCityMunicipality import, psgc_city_municipality_id in $fillable, psgcCityMunicipality() BelongsTo, and scopeInCity(). ProductController adds city_id validation (nullable|integer|exists:psgc_cities_municipalities,id), resolves $cityId from request falling back silently to authenticated user's default address, applies whereHas shop->inCity() filter, passes cityId/activeCityId/cities/sameDay to view. Filter form adds city <select> before Delivery section, replaces the disabled checkboxes foreach with individual markup: Same-day delivery is now an enabled Alpine-wired checkbox (x-data sameDay, :checked, @change auto-submits), FarSell Guaranteed remains disabled/opacity-50/coming-soon. Clear all filters condition extended to include $activeCityId. PsgcRegion, PsgcProvince, PsgcCityMunicipality models gained HasFactory trait; three corresponding factories created (PsgcRegionFactory, PsgcProvinceFactory, PsgcCityMunicipalityFactory) to support test seeding. All 7 CatalogFilterTest tests pass (6 pre-existing + 1 new: test_city_filter_returns_only_products_from_shops_in_that_city)."
+}
