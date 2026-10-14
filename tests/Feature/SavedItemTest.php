@@ -28,7 +28,7 @@ class SavedItemTest extends TestCase
 
     public function test_authenticated_buyer_can_save_a_product(): void
     {
-        $buyer   = $this->buyer();
+        $buyer = $this->buyer();
         $product = $this->activeProduct();
 
         $response = $this->actingAs($buyer)
@@ -36,14 +36,14 @@ class SavedItemTest extends TestCase
 
         $response->assertOk()->assertJson(['saved' => true]);
         $this->assertDatabaseHas('saved_items', [
-            'user_id'    => $buyer->id,
+            'user_id' => $buyer->id,
             'product_id' => $product->id,
         ]);
     }
 
     public function test_saving_the_same_product_twice_is_idempotent(): void
     {
-        $buyer   = $this->buyer();
+        $buyer = $this->buyer();
         $product = $this->activeProduct();
 
         $this->actingAs($buyer)->postJson(route('account.saved.store', $product));
@@ -59,7 +59,7 @@ class SavedItemTest extends TestCase
 
     public function test_buyer_can_unsave_a_product(): void
     {
-        $buyer   = $this->buyer();
+        $buyer = $this->buyer();
         $product = $this->activeProduct();
 
         SavedItem::create(['user_id' => $buyer->id, 'product_id' => $product->id]);
@@ -69,7 +69,7 @@ class SavedItemTest extends TestCase
 
         $response->assertOk()->assertJson(['saved' => false]);
         $this->assertDatabaseMissing('saved_items', [
-            'user_id'    => $buyer->id,
+            'user_id' => $buyer->id,
             'product_id' => $product->id,
         ]);
     }
@@ -90,7 +90,7 @@ class SavedItemTest extends TestCase
 
     public function test_index_shows_saved_products(): void
     {
-        $buyer   = $this->buyer();
+        $buyer = $this->buyer();
         $product = $this->activeProduct();
 
         SavedItem::create(['user_id' => $buyer->id, 'product_id' => $product->id]);

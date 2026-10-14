@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\PsgcCityMunicipality;
+use App\Models\SavedItem;
 use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -185,5 +188,51 @@ class CatalogFilterTest extends TestCase
             ->assertSee($productInCity->name)
             ->assertDontSee($productElsewhere->name)
             ->assertViewHas('products', fn ($products) => $products->total() === 1);
+    }
+
+    public function test_catalog_index_preloads_saved_product_ids_for_authenticated_buyer(): void
+    {
+        $user = User::factory()->create(['role' => UserRole::Buyer]);
+        $product = Product::factory()->create();
+        SavedItem::create(['user_id' => $user->id, 'product_id' => $product->id]);
+
+        $this->actingAs($user)
+            ->get(route('catalog.index'))
+            ->assertOk()
+            ->assertViewHas('savedProductIds', [$product->id]);
+    }
+
+    public function test_api_catalog_supports_price_zero_city_and_sort(): void
+    {
+        $city = PsgcCityMunicipality::factory()->create();
+        $shop = Shop::factory()->create(['psgc_city_municipality_id' => $city->id]);
+        $freeProduct = Product::factory()->create([
+            'shop_id' => $shop->id,
+            'name' => 'Free Sticker',
+            'price' => 0.00,
+        ]);
+        $paidProduct = Product::factory()->create([
+            'shop_id' => $shop->id,
+            'name' => 'Paid Hat',
+            'price' => 150.00,
+        ]);
+
+        // Verify price_min=0 is not dropped
+        $this->getJson('/api/v1/catalog?price_min=0&price_max=50')
+            ->assertOk()
+            ->assertJsonFragment(['name' => 'Free Sticker'])
+            ->assertJsonMissing(['name' => 'Paid Hat']);
+
+        // Verify city_id filter
+        $this->getJson('/api/v1/catalog?city_id='.$city->id)
+            ->assertOk()
+            ->assertJsonFragment(['name' => 'Free Sticker'])
+            ->assertJsonFragment(['name' => 'Paid Hat']);
+
+        // Verify sort
+        $response = $this->getJson('/api/v1/catalog?sort=price_desc');
+        $response->assertOk();
+        $items = $response->json('data');
+        $this->assertSame('Paid Hat', $items[0]['name']);
     }
 }

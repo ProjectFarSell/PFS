@@ -45,6 +45,17 @@ class CatalogController extends Controller
             $query->where('shop_id', $shopId);
         }
 
+        if ($cityId = $request->integer('city_id')) {
+            $query->whereHas('shop', fn ($q) => $q->inCity($cityId));
+        }
+
+        $sort = $request->string('sort')->toString();
+        if ($sort === 'price_asc') {
+            $query->reorder()->orderBy('price');
+        } elseif ($sort === 'price_desc') {
+            $query->reorder()->orderByDesc('price');
+        }
+
         return response()->json($query->paginate(20)->through(fn (Product $product) => [
             'id' => $product->id,
             'name' => $product->name,

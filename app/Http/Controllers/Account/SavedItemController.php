@@ -29,7 +29,7 @@ class SavedItemController extends Controller
         }
 
         SavedItem::firstOrCreate([
-            'user_id'    => $request->user()->id,
+            'user_id' => $request->user()->id,
             'product_id' => $product->id,
         ]);
 

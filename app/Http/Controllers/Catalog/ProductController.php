@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Catalog;
 
 use App\Contracts\DeliveryEtaService;
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
@@ -39,7 +40,7 @@ class ProductController extends Controller
 
         // Resolve city_id: explicit param > authenticated user's default address city
         $cityId = isset($filters['city_id']) ? (int) $filters['city_id'] : null;
-        if ($cityId === null && auth()->check() && !$request->has('clear_city')) {
+        if ($cityId === null && auth()->check() && ! $request->has('clear_city')) {
             $defaultCityId = auth()->user()->addresses()
                 ->where('is_default', true)
                 ->value('psgc_city_municipality_id');
@@ -104,6 +105,10 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get();
 
+        $savedProductIds = (auth()->check() && auth()->user()->role === UserRole::Buyer)
+            ? auth()->user()->savedItems()->pluck('product_id')->all()
+            : [];
+
         return view('catalog.index', [
             'products' => $query->paginate(16)->withQueryString(),
             'categories' => Category::query()->orderBy('sort_order')->get(),
@@ -118,6 +123,7 @@ class ProductController extends Controller
             'activeCityId' => $cityId,
             'cities' => PsgcCityMunicipality::orderBy('name')->get(),
             'sameDay' => $sameDay,
+            'savedProductIds' => $savedProductIds,
         ]);
     }
 
