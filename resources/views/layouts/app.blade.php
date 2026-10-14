@@ -54,8 +54,7 @@
         {{-- ── Top utility bar (desktop only) ─────────────────────── --}}
         <div class="hidden md:block border-b text-xs"
              style="background-color: rgb(var(--color-surface-muted)); border-color: rgb(var(--color-surface-border) / 0.4); color: rgb(var(--color-text-muted));">
-            <div class="mx-auto max-w-7xl px-4 py-1.5 flex items-center justify-between">
-                <span>Doorzo-style auction lots · Shopee-fast checkout</span>
+            <div class="mx-auto max-w-7xl px-4 py-1.5 flex items-center justify-end">
                 <div class="flex items-center gap-4">
                     @guest
                         {{-- Guest pill --}}
