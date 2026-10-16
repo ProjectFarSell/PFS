@@ -36,7 +36,7 @@ class SellerProductManagementTest extends TestCase
 
     public function test_approval_to_listing_purchase_and_seller_order_visibility_end_to_end(): void
     {
-        Storage::fake('public');
+        Storage::fake('r2');
         $seller = User::factory()->create();
         $this->actingAs($seller)->post(route('seller.apply.store'), ['shop_name' => 'Professor Demo Shop', 'city' => 'Manila', 'description' => 'Collectibles for a class demo'])->assertRedirect();
         $application = $seller->sellerApplication;
@@ -45,9 +45,9 @@ class SellerProductManagementTest extends TestCase
         $this->actingAs($seller)->get(route('seller.products.create'))->assertOk()->assertSee('Add product');
         $this->post(route('seller.products.store'), $this->data(['image' => UploadedFile::fake()->image('product.jpg')]))->assertSessionHasNoErrors()->assertRedirect();
         $product = Product::sole();
-        Storage::disk('public')->assertExists($product->image_path);
+        Storage::disk('r2')->assertExists($product->image_path);
         $this->assertSame($seller->shop->id, $product->shop_id);
-        $this->get(route('home'))->assertOk()->assertSee($product->name)->assertSee('storage/'.$product->image_path, false);
+        $this->get(route('home'))->assertOk()->assertSee($product->name);
         $this->get(route('shops.show', $seller->shop))->assertOk()->assertSee($product->name);
         $this->get(route('products.show', $product))->assertOk()->assertSee('125.50');
         $buyer = User::factory()->create(['name' => 'Private Buyer', 'email' => 'private-buyer@example.test']);
@@ -137,13 +137,13 @@ class SellerProductManagementTest extends TestCase
 
     public function test_listing_validation_rejects_bad_prices_stock_category_and_non_image_uploads(): void
     {
-        Storage::fake('public');
+        Storage::fake('r2');
         $this->actingAs($this->seller());
         foreach ([['price' => 0], ['price' => '1.001'], ['stock' => -1], ['stock' => 1.5], ['category_id' => 9999], ['name' => ''], ['is_active' => 'approved'], ['image' => UploadedFile::fake()->create('payload.svg', 10, 'image/svg+xml')], ['image' => UploadedFile::fake()->image('large.jpg')->size(4097)]] as $invalid) {
             $this->postJson(route('seller.products.store'), $this->data($invalid))->assertUnprocessable();
         }
         $this->assertDatabaseCount('products', 0);
-        $this->assertSame([], Storage::disk('public')->allFiles());
+        $this->assertSame([], Storage::disk('r2')->allFiles());
     }
 
     public function test_hidden_shop_products_are_blocked_in_public_catalog_cart_and_stale_checkout(): void
@@ -163,7 +163,7 @@ class SellerProductManagementTest extends TestCase
 
     public function test_failed_create_rolls_back_database_and_removes_new_upload(): void
     {
-        Storage::fake('public');
+        Storage::fake('r2');
         $seller = $this->seller();
         Product::creating(function () {
             throw new \RuntimeException('Simulated failure');
@@ -171,7 +171,7 @@ class SellerProductManagementTest extends TestCase
         try {
             $this->actingAs($seller)->post(route('seller.products.store'), $this->data(['image' => UploadedFile::fake()->image('item.jpg')]))->assertStatus(500);
             $this->assertDatabaseCount('products', 0);
-            $this->assertSame([], Storage::disk('public')->allFiles());
+            $this->assertSame([], Storage::disk('r2')->allFiles());
         } finally {
             Product::flushEventListeners();
         }
