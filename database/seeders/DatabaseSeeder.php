@@ -4,12 +4,15 @@ namespace Database\Seeders;
 
 use App\Enums\UserRole;
 use App\Models\Category;
-use App\Models\PsgcBarangay;
 use App\Models\Product;
+use App\Models\ProductImage;
+use App\Models\ProductVariant;
+use App\Models\PsgcBarangay;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -53,7 +56,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Gadgets', 'icon' => 'G', 'sort_order' => 7],
             ['name' => 'Surplus', 'icon' => 'X', 'sort_order' => 8],
         ])->map(fn (array $row) => Category::query()->firstOrCreate(
-            ['slug' => \Illuminate\Support\Str::slug($row['name'])],
+            ['slug' => Str::slug($row['name'])],
             $row
         ));
 
@@ -80,12 +83,12 @@ class DatabaseSeeder extends Seeder
             // product at least one gallery image — staff-seeded dev data only.
             $products->each(function (Product $product) {
                 if (fake()->boolean(50)) {
-                    \App\Models\ProductVariant::factory()
+                    ProductVariant::factory()
                         ->count(fake()->numberBetween(2, 4))
                         ->create(['product_id' => $product->id]);
                 }
 
-                \App\Models\ProductImage::factory()
+                ProductImage::factory()
                     ->count(fake()->numberBetween(1, 3))
                     ->sequence(fn ($sequence) => ['sort_order' => $sequence->index])
                     ->create(['product_id' => $product->id]);
@@ -113,5 +116,8 @@ class DatabaseSeeder extends Seeder
                 'is_default' => true,
             ]);
         }
+
+        // Copy tracked seed images into public storage and assign to products
+        $this->command?->call('products:seed-images');
     }
 }

@@ -18,9 +18,13 @@ class ProductImageFactory extends Factory
      */
     public function definition(): array
     {
+        $prefixes = ['gadgets', 'mens', 'womens', 'home', 'beauty', 'sports', 'kids', 'surplus'];
+        $prefix = fake()->randomElement($prefixes);
+        $num = fake()->numberBetween(1, 3);
+
         return [
             'product_id' => Product::factory(),
-            'path' => 'products/placeholder-'.fake()->numberBetween(1, 12).'.jpg',
+            'path' => "products/{$prefix}-{$num}.jpg",
             'alt_text' => fake()->words(3, true),
             'sort_order' => 0,
         ];
