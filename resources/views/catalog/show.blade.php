@@ -13,7 +13,7 @@
     <div class="grid md:grid-cols-2 gap-6">
         <div class="aspect-square rounded-2xl bg-surface border border-surface-border flex items-center justify-center text-text-muted">
             @if($product->image_path)
-                <img src="{{ asset('storage/'.$product->image_path) }}" alt="{{ $product->name }}" class="h-full w-full rounded-2xl object-cover">
+                <img src="{{ $product->imageUrl() }}" alt="{{ $product->name }}" class="h-full w-full rounded-2xl object-cover">
             @else
                 {{ $product->category?->name }}
             @endif

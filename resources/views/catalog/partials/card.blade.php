@@ -15,7 +15,7 @@
                 <span class="text-[11px]">Photo unavailable</span>
             </div>
             @if ($product->image_path)
-                <img src="{{ asset('storage/'.$product->image_path) }}" alt="{{ $product->name }}"
+                <img src="{{ $product->imageUrl() }}" alt="{{ $product->name }}"
                      loading="{{ $heroVariant ? 'eager' : 'lazy' }}" decoding="async"
                      width="640" height="{{ $heroVariant ? '320' : '640' }}"
                      x-show="!failed" x-on:error="failed = true">
