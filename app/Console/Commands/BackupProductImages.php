@@ -27,7 +27,7 @@ class BackupProductImages extends Command
             File::makeDirectory($repoDir, 0755, true);
         }
 
-        $files = File::files($storageDir);
+        $files = array_filter(File::files($storageDir), fn ($f) => ! str_starts_with($f->getFilename(), '.'));
         $newBackupCount = 0;
         foreach ($files as $file) {
             $dest = $repoDir.DIRECTORY_SEPARATOR.$file->getFilename();

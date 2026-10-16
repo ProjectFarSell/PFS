@@ -30,12 +30,12 @@ class SeedProductImages extends Command
             File::makeDirectory($targetDir, 0755, true);
         }
 
-        // Copy all source images into storage/app/public/products
-        $sourceFiles = File::files($sourceDir);
+        // Copy all source images into storage/app/public/products (ignoring hidden files like .gitkeep)
+        $sourceFiles = array_filter(File::files($sourceDir), fn ($f) => ! str_starts_with($f->getFilename(), '.'));
         if (empty($sourceFiles)) {
-            $this->warn("No images found in {$sourceDir}.");
+            $this->info("No seed images found in {$sourceDir}. Skipping image seeding.");
 
-            return Command::FAILURE;
+            return Command::SUCCESS;
         }
 
         $copiedCount = 0;
