@@ -55,7 +55,7 @@
                         </template>
                     </div>
                 </section>
-                @if($product->image_path)<img src="{{ asset('storage/'.$product->image_path) }}" alt="{{ $product->name }}" class="h-40 w-40 rounded-lg object-cover">@endif
+                @if($product->image_path)<img src="{{ $product->imageUrl() }}" alt="{{ $product->name }}" class="h-40 w-40 rounded-lg object-cover">@endif
                 <label class="block text-sm">Product photo (optional)<input type="file" name="image" accept="image/jpeg,image/png,image/webp" class="mt-2 block w-full text-sm"></label>
                 <p class="text-xs text-text-muted">JPG, PNG or WebP, up to 4 MB. Uploading a new photo replaces the displayed image.</p>
                 <label class="block text-sm">Listing visibility<select name="is_active" class="mt-1 w-full rounded-lg"><option value="0" @selected((string)old('is_active', (int)$product->is_active) === '0')>Unpublished / draft</option><option value="1" @selected((string)old('is_active', (int)$product->is_active) === '1')>Published — available to buyers</option></select></label>
