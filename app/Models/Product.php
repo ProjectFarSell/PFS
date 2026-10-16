@@ -75,6 +75,20 @@ class Product extends Model
         return 'PHP '.number_format((float) $this->price, 2);
     }
 
+    /**
+     * Returns the public URL for the product image served from Cloudflare R2.
+     */
+    public function imageUrl(): ?string
+    {
+        if (! $this->image_path) {
+            return null;
+        }
+
+        $baseUrl = rtrim(config('filesystems.disks.r2.url'), '/');
+
+        return $baseUrl . '/' . ltrim($this->image_path, '/');
+    }
+
     public function availableStock(): int
     {
         if (! $this->has_variants) {

@@ -69,7 +69,7 @@ class ProductController extends Controller
             $product = DB::transaction(function () use ($request, $shop, $data, $variants, $hasVariants, &$path) {
                 $lockedShop = Shop::whereKey($shop->id)->lockForUpdate()->firstOrFail();
                 abort_unless($lockedShop->is_active, 403);
-                $path = $request->file('image')?->store('products', 'public');
+                $path = $request->file('image')?->store('products', 'r2');
                 if ($path === false) {
                     throw ValidationException::withMessages(['image' => 'Image could not be saved. Please try again.']);
                 }
@@ -82,7 +82,7 @@ class ProductController extends Controller
             });
         } catch (\Throwable $e) {
             if ($path) {
-                Storage::disk('public')->delete($path);
+                Storage::disk('r2')->delete($path);
             }
             throw $e;
         }
@@ -109,20 +109,25 @@ class ProductController extends Controller
                     throw ValidationException::withMessages(['version' => 'This listing or its stock changed. Reload the editor before saving; your changes were not applied.']);
                 }
                 if ($request->hasFile('image')) {
-                    $path = $request->file('image')->store('products', 'public');
+                    $path = $request->file('image')->store('products', 'r2');
                     if (! $path) {
                         throw ValidationException::withMessages(['image' => 'Image could not be saved. Please try again.']);
                     }
+                    $oldPath = $product->image_path;
                     $product->image_path = $path;
                 }
                 // Preserve slug, shop ownership, order snapshots and reserved stock.
                 $product->fill($data)->save();
                 if ($hasVariants) $this->saveVariants($product, $variants);
                 else $product->variants()->update(['is_active' => false]);
+                // Delete old R2 image after successful save
+                if (isset($oldPath) && $oldPath) {
+                    Storage::disk('r2')->delete($oldPath);
+                }
             });
         } catch (\Throwable $e) {
             if ($path) {
-                Storage::disk('public')->delete($path);
+                Storage::disk('r2')->delete($path);
             }
             throw $e;
         }
