@@ -27,3 +27,8 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+.kiro
+.agents
+CONTEXT_HANDOVER.md
+AGENTS.md
