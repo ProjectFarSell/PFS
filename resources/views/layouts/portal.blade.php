@@ -17,7 +17,7 @@
 
     <header class="sticky top-0 z-40 border-b"
             style="background-color: rgb(var(--color-surface)); border-color: rgb(var(--color-surface-border));">
-        <div class="mx-auto flex min-h-16 max-w-7xl items-center gap-4 px-4 py-3">
+        <div class="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
             <a href="{{ match ($portalRole) {
                     \App\Enums\UserRole::Admin => route('admin.dashboard'),
                     \App\Enums\UserRole::Seller => route('seller.dashboard'),
@@ -26,43 +26,41 @@
                 } }}" class="flex shrink-0 items-center gap-2 font-bold" style="color: rgb(var(--color-accent));">
                 <span class="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-black"
                       style="background-color: rgb(var(--color-accent)); color: rgb(var(--color-accent-text));">F</span>
-                <span>FarSell {{ ucfirst($portalRole->value) }}</span>
+                <span>FarSell <span class="hidden sm:inline">{{ ucfirst($portalRole->value) }}</span></span>
             </a>
 
-            <nav class="ml-auto flex flex-wrap items-center justify-end gap-1 text-sm" aria-label="Portal navigation">
+            <nav class="portal-navigation order-last flex w-full gap-1 overflow-x-auto text-sm xl:order-none xl:ml-auto xl:w-auto" aria-label="Portal navigation">
                 @if($portalRole === \App\Enums\UserRole::Admin)
-                    <a href="{{ route('admin.dashboard') }}" class="nav-link px-3 py-2">Dashboard</a>
-                    <a href="{{ route('admin.sellers.index') }}" class="nav-link px-3 py-2">Seller Approvals</a>
-                    <a href="{{ route('admin.riders.index') }}" class="nav-link px-3 py-2">Rider Approvals</a>
-                    <a href="{{ route('fulfillments.index') }}" class="nav-link px-3 py-2">Dispatch</a>
+                    <a href="{{ route('admin.dashboard') }}" class="portal-nav-link" @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif>Dashboard</a>
+                    <a href="{{ route('admin.sellers.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.sellers.*')) aria-current="page" @endif>Seller Approvals</a>
+                    <a href="{{ route('admin.riders.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.riders.*')) aria-current="page" @endif>Rider Approvals</a>
+                    <a href="{{ route('fulfillments.index') }}" class="portal-nav-link" @if(request()->routeIs('fulfillments.*')) aria-current="page" @endif>Dispatch</a>
                 @elseif($portalRole === \App\Enums\UserRole::Seller)
-                    <a href="{{ route('seller.dashboard') }}" class="nav-link px-3 py-2">Dashboard</a>
-                    <a href="{{ route('seller.products.create') }}" class="nav-link px-3 py-2">Add Product</a>
-                    <a href="{{ route('fulfillments.index') }}" class="nav-link px-3 py-2">Orders</a>
-                    <a href="{{ route('chat.index') }}" class="nav-link px-3 py-2">Chat @if($chatUnreadCount)<span class="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[10px] text-white">{{ $chatUnreadCount > 99 ? '99+' : $chatUnreadCount }}</span>@endif</a>
-                    <a href="{{ route('home') }}" class="nav-link px-3 py-2">View Storefront</a>
+                    <a href="{{ route('seller.dashboard') }}" class="portal-nav-link">Dashboard</a>
+                    <a href="{{ route('seller.products.create') }}" class="portal-nav-link">Add Product</a>
+                    <a href="{{ route('fulfillments.index') }}" class="portal-nav-link" @if(request()->routeIs('fulfillments.*')) aria-current="page" @endif>Orders</a>
+                    <a href="{{ route('chat.index') }}" class="portal-nav-link">Chat @if($chatUnreadCount)<span class="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[10px] text-white">{{ $chatUnreadCount > 99 ? '99+' : $chatUnreadCount }}</span>@endif</a>
+                    <a href="{{ route('home') }}" class="portal-nav-link">View Storefront</a>
                 @elseif($portalRole === \App\Enums\UserRole::Rider)
-                    <a href="{{ route('rider.dashboard') }}" class="nav-link px-3 py-2">Dashboard</a>
-                    <a href="{{ route('rider.delivery-requests') }}" class="nav-link px-3 py-2">Delivery Requests</a>
-                    <a href="{{ route('fulfillments.index') }}" class="nav-link px-3 py-2">Deliveries</a>
-                    <a href="{{ route('rider.profile') }}" class="nav-link px-3 py-2">Rider Profile</a>
+                    <a href="{{ route('rider.dashboard') }}" class="portal-nav-link">Dashboard</a>
+                    <a href="{{ route('rider.delivery-requests') }}" class="portal-nav-link">Delivery Requests</a>
+                    <a href="{{ route('fulfillments.index') }}" class="portal-nav-link" @if(request()->routeIs('fulfillments.*')) aria-current="page" @endif>Deliveries</a>
+                    <a href="{{ route('rider.profile') }}" class="portal-nav-link">Rider Profile</a>
                 @endif
 
                 @if($portalRole === \App\Enums\UserRole::Buyer)
-                    <a href="{{ route('chat.index') }}" class="nav-link px-3 py-2">Chat @if($chatUnreadCount)<span class="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[10px] text-white">{{ $chatUnreadCount > 99 ? '99+' : $chatUnreadCount }}</span>@endif</a>
+                    <a href="{{ route('chat.index') }}" class="portal-nav-link">Chat @if($chatUnreadCount)<span class="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[10px] text-white">{{ $chatUnreadCount > 99 ? '99+' : $chatUnreadCount }}</span>@endif</a>
                 @endif
 
-                <a href="{{ route('account.profile') }}" class="nav-link px-3 py-2">My Account</a>
-                <button class="theme-toggle" @click="$theme.toggle()" x-data aria-label="Toggle color theme">
-                    <span x-show="!$theme.isDark">Dark</span>
-                    <span x-show="$theme.isDark" style="display:none">Light</span>
-                </button>
+            </nav>
+            <div class="ml-auto flex shrink-0 items-center gap-2 xl:ml-1">
+                <a href="{{ route('account.profile') }}" class="portal-nav-link" aria-label="My Account"><svg class="h-5 w-5 sm:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span class="hidden sm:inline">My Account</span></a>
+                <x-theme-toggle />
                 <form method="post" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="rounded-full px-3 py-2 text-sm font-semibold text-white"
-                            style="background-color: rgb(var(--color-accent));">Sign out</button>
+                    <button type="submit" class="btn-outline min-h-11 px-3 py-2">Sign out</button>
                 </form>
-            </nav>
+            </div>
         </div>
     </header>
 
@@ -77,6 +75,8 @@
     </main>
 
     @stack('scripts')
-    @include('chat.partials.dock')
+    @if (in_array($portalRole, [\App\Enums\UserRole::Buyer, \App\Enums\UserRole::Seller], true))
+        @include('chat.partials.dock')
+    @endif
 </body>
 </html>

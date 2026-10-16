@@ -10,21 +10,23 @@
 </aside>
 
 {{-- Mobile: bottom-sheet overlay --}}
+<div x-show="filtersOpen" x-cloak @click="filtersOpen = false" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden" style="display:none;"></div>
 <div x-show="filtersOpen"
+     id="mobile-filters" role="dialog" aria-modal="true" aria-labelledby="mobile-filters-title"
      x-transition:enter="transition ease-out duration-200"
      x-transition:enter-start="translate-y-full"
      x-transition:enter-end="translate-y-0"
      x-transition:leave="transition ease-in duration-150"
      x-transition:leave-start="translate-y-0"
      x-transition:leave-end="translate-y-full"
-     class="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl shadow-card-md lg:hidden
+     class="fixed inset-x-0 bottom-0 z-[60] rounded-t-2xl shadow-card-md lg:hidden
             overflow-y-auto"
      style="max-height:80vh; background-color:rgb(var(--color-surface)); display:none;">
 
     <div class="sticky top-0 flex items-center justify-between px-5 py-3.5 border-b"
          style="background-color:rgb(var(--color-surface)); border-color:rgb(var(--color-surface-border)/0.5);">
-        <p class="font-semibold text-sm" style="color:rgb(var(--color-text-base));">Filters</p>
-        <button @click="filtersOpen = false" class="btn-ghost p-1.5" aria-label="Close filters">
+        <p id="mobile-filters-title" class="font-semibold text-sm" style="color:rgb(var(--color-text-base));">Filters</p>
+        <button x-ref="closeFilters" @click="filtersOpen = false" class="btn-ghost min-h-11 min-w-11" aria-label="Close filters">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
             </svg>

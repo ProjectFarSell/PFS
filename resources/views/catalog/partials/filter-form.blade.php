@@ -12,15 +12,13 @@
     @if ($activeCategory)
         <input type="hidden" name="category" value="{{ $activeCategory }}">
     @endif
-    @if (!empty($sameDay))
-        <input type="hidden" name="same_day" value="1">
-    @endif
+    <input type="hidden" name="sort" value="{{ request('sort', 'newest') }}">
 
     {{-- ── City filter ──────────────────────────────────────────────────────── --}}
     @if (!empty($cities) && $cities->isNotEmpty())
     <div>
         <p class="fs-label mb-2">City / Municipality</p>
-        <select name="city_id" class="fs-input w-full">
+        <select name="city_id" aria-label="City or municipality" class="fs-input w-full">
             <option value="">All cities</option>
             @foreach ($cities as $city)
                 <option value="{{ $city->id }}" @selected((string) $city->id === (string) ($activeCityId ?? ''))>
@@ -37,10 +35,10 @@
         <p class="fs-label mb-2">Price range</p>
         <div class="flex gap-2">
             <input type="number" name="price_min" value="{{ $priceMin }}"
-                   placeholder="Min" min="0" step="0.01"
+                   placeholder="Min" aria-label="Minimum price" min="0" step="0.01"
                    class="fs-input w-full">
             <input type="number" name="price_max" value="{{ $priceMax }}"
-                   placeholder="Max" min="0" step="0.01"
+                   placeholder="Max" aria-label="Maximum price" min="0" step="0.01"
                    class="fs-input w-full">
         </div>
         @error('price_min')<p class="mt-1 text-xs text-error">{{ $message }}</p>@enderror
@@ -55,7 +53,7 @@
                class="fs-input mb-2" autocomplete="off">
         <div class="space-y-0.5 max-h-40 overflow-y-auto">
             @foreach ($shops as $shop)
-            <label x-show="shopSearch === '' || '{{ addslashes(strtolower($shop->name)) }}'.includes(shopSearch.toLowerCase())"
+            <label x-show="shopSearch === '' || @js(mb_strtolower($shop->name)).includes(shopSearch.toLowerCase())"
                    class="flex items-center justify-between gap-2 py-1 cursor-pointer select-none text-sm"
                    style="color:rgb(var(--color-text-base));">
                 <span class="flex items-center gap-2 min-w-0">
@@ -75,7 +73,7 @@
     @endif
 
     {{-- ── Delivery options ────────────────────────────────────────────────── --}}
-    <div x-data="{ sameDay: {{ $sameDay ?? 'false' }} }">
+    <div>
         <p class="fs-label mb-2">Delivery</p>
 
         {{-- Same-day delivery: enabled, filters by buyer's city --}}
@@ -83,8 +81,7 @@
                style="color:rgb(var(--color-text-base));">
             <span class="text-sm">Same-day delivery</span>
             <input type="checkbox" name="same_day" value="1"
-                   :checked="sameDay"
-                   @change="sameDay = $event.target.checked; $el.form.submit()"
+                   @checked($sameDay ?? false)
                    class="rounded"
                    style="accent-color:rgb(var(--color-accent));">
         </label>

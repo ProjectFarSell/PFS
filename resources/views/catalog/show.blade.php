@@ -36,10 +36,12 @@
 
             @if (auth()->check() && auth()->user()->role === \App\Enums\UserRole::Buyer)
                 <div class="mt-3"
-                     x-data="savedItem(@js($product->id), @js(auth()->user()->hasSavedProduct($product->id)))">
+                     x-data="savedItem(@js(route('account.saved.store', $product)), @js(auth()->user()->hasSavedProduct($product->id)))">
                     <button
                         type="button"
                         @click="toggle()"
+                        :disabled="pending"
+                        :aria-pressed="saved"
                         :aria-label="saved ? 'Remove from saved' : 'Save item'"
                         class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors"
                         :class="saved ? 'border-rose-300 text-rose-500 bg-rose-50' : 'border-surface-border text-text-muted hover:text-rose-400 hover:border-rose-300'"
@@ -54,6 +56,7 @@
                         </svg>
                         <span x-text="saved ? 'Saved' : 'Save'"></span>
                     </button>
+                    <p x-show="error" x-text="error" class="mt-2 text-sm text-error" role="status" style="display:none;"></p>
                 </div>
             @endif
             <p class="text-sm text-text-muted mt-4">{{ $product->description }}</p>

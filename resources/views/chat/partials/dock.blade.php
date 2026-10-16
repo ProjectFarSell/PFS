@@ -2,7 +2,7 @@
     $dockUser = auth()->user();
     $canUseChatDock = $dockUser && in_array($dockUser->role, [\App\Enums\UserRole::Buyer, \App\Enums\UserRole::Seller], true);
 @endphp
-<div class="fixed bottom-4 right-4 z-[70]" x-data="chatDock(@js(route('chat.widget.conversations')), @js(url('/chat')), @js($canUseChatDock), {{ (int) ($chatUnreadCount ?? 0) }}, {{ (int) ($dockUser?->id ?? 0) }})" x-init="init()" x-on:beforeunload.window="stopPolling()">
+<div class="fixed {{ ($canUseCart ?? false) ? 'bottom-20 md:bottom-4' : 'bottom-4' }} right-4 z-[45]" :inert="typeof drawerOpen !== 'undefined' && drawerOpen" x-data="chatDock(@js(route('chat.widget.conversations')), @js(url('/chat')), @js($canUseChatDock), {{ (int) ($chatUnreadCount ?? 0) }}, {{ (int) ($dockUser?->id ?? 0) }})" x-on:beforeunload.window="stopPolling()">
     <section x-show="open" x-cloak x-transition class="mb-3 flex h-[min(34rem,calc(100vh-7rem))] w-[min(23rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-surface-border bg-surface shadow-2xl" aria-label="Chat panel">
         <header class="flex min-h-14 items-center justify-between gap-3 border-b border-surface-border px-4">
             <div class="flex min-w-0 items-center gap-2">

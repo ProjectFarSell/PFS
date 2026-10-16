@@ -16,6 +16,5 @@
     <main class="flex-1">
         @yield('content')
     </main>
-    @include('chat.partials.dock')
 </body>
 </html>

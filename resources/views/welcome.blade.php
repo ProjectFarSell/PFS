@@ -1,6 +1,5 @@
 @extends('layouts.auth')
-
-@section('title', 'FarSell — Auction surplus. Everyday prices.')
+@section('title', 'Your next great find starts here · FarSell')
 
 @section('content')
 @php
@@ -9,427 +8,88 @@
         : ($errors->login->isNotEmpty() ? 'login'
             : ($errors->any() && in_array(old('_form'), ['login', 'register'], true) ? old('_form') : ($initialTab ?? 'login')));
 @endphp
-
-<div class="min-h-screen flex flex-col lg:flex-row"
-     x-data="{ tab: '{{ $defaultTab }}', loginLoading: false, registerLoading: false }">
-
-    {{-- ═══════════════════════════════════════════════════════════
-         LEFT  —  Brand illustration panel  (Doorzo-style)
-         Hidden on mobile, full-height on desktop
-         ═══════════════════════════════════════════════════════════ --}}
-    <div class="hidden lg:flex lg:w-1/2 xl:w-[55%] relative flex-col justify-between
-                overflow-hidden p-12 text-white"
-         style="background: linear-gradient(135deg, rgb(var(--color-accent)) 0%, rgb(var(--color-accent-hover)) 60%, #1e1b4b 100%);">
-
-        {{-- Decorative geometry --}}
-        <div class="pointer-events-none absolute inset-0" aria-hidden="true">
-            {{-- Large soft circle top-left --}}
-            <div class="absolute -top-32 -left-32 h-96 w-96 rounded-full opacity-20"
-                 style="background: radial-gradient(circle, white, transparent);"></div>
-            {{-- Medium circle bottom-right --}}
-            <div class="absolute -bottom-24 -right-24 h-72 w-72 rounded-full opacity-15"
-                 style="background: radial-gradient(circle, white, transparent);"></div>
-            {{-- Grid pattern overlay --}}
-            <svg class="absolute inset-0 h-full w-full opacity-[0.04]"
-                 xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="1"/>
-                    </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid)"/>
-            </svg>
-            {{-- Floating accent orb --}}
-            <div class="absolute top-1/3 right-1/4 h-48 w-48 rounded-full blur-3xl opacity-30"
-                 style="background-color: white;"></div>
-        </div>
-
-        {{-- Logo --}}
-        <div class="relative z-10">
-            <a href="{{ route('welcome') }}"
-               class="inline-flex items-center gap-3 group">
-                <span class="flex h-10 w-10 items-center justify-center rounded-xl
-                             bg-white/20 border border-white/30 font-black text-xl
-                             group-hover:bg-white/30 transition-colors">
-                    F
-                </span>
-                <span class="text-2xl font-bold tracking-tight">FarSell</span>
-            </a>
-        </div>
-
-        {{-- ── Illustration area ──────────────────────────────────── --}}
-        <div class="relative z-10 my-8">
-            {{-- Abstract product showcase illustration --}}
-            <div class="grid grid-cols-2 gap-3 max-w-xs mx-auto lg:mx-0">
-                {{-- Mock product cards --}}
-                @foreach ([
-                    ['icon' => '', 'label' => "Women's Fashion", 'price' => '₱249'],
-                    ['icon' => '', 'label' => 'Gadgets & Tech',  'price' => '₱899'],
-                    ['icon' => '', 'label' => 'Home & Living',    'price' => '₱159'],
-                    ['icon' => '', 'label' => 'Sports & Outdoor', 'price' => '₱349'],
-                ] as $mock)
-                    <div class="rounded-2xl bg-white/10 border border-white/20 p-3
-                                backdrop-blur-sm hover:bg-white/15 transition-colors">
-                        <div class="text-3xl mb-2">{{ $mock['icon'] }}</div>
-                        <p class="text-xs font-medium text-white/80 leading-tight">{{ $mock['label'] }}</p>
-                        <p class="text-sm font-bold mt-1">{{ $mock['price'] }}</p>
-                    </div>
-                @endforeach
+<div class="auth-page" x-data="{ tab: '{{ $defaultTab }}', loginLoading: false, registerLoading: false }" @pageshow.window="loginLoading = false; registerLoading = false">
+    <div class="auth-shell">
+        <aside class="auth-story" aria-labelledby="auth-story-heading">
+            <a href="{{ route('welcome') }}" class="inline-flex w-fit items-center gap-3 text-xl font-bold"><span class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/30 bg-white/10">F</span> FarSell</a>
+            <div class="relative z-10 py-10">
+                <p class="text-xs font-semibold uppercase tracking-[.2em] text-white/70">Good finds. Great possibilities.</p>
+                <h1 id="auth-story-heading" class="mt-5 text-4xl font-bold leading-[1.08] tracking-tight xl:text-5xl">A little more<br>you. A lot more<br><span class="auth-outline-text">to discover.</span></h1>
+                <p class="mt-5 max-w-xs text-sm leading-relaxed text-white/80">Collect something special. Upgrade your everyday. Find your next favorite, closer to home.</p>
+                <div class="auth-art" aria-hidden="true">
+                    <div class="auth-art-card auth-art-card-back"><x-discovery-art kind="cards" /></div>
+                    <div class="auth-art-card auth-art-card-front"><x-discovery-art kind="keyboard" /></div>
+                    <span class="auth-art-label">Curated finds. Everyday prices.</span>
+                </div>
             </div>
+            <div class="relative z-10 flex flex-wrap gap-2 text-xs text-white/90"><span class="rounded-full border border-white/25 px-3 py-2">Local shops</span><span class="rounded-full border border-white/25 px-3 py-2">Unique finds</span><span class="rounded-full border border-white/25 px-3 py-2">One FarSell account</span></div>
+        </aside>
 
-            {{-- Floating badge --}}
-            <div class="absolute -top-3 -right-3 lg:right-0 rounded-full px-3 py-1.5
-                        bg-white text-xs font-bold shadow-lg"
-                 style="color: rgb(var(--color-accent));">
-                🔥 Flash deals live
+        <section class="auth-form-side" aria-label="Your FarSell account">
+            <div class="flex items-center justify-between gap-3">
+                <a href="{{ route('welcome') }}" class="inline-flex min-h-11 items-center gap-2 text-sm text-text-muted hover:text-accent"><span aria-hidden="true">←</span> Back to browsing</a>
+                <x-theme-toggle />
             </div>
-        </div>
-
-        {{-- ── Hero copy ──────────────────────────────────────────── --}}
-        <div class="relative z-10 space-y-5">
-            <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-white/60 mb-3">
-                    Quality lots · Quick & fast checkout
-                </p>
-                <h1 class="text-4xl xl:text-5xl font-bold leading-tight">
-                    Best surplus.<br>
-                    <span class="text-white/80">Everyday prices.</span>
-                </h1>
-            </div>
-            <p class="text-base text-white/70 max-w-sm leading-relaxed">
-                Browse quality lots and good deals. Buy in minutes,
-                sell your store, or ride with us and earn every delivery.
-            </p>
-
-            {{-- Feature pill row --}}
-            <div class="flex flex-wrap gap-2">
-                @foreach (['Shop lots', 'Sell online', 'Rider earnings', 'Browse freely'] as $pill)
-                    <span class="rounded-full border border-white/25 bg-white/10
-                                 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm">
-                        {{ $pill }}
-                    </span>
-                @endforeach
-            </div>
-
-            {{-- Social proof --}}
-            <p class="text-xs text-white/40 pt-2">
-                Trusted by buyers, sellers &amp; riders across the Philippines.
-            </p>
-        </div>
-    </div>
-
-    {{-- ═══════════════════════════════════════════════════════════
-         RIGHT  —  Auth card  (Login / Register tabs)
-         ═══════════════════════════════════════════════════════════ --}}
-    <div class="flex flex-1 flex-col items-center justify-center px-5 py-10
-                sm:px-10 lg:px-14 xl:px-20 min-h-screen lg:min-h-0"
-         style="background-color: rgb(var(--color-on-surface));">
-
-        {{-- Mobile logo --}}
-        <div class="mb-8 flex flex-col items-center lg:hidden">
-            <a href="{{ route('welcome') }}"
-               class="flex h-12 w-12 items-center justify-center rounded-2xl
-                      font-black text-xl mb-3 text-white"
-               style="background-color: rgb(var(--color-accent));">
-                F
-            </a>
-            <p class="text-xl font-bold" style="color: rgb(var(--color-text-base));">FarSell</p>
-            <p class="text-sm mt-1" style="color: rgb(var(--color-text-muted));">
-                Best surplus. Everyday prices.
-            </p>
-        </div>
-
-        {{-- Theme toggle (top-right of right panel, mobile only) --}}
-        <div class="fixed top-4 right-4 lg:absolute lg:top-6 lg:right-6 z-10" x-data>
-            <button class="theme-toggle"
-                    @click="$theme.toggle()"
-                    :aria-label="$theme.isDark ? 'Switch to light mode' : 'Switch to dark mode'">
-                <svg x-show="$theme.isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor" stroke-width="1.8">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/>
-                </svg>
-                <svg x-show="!$theme.isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor" stroke-width="1.8" style="display:none;">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 12c0 5.385 4.365 9.75 9.75 9.75 4.797 0 8.818-3.462 9.75-8.002z"/>
-                </svg>
-            </button>
-        </div>
-
-        <div class="w-full max-w-md">
-
-            {{-- ── Auth card shell ──────────────────────────────────── --}}
-            <div class="fs-card overflow-hidden shadow-card-md">
-
-                {{-- Tab switcher --}}
-                <div class="flex border-b" style="border-color: rgb(var(--color-surface-border) / 0.5);">
-                    <a href="{{ route('login') }}" @click.prevent="tab = 'login'"
-                            class="flex flex-1 items-center justify-center px-3 py-4 text-center text-sm font-medium transition-colors duration-150
-                                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] relative"
-                            :style="tab === 'login'
-                                ? 'color:rgb(var(--color-accent)); border-bottom: 2px solid rgb(var(--color-accent));'
-                                : 'color:rgb(var(--color-text-muted));'"
-                            aria-label="Log in tab" :aria-current="tab === 'login' ? 'page' : null">
-                        Log in
-                    </a>
-                    <a href="{{ route('register') }}" @click.prevent="tab = 'register'"
-                            class="flex flex-1 items-center justify-center px-3 py-4 text-center text-sm font-medium transition-colors duration-150
-                                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px]"
-                            :style="tab === 'register'
-                                ? 'color:rgb(var(--color-accent)); border-bottom: 2px solid rgb(var(--color-accent));'
-                                : 'color:rgb(var(--color-text-muted));'"
-                            aria-label="Create account tab" :aria-current="tab === 'register' ? 'page' : null">
-                        Create account
-                    </a>
+            <div class="auth-form-content">
+                <a href="{{ route('welcome') }}" class="mb-6 inline-flex items-center gap-2 font-bold text-accent lg:hidden"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-accent-text">F</span> FarSell</a>
+                <div class="auth-tabs" role="tablist" aria-label="Account access">
+                    <a id="login-tab" x-ref="loginTab" href="{{ route('login') }}" role="tab" aria-controls="login-panel" :aria-selected="tab === 'login'" :tabindex="tab === 'login' ? 0 : -1" @click.prevent="tab = 'login'" @keydown.right.prevent="tab = 'register'; $refs.registerTab.focus()" :data-active="tab === 'login' ? 'true' : 'false'" data-active="{{ $defaultTab === 'login' ? 'true' : 'false' }}">Log in</a>
+                    <a id="register-tab" x-ref="registerTab" href="{{ route('register') }}" role="tab" aria-controls="register-panel" :aria-selected="tab === 'register'" :tabindex="tab === 'register' ? 0 : -1" @click.prevent="tab = 'register'" @keydown.left.prevent="tab = 'login'; $refs.loginTab.focus()" :data-active="tab === 'register' ? 'true' : 'false'" data-active="{{ $defaultTab === 'register' ? 'true' : 'false' }}">Create account</a>
                 </div>
 
-                <div class="p-7 sm:p-8">
-
-                    {{-- ══ LOGIN ══════════════════════════════════════ --}}
-                    <div x-show="tab === 'login'" style="{{ $defaultTab === 'login' ? '' : 'display:none;' }}"
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-1"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100"
-                         x-transition:leave-end="opacity-0">
-
-                        <h2 class="text-xl font-bold mb-1"
-                            style="color: rgb(var(--color-text-base));">{{ $checkoutIntent ? 'Log in to checkout' : 'Welcome back' }}</h2>
-                        <p class="text-sm mb-6" style="color: rgb(var(--color-text-muted));">
-                            {{ $checkoutIntent ? 'Sign in or create an account to place your order. Your cart will be kept.' : 'Sign in to your FarSell account.' }}
-                        </p>
-
+                <div class="auth-forms">
+                    <div id="login-panel" role="tabpanel" aria-labelledby="login-tab" class="auth-form-panel" :data-active="tab === 'login' ? 'true' : 'false'" data-active="{{ $defaultTab === 'login' ? 'true' : 'false' }}" :inert="tab !== 'login'" @if ($defaultTab !== 'login') inert @endif>
+                        <p class="section-eyebrow">Your next find is waiting</p>
+                        <h2 class="mt-2 text-3xl font-bold tracking-tight">{{ $checkoutIntent ? 'Log in to checkout' : 'Welcome back.' }}</h2>
+                        <p class="mt-2 mb-6 text-sm text-text-muted leading-relaxed">{{ $checkoutIntent ? 'Sign in or create an account to place your order. Your cart will be kept.' : 'Good to see you again. Pick up where you left off.' }}</p>
                         @if ($errors->login->isNotEmpty())
-                            <div class="alert-error mb-4" role="alert">
-                                {{ $errors->login->first() }}
-                            </div>
+                            <div class="alert-error mb-4" role="alert">{{ $errors->login->first() }}</div>
                         @elseif ($errors->any() && old('_form') !== 'register')
-                            <div class="alert-error mb-4" role="alert">
-                                {{ $errors->first() }}
-                            </div>
+                            <div class="alert-error mb-4" role="alert">{{ $errors->first() }}</div>
                         @endif
-
-                        <form method="POST" action="{{ route('login') }}"
-                              @submit="loginLoading = true" class="space-y-4" novalidate>
+                        <form method="post" action="{{ route('login') }}" class="space-y-4" @submit="loginLoading = true">
                             @csrf
                             <input type="hidden" name="_form" value="login">
-
-                            <div>
-                                <label for="login-identifier" class="fs-label">Email or admin username</label>
-                                <input id="login-identifier" type="text" name="email"
-                                       value="{{ old('email') }}" required
-                                       autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="you@example.com or admin"
-                                       class="fs-input @error('email') ring-1 ring-red-400 @enderror">
-                            </div>
-
-                            <div>
-                                <div class="flex items-center justify-between mb-1.5">
-                                    <label for="login_password" class="fs-label mb-0">Password</label>
-                                    <span class="text-xs cursor-not-allowed"
-                                          style="color: rgb(var(--color-text-muted));"
-                                          title="Password reset coming soon">Forgot password?</span>
-                                </div>
-                                <input id="login_password" type="password" name="password"
-                                       required autocomplete="current-password"
-                                       placeholder="••••••••" class="fs-input">
-                            </div>
-
-                            <label class="flex items-center gap-2 text-sm cursor-pointer select-none"
-                                   style="color: rgb(var(--color-text-muted));">
-                                <input type="checkbox" name="remember"
-                                       class="rounded"
-                                       style="accent-color: rgb(var(--color-accent));">
-                                Remember me
-                            </label>
-
-                            <button type="submit" :disabled="loginLoading"
-                                    class="btn-accent w-full py-3">
-                                <span x-show="!loginLoading">Log in</span>
-                                <span x-show="loginLoading"
-                                      class="flex items-center justify-center gap-2">
-                                    <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10"
-                                                stroke="currentColor" stroke-width="4"/>
-                                        <path class="opacity-75" fill="currentColor"
-                                              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
-                                    </svg>
-                                    Signing in…
-                                </span>
-                            </button>
+                            <div><label for="login-identifier" class="fs-label">Email or admin username</label><input id="login-identifier" type="text" name="email" value="{{ old('email') }}" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder="you@example.com or admin" class="fs-input"></div>
+                            <div><label for="login_password" class="fs-label">Password</label><x-password-input id="login_password" /></div>
+                            <label class="inline-flex min-h-8 cursor-pointer items-center gap-2 text-sm text-text-muted"><input name="remember" type="checkbox" class="rounded border-surface-border text-accent focus:ring-accent"> Remember me</label>
+                            <button type="submit" :disabled="loginLoading" class="btn-accent w-full min-h-12"><span x-text="loginLoading ? 'Signing in…' : 'Log in'">Log in</span><span x-show="!loginLoading" aria-hidden="true">→</span></button>
                         </form>
-
-                        <div class="my-4 flex items-center gap-3">
-                            <div class="h-px flex-1" style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
-                            <span class="text-xs" style="color: rgb(var(--color-text-muted));">or</span>
-                            <div class="h-px flex-1" style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
-                        </div>
-                        @if(config('services.google.client_id') && config('services.google.client_secret'))
-                            <a href="{{ route('auth.google.redirect') }}" class="btn-outline flex w-full items-center justify-center gap-2 py-2.5">
-                                <span aria-hidden="true" class="font-bold">G</span> Continue with Google
-                            </a>
-                        @else
-                            <button type="button" disabled title="Google sign-in needs to be configured first" class="btn-outline flex w-full cursor-not-allowed items-center justify-center gap-2 py-2.5 opacity-60">
-                                <span aria-hidden="true" class="font-bold">G</span> Continue with Google
-                            </button>
-                            <p class="mt-1 text-center text-xs" style="color: rgb(var(--color-text-muted));">Google sign-in is not configured yet.</p>
-                        @endif
-                        @if($errors->has('google'))<p role="alert" class="mt-2 text-sm text-error">{{ $errors->first('google') }}</p>@endif
-
-                        {{-- Divider --}}
-                        <div class="my-5 flex items-center gap-3">
-                            <div class="h-px flex-1"
-                                 style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
-                            <span class="text-xs" style="color: rgb(var(--color-text-muted));">or</span>
-                            <div class="h-px flex-1"
-                                 style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
-                        </div>
-
-                        @if($checkoutIntent)
-                            <a href="{{ route('register') }}" class="btn-outline w-full py-2.5">Create an account</a>
-                            <a href="{{ route('cart.index') }}" class="block mt-3 text-center text-sm underline">Back to cart</a>
-                        @else
-                            <a href="{{ route('welcome') }}" class="btn-outline w-full py-2.5">Back to browsing</a>
-                        @endif
-
-                        <p class="mt-5 text-center text-xs"
-                           style="color: rgb(var(--color-text-muted));">
-                            Demo: <span class="font-mono">buyer@farsell.test</span> / password
-                        </p>
+                        @include('auth.partials.google-access')
+                        <p class="mt-5 text-center text-sm text-text-muted">New to FarSell? <a href="{{ route('register') }}" @click.prevent="tab = 'register'; $nextTick(() => $refs.registerTab.focus())" class="inline-flex min-h-11 items-center font-semibold text-accent hover:underline">Create an account</a></p>
+                        @if ($checkoutIntent)<a href="{{ route('cart.index') }}" class="mt-2 block text-center text-sm text-accent hover:underline">Back to cart</a>@endif
                     </div>
 
-                    {{-- ══ REGISTER ════════════════════════════════════ --}}
-                    <div x-show="tab === 'register'"
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-1"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100"
-                         x-transition:leave-end="opacity-0"
-                         style="{{ $defaultTab === 'register' ? '' : 'display:none;' }}">
-
-                        <h2 class="text-xl font-bold mb-1"
-                            style="color: rgb(var(--color-text-base));">Join FarSell</h2>
-                        <p class="text-sm mb-6" style="color: rgb(var(--color-text-muted));">
-                            Create your free account in seconds.
-                        </p>
-
-                        @if ($errors->register->isNotEmpty())
-                            <div class="alert-error mb-4" role="alert">
-                                <ul class="list-disc pl-4 space-y-0.5">
-                                    @foreach ($errors->register->all() as $e)
-                                        <li>{{ $e }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @elseif ($errors->any() && old('_form') === 'register')
-                            <div class="alert-error mb-4" role="alert">
-                                <ul class="list-disc pl-4 space-y-0.5">
-                                    @foreach ($errors->all() as $e)
-                                        <li>{{ $e }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
+                    <div id="register-panel" role="tabpanel" aria-labelledby="register-tab" class="auth-form-panel" :data-active="tab === 'register' ? 'true' : 'false'" data-active="{{ $defaultTab === 'register' ? 'true' : 'false' }}" :inert="tab !== 'register'" @if ($defaultTab !== 'register') inert @endif>
+                        <p class="section-eyebrow">Make yourself at home</p>
+                        <h2 class="mt-2 text-3xl font-bold tracking-tight">Your next chapter<br>starts with a find.</h2>
+                        <p class="mt-2 mb-5 text-sm text-text-muted">Join FarSell. Discover, collect, and shop your way.</p>
+                        @if ($errors->register->isNotEmpty() || ($errors->any() && old('_form') === 'register'))
+                            <div class="alert-error mb-4" role="alert"><ul class="list-disc pl-4 space-y-1">@foreach (($errors->register->isNotEmpty() ? $errors->register : $errors)->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
                         @endif
-
-                        <form method="POST" action="{{ route('register') }}"
-                              @submit="registerLoading = true" class="space-y-4" novalidate>
+                        <form method="post" action="{{ route('register') }}" class="space-y-3.5" @submit="registerLoading = true">
                             @csrf
                             <input type="hidden" name="_form" value="register">
-
-                            <div>
-                                <label for="reg_name" class="fs-label">Full name</label>
-                                <input id="reg_name" type="text" name="name"
-                                       value="{{ old('name') }}" required
-                                       autocomplete="name" placeholder="Your name"
-                                       class="fs-input @error('name') ring-1 ring-red-400 @enderror">
+                            <div><label for="reg_name" class="fs-label">Full name</label><input id="reg_name" name="name" type="text" value="{{ old('name') }}" autocomplete="name" maxlength="120" required placeholder="Your full name" class="fs-input"></div>
+                            <div><label for="reg_email" class="fs-label">Email address</label><input id="reg_email" type="email" name="email" value="{{ old('email') }}" autocomplete="email" maxlength="180" required placeholder="you@example.com" class="fs-input"></div>
+                            <div class="grid gap-3.5 sm:grid-cols-2">
+                                <div><label for="reg_password" class="fs-label">Password</label><x-password-input id="reg_password" autocomplete="new-password" placeholder="Min. 8 characters" /></div>
+                                <div><label for="reg_password_confirmation" class="fs-label">Confirm password</label><x-password-input id="reg_password_confirmation" name="password_confirmation" autocomplete="new-password" placeholder="Repeat password" /></div>
                             </div>
-                            <div>
-                                <label for="reg_email" class="fs-label">Email address</label>
-                                <input id="reg_email" type="email" name="email"
-                                       value="{{ old('email') }}" required
-                                       autocomplete="email" placeholder="you@example.com"
-                                       class="fs-input @error('email') ring-1 ring-red-400 @enderror">
-                            </div>
-                            <div>
-                                <label for="reg_password" class="fs-label">Password</label>
-                                <input id="reg_password" type="password" name="password"
-                                       required autocomplete="new-password"
-                                       placeholder="Min. 8 characters"
-                                       class="fs-input @error('password') ring-1 ring-red-400 @enderror">
-                            </div>
-                            <div>
-                                <label for="reg_password_confirmation" class="fs-label">
-                                    Confirm password
-                                </label>
-                                <input id="reg_password_confirmation" type="password"
-                                       name="password_confirmation" required
-                                       autocomplete="new-password" placeholder="Repeat password"
-                                       class="fs-input">
-                            </div>
-                            @if($checkoutIntent)
+                            @if ($checkoutIntent)
                                 <input type="hidden" name="intent" value="buyer">
                             @else
-                            <div>
-                                <label for="reg_intent" class="fs-label">I want to…</label>
-                                <select id="reg_intent" name="intent" class="fs-input">
-                                    <option value="buyer">Shop (buyer)</option>
-                                    <option value="seller" @selected(old('intent', request('intent')) === 'seller')>Sell products (seller)</option>
-                                    <option value="rider" @selected(old('intent', request('intent')) === 'rider')>
-                                        Deliver orders (rider)
-                                    </option>
-                                </select>
-                                <p class="mt-1.5 text-[11px]"
-                                   style="color: rgb(var(--color-text-muted));">
-                                    All accounts start as Buyer. Seller/Rider access granted after review.
-                                </p>
-                            </div>
+                                <div><label for="reg_intent" class="fs-label">I'm here to</label><select id="reg_intent" name="intent" class="fs-input"><option value="buyer">Discover &amp; shop</option><option value="seller" @selected(old('intent', request('intent')) === 'seller')>Sell on FarSell</option><option value="rider" @selected(old('intent', request('intent')) === 'rider')>Deliver &amp; earn</option></select><p class="mt-1.5 text-xs text-text-muted">Start as a buyer. Seller and rider access follow application review.</p></div>
                             @endif
-
-                            <button type="submit" :disabled="registerLoading"
-                                    class="btn-accent w-full py-3">
-                                <span x-show="!registerLoading">{{ $checkoutIntent ? 'Create account and continue' : 'Create account' }}</span>
-                                <span x-show="registerLoading" style="display:none;"
-                                      class="flex items-center justify-center gap-2">
-                                    <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10"
-                                                stroke="currentColor" stroke-width="4"/>
-                                        <path class="opacity-75" fill="currentColor"
-                                              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
-                                    </svg>
-                                    Creating account…
-                                </span>
-                            </button>
+                            <button type="submit" :disabled="registerLoading" class="btn-accent w-full min-h-12"><span x-text="registerLoading ? 'Creating account…' : @js($checkoutIntent ? 'Create account and continue' : 'Create account')">{{ $checkoutIntent ? 'Create account and continue' : 'Create account' }}</span><span x-show="!registerLoading" aria-hidden="true">→</span></button>
                         </form>
-                        <div class="my-4 flex items-center gap-3">
-                            <div class="h-px flex-1" style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
-                            <span class="text-xs" style="color: rgb(var(--color-text-muted));">or</span>
-                            <div class="h-px flex-1" style="background-color: rgb(var(--color-surface-border) / 0.5);"></div>
-                        </div>
-                        @if(config('services.google.client_id') && config('services.google.client_secret'))
-                            <a href="{{ route('auth.google.redirect') }}" class="btn-outline flex w-full items-center justify-center gap-2 py-2.5">
-                                <span aria-hidden="true" class="font-bold">G</span> Continue with Google
-                            </a>
-                        @else
-                            <button type="button" disabled title="Google sign-in needs to be configured first" class="btn-outline flex w-full cursor-not-allowed items-center justify-center gap-2 py-2.5 opacity-60">
-                                <span aria-hidden="true" class="font-bold">G</span> Continue with Google
-                            </button>
-                            <p class="mt-1 text-center text-xs" style="color: rgb(var(--color-text-muted));">Google sign-in is not configured yet.</p>
-                        @endif
+                        @include('auth.partials.google-access')
+                        <p class="mt-4 text-center text-sm text-text-muted">Already part of FarSell? <a href="{{ route('login') }}" @click.prevent="tab = 'login'; $nextTick(() => $refs.loginTab.focus())" class="inline-flex min-h-11 items-center font-semibold text-accent hover:underline">Log in</a></p>
                     </div>
-
-                </div>{{-- /card body --}}
-            </div>{{-- /fs-card --}}
-
-            <p class="mt-5 text-center text-xs leading-relaxed"
-               style="color: rgb(var(--color-text-muted));">
-                By continuing you agree to FarSell's
-                <a href="#" class="underline underline-offset-2 hover:opacity-100 opacity-70">Terms of Service</a>
-                and
-                <a href="#" class="underline underline-offset-2 hover:opacity-100 opacity-70">Privacy Policy</a>.
-            </p>
-        </div>
+                </div>
+                <p class="mt-5 border-t border-surface-border/40 pt-4 text-center text-xs text-text-muted">FarSell Marketplace — Quality Deals &amp; Local Surplus</p>
+            </div>
+        </section>
     </div>
 </div>
 @endsection

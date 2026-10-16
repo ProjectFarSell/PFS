@@ -16,6 +16,8 @@
         --color-on-surface:     249 248 255;   /* violet-50-ish off-white */
         --color-surface-muted:  245 243 255;   /* accent-50 */
         --color-surface-border: 221 214 254;   /* accent-200 */
+        --color-card:           255 255 255;
+        --color-brand-deep:     76 29 149;
 
         /* Text */
         --color-text-base:      17 17 27;      /* near-black */
@@ -45,6 +47,7 @@
         --color-on-surface:     51 51 51;      /* #333333 */
         --color-surface-muted:  38 38 38;
         --color-surface-border: 76 29 149;     /* accent-900 border tint */
+        --color-card:           35 33 45;
 
         /* Text */
         --color-text-base:      243 244 246;   /* gray-100 */
@@ -77,6 +80,8 @@
         background-color: rgb(var(--color-surface));
         color: rgb(var(--color-text-base));
         transition: background-color 0.2s ease, color 0.2s ease;
+        line-height: 1.55;
+        text-rendering: optimizeLegibility;
     }
 
     /* Focus ring */
@@ -103,10 +108,11 @@
 
     /* ── Surfaces ───────────────────────────────────────────────── */
     .fs-card {
-        background-color: rgb(var(--color-surface));
+        background-color: rgb(var(--color-card));
         border: 1px solid rgb(var(--color-surface-border) / 0.6);
         box-shadow: 0 1px 4px 0 rgb(0 0 0 / .06), 0 1px 2px -1px rgb(0 0 0 / .06);
-        @apply rounded-2xl transition-all duration-150;
+        @apply rounded-2xl;
+        transition: border-color .2s ease, box-shadow .2s ease;
     }
     .fs-card:hover {
         border-color: rgb(var(--color-accent));
@@ -114,7 +120,7 @@
     }
     /* Dark-mode surface override — cards pop against the #2B2B2B page bg */
     .dark .fs-card {
-        background-color: #23212d;
+        background-color: rgb(var(--color-card));
     }
 
     .fs-card-raised {
@@ -222,7 +228,7 @@
 
     /* ── Section headings ───────────────────────────────────────── */
     .section-title {
-        @apply text-base font-bold tracking-tight;
+        @apply text-xl sm:text-2xl font-semibold tracking-tight;
         color: rgb(var(--color-text-base));
     }
 
@@ -281,11 +287,120 @@
 
     /* ── Theme toggle ───────────────────────────────────────────── */
     .theme-toggle {
-        @apply flex h-8 w-8 items-center justify-center rounded-full transition-colors;
+        @apply flex h-11 w-11 items-center justify-center rounded-full transition-colors;
         color: rgb(var(--color-text-muted));
     }
     .theme-toggle:hover {
         background-color: rgb(var(--color-surface-muted));
         color: rgb(var(--color-accent));
+    }
+}
+
+@layer components {
+    .auth-page {
+        min-height: 100svh;
+        @apply flex items-center justify-center bg-surface-muted p-3 sm:p-6 lg:p-8;
+    }
+    .auth-shell {
+        @apply grid w-full max-w-6xl overflow-hidden rounded-[1.75rem] border border-surface-border/40 bg-surface shadow-card-md lg:grid-cols-[.9fr_1.1fr];
+    }
+    .auth-story {
+        @apply relative hidden flex-col justify-between overflow-hidden p-8 text-white lg:flex xl:p-10;
+        background: radial-gradient(ellipse at 95% 10%, rgb(255 255 255 / .14), transparent 50%), linear-gradient(155deg, rgb(var(--color-brand-deep)), rgb(var(--color-accent) / .85));
+    }
+    .auth-story::after {
+        content: '';
+        @apply pointer-events-none absolute -right-48 top-1/4 h-[36rem] w-[36rem] rounded-full border border-white/15;
+        box-shadow: 0 0 0 40px rgb(255 255 255 / .03), 0 0 0 80px rgb(255 255 255 / .03), 0 0 0 120px rgb(255 255 255 / .03);
+    }
+    .auth-outline-text { color: transparent; -webkit-text-stroke: 1px rgb(255 255 255 / .8); }
+    .auth-art { @apply relative mt-8 h-48; }
+    .auth-art-card {
+        @apply absolute h-36 w-56 rounded-2xl border border-white/30 bg-white/10 text-white;
+        box-shadow: 0 14px 28px -16px rgb(0 0 0 / .5);
+    }
+    .auth-art-card-back { top: 0; right: 0; transform: rotate(10deg); }
+    .auth-art-card-front { top: 32px; left: 0; transform: rotate(-8deg); background-color: rgb(var(--color-brand-deep) / .7); }
+    .auth-art-label { @apply absolute -bottom-1 right-0 rounded-full bg-white px-4 py-2 text-xs font-semibold; color: rgb(var(--color-brand-deep)); }
+    .auth-form-side { @apply min-w-0 p-5 sm:p-8 lg:px-10 xl:px-12; }
+    .auth-form-content { @apply mx-auto w-full max-w-md pb-2 pt-5; }
+    .auth-tabs { @apply mb-7 grid grid-cols-2 gap-1 rounded-xl bg-surface-muted p-1; }
+    .auth-tabs a { @apply flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-semibold text-text-muted; transition: background-color .15s ease, color .15s ease; }
+    .auth-tabs a:hover { color: rgb(var(--color-accent)); }
+    .auth-tabs a[data-active='true'] { @apply bg-surface text-accent shadow-sm; }
+    /* Both panels share one grid cell; a tab swap never adds their heights. */
+    .auth-forms { display: grid; align-items: center; }
+    .auth-form-panel { grid-area: 1 / 1; min-width: 0; transition: opacity .16s ease, transform .16s ease; }
+    .auth-form-panel[data-active='false'] { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(4px); }
+    .auth-form-side .fs-input { @apply min-h-11; }
+    .btn { transition-property: background-color, color, border-color, box-shadow, transform; }
+    .portal-nav-link { @apply inline-flex min-h-11 shrink-0 items-center rounded-xl px-3 text-sm font-medium text-text-muted; transition: background-color .15s ease, color .15s ease; }
+    .portal-nav-link:hover, .portal-nav-link[aria-current='page'] { @apply bg-surface-muted text-accent; }
+    .portal-navigation { scrollbar-width: none; }
+    .portal-navigation::-webkit-scrollbar { display: none; }
+    .admin-stat { @apply fs-card p-4 sm:p-5; }
+    .admin-action { @apply fs-card flex flex-col gap-5 p-5; }
+    .admin-row { transition: background-color .15s ease; }
+    .admin-row:hover { background-color: rgb(var(--color-accent) / .04); }
+    @media (hover: hover) {
+        .btn-outline:hover { box-shadow: 0 3px 10px -5px rgb(var(--color-accent) / .25); }
+        .auth-art-card { transition: transform .2s ease; }
+        .auth-story:hover .auth-art-card-front { transform: rotate(-5deg) translateY(-2px); }
+    }
+    .section-eyebrow {
+        @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted;
+    }
+    .discovery-heading {
+        @apply mb-4 flex items-end justify-between gap-4;
+    }
+    .discovery-link {
+        @apply inline-flex min-h-11 shrink-0 items-center gap-2 text-sm font-semibold text-accent hover:underline;
+    }
+    .interest-pill {
+        @apply inline-flex min-h-11 shrink-0 items-center gap-3 rounded-full border border-surface-border/60 bg-on-surface px-4 text-sm font-medium transition-colors hover:border-accent hover:text-accent;
+    }
+    .product-rail {
+        @apply grid auto-cols-[minmax(160px,43%)] grid-flow-col gap-3 overflow-x-auto pb-3 pt-1 sm:auto-cols-[minmax(190px,29%)] lg:auto-cols-[calc((100%-3.75rem)/4)] lg:gap-5;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
+        scrollbar-color: rgb(var(--color-accent) / .3) transparent;
+    }
+    .product-rail > * { scroll-snap-align: start; }
+    .product-card {
+        @apply relative h-full overflow-hidden;
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .product-card-link { @apply flex h-full flex-col; }
+    .product-card-link::after { content: ''; @apply absolute inset-0 rounded-2xl; }
+    .product-save { @apply relative z-10 flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-accent shadow-sm backdrop-blur-sm; }
+    .product-save:disabled { @apply opacity-60 cursor-wait; }
+    .product-media { @apply relative overflow-hidden bg-surface-muted text-text-muted; }
+    .product-media img { @apply absolute inset-0 h-full w-full object-cover; }
+    .product-placeholder { @apply absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center text-xs; }
+    .collection-card {
+        @apply fs-card block overflow-hidden;
+        transition: transform .25s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .collection-art {
+        @apply h-36 text-accent;
+        background: radial-gradient(ellipse at center, rgb(var(--color-accent) / .12), rgb(var(--color-accent) / .02));
+    }
+    .search-recents { @apply absolute inset-x-0 top-full z-50 mt-2 rounded-2xl border border-surface-border/60 bg-surface p-2 shadow-card-md; }
+    .deferred-section {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 480px;
+    }
+    @media (hover: hover) {
+        .product-card:hover, .collection-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px -8px rgb(0 0 0 / .2); }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto !important; }
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
     }
 }

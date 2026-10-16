@@ -6,16 +6,30 @@ use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\Product;
 use App\Support\Cart;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 
 class HomeController extends Controller
 {
     public function __invoke(): View
     {
-        $categories = Category::query()->orderBy('sort_order')->get();
+        $categories = Category::query()
+            ->withCount(['products' => fn (Builder $query) => $query->visible()])
+            ->orderBy('sort_order')
+            ->get();
+
+        $popular = Product::query()
+            ->with(['shop', 'category'])
+            ->visible()
+            ->has('savedItems')
+            ->withCount('savedItems')
+            ->orderByDesc('saved_items_count')
+            ->orderByDesc('id')
+            ->take(4)
+            ->get();
 
         $flash = Product::query()
-            ->with(['shop', 'category'])
+            ->with(['shop', 'category', 'variants'])
             ->visible()
             ->where('is_flash', true)
             ->latest()
@@ -35,6 +49,7 @@ class HomeController extends Controller
 
         return view('home', [
             'categories' => $categories,
+            'popular' => $popular,
             'flash' => $flash,
             'products' => $products,
             'cartCount' => Cart::count(),

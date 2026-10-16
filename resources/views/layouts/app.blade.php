@@ -25,7 +25,7 @@
     <script src="{{ asset('js/theme.js') }}"></script>
 </head>
 
-<body class="min-h-screen flex flex-col antialiased font-sans transition-colors duration-200"
+<body class="min-h-screen flex flex-col antialiased font-sans transition-colors duration-200 {{ $canUseCart ? 'pb-20 md:pb-0' : '' }}"
       style="background-color: rgb(var(--color-surface)); color: rgb(var(--color-text-base));"
       x-data="{
           drawerOpen: false,
@@ -41,6 +41,7 @@
           }
       }"
       @keydown.escape.window="drawerOpen && closeDrawer()">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] btn-accent">Skip to content</a>
 
     {{-- ══════════════════════════════════════════════════════════════
          TOP NAVIGATION  —  Extremerate style
@@ -51,42 +52,9 @@
             style="background-color: rgb(var(--color-surface)); border-color: rgb(var(--color-surface-border) / 0.5);"
             x-data="{ mobileOpen: false }" @keydown.escape.window="mobileOpen = false">
 
-        {{-- ── Top utility bar (desktop only) ─────────────────────── --}}
-        <div class="hidden md:block border-b text-xs"
-             style="background-color: rgb(var(--color-surface-muted)); border-color: rgb(var(--color-surface-border) / 0.4); color: rgb(var(--color-text-muted));">
-            <div class="mx-auto max-w-7xl px-4 py-1.5 flex items-center justify-end">
-                <div class="flex items-center gap-4">
-                    @guest
-                        {{-- Guest pill --}}
-                        <div class="hidden sm:flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm transition-colors"
-                             style="border-color: rgb(var(--color-surface-border) / 0.7); background-color: rgb(var(--color-surface));">
-                            <a href="{{ route('login') }}" class="font-medium hover:underline" style="color: rgb(var(--color-accent));">Sign in</a>
-                            <span class="mx-1" style="color: rgb(var(--color-surface-border));">|</span>
-                            <a href="{{ route('register') }}" class="font-medium hover:underline" style="color: rgb(var(--color-accent));">Register</a>
-                        </div>
-                    @endguest
-                    @auth
-                        {{-- Auth pill — opens drawer --}}
-                        <button x-ref="profilePill"
-                                @click="openDrawer()"
-                                :aria-expanded="drawerOpen"
-                                aria-haspopup="dialog"
-                                class="hidden sm:flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors hover:border-accent max-w-[160px]"
-                                style="border-color: rgb(var(--color-surface-border) / 0.7); background-color: rgb(var(--color-surface));">
-                            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold"
-                                  style="background-color: rgb(var(--color-accent)); color: rgb(var(--color-accent-text));">
-                                {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
-                            </span>
-                            <span class="truncate max-w-[120px]">{{ auth()->user()->name }}</span>
-                        </button>
-                    @endauth
-                </div>
-            </div>
-        </div>
-
         {{-- ── Main nav bar ─────────────────────────────────────────── --}}
         <div class="mx-auto max-w-7xl px-4">
-            <div class="flex items-center gap-4 h-14">
+            <div class="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3 py-2">
 
                 {{-- Logo --}}
                 <a href="{{ route('home') }}"
@@ -98,7 +66,7 @@
                 </a>
 
                 {{-- ── Desktop: category dropdown nav ────────────────── --}}
-                <nav class="hidden lg:flex items-center gap-1" aria-label="Category navigation">
+                <nav class="hidden xl:flex items-center gap-1" aria-label="Category navigation">
 
                     {{-- All Products --}}
                     <a href="{{ route('catalog.index') }}"
@@ -153,27 +121,55 @@
                 </nav>
 
                 {{-- ── Expandable search (flex-1 on desktop) ─────────── --}}
-                <div class="min-w-0 flex-1 max-w-xl mx-2 lg:mx-4"
-                     x-data="{ focused: false }">
+                <div class="order-last w-full min-w-0 md:order-none md:w-auto md:flex-1 md:max-w-xl md:mx-2 relative"
+                     x-data="marketplaceSearch(@js(request('q', '')))" @click.outside="focused = false" @keydown.escape="focused = false">
                     <form action="{{ route('catalog.index') }}" method="get"
-                          class="relative" role="search">
+                          x-ref="searchForm" @submit="remember()" class="relative" role="search">
                         <svg class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors"
                              :style="focused ? 'color:rgb(var(--color-accent))' : 'color:rgb(var(--color-text-muted))'"
                              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                   d="m21 21-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
                         </svg>
-                        <input type="search" name="q" value="{{ request('q') }}"
-                               placeholder="Search Japan surplus, brands, lots…"
+                        <input type="search" name="q" value="{{ request('q') }}" x-model="query" x-ref="searchInput" maxlength="120" autocomplete="off"
+                               placeholder="Search items, shops, brands, surplus lots..."
                                aria-label="Search products"
-                               @focus="focused = true" @blur="focused = false"
-                               class="fs-input pl-10 pr-4 py-2 rounded-full"
-                               style="padding-top:0.5rem; padding-bottom:0.5rem;">
+                               @focus="focused = true" @focusout="if (!$el.parentElement.parentElement.contains($event.relatedTarget)) focused = false"
+                               class="fs-input min-h-11 pl-10 pr-11 rounded-full">
+                        <button type="button" x-show="query.length > 0" @click="query = ''; $refs.searchInput.focus()" aria-label="Clear search" class="absolute right-0 top-0 theme-toggle" style="display:none;">×</button>
                     </form>
+                    <div x-show="focused && !query.trim() && recent.length" class="search-recents" style="display:none;" @focusout="if (!$el.parentElement.contains($event.relatedTarget)) focused = false">
+                        <div class="flex items-center justify-between px-2"><p class="text-xs font-semibold text-text-muted">Recent searches</p><button type="button" @click="clearRecent()" class="min-h-11 px-2 text-xs text-accent">Clear history</button></div>
+                        <template x-for="term in recent" :key="term"><button type="button" @click="choose(term)" class="dropdown-item w-full rounded-xl text-left" x-text="term"></button></template>
+                    </div>
                 </div>
 
                 {{-- ── Right icons cluster ─────────────────────────────── --}}
-                <div class="flex items-center gap-1.5 shrink-0">
+                <div class="ml-auto flex items-center gap-1.5 shrink-0">
+                    @guest
+                        {{-- Guest pill --}}
+                        <div class="hidden sm:flex items-center gap-1 rounded-full border min-h-11 px-3 py-1.5 text-sm transition-colors"
+                             style="border-color: rgb(var(--color-surface-border) / 0.7); background-color: rgb(var(--color-surface));">
+                            <a href="{{ route('login') }}" class="font-medium hover:underline" style="color: rgb(var(--color-accent));">Sign in</a>
+                            <span class="mx-1" style="color: rgb(var(--color-surface-border));">|</span>
+                            <a href="{{ route('register') }}" class="font-medium hover:underline" style="color: rgb(var(--color-accent));">Register</a>
+                        </div>
+                    @endguest
+                    @auth
+                        {{-- Auth pill — opens drawer --}}
+                        <button x-ref="profilePill"
+                                @click="openDrawer()"
+                                :aria-expanded="drawerOpen"
+                                aria-haspopup="dialog"
+                                class="hidden sm:flex items-center gap-2 rounded-full border min-h-11 px-3 py-1.5 text-sm font-medium transition-colors hover:border-accent max-w-[160px]"
+                                style="border-color: rgb(var(--color-surface-border) / 0.7); background-color: rgb(var(--color-surface));">
+                            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold"
+                                  style="background-color: rgb(var(--color-accent)); color: rgb(var(--color-accent-text));">
+                                {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
+                            </span>
+                            <span class="truncate max-w-[120px]">{{ auth()->user()->name }}</span>
+                        </button>
+                    @endauth
 
                     @if($canUseCart)
                     {{-- Cart --}}
@@ -195,8 +191,7 @@
                     </a>
                     @endif
 
-                    {{-- Profile pill (auth, sm+) — desktop button same as utility bar pill above --}}
-                    {{-- The utility bar pill already handles sm+; this slot is kept for icon-only on xs --}}
+                    {{-- Compact account trigger below sm --}}
                     @auth
                         {{-- xs-only icon trigger (< sm, where pill is hidden) --}}
                         <button @click="openDrawer()"
@@ -230,7 +225,7 @@
                     </button>
 
                     {{-- Mobile hamburger --}}
-                    <button class="theme-toggle lg:hidden"
+                    <button class="theme-toggle xl:hidden"
                             @click="mobileOpen = !mobileOpen"
                             :aria-expanded="mobileOpen"
                             aria-label="Toggle menu">
@@ -256,7 +251,7 @@
              x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
-             class="lg:hidden border-t pb-4"
+             class="xl:hidden border-t pb-4"
              style="display:none; background-color: rgb(var(--color-surface)); border-color: rgb(var(--color-surface-border) / 0.4);">
             <nav class="mx-auto max-w-7xl px-4 pt-3 space-y-1" aria-label="Mobile navigation">
                 <a href="{{ route('home') }}" class="dropdown-item rounded-xl"
@@ -342,7 +337,7 @@
             @endif
         </nav>
     @endif
-    <main class="flex-1 mx-auto max-w-7xl px-4 py-5">
+    <main id="main-content" class="w-full flex-1 mx-auto max-w-7xl px-4 py-6 sm:py-8">
         @yield('content')
     </main>
 
@@ -350,7 +345,7 @@
     </div>{{-- /inert wrapper --}}
 
     {{-- ══════════════════════════════════════════════════════════════
-         FOOTER  —  Doorzo style: multi-column + payment icons
+         FOOTER — marketplace links and payments
          ══════════════════════════════════════════════════════════════ --}}
     <footer style="background-color: rgb(var(--color-footer-bg)); color: rgb(var(--color-footer-text));">
 
@@ -366,7 +361,7 @@
                         <span class="text-lg font-bold text-white">FarSell</span>
                     </a>
                     <p class="text-xs leading-relaxed" style="color: rgb(var(--color-footer-text) / 0.7);">
-                        Doorzo-style auction surplus. Buy Japan lots at everyday Philippine prices.
+                        Discover verified marketplace finds, local surplus, and auction lots delivered straight to your door.
                     </p>
                 </div>
 
@@ -664,6 +659,9 @@
 
     </div>{{-- /drawer panel --}}
 
+    @if ($canUseCart)
+        @include('layouts.partials.mobile-navigation')
+    @endif
     @include('chat.partials.dock')
 
 </body>
