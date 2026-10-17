@@ -4,6 +4,7 @@ namespace App\Services\Orders;
 
 use App\Models\Fulfillment;
 use App\Models\Order;
+use App\Models\RiderBarangayAssignment;
 use App\Models\RiderProfile;
 use Illuminate\Support\Facades\DB;
 
@@ -20,6 +21,11 @@ class DeliveryRequestService
             Order::query()->whereKey($part->order_id)->lockForUpdate()->firstOrFail();
             $part = Fulfillment::query()->lockForUpdate()->findOrFail($part->id);
             if ($part->status->value !== 'ready' || $part->rider_id || ! $part->pickup_city) {
+                return;
+            }
+            // Barangay-covered shipments are reserved for their designated rider.
+            if ($part->delivery_barangay_id && RiderBarangayAssignment::query()
+                ->where('psgc_barangay_id', $part->delivery_barangay_id)->exists()) {
                 return;
             }
             $active = DB::table('rider_delivery_requests')->where('fulfillment_id', $part->id)

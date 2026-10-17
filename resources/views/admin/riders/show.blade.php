@@ -15,6 +15,41 @@
         </dl>
         @if($profile->bio)<p class="mt-4 text-sm whitespace-pre-line break-words">{{ $profile->bio }}</p>@endif
 
+        <section class="mt-6 border-t border-surface-border pt-4">
+            <h2 class="font-semibold">Barangay coverage</h2>
+            <p class="mt-1 text-xs text-text-muted">One rider can be assigned to each barangay. Ready shipments for a covered barangay are assigned directly to that rider.</p>
+            @if($profile->isApproved() && $profile->user->role === \App\Enums\UserRole::Rider)
+                <form method="post" action="{{ route('admin.riders.barangays.store', $profile) }}" class="mt-3 flex flex-wrap items-end gap-3">
+                    @csrf
+                    <label class="block min-w-56 flex-1 text-sm">Barangay in {{ $profile->city }}
+                        <select name="psgc_barangay_id" class="mt-1 w-full rounded-lg" required>
+                            <option value="">Select a barangay</option>
+                            @foreach($barangays as $barangay)
+                                <option value="{{ $barangay->id }}" @selected(old('psgc_barangay_id') == $barangay->id)>{{ $barangay->name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                    <button class="btn-accent">Assign barangay</button>
+                </form>
+                @error('psgc_barangay_id')<p role="alert" class="mt-2 text-sm text-error">{{ $message }}</p>@enderror
+            @else
+                <p class="mt-3 text-sm text-text-muted">Approve this rider before assigning barangay coverage.</p>
+            @endif
+            <ul class="mt-3 space-y-2 text-sm">
+                @forelse($profile->barangayAssignments as $assignment)
+                    <li class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-surface-border px-3 py-2">
+                        <span>{{ $assignment->barangay->name }}{{ $assignment->barangay->cityMunicipality ? ', '.$assignment->barangay->cityMunicipality->name : '' }}</span>
+                        <form method="post" action="{{ route('admin.riders.barangays.destroy', [$profile, $assignment]) }}">
+                            @csrf @method('delete')
+                            <button class="text-sm text-error underline">Remove</button>
+                        </form>
+                    </li>
+                @empty
+                    <li class="text-text-muted">No barangays assigned.</li>
+                @endforelse
+            </ul>
+        </section>
+
         <h2 class="mt-6 font-semibold">Submitted documents</h2>
         <p class="mt-1 text-xs text-text-muted">Private downloads, available only to admins. Uploads are currently optional. Approval does not automatically mark documents as verified.</p>
         <ul class="mt-3 space-y-3">

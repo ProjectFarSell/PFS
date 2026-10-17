@@ -5,6 +5,7 @@ use App\Http\Controllers\Account\OrderController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\SavedItemController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\RiderApplicationController;
 use App\Http\Controllers\Admin\SellerApplicationController;
 use App\Http\Controllers\Auth\GuestSessionController;
@@ -72,10 +73,17 @@ Route::get('/admin', DashboardController::class)
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.dashboard');
 
+Route::get('/admin/partners', [PartnerController::class, 'index'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.partners.index');
+
 Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/riders')->name('admin.riders.')->group(function () {
     Route::get('/', [RiderApplicationController::class, 'index'])->name('index');
+    Route::get('/barangays', [RiderApplicationController::class, 'barangayAssignments'])->name('barangays.index');
     Route::get('/{riderProfile}', [RiderApplicationController::class, 'show'])->name('show');
     Route::post('/{riderProfile}/review', [RiderApplicationController::class, 'review'])->name('review');
+    Route::post('/{riderProfile}/barangays', [RiderApplicationController::class, 'assignBarangay'])->name('barangays.store');
+    Route::delete('/{riderProfile}/barangays/{assignment}', [RiderApplicationController::class, 'removeBarangay'])->name('barangays.destroy');
     Route::get('/{riderProfile}/documents/{document}', [RiderApplicationController::class, 'document'])->name('document');
 });
 

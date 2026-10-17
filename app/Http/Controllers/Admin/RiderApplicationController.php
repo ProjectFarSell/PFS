@@ -6,7 +6,9 @@ use App\Enums\RiderStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\RiderDocument;
+use App\Models\RiderBarangayAssignment;
 use App\Models\RiderProfile;
+use App\Models\PsgcBarangay;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,12 +36,71 @@ class RiderApplicationController extends Controller
 
     public function show(RiderProfile $riderProfile): View
     {
-        $riderProfile->load(['user:id,name,email,role', 'documents', 'reviewer:id,name']);
+        $riderProfile->load(['user:id,name,email,role', 'documents', 'reviewer:id,name', 'barangayAssignments.barangay.cityMunicipality']);
 
         return view('admin.riders.show', [
             'profile' => $riderProfile,
             'reviewToken' => $riderProfile->reviewToken(),
+            'barangays' => $this->barangaysFor($riderProfile),
         ]);
+    }
+
+    public function barangayAssignments(Request $request): View
+    {
+        $data = $request->validate(['rider_profile_id' => ['nullable', 'integer', Rule::exists('rider_profiles', 'id')]]);
+        $riders = RiderProfile::query()
+            ->with('user:id,name,email,role')
+            ->where('status', RiderStatus::Approved)
+            ->whereHas('user', fn ($query) => $query->where('role', UserRole::Rider))
+            ->orderBy('city')
+            ->orderBy('id')
+            ->get();
+        $profile = isset($data['rider_profile_id']) ? $riders->firstWhere('id', $data['rider_profile_id']) : null;
+        abort_if(isset($data['rider_profile_id']) && ! $profile, 404);
+        $profile?->load('barangayAssignments.barangay.cityMunicipality');
+
+        return view('admin.riders.barangays', [
+            'riders' => $riders,
+            'profile' => $profile,
+            'barangays' => $profile ? $this->barangaysFor($profile) : collect(),
+        ]);
+    }
+
+    public function assignBarangay(Request $request, RiderProfile $riderProfile): RedirectResponse
+    {
+        $data = $request->validate(['psgc_barangay_id' => ['required', 'integer', Rule::exists('psgc_barangays', 'id')]]);
+        abort_unless($riderProfile->isApproved() && $riderProfile->user()->where('role', UserRole::Rider)->exists(), 422);
+
+        $barangay = PsgcBarangay::query()->with('cityMunicipality:id,name')->findOrFail($data['psgc_barangay_id']);
+        abort_unless(mb_strtolower(trim($barangay->cityMunicipality->name)) === mb_strtolower(trim($riderProfile->city)), 422);
+        $existing = RiderBarangayAssignment::query()->where('psgc_barangay_id', $barangay->id)->first();
+        if ($existing && $existing->rider_profile_id !== $riderProfile->id) {
+            throw ValidationException::withMessages(['psgc_barangay_id' => 'This barangay is already assigned to another rider.']);
+        }
+
+        RiderBarangayAssignment::query()->firstOrCreate([
+            'rider_profile_id' => $riderProfile->id,
+            'psgc_barangay_id' => $barangay->id,
+        ]);
+
+        return back()->with('status', $barangay->name.' is now assigned to this rider.');
+    }
+
+    public function removeBarangay(RiderProfile $riderProfile, RiderBarangayAssignment $assignment): RedirectResponse
+    {
+        abort_unless($assignment->rider_profile_id === $riderProfile->id, 404);
+        $assignment->delete();
+
+        return back()->with('status', 'Barangay coverage removed.');
+    }
+
+    private function barangaysFor(RiderProfile $riderProfile)
+    {
+        $city = mb_strtolower(trim($riderProfile->city));
+
+        return PsgcBarangay::query()->with('cityMunicipality:id,name')
+            ->whereHas('cityMunicipality', fn ($query) => $query->whereRaw('LOWER(name) = ?', [$city]))
+            ->orderBy('name')->get(['id', 'psgc_city_municipality_id', 'name']);
     }
 
     public function review(Request $request, RiderProfile $riderProfile): RedirectResponse

@@ -32,8 +32,8 @@
             <nav class="portal-navigation order-last flex w-full gap-1 overflow-x-auto text-sm xl:order-none xl:ml-auto xl:w-auto" aria-label="Portal navigation">
                 @if($portalRole === \App\Enums\UserRole::Admin)
                     <a href="{{ route('admin.dashboard') }}" class="portal-nav-link" @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif>Dashboard</a>
-                    <a href="{{ route('admin.sellers.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.sellers.*')) aria-current="page" @endif>Seller Approvals</a>
-                    <a href="{{ route('admin.riders.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.riders.*')) aria-current="page" @endif>Rider Approvals</a>
+                    <a href="{{ route('admin.partners.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.partners.*', 'admin.sellers.*') || (request()->routeIs('admin.riders.*') && !request()->routeIs('admin.riders.barangays.*'))) aria-current="page" @endif>Partners</a>
+                    <a href="{{ route('admin.riders.barangays.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.riders.barangays.index')) aria-current="page" @endif>Barangay Assignments</a>
                     <a href="{{ route('fulfillments.index') }}" class="portal-nav-link" @if(request()->routeIs('fulfillments.*')) aria-current="page" @endif>Dispatch</a>
                 @elseif($portalRole === \App\Enums\UserRole::Seller)
                     <a href="{{ route('seller.dashboard') }}" class="portal-nav-link">Dashboard</a>

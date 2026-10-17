@@ -9,6 +9,7 @@ use App\Enums\UserRole;
 use App\Models\Fulfillment;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\RiderBarangayAssignment;
 use App\Models\RiderProfile;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -20,12 +21,14 @@ class FulfillmentService
     public function createForOrder(Order $order): void
     {
         $groups = $order->items()->with('product.shop')->orderBy('id')->get()->groupBy('product.shop_id');
+        $deliveryBarangayId = $order->address()->value('psgc_barangay_id');
         $fee = (int) round((float) $order->shipping_fee * 100);
         $index = 0;
         foreach ($groups as $shopId => $items) {
             $fulfillment = $order->fulfillments()->create([
                 'shop_id' => $shopId,
                 'shop_name' => $items->first()->product->shop->name,
+                'delivery_barangay_id' => $deliveryBarangayId,
                 'status' => Status::Pending,
                 'subtotal' => $items->sum('line_total'),
                 'shipping_fee' => (intdiv($fee, $groups->count()) + ($index++ < $fee % $groups->count() ? 1 : 0)) / 100,
@@ -60,8 +63,16 @@ class FulfillmentService
                 if (in_array($action, ['ready', 'request_rider'], true)) {
                     $part->pickup_address = $data['pickup_address'];
                     $part->pickup_contact = $data['pickup_contact'];
-                    $part->pickup_city = DeliveryRequestService::city($part->shop->city);
-                    $note = 'Rider request published for '.$part->shop->city.'.';
+                    $shopCity = trim((string) $part->shop?->city);
+                    if ($shopCity === '' && ! $this->barangayRider($part)) {
+                        throw ValidationException::withMessages([
+                            'fulfillment' => 'Set the shop city before requesting a city-based rider, or assign a rider to the delivery barangay.',
+                        ]);
+                    }
+                    $part->pickup_city = $shopCity === '' ? null : DeliveryRequestService::city($shopCity);
+                    $note = $shopCity === ''
+                        ? 'Shipment is ready for its designated barangay rider.'
+                        : 'Rider request published for '.$shopCity.'.';
                 }
                 if ($action === 'reject') {
                     $note = $data['reason'];
@@ -131,6 +142,15 @@ class FulfillmentService
                 $note = 'Buyer confirmed receipt.';
             }
 
+            if ($next === Status::Ready) {
+                $rider = $this->barangayRider($part);
+                if ($rider) {
+                    $part->rider_id = $rider->id;
+                    $next = Status::Assigned;
+                    $note = 'Automatically assigned to '.$rider->user->name.' for the delivery barangay.';
+                }
+            }
+
             $part->status = $next;
             $part->save();
             if ($next === Status::Ready) {
@@ -146,6 +166,21 @@ class FulfillmentService
         if ($part->status !== $expected) {
             throw ValidationException::withMessages(['fulfillment' => 'This shipment has changed or the action is unavailable. Refresh and try again.']);
         }
+    }
+
+    private function barangayRider(Fulfillment $part): ?RiderProfile
+    {
+        if (! $part->delivery_barangay_id) {
+            return null;
+        }
+
+        $assignment = RiderBarangayAssignment::query()
+            ->where('psgc_barangay_id', $part->delivery_barangay_id)
+            ->with('riderProfile.user')
+            ->first();
+        $rider = $assignment?->riderProfile;
+
+        return $rider?->isApproved() && $rider->user?->role === UserRole::Rider ? $rider : null;
     }
 
     private function syncOrder(Order $order): void
