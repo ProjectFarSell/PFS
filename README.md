@@ -28,6 +28,7 @@ A Laravel-powered marketplace for surplus goods, built for fast checkout and mul
 | Build tool | Vite 8 via `laravel-vite-plugin` |
 | Database | SQLite (default) · MySQL supported |
 | Sessions / Cache / Queue | Database driver (default) |
+| Media Storage | Cloudflare R2 (S3-compatible object storage via `league/flysystem-aws-s3-v3`) |
 | Font | Figtree (Google Fonts) |
 | API auth | Laravel Sanctum |
 
@@ -100,7 +101,15 @@ php artisan db:seed
 
 For a new development database, this applies migrations and seeds four demo accounts, eight product categories, one demo shop, and 24 sample products. See [Test Accounts](#test-accounts).
 
-### 6 — Install JS dependencies and build assets
+### 6 — Sync product images from Cloudflare R2
+
+```bash
+php artisan products:seed-images
+```
+
+This assigns cloud-hosted images stored in Cloudflare R2 to all sample products so that product cards display photos immediately.
+
+### 7 — Install JS dependencies and build assets
 
 ```bash
 npm install
@@ -109,7 +118,7 @@ npm run build      # production build
 npm run dev        # hot-reload Vite dev server (run in a separate terminal)
 ```
 
-### 7 — Start the development server
+### 8 — Start the development server
 
 ```bash
 php artisan serve
@@ -163,7 +172,33 @@ Then start the dev server manually with `php artisan serve`.
 | `AWS_SECRET_ACCESS_KEY` | _(empty)_ | AWS secret |
 | `AWS_DEFAULT_REGION` | `us-east-1` | AWS region |
 | `AWS_BUCKET` | _(empty)_ | S3 bucket name |
+| `CLOUDFLARE_R2_ACCESS_KEY_ID` | _(empty)_ | Cloudflare R2 API token Access Key ID |
+| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | _(empty)_ | Cloudflare R2 API token Secret Access Key |
+| `CLOUDFLARE_R2_BUCKET` | `farsell-products` | Cloudflare R2 bucket name |
+| `CLOUDFLARE_R2_ENDPOINT` | _(empty)_ | `https://<account_id>.r2.cloudflarestorage.com` |
+| `CLOUDFLARE_R2_URL` | _(empty)_ | Public development URL (e.g. `https://pub-<id>.r2.dev`) |
 | `VITE_APP_NAME` | `"${APP_NAME}"` | Passed to the Vite frontend build |
+
+### Cloudflare R2 Product Image Storage
+
+FarSell uses Cloudflare R2 object storage (S3-compatible) to store and serve product images globally. This allows team members to share product images seamlessly without bloating the Git repository.
+
+Add your R2 credentials to `.env`:
+
+```dotenv
+CLOUDFLARE_R2_ACCESS_KEY_ID=b55cf2743236753d9be0200c46d8eec0
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=7c3708b19ed4c6d9ef30b72045945bdae2748840511564c17506e58eff1b79ba
+CLOUDFLARE_R2_BUCKET=farsell-products
+CLOUDFLARE_R2_ENDPOINT=https://721cd448fb1b190bac349ceb602a4f62.r2.cloudflarestorage.com
+CLOUDFLARE_R2_URL=https://pub-f7ad469cfd614b5fafcfb14b0b0e55a6.r2.dev
+```
+
+To sync and assign the cloud-hosted images to your local database products:
+
+```bash
+php artisan config:clear
+php artisan products:seed-images
+```
 
 ### Google sign-in
 
@@ -412,6 +447,8 @@ php artisan tinker                 # Interactive REPL
 php artisan route:list             # Print all registered routes
 php artisan config:clear           # Clear configuration cache
 php artisan view:clear             # Clear compiled Blade templates
+php artisan products:seed-images   # Sync cloud images from R2 to database products
+php artisan products:backup-images # Download images from R2 into repo folder
 php artisan pail                   # Tail application logs in real time
 ```
 
