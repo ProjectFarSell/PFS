@@ -24,6 +24,7 @@ class ProductController extends Controller
             'category' => ['nullable', 'integer', 'exists:categories,id'],
             'shop' => ['nullable', 'array', 'max:50'],
             'shop.*' => ['integer', 'distinct', 'exists:shops,id'],
+            'shop_search' => ['nullable', 'string', 'max:120'],
             'price_min' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
             'price_max' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'gte:price_min'],
             'sort' => ['nullable', 'string', 'in:relevance,price_asc,price_desc,newest'],
@@ -33,6 +34,7 @@ class ProductController extends Controller
         $search = trim((string) ($filters['q'] ?? ''));
         $categoryId = isset($filters['category']) ? (int) $filters['category'] : null;
         $shopIds = collect($filters['shop'] ?? [])->map(fn ($id) => (int) $id)->unique()->values()->all();
+        $shopSearch = trim((string) ($filters['shop_search'] ?? ''));
         $priceMin = $filters['price_min'] ?? null;
         $priceMax = $filters['price_max'] ?? null;
         $sort = $filters['sort'] ?? 'newest';
@@ -53,7 +55,17 @@ class ProductController extends Controller
             ->with(['shop', 'category'])
             ->visible();
 
-        if ($search !== '') {
+        $matchingShops = $this->matchingActiveShops($shopSearch !== '' ? $shopSearch : $search);
+        $matchingShopIds = $matchingShops->pluck('id');
+
+        if ($shopSearch !== '') {
+            // A shop filter search is an explicit request for products from the matching shop(s).
+            $query->whereIn('shop_id', $matchingShopIds);
+            $shopIds = $matchingShopIds->map(fn ($id) => (int) $id)->all();
+        } elseif ($matchingShopIds->isNotEmpty()) {
+            // A shop-name search should show listings from those shops, not unrelated product-name matches.
+            $query->whereIn('shop_id', $matchingShopIds);
+        } elseif ($search !== '') {
             if (DB::getDriverName() !== 'sqlite') {
                 $query->whereFullText(['name', 'description'], $search);
             } else {
@@ -104,6 +116,8 @@ class ProductController extends Controller
             ->withCount(['products as products_count' => fn ($q) => $q->visible()])
             ->orderBy('name')
             ->get();
+        $priceCeiling = (int) (ceil(((float) Product::query()->visible()->max('price')) / 1000) * 1000);
+        $priceCeiling = max($priceCeiling, 1000);
 
         $savedProductIds = (auth()->check() && auth()->user()->role === UserRole::Buyer)
             ? auth()->user()->savedItems()->pluck('product_id')->all()
@@ -113,11 +127,14 @@ class ProductController extends Controller
             'products' => $query->paginate(16)->withQueryString(),
             'categories' => Category::query()->orderBy('sort_order')->get(),
             'shops' => $shops,
+            'searchedShop' => $matchingShops->count() === 1 ? $matchingShops->first() : null,
             'q' => $search,
             'activeCategory' => $categoryId,
             'activeShops' => $shopIds,
+            'shopSearch' => $shopSearch,
             'priceMin' => $priceMin ?? '',
             'priceMax' => $priceMax ?? '',
+            'priceCeiling' => $priceCeiling,
             'sort' => $sort,
             'cityId' => $cityId,
             'activeCityId' => $cityId,
@@ -125,6 +142,22 @@ class ProductController extends Controller
             'sameDay' => $sameDay,
             'savedProductIds' => $savedProductIds,
         ]);
+    }
+
+    private function matchingActiveShops(string $term)
+    {
+        if ($term === '') {
+            return collect();
+        }
+
+        $activeShops = Shop::query()->where('is_active', true);
+        $exactMatches = (clone $activeShops)
+            ->whereRaw('LOWER(name) = ?', [mb_strtolower($term)])
+            ->get(['id', 'name']);
+
+        return $exactMatches->isNotEmpty()
+            ? $exactMatches
+            : $activeShops->where('name', 'like', '%'.$term.'%')->get(['id', 'name']);
     }
 
     public function show(Product $product): View

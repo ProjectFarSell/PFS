@@ -20,7 +20,7 @@ class ProductVariantFactory extends Factory
     {
         return [
             'product_id' => Product::factory(),
-            'sku' => strtoupper(fake()->bothify('SKU-????-####')),
+            'sku' => strtoupper(fake()->bothify('SKU-???-###')),
             'option_name' => 'Size',
             'option_value' => fake()->randomElement(['S', 'M', 'L', 'XL']),
             'price_override' => null,

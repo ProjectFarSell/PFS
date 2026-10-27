@@ -4,7 +4,10 @@
     @php
         $initialVariants = collect(old('variants', $product->variants->map(fn($variant) => [
             'id' => $variant->id,
-            'options_text' => collect($variant->options ?: array_filter([$variant->option_name => $variant->option_value]))->map(fn($value, $name) => $name.': '.$value)->join(', '),
+            'sku' => $variant->sku,
+            'size' => collect($variant->options ?: array_filter([$variant->option_name => $variant->option_value]))->first(fn($value, $name) => mb_strtolower($name) === 'size', ''),
+            'color' => collect($variant->options ?: array_filter([$variant->option_name => $variant->option_value]))->first(fn($value, $name) => mb_strtolower($name) === 'color', ''),
+            'other_options' => collect($variant->options ?: array_filter([$variant->option_name => $variant->option_value]))->reject(fn($value, $name) => in_array(mb_strtolower($name), ['size', 'color'], true))->map(fn($value, $name) => $name.': '.$value)->join(', '),
             'price_override' => $variant->price_override,
             'stock' => $variant->stock,
             'is_active' => $variant->is_active,
@@ -26,6 +29,9 @@
                 @if($product->exists)
                     @method('PUT')
                     <input type="hidden" name="version" value="{{ old('version', $product->editVersion()) }}">
+                    <p class="rounded-lg bg-surface-muted px-3 py-2 text-sm">Product ID: <strong>#{{ $product->id }}</strong></p>
+                @else
+                    <p class="rounded-lg bg-surface-muted px-3 py-2 text-sm">Product ID will be assigned after the listing is created.</p>
                 @endif
                 <label class="block text-sm">Product name<input name="name" required maxlength="150" value="{{ old('name', $product->name) }}" class="mt-1 w-full rounded-lg"></label>
                 <label class="block text-sm">Category<select name="category_id" required class="mt-1 w-full rounded-lg"><option value="">Choose a category</option>@foreach($categories as $category)<option value="{{ $category->id }}" @selected((string)old('category_id', $product->category_id) === (string)$category->id)>{{ $category->name }}</option>@endforeach</select></label>
@@ -33,6 +39,7 @@
                 <label class="block text-sm">Description<textarea name="description" required maxlength="5000" rows="5" class="mt-1 w-full rounded-lg">{{ old('description', $product->description) }}</textarea></label>
                 <input type="hidden" name="has_variants" :value="hasVariants ? 1 : 0">
                 <label class="flex items-center gap-2 text-sm"><input type="checkbox" x-model="hasVariants" class="rounded"> This product has options (size, color, etc.)</label>
+                <label class="block text-sm" x-show="!hasVariants">SKU<input name="sku" minlength="8" maxlength="12" value="{{ old('sku', $product->sku) }}" x-bind:disabled="hasVariants" placeholder="8–12 characters; blank generates one" class="mt-1 w-full rounded-lg"><span class="mt-1 block text-xs text-text-muted">Use 8–12 characters. Leave blank to generate a compact code.</span></label>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <label class="block text-sm">Price (PHP)<input type="number" name="price" min="0.01" max="99999999.99" step="0.01" required value="{{ old('price', $product->price) }}" class="mt-1 w-full rounded-lg"></label>
                     <label class="block text-sm" x-show="!hasVariants">Available units<input type="number" name="stock" min="0" max="1000000" step="1" required value="{{ old('stock', $product->stock ?? 0) }}" x-bind:disabled="hasVariants" class="mt-1 w-full rounded-lg"></label>
@@ -40,12 +47,16 @@
                 </div>
                 <p class="text-xs text-text-muted" x-show="!hasVariants">Available units exclude stock already reserved for orders. Enter only units still available to sell.</p>
                 <section x-show="hasVariants" class="rounded-xl border border-surface-border p-4">
-                    <div class="flex items-center justify-between gap-3"><div><h2 class="font-semibold">Options and stock</h2><p class="mt-1 text-xs text-text-muted">One row per combination. Example: Size: M, Color: Red</p></div><button type="button" class="btn-outline" @click="variantRows.push({ options_text: '', price_override: '', stock: 0, is_active: true })">Add option</button></div>
+                    <div class="flex items-center justify-between gap-3"><div><h2 class="font-semibold">Options and stock</h2><p class="mt-1 text-xs text-text-muted">Add one row for each size and color combination. Each combination has its own SKU.</p></div><button type="button" class="btn-outline" @click="variantRows.push({ sku: '', size: '', color: '', other_options: '', price_override: '', stock: 0, is_active: true })">Add option</button></div>
                     <div class="mt-3 space-y-3">
                         <template x-for="(variant, index) in variantRows" :key="variant.id ?? index">
                             <div class="grid gap-2 rounded-lg bg-surface-muted p-3 sm:grid-cols-2">
                                 <input type="hidden" :name="`variants[${index}][id]`" x-model="variant.id" x-bind:disabled="!hasVariants">
-                                <label class="text-xs sm:col-span-2">Option combination<input required :name="`variants[${index}][options_text]`" x-model="variant.options_text" placeholder="Size: M, Color: Red" class="mt-1 w-full rounded-lg"></label>
+                                <label class="text-xs sm:col-span-2">SKU<input minlength="8" maxlength="12" :name="`variants[${index}][sku]`" x-model="variant.sku" placeholder="8–12 characters; blank generates one" class="mt-1 w-full rounded-lg"></label>
+                                <input type="hidden" :name="`variants[${index}][options_text]`" x-bind:value="[variant.size ? 'Size: ' + variant.size : null, variant.color ? 'Color: ' + variant.color : null, variant.other_options].filter(Boolean).join(', ')">
+                                <label class="text-xs">Size<input :name="`variants[${index}][size]`" x-model="variant.size" placeholder="e.g. M or 10.5" class="mt-1 w-full rounded-lg"></label>
+                                <label class="text-xs">Color<input :name="`variants[${index}][color]`" x-model="variant.color" placeholder="e.g. Black" class="mt-1 w-full rounded-lg"></label>
+                                <label class="text-xs sm:col-span-2">Other options (optional)<input :name="`variants[${index}][other_options]`" x-model="variant.other_options" placeholder="Material: Cotton" class="mt-1 w-full rounded-lg"></label>
                                 <label class="text-xs">Price override (optional)<input type="number" min="0.01" step="0.01" :name="`variants[${index}][price_override]`" x-model="variant.price_override" class="mt-1 w-full rounded-lg" placeholder="Use base price"></label>
                                 <label class="text-xs">Available stock<input type="number" min="0" max="1000000" required :name="`variants[${index}][stock]`" x-model="variant.stock" class="mt-1 w-full rounded-lg"></label>
                                 <input type="hidden" value="0" :name="`variants[${index}][is_active]`">

@@ -127,6 +127,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store'])->middleware(EnsureUserHasRole::class.':buyer')->name('checkout.store');
     Route::get('/orders', [OrderController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer')->name('orders.index');
     Route::get('/orders/{order}', [CheckoutController::class, 'show'])->middleware(EnsureUserHasRole::class.':buyer,admin')->name('orders.show');
+    Route::get('/orders/{order}/print/{document}', [CheckoutController::class, 'print'])->middleware(EnsureUserHasRole::class.':buyer,admin')->whereIn('document', ['invoice', 'packing-slip'])->name('orders.print');
 
     Route::get('/account/saved', [SavedItemController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer')->name('account.saved.index');
     Route::post('/account/saved/{product}', [SavedItemController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:30,1'])->name('account.saved.store');
