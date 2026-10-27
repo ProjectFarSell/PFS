@@ -41,6 +41,7 @@
                 <p class="text-xs mt-0.5" style="color:rgb(var(--color-text-muted));">
                     {{ $line->product->shop->name }}
                 </p>
+                <p class="text-xs mt-0.5 text-text-muted">SKU: {{ $line->variant?->sku ?? $line->product->sku ?? 'Unavailable' }}</p>
                 @if($line->stale_variant)<p class="mt-1 text-xs text-error">This product's options changed. Remove it and choose an available option again.</p>@endif
                 @if($line->variant_options)<p class="text-xs mt-0.5 text-text-muted">{{ collect($line->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }}</p>@endif
                 <p class="text-sm font-semibold mt-1" style="color:rgb(var(--color-accent));">

@@ -5,7 +5,15 @@
 @section('content')
 @php $productCount = $products->total(); @endphp
 
-<div class="mb-5"><p class="section-eyebrow">Local shops. Everyday finds.</p><h1 class="section-title">Explore the marketplace</h1></div>
+<div class="mb-5">
+    @if ($searchedShop)
+        <p class="section-eyebrow">Shop listings</p>
+        <h1 class="section-title">Products from {{ $searchedShop->name }}</h1>
+    @else
+        <p class="section-eyebrow">Local shops. Everyday finds.</p>
+        <h1 class="section-title">Explore the marketplace</h1>
+    @endif
+</div>
 
 {{-- ── Category pill strip ─────────────────────────────────────────────────── --}}
 <div class="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-1 px-1"
@@ -57,7 +65,7 @@
                 Filters
             </button>
             <form action="{{ route('catalog.index') }}" method="get" class="ml-auto flex items-center gap-2">
-                @foreach (request()->only(['q', 'category', 'shop', 'price_min', 'price_max', 'city_id', 'same_day', 'clear_city']) as $key => $value)
+                @foreach (request()->only(['q', 'category', 'shop', 'shop_search', 'price_min', 'price_max', 'city_id', 'same_day', 'clear_city']) as $key => $value)
                     @foreach (is_array($value) ? $value : [$value] as $item)
                         <input type="hidden" name="{{ is_array($value) ? $key.'[]' : $key }}" value="{{ $item }}">
                     @endforeach

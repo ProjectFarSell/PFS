@@ -6,7 +6,7 @@
     @php
         $variantOptions = $product->variants->map(function ($variant) {
             $options = $variant->options ?: array_filter([$variant->option_name => $variant->option_value]);
-            return ['id' => $variant->id, 'stock' => (int) $variant->stock, 'price' => $variant->effectivePrice(), 'options' => $options];
+            return ['id' => $variant->id, 'sku' => $variant->sku, 'stock' => (int) $variant->stock, 'price' => $variant->effectivePrice(), 'options' => $options];
         })->values();
         $optionNames = $variantOptions->flatMap(fn ($variant) => array_keys($variant['options']))->unique()->values();
     @endphp
@@ -22,6 +22,9 @@
             <a href="{{ route('shops.show', $product->shop) }}" class="text-xs text-accent hover:text-accent font-medium">{{ $product->shop->name }}</a>
             <h1 class="text-xl font-semibold mt-1">{{ $product->name }}</h1>
             <p class="text-2xl font-semibold text-accent mt-2">{{ $product->formattedPrice() }}</p>
+            @if(!$product->has_variants)
+                <p class="mt-1 text-xs text-text-muted">SKU: {{ $product->sku }}</p>
+            @endif
             @if ($product->compare_at_price)
                 <p class="text-sm text-text-muted line-through">₱{{ number_format((float) $product->compare_at_price, 2) }}</p>
             @endif
@@ -85,7 +88,7 @@
                             @endforeach
                         </div>
                         <p class="w-full text-xs text-text-muted" x-show="selectedVariant()" x-cloak>
-                            Selected price: PHP <span x-text="Number(selectedVariant()?.price).toFixed(2)"></span> · <span x-text="selectedVariant()?.stock"></span> available
+                            Selected price: PHP <span x-text="Number(selectedVariant()?.price).toFixed(2)"></span> · <span x-text="selectedVariant()?.stock"></span> available · SKU: <span x-text="selectedVariant()?.sku"></span>
                         </p>
                     @endif
                     @php($quantityLimit = min(99, $product->availableStock()))

@@ -16,6 +16,7 @@ class Product extends Model
         'shop_id',
         'category_id',
         'name',
+        'sku',
         'slug',
         'description',
         'price',
@@ -102,7 +103,7 @@ class Product extends Model
 
     public function editVersion(): string
     {
-        $variants = $this->variants()->orderBy('id')->get(['id', 'stock', 'is_active', 'price_override', 'options', 'updated_at'])
+        $variants = $this->variants()->orderBy('id')->get(['id', 'sku', 'stock', 'is_active', 'price_override', 'options', 'updated_at'])
             ->map(fn ($variant) => $variant->getAttributes())->all();
 
         return hash('sha256', json_encode([$this->getAttributes(), $variants], JSON_THROW_ON_ERROR));

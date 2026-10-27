@@ -54,6 +54,17 @@ class AdminRiderApprovalTest extends TestCase
         $this->assertSame(UserRole::Buyer, $profile->user->fresh()->role);
     }
 
+    public function test_partners_page_groups_riders_and_sellers_into_tabs(): void
+    {
+        $profile = $this->application(['status' => RiderStatus::Approved], User::factory()->rider()->create());
+        $admin = $this->admin();
+
+        $this->actingAs($admin)->get(route('admin.partners.index'))->assertOk()
+            ->assertSee('Partners')->assertSee('Riders')->assertSee('Sellers')->assertSee($profile->user->name);
+        $this->get(route('admin.partners.index', ['tab' => 'sellers']))->assertOk()
+            ->assertSee('Sellers');
+    }
+
     public function test_admin_can_approve_and_applicant_immediately_gets_rider_dashboard(): void
     {
         $profile = $this->application();
@@ -70,6 +81,8 @@ class AdminRiderApprovalTest extends TestCase
         $this->assertSame($admin->id, $profile->reviewed_by);
         $this->assertNotNull($profile->reviewed_at);
         $this->get(route('admin.riders.show', $profile))->assertOk()->assertDontSee('Approve rider');
+        $this->get(route('admin.riders.barangays.index'))->assertOk()
+            ->assertSee('Barangay assignments')->assertSee($profile->user->name);
         $this->actingAs($profile->user->fresh())->get(route('rider.dashboard'))->assertOk()
             ->assertSee('Your active deliveries')->assertSee('No active deliveries assigned to you yet.');
         $this->get(route('account.profile'))->assertOk()->assertSee('Rider Profile')

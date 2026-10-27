@@ -41,4 +41,10 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL').'/auth/google/callback'),
     ],
 
+    'invoice_generator' => [
+        'api_key' => env('INVOICE_GENERATOR_API_KEY'),
+        'endpoint' => env('INVOICE_GENERATOR_ENDPOINT', 'https://invoice-generator.com'),
+        'from' => env('INVOICE_GENERATOR_FROM', env('APP_NAME', 'FarSell')),
+    ],
+
 ];

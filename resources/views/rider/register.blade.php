@@ -26,14 +26,14 @@
         errors: { phone: '', vehicle_type: '', license_no: '', city: '' },
 
         validateStep1() {
-            const phone = this.$el.querySelector('[name=phone]')?.value.trim() ?? '';
+            const phone = document.getElementById('r_phone')?.value.trim() ?? '';
             this.errors.phone = phone === '' ? 'Phone number is required.' : '';
             return this.errors.phone === '';
         },
         validateStep2() {
-            const vt = this.$el.querySelector('[name=vehicle_type]')?.value ?? '';
-            const ln = this.$el.querySelector('[name=license_no]')?.value.trim() ?? '';
-            const ci = this.$el.querySelector('[name=city]')?.value.trim() ?? '';
+            const vt = document.getElementById('r_vehicle_type')?.value ?? '';
+            const ln = document.getElementById('r_license')?.value.trim() ?? '';
+            const ci = document.getElementById('r_city')?.value.trim() ?? '';
             this.errors.vehicle_type = vt === '' ? 'Vehicle type is required.' : '';
             this.errors.license_no   = ln === '' ? 'License / ID number is required.' : '';
             this.errors.city         = ci === '' ? 'City is required.' : '';
@@ -117,6 +117,8 @@
                     <input id="r_phone" type="tel" name="phone"
                            value="{{ old('phone', auth()->user()->phone ?? '') }}"
                            placeholder="09XXXXXXXXX"
+                           autocomplete="tel" inputmode="tel" required
+                           @input="errors.phone = ''"
                            class="fs-input">
                     <p x-show="errors.phone !== ''" x-text="errors.phone"
                        class="text-xs mt-1" style="color:rgb(var(--color-error)); display:none;"></p>
@@ -127,7 +129,7 @@
             <div x-show="step === 2" style="display:none;" class="space-y-4">
                 <div>
                     <label for="r_vehicle_type" class="fs-label">Vehicle type <span class="text-error">*</span></label>
-                    <select id="r_vehicle_type" name="vehicle_type" class="fs-input">
+                    <select id="r_vehicle_type" name="vehicle_type" @change="errors.vehicle_type = ''" class="fs-input">
                         @foreach(['motorcycle', 'bicycle', 'car', 'van'] as $vehicle)
                         <option value="{{ $vehicle }}"
                                 @selected(old('vehicle_type', $profile?->vehicle_type ?? 'motorcycle') === $vehicle)>
@@ -150,6 +152,7 @@
                     <input id="r_license" name="license_no" required
                            value="{{ old('license_no', $profile?->license_no ?? '') }}"
                            placeholder="License number"
+                           @input="errors.license_no = ''"
                            class="fs-input">
                     <p x-show="errors.license_no !== ''" x-text="errors.license_no"
                        class="text-xs mt-1" style="color:rgb(var(--color-error)); display:none;"></p>
@@ -159,6 +162,7 @@
                     <input id="r_city" name="city" required
                            value="{{ old('city', $profile?->city ?? '') }}"
                            placeholder="City of operation"
+                           @input="errors.city = ''"
                            class="fs-input">
                     <p x-show="errors.city !== ''" x-text="errors.city"
                        class="text-xs mt-1" style="color:rgb(var(--color-error)); display:none;"></p>
@@ -174,7 +178,7 @@
             {{-- ── STEP 3: Document Verification ─────────────────────────── --}}
             <div x-show="step === 3" style="display:none;" class="space-y-4">
                 <p class="text-xs" style="color:rgb(var(--color-text-muted));">
-                    Accepted: JPG, PNG, PDF · Max 5 MB each
+                    Accepted: JPG, PNG, WebP, PDF · Max 5 MB each
                 </p>
                 @if($profile?->documents->isNotEmpty())
                     <p class="rounded-lg bg-surface-muted p-3 text-xs text-text-muted">
@@ -237,7 +241,7 @@
                         </template>
                         <input x-ref="{{ $doc['ref'] }}"
                                type="file" name="{{ $doc['name'] }}"
-                               accept="image/*,.pdf"
+                               accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
                                class="sr-only"
                                @change="filename = $event.target.files[0]?.name ?? null">
                     </div>

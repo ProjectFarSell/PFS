@@ -143,6 +143,63 @@
         border-color: rgb(var(--color-accent));
     }
 
+    .fs-range-control {
+        height: 28px;
+        position: relative;
+        touch-action: pan-y;
+    }
+    .fs-range-track {
+        background-color: rgb(var(--color-surface-border));
+        border-radius: 9999px;
+        height: 4px;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 12px;
+    }
+    .fs-range-selected {
+        background-color: rgb(var(--color-accent));
+        border-radius: inherit;
+        height: 100%;
+        position: absolute;
+    }
+    .fs-range {
+        appearance: none;
+        background: transparent;
+        height: 28px;
+        margin: 0;
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        width: 100%;
+    }
+    .fs-range-min { z-index: 2; }
+    .fs-range-max { z-index: 1; }
+    .fs-range::-webkit-slider-runnable-track { background: transparent; height: 4px; }
+    .fs-range::-moz-range-track { background: transparent; height: 4px; }
+    .fs-range::-webkit-slider-thumb {
+        appearance: none;
+        background-color: rgb(var(--color-accent));
+        border: 2px solid rgb(var(--color-surface));
+        border-radius: 9999px;
+        box-shadow: 0 0 0 1px rgb(var(--color-accent));
+        cursor: grab;
+        height: 18px;
+        margin-top: -7px;
+        pointer-events: auto;
+        width: 18px;
+    }
+    .fs-range::-moz-range-thumb {
+        background-color: rgb(var(--color-accent));
+        border: 2px solid rgb(var(--color-surface));
+        border-radius: 9999px;
+        box-shadow: 0 0 0 1px rgb(var(--color-accent));
+        cursor: grab;
+        height: 14px;
+        pointer-events: auto;
+        width: 14px;
+    }
+
     .fs-label {
         color: rgb(var(--color-text-base));
         @apply block text-xs font-semibold mb-1.5;

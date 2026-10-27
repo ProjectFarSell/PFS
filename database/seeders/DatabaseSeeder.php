@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\PsgcBarangay;
-use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -68,29 +67,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        if ($shop->products()->count() === 0) {
-            $products = Product::factory()
-                ->count(24)
-                ->create([
-                    'shop_id' => $shop->id,
-                    'category_id' => $categories->random()->id,
-                ]);
-
-            // Give roughly half the products a size-variant spread, and every
-            // product at least one gallery image — staff-seeded dev data only.
-            $products->each(function (Product $product) {
-                if (fake()->boolean(50)) {
-                    \App\Models\ProductVariant::factory()
-                        ->count(fake()->numberBetween(2, 4))
-                        ->create(['product_id' => $product->id]);
-                }
-
-                \App\Models\ProductImage::factory()
-                    ->count(fake()->numberBetween(1, 3))
-                    ->sequence(fn ($sequence) => ['sort_order' => $sequence->index])
-                    ->create(['product_id' => $product->id]);
-            });
-        }
+        $this->call(SellerDemoProductsSeeder::class);
 
         if ($buyer->addresses()->count() === 0) {
             $barangay = PsgcBarangay::query()

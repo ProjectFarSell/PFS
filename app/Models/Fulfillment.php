@@ -37,6 +37,11 @@ class Fulfillment extends Model
         return $this->belongsTo(RiderProfile::class);
     }
 
+    public function deliveryBarangay(): BelongsTo
+    {
+        return $this->belongsTo(PsgcBarangay::class, 'delivery_barangay_id');
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);

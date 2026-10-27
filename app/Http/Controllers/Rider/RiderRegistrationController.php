@@ -36,9 +36,9 @@ class RiderRegistrationController extends Controller
             'license_no' => ['required', 'string', 'max:40'],
             'city' => ['required', 'string', 'max:80'],
             'bio' => ['nullable', 'string', 'max:500'],
-            'license_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'id_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'vehicle_reg_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'license_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
+            'id_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
+            'vehicle_reg_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
         ]);
 
         $user = $request->user();

@@ -6,13 +6,18 @@ use App\Contracts\DeliveryFeeService;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
+use App\Mail\OrderConfirmationMail;
 use App\Models\Order;
+use App\Services\Invoices\InvoiceGeneratorApi;
 use App\Services\Orders\FulfillmentService;
 use App\Services\Orders\StockReservationService;
 use App\Support\Cart;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -105,6 +110,7 @@ class CheckoutController extends Controller
                     'product_id' => $line->product->id,
                     'product_variant_id' => $line->variant?->id,
                     'name' => $line->product->name,
+                    'product_sku' => $line->variant?->sku ?? $line->product->sku,
                     'variant_options' => $line->variant_options,
                     'qty' => $line->qty,
                     'unit_price' => $line->unit_price,
@@ -120,6 +126,15 @@ class CheckoutController extends Controller
 
         Cart::clearCheckout();
 
+        try {
+            Mail::to($order->guest_email)->send(new OrderConfirmationMail($order->load('items')));
+        } catch (\Throwable $exception) {
+            Log::warning('Order confirmation email could not be sent.', [
+                'order_id' => $order->id,
+                'exception' => $exception::class,
+            ]);
+        }
+
         return redirect()->route('orders.show', $order)->with('status', 'Order placed.');
     }
 
@@ -129,5 +144,37 @@ class CheckoutController extends Controller
         $order->load(['items', 'fulfillments.items', 'fulfillments.events', 'fulfillments.rider.user']);
 
         return view('orders.show', compact('order'));
+    }
+
+    public function print(Order $order, string $document, InvoiceGeneratorApi $invoiceGenerator): View|Response
+    {
+        abort_unless(in_array($document, ['invoice', 'packing-slip'], true), 404);
+        $this->authorize('view', $order);
+        $order->load('items');
+
+        if ($document === 'invoice' && filled(config('services.invoice_generator.api_key'))) {
+            try {
+                $pdf = $invoiceGenerator->generate($order);
+
+                return response($pdf, 200, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="invoice-'.$order->number.'.pdf"',
+                    'Cache-Control' => 'private, no-store',
+                ]);
+            } catch (\Throwable $exception) {
+                Log::warning('Invoice Generator API failed; using the printable invoice fallback.', [
+                    'order_id' => $order->id,
+                    'exception' => $exception::class,
+                ]);
+
+                return view('orders.print', [
+                    'order' => $order,
+                    'document' => $document,
+                    'invoiceGenerationFailed' => true,
+                ]);
+            }
+        }
+
+        return view('orders.print', compact('order', 'document'));
     }
 }

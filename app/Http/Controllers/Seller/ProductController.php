@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -63,7 +64,10 @@ class ProductController extends Controller
         unset($data['variants']);
         $hasVariants = (bool) ($data['has_variants'] ?? false);
         $data['has_variants'] = $hasVariants;
-        if ($hasVariants) $data['stock'] = 0;
+        if ($hasVariants) {
+            $data['stock'] = 0;
+            $data['sku'] = null;
+        }
         $path = null;
         try {
             $product = DB::transaction(function () use ($request, $shop, $data, $variants, $hasVariants, &$path) {
@@ -77,6 +81,9 @@ class ProductController extends Controller
                 $product = $lockedShop->products()->create([
                     ...$data, 'slug' => Str::slug($data['name']).'-'.Str::uuid(), 'image_path' => $path, 'is_flash' => false,
                 ]);
+                if (! $hasVariants && blank($product->sku)) {
+                    $product->forceFill(['sku' => $this->generatedProductSku($product)])->save();
+                }
                 if ($hasVariants) $this->saveVariants($product, $variants);
                 return $product;
             });
@@ -93,11 +100,15 @@ class ProductController extends Controller
     public function update(Request $request, Product $product): RedirectResponse
     {
         $shop = $this->owned($request, $product);
-        $data = $this->validateProduct($request);
+        $data = $this->validateProduct($request, $product);
         $variants = $data['variants'] ?? [];
         unset($data['variants']);
         $hasVariants = (bool) ($data['has_variants'] ?? false);
         $data['has_variants'] = $hasVariants;
+        if ($hasVariants) {
+            $data['stock'] = 0;
+            $data['sku'] = null;
+        }
         $request->validate(['version' => ['required', 'string', 'size:64']]);
         $path = null;
         try {
@@ -119,7 +130,12 @@ class ProductController extends Controller
                 // Preserve slug, shop ownership, order snapshots and reserved stock.
                 $product->fill($data)->save();
                 if ($hasVariants) $this->saveVariants($product, $variants);
-                else $product->variants()->update(['is_active' => false]);
+                else {
+                    $product->variants()->update(['is_active' => false]);
+                    if (blank($product->sku)) {
+                        $product->forceFill(['sku' => $this->generatedProductSku($product)])->save();
+                    }
+                }
                 // Delete old R2 image after successful save
                 if (isset($oldPath) && $oldPath) {
                     Storage::disk('r2')->delete($oldPath);
@@ -135,10 +151,16 @@ class ProductController extends Controller
         return to_route('seller.products.edit', $product)->with('status', 'Listing updated. Existing order details have not changed.');
     }
 
-    private function validateProduct(Request $request): array
+    private function validateProduct(Request $request, ?Product $product = null): array
     {
+        $skuRules = ['nullable', 'string', 'min:8', 'max:12'];
+        $skuRules[] = $product
+            ? Rule::unique('products', 'sku')->ignore($product->id)
+            : Rule::unique('products', 'sku');
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:150'],
+            'sku' => $skuRules,
             'description' => ['required', 'string', 'max:5000'],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
             'price' => ['required', 'numeric', 'decimal:0,2', 'min:0.01', 'max:99999999.99'],
@@ -146,7 +168,7 @@ class ProductController extends Controller
             'has_variants' => ['nullable', 'boolean'],
             'variants' => ['required_if:has_variants,1', 'array', 'max:100'],
             'variants.*.id' => ['nullable', 'integer'],
-            'variants.*.sku' => ['nullable', 'string', 'max:100'],
+            'variants.*.sku' => ['nullable', 'string', 'min:8', 'max:12'],
             'variants.*.options_text' => ['required_if:has_variants,1', 'string', 'max:500'],
             'variants.*.price_override' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.01', 'max:99999999.99'],
             'variants.*.stock' => ['required_if:has_variants,1', 'integer', 'min:0', 'max:1000000'],
@@ -156,7 +178,66 @@ class ProductController extends Controller
         ]);
         unset($data['image']);
 
+        if (filled($data['sku'] ?? null) && \App\Models\ProductVariant::where('sku', $data['sku'])->exists()) {
+            throw ValidationException::withMessages(['sku' => 'That SKU is already in use by a product variant. Enter a unique SKU.']);
+        }
+
         return $data;
+    }
+
+    private function generatedProductSku(Product $product): string
+    {
+        $base = $this->productSkuPrefix($product).'-'.str_pad((string) $product->id, 4, '0', STR_PAD_LEFT);
+        $sku = $base;
+        while (Product::where('sku', $sku)->where('id', '!=', $product->id)->exists() || \App\Models\ProductVariant::where('sku', $sku)->exists()) {
+            $sku = $base.'-'.Str::upper(Str::random(2));
+        }
+
+        return $sku;
+    }
+
+    private function productSkuPrefix(Product $product): string
+    {
+        $words = preg_split('/[^A-Z0-9]+/', Str::upper($product->name), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $code = count($words) > 1
+            ? implode('', array_map(fn ($word) => $word[0], array_slice($words, 0, 3)))
+            : substr($words[0] ?? 'PRD', 0, 3);
+
+        return str_pad(substr($code ?: 'PRD', 0, 3), 3, 'X');
+    }
+
+    private function generatedVariantSku(Product $product, array $options, int $variantId): string
+    {
+        $ordered = collect($options)->sortBy(fn ($value, $name) => match (mb_strtolower($name)) {
+            'color' => 0,
+            'size' => 1,
+            default => 2,
+        });
+        $optionCode = $ordered->take(2)->map(fn ($value, $name) => $this->optionSkuCode((string) $name, (string) $value))->join('');
+        $productIdCode = strtoupper(base_convert((string) $product->id, 10, 36));
+        $variantIdCode = strtoupper(base_convert((string) $variantId, 10, 36));
+        $nameCode = $this->productSkuPrefix($product);
+        $maxNameLength = max(1, 12 - strlen($productIdCode) - 1 - strlen($optionCode) - strlen($variantIdCode));
+
+        return substr($nameCode, 0, $maxNameLength).$productIdCode.'-'.$optionCode.$variantIdCode;
+    }
+
+    private function optionSkuCode(string $name, string $value): string
+    {
+        $normalized = mb_strtolower(trim($value));
+        $codes = [
+            'black' => 'BK', 'white' => 'WH', 'black/white' => 'BW', 'black and white' => 'BW',
+            'red' => 'RD', 'blue' => 'BL', 'green' => 'GN', 'yellow' => 'YL', 'pink' => 'PK',
+            'purple' => 'PU', 'gray' => 'GY', 'grey' => 'GY', 'brown' => 'BN', 'orange' => 'OR',
+            'xs' => 'XS', 's' => 'S', 'm' => 'M', 'l' => 'L', 'xl' => 'XL', 'xxl' => '2X', 'xxxl' => '3X',
+        ];
+        if (mb_strtolower($name) === 'size' && preg_match('/\d+(?:\.\d+)?/', $normalized, $match)) {
+            return substr(preg_replace('/\D/', '', $match[0]), 0, 3) ?: 'SZ';
+        }
+
+        $code = $codes[$normalized] ?? strtoupper(substr(preg_replace('/[^a-z0-9]/i', '', $value) ?: 'XX', 0, 2));
+
+        return str_pad(substr($code, 0, 2), 2, 'X');
     }
 
     private function saveVariants(Product $product, array $rows): void
@@ -190,8 +271,20 @@ class ProductController extends Controller
                 $variant = $product->variants()->whereKey($row['id'])->firstOrFail();
             } else {
                 $variant = $product->variants()->make();
-                $variant->sku = filled($row['sku'] ?? null) ? $row['sku'] : 'FS-'.Str::upper(Str::random(12));
             }
+            $sku = trim((string) ($row['sku'] ?? '')) ?: $variant->sku;
+            if (blank($sku)) {
+                $variant->options = $options;
+                $variant->option_name = array_key_first($options);
+                $variant->option_value = reset($options);
+                $variant->sku = 'TMP'.Str::upper(Str::random(9));
+                $variant->save();
+                $sku = $this->generatedVariantSku($product, $options, (int) $variant->id);
+            }
+            if (Product::where('sku', $sku)->exists() || \App\Models\ProductVariant::where('sku', $sku)->where('id', '!=', $variant->id ?? 0)->exists()) {
+                throw ValidationException::withMessages(['variants' => "SKU {$sku} is already in use. Each product or variant must have a unique SKU."]);
+            }
+            $variant->sku = $sku;
             $variant->options = $options;
             $variant->option_name = array_key_first($options);
             $variant->option_value = reset($options);

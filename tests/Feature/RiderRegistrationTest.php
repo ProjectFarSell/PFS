@@ -69,6 +69,21 @@ class RiderRegistrationTest extends TestCase
         ]);
     }
 
+    public function test_webp_documents_are_accepted(): void
+    {
+        Storage::fake('local');
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post('/rider/apply', [
+            'vehicle_type' => 'motorcycle',
+            'license_no' => 'LIC-12345',
+            'city' => 'Quezon City',
+            'id_document' => UploadedFile::fake()->create('id.webp', 100, 'image/webp'),
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('rider_documents', ['document_type' => 'id']);
+    }
+
     public function test_updating_details_keeps_existing_documents_and_saves_the_phone_number(): void
     {
         Storage::fake('local');
