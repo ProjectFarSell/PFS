@@ -2,13 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\PsgcBarangay;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,31 +14,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(PsgcGeographySeeder::class);
 
-        // Idempotent: containers/local runs may re-seed on restart, so use
-        // firstOrCreate to avoid duplicate-key crashes instead of failing.
-        User::query()->firstOrCreate(
-            ['email' => 'admin@farsell.test'],
-            [
-                'name' => 'FarSell Admin',
-                'password' => Hash::make('password'),
-                'role' => UserRole::Admin,
-            ]
-        );
+        $this->call(DemoAccountsSeeder::class);
 
-        $buyer = User::query()->firstOrCreate(
-            ['email' => 'buyer@farsell.test'],
-            User::factory()->raw(['name' => 'Guest Buyer'])
-        );
-
-        $seller = User::query()->firstOrCreate(
-            ['email' => 'seller@farsell.test'],
-            User::factory()->seller()->raw(['name' => 'Demo Seller'])
-        );
-
-        User::query()->firstOrCreate(
-            ['email' => 'rider@farsell.test'],
-            User::factory()->rider()->raw(['name' => 'Demo Rider'])
-        );
+        $buyer = User::query()->where('email', 'buyer@farsell.test')->firstOrFail();
+        $seller = User::query()->where('email', 'seller@farsell.test')->firstOrFail();
 
         $categories = collect([
             ['name' => "Women's", 'icon' => 'W', 'sort_order' => 1],

@@ -191,6 +191,19 @@ DB_PASSWORD=your_password
 
 All seeded accounts use the password `password`.
 
+Demo accounts are stored as PHP seeders so they travel with the GitHub repository. Database files and `.env` files should stay out of Git.
+
+After pulling the project and configuring your local database, create any missing demo accounts without adding sample products:
+
+```bash
+php artisan migrate
+php artisan db:seed --class=DemoAccountsSeeder
+```
+
+For the standalone MySQL setup using `.env.local`, append `--env=local` to both commands. You can rerun the seeder whenever needed: it creates missing accounts without duplicating users or resetting existing names, roles, or passwords. Git pull updates the seeder code; run the command to populate each local database.
+
+To also create the demo seller's shop, sample products, and buyer address, run `php artisan db:seed` instead. The accounts-only command creates login accounts; seller shop setup and rider onboarding still apply.
+
 | Role | Email | Name | Notes |
 |---|---|---|---|
 | Admin | `admin@farsell.test` | FarSell Admin | Marketplace dashboard, seller/rider application reviews, and authorized order details |
