@@ -9,17 +9,27 @@
             <h1 class="mt-2 text-3xl font-bold tracking-tight">Marketplace overview</h1>
             <p class="mt-2 text-sm text-text-muted">Welcome, {{ auth()->user()->name }}. Here is what needs your attention.</p>
         </div>
-        <a href="{{ route('fulfillments.index', ['status' => 'ready']) }}" class="btn-accent min-h-11">Dispatch shipments <span aria-hidden="true">→</span></a>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('admin.categories.index') }}" class="btn-outline min-h-11">Manage categories</a>
+            <a href="{{ route('fulfillments.index', ['status' => 'ready']) }}" class="btn-accent min-h-11">Dispatch shipments <span aria-hidden="true">&#8594;</span></a>
+        </div>
     </section>
 
-    <dl class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        @foreach (['buyers' => ['Buyer accounts', 'People in your marketplace', 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8m8 0a4 4 0 0 0 0-8m5 18v-2a4 4 0 0 0-3-3.87'], 'products' => ['Active products', 'Currently enabled listings', 'm3 7 9-5 9 5v10l-9 5-9-5Zm0 0 9 5 9-5M12 12v10'], 'orders' => ['Total orders', 'Across all order statuses', 'M5 3h14v18H5Zm4 5h6m-6 4h6m-6 4h4'], 'pendingRiders' => ['Pending rider applications', 'Awaiting your review', 'M12 8v4l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0'] ] as $key => [$label, $description, $path])
-            <div class="admin-stat">
-                <dt class="flex items-start justify-between gap-2 text-xs font-medium text-text-muted">{{ $label }}<span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-subtle text-accent"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ $path }}"/></svg></span></dt>
-                <dd class="mt-2 text-3xl font-bold tracking-tight tabular-nums">{{ number_format($stats[$key]) }}<span class="mt-2 block text-xs font-normal tracking-normal text-text-muted">{{ $description }}</span></dd>
-            </div>
+    @php($statCards = [
+        'buyers' => ['Buyer accounts', 'People in your marketplace', route('admin.buyers.index'), 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8m8 0a4 4 0 0 0-3 3.87'],
+        'products' => ['Active products', 'Browse enabled listings', route('admin.products.index'), 'm3 7 9-5 9 5v10l-9 5-9-5Zm0 0 9 5 9-5M12 12v10'],
+        'orders' => ['Total orders', 'Across all order statuses', route('admin.dashboard').'#recent-orders', 'M5 3h14v18H5Zm4 5h6m-6 4h6m-6 4h4'],
+        'pendingRiders' => ['Pending rider applications', 'Awaiting your review', route('admin.riders.index', ['status' => 'pending']), 'M12 8v4l3 2m6-2a9 9 0 1 1-18 0'],
+    ])
+    <div class="grid grid-cols-2 gap-3 lg:grid-cols-4" data-admin-dashboard data-summary-url="{{ route('admin.dashboard.summary') }}">
+        @foreach($statCards as $key => [$label, $description, $url, $path])
+            <a href="{{ $url }}" class="admin-stat group block cursor-pointer rounded-2xl transition hover:border-accent/50 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" data-admin-stat-label="{{ $label }}" data-admin-stat-description="{{ $description }}" aria-label="{{ $label }}: {{ number_format($stats[$key]) }}. {{ $description }}">
+                <span class="flex items-start justify-between gap-2 text-xs font-medium text-text-muted">{{ $label }}<span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-subtle text-accent"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ $path }}"/></svg></span></span>
+                <span class="mt-2 block text-3xl font-bold tracking-tight tabular-nums" data-admin-stat-value="{{ $key }}">{{ number_format($stats[$key]) }}</span>
+                <span class="mt-2 block text-xs text-text-muted">{{ $description }}</span>
+            </a>
         @endforeach
-    </dl>
+    </div>
 
     <div class="my-7 grid gap-4 md:grid-cols-2">
     <section class="admin-action">
@@ -94,20 +104,21 @@
         @endif
     </section>
 
-    <section aria-labelledby="low-stock" class="fs-card p-5">
+    <section aria-labelledby="low-stock" class="fs-card p-5" data-low-stock-panel>
         <div class="flex flex-wrap items-center justify-between gap-2">
             <h2 id="low-stock" class="font-semibold">Inventory attention</h2>
-            <span class="rounded-full bg-accent-subtle px-3 py-1 text-xs text-accent">{{ $lowStockCount }} low-stock products</span>
+            <span class="rounded-full bg-accent-subtle px-3 py-1 text-xs text-accent"><span data-low-stock-count>{{ $lowStockCount }}</span> low-stock products</span>
         </div>
-        <p class="mt-1 text-xs text-text-muted">Active products with 5 or fewer units of product-level stock. Showing up to 5, lowest stock first.</p>
-        <ul class="mt-3 divide-y divide-surface-border">
+        <p class="mt-1 text-xs text-text-muted">Includes available stock across active variants. Refreshes every 10 seconds.</p>
+        <p class="mt-1 text-[11px] text-text-muted" data-inventory-updated aria-live="polite">Showing current database stock.</p>
+        <ul class="mt-3 divide-y divide-surface-border" data-low-stock-list aria-live="polite">
             @forelse($lowStockProducts as $product)
                 <li class="flex items-center justify-between gap-3 py-3">
                     <div class="min-w-0">
-                        <a href="{{ route('products.show', $product) }}" class="break-words text-sm font-medium text-accent underline">{{ $product->name }}</a>
+                        <a href="{{ route('admin.products.index') }}" class="break-words text-sm font-medium text-accent underline">{{ $product->name }}</a>
                         <p class="mt-1 text-xs text-text-muted">{{ $product->shop?->name ?? 'Unavailable shop' }}</p>
                     </div>
-                    <span class="shrink-0 text-xs font-semibold tabular-nums {{ $product->stock <= 0 ? 'text-error' : 'text-text-base' }}">{{ $product->stock <= 0 ? 'Out of stock' : $product->stock.' left' }}</span>
+                    <span class="shrink-0 text-xs font-semibold tabular-nums {{ $product->availableStock() <= 0 ? 'text-error' : 'text-text-base' }}">{{ $product->availableStock() <= 0 ? 'Out of stock' : $product->availableStock().' left' }}</span>
                 </li>
             @empty
                 <li class="py-4 text-sm text-text-muted">No active products are low on stock.</li>
@@ -117,3 +128,7 @@
     </div>
     <p class="mt-5 text-xs text-text-muted">Figures reflect current database records, including demo data.</p>
 @endsection
+
+@push('scripts')
+<script src="{{ asset('js/admin-dashboard-live.js') }}" defer></script>
+@endpush

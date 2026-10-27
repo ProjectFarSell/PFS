@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Product extends Model
@@ -92,6 +93,10 @@ class Product extends Model
 
     public function availableStock(): int
     {
+        if (array_key_exists('available_stock', $this->attributes)) {
+            return (int) $this->attributes['available_stock'];
+        }
+
         if (! $this->has_variants) {
             return (int) $this->stock;
         }
@@ -99,6 +104,29 @@ class Product extends Model
         return (int) ($this->relationLoaded('variants')
             ? $this->variants->where('is_active', true)->sum('stock')
             : $this->variants()->where('is_active', true)->sum('stock'));
+    }
+
+    public function scopeWithAvailableStock($query)
+    {
+        return $query->addSelect(DB::raw(
+            'CASE WHEN products.has_variants = 1 THEN COALESCE('
+            .'(SELECT SUM(product_variants.stock) FROM product_variants '
+            .'WHERE product_variants.product_id = products.id AND product_variants.is_active = 1), 0) '
+            .'ELSE products.stock END AS available_stock'
+        ));
+    }
+
+    public function scopeLowStock($query, int $threshold = 5)
+    {
+        return $query->withAvailableStock()
+            ->where('products.is_active', true)
+            ->whereRaw(
+                'CASE WHEN products.has_variants = 1 THEN COALESCE('
+                .'(SELECT SUM(product_variants.stock) FROM product_variants '
+                .'WHERE product_variants.product_id = products.id AND product_variants.is_active = 1), 0) '
+                .'ELSE products.stock END <= ?',
+                [$threshold]
+            );
     }
 
     public function editVersion(): string

@@ -5,6 +5,9 @@ use App\Http\Controllers\Account\OrderController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\SavedItemController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\BuyerController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductInventoryController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\RiderApplicationController;
 use App\Http\Controllers\Admin\SellerApplicationController;
@@ -73,6 +76,25 @@ Route::get('/admin', DashboardController::class)
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.dashboard');
 
+Route::get('/admin/dashboard/summary', [DashboardController::class, 'summary'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.dashboard.summary');
+
+Route::get('/admin/buyers', [BuyerController::class, 'index'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.buyers.index');
+
+Route::get('/admin/products', [ProductInventoryController::class, 'index'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.products.index');
+
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/categories')->name('admin.categories.')->group(function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('index');
+    Route::post('/', [CategoryController::class, 'store'])->middleware('throttle:30,1')->name('store');
+    Route::put('/{category}', [CategoryController::class, 'update'])->middleware('throttle:30,1')->name('update');
+    Route::delete('/{category}', [CategoryController::class, 'destroy'])->middleware('throttle:30,1')->name('destroy');
+});
+
 Route::get('/admin/partners', [PartnerController::class, 'index'])
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.partners.index');
@@ -116,6 +138,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/rider/delivery-requests', [DeliveryRequestController::class, 'index'])->middleware([EnsureUserHasRole::class.':rider', 'throttle:30,1'])->name('rider.delivery-requests');
     Route::get('/fulfillments', [FulfillmentController::class, 'index'])->middleware(EnsureUserHasRole::class.':admin,seller,rider')->name('fulfillments.index');
     Route::post('/fulfillments/{fulfillment}', [FulfillmentController::class, 'update'])->middleware([EnsureUserHasRole::class.':admin,seller,rider,buyer', 'throttle:60,1'])->name('fulfillments.update');
+    Route::get('/seller/apply/locations/provinces', [SellerApplication::class, 'provinces'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('seller.apply.locations.provinces');
+    Route::get('/seller/apply/locations/cities-municipalities', [SellerApplication::class, 'citiesMunicipalities'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('seller.apply.locations.cities-municipalities');
     Route::get('/seller/apply', [SellerApplication::class, 'show'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('seller.apply');
     Route::post('/seller/apply', [SellerApplication::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer,seller', 'throttle:10,1'])->name('seller.apply.store');
     Route::get('/account/profile', [ProfileController::class, 'show'])->name('account.profile');

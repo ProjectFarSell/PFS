@@ -24,7 +24,7 @@ class DashboardController extends Controller
         $stats = [
             'products' => $shop->products()->count(),
             'active' => $shop->products()->where('is_active', true)->count(),
-            'lowStock' => $shop->products()->where('is_active', true)->where('stock', '<=', 5)->count(),
+            'lowStock' => $shop->products()->lowStock()->count(),
             'orderItems' => (clone $itemsQuery)->count(),
         ];
 

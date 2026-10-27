@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\SellerApplication;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,7 +33,10 @@ class SellerApplicationController extends Controller
     {
         $application->load(['user', 'reviewer:id,name']);
 
-        return view('admin.sellers.show', compact('application'));
+        return view('admin.sellers.show', [
+            'application' => $application,
+            'categories' => Category::query()->whereIn('id', $application->category_ids ?? [])->orderBy('sort_order')->orderBy('name')->pluck('name'),
+        ]);
     }
 
     public function review(Request $request, SellerApplication $application): RedirectResponse
@@ -55,6 +59,7 @@ class SellerApplicationController extends Controller
                 }
                 $user->shop()->create([
                     'name' => $application->shop_name, 'city' => $application->city,
+                    'psgc_city_municipality_id' => $application->psgc_city_municipality_id,
                     'tagline' => $application->tagline, 'is_active' => true,
                     'slug' => Str::slug($application->shop_name).'-'.Str::uuid(),
                 ]);
