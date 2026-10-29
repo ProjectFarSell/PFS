@@ -19,6 +19,7 @@ class Fulfillment extends Model
             'shipping_fee' => 'decimal:2',
             'cod_collected_at' => 'datetime',
             'stock_released_at' => 'datetime',
+            'delivery_pin' => 'encrypted',
         ];
     }
 

@@ -11,6 +11,9 @@ use App\Services\Checkout\FlatRateDeliveryFeeService;
 use App\Services\Delivery\CityBasedDeliveryEtaService;
 use App\Support\Cart;
 use App\Enums\UserRole;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -28,6 +31,16 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        RateLimiter::for('otp-send', function (Request $request): Limit {
+            return Limit::perMinute(3)
+                ->by('otp-send:'.($request->user()?->id ?? $request->ip()))
+                ->response(function (Request $request, array $headers) {
+                    return to_route('contact-verification.show')
+                        ->withErrors(['code' => 'Too many verification requests. Please wait a minute before trying again.'])
+                        ->withHeaders($headers);
+                });
+        });
+
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }

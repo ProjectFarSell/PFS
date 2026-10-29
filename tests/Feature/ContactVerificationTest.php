@@ -8,7 +8,6 @@ use App\Models\VerificationChallenge;
 use App\Services\Auth\ContactVerificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -20,8 +19,10 @@ class ContactVerificationTest extends TestCase
     {
         parent::setUp();
 
-        Config::set('services.otp.sms_driver', 'log');
-        Config::set('services.otp.semaphore.api_key', null);
+        Config::set('services.firebase.api_key', null);
+        Config::set('services.firebase.auth_domain', null);
+        Config::set('services.firebase.project_id', null);
+        Config::set('services.firebase.app_id', null);
     }
 
     public function test_user_can_verify_their_email_with_an_otp(): void
@@ -48,6 +49,8 @@ class ContactVerificationTest extends TestCase
             ->assertSessionHas('status', 'Email verified.');
 
         $this->assertNotNull($user->fresh()->email_verified_at);
+        $this->actingAs($user->fresh())->get(route('account.profile.edit'))
+            ->assertOk()->assertDontSee('Account verification');
     }
 
     public function test_user_chooses_email_before_a_code_is_sent(): void
@@ -73,15 +76,37 @@ class ContactVerificationTest extends TestCase
         $this->assertNull($user->fresh()->verification_channel);
     }
 
-    public function test_an_invalid_code_does_not_verify_a_phone_number(): void
+    public function test_user_can_choose_phone_verification_without_sending_a_laravel_sms_code(): void
+    {
+        $user = User::factory()->create(['phone' => null, 'verification_channel' => null]);
+
+        $this->actingAs($user)->post(route('contact-verification.choose'), ['channel' => 'phone', 'phone' => '09123456789'])
+            ->assertRedirect(route('contact-verification.show'))
+            ->assertSessionHas('status', 'Continue with Firebase to verify your phone number.');
+
+        $this->assertSame(VerificationChallenge::PHONE, $user->fresh()->verification_channel);
+        $this->assertSame('09123456789', $user->fresh()->phone);
+        $this->assertDatabaseMissing('verification_challenges', ['user_id' => $user->id, 'channel' => VerificationChallenge::PHONE]);
+    }
+
+    public function test_phone_verification_requires_firebase_configuration(): void
     {
         $user = User::factory()->create(['phone' => '09123456789', 'phone_verified_at' => null, 'verification_channel' => 'phone']);
-        app(ContactVerificationService::class)->send($user, VerificationChallenge::PHONE);
 
-        $this->actingAs($user)->post(route('contact-verification.verify', 'phone'), ['code' => '123456'])
-            ->assertSessionHasErrors('code');
+        $this->actingAs($user)->get(route('contact-verification.show'))
+            ->assertOk()->assertSee('Firebase Phone Auth has not been configured yet.');
+    }
 
-        $this->assertNull($user->fresh()->phone_verified_at);
+    public function test_phone_verification_passes_a_philippine_number_to_firebase_in_international_format(): void
+    {
+        Config::set('services.firebase.api_key', 'public-api-key');
+        Config::set('services.firebase.auth_domain', 'farsell-test.firebaseapp.com');
+        Config::set('services.firebase.project_id', 'farsell-test');
+        Config::set('services.firebase.app_id', '1:1:web:test');
+        $user = User::factory()->create(['phone' => '09123456789', 'verification_channel' => 'phone']);
+
+        $this->actingAs($user)->get(route('contact-verification.show'))
+            ->assertOk()->assertSee("signInWithPhoneNumber(auth, \"+639123456789\"", false);
     }
 
     public function test_verification_codes_cannot_be_resent_immediately(): void
@@ -94,21 +119,15 @@ class ContactVerificationTest extends TestCase
             ->assertSessionHasErrors('code');
     }
 
-    public function test_semaphore_sms_uses_the_otp_endpoint_with_a_philippine_number(): void
+    public function test_firebase_phone_verification_rejects_a_malformed_token(): void
     {
-        Config::set('services.otp.sms_driver', 'semaphore');
-        Config::set('services.otp.semaphore.api_key', 'test-api-key');
-        Http::fake(['https://api.semaphore.co/*' => Http::response([], 200)]);
-
+        Config::set('services.firebase.project_id', 'farsell-test');
         $user = User::factory()->create(['phone' => '09123456789', 'verification_channel' => 'phone']);
-        app(ContactVerificationService::class)->send($user, VerificationChallenge::PHONE);
 
-        Http::assertSent(function ($request): bool {
-            return $request->url() === 'https://api.semaphore.co/api/v4/otp'
-                && $request['apikey'] === 'test-api-key'
-                && $request['number'] === '639123456789'
-                && $request['code'] !== null;
-        });
+        $this->actingAs($user)->post(route('contact-verification.phone.firebase'), ['id_token' => 'not-a-token'])
+            ->assertRedirect(route('contact-verification.show'))
+            ->assertSessionHasErrors('token');
+        $this->assertNull($user->fresh()->phone_verified_at);
     }
 
     public function test_failed_delivery_does_not_create_a_resend_lock(): void

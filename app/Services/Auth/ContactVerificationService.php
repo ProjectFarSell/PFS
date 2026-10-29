@@ -6,8 +6,6 @@ use App\Mail\OneTimePasscodeMail;
 use App\Models\User;
 use App\Models\VerificationChallenge;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
@@ -43,7 +41,7 @@ class ContactVerificationService
         if ($channel === VerificationChallenge::EMAIL) {
             Mail::to($user->email)->send(new OneTimePasscodeMail($code));
         } else {
-            $this->sendSms($user->phone, $code);
+            throw ValidationException::withMessages(['channel' => 'Phone verification is handled by Firebase.']);
         }
 
         $user->verificationChallenges()->updateOrCreate(['channel' => $channel], $attributes);
@@ -74,35 +72,6 @@ class ContactVerificationService
         return true;
     }
 
-    private function sendSms(?string $phone, string $code): void
-    {
-        $driver = config('services.otp.sms_driver', 'log');
-
-        if ($driver === 'log') {
-            Log::info('Local SMS OTP generated.', ['phone' => $phone, 'code' => $code]);
-
-            return;
-        }
-
-        if ($driver !== 'semaphore') {
-            throw new \RuntimeException('The configured OTP SMS driver is not supported.');
-        }
-
-        $apiKey = config('services.otp.semaphore.api_key');
-        if (! $apiKey) {
-            throw new \RuntimeException('Semaphore OTP settings are incomplete.');
-        }
-
-        Http::asForm()
-            ->post('https://api.semaphore.co/api/v4/otp', [
-                'apikey' => $apiKey,
-                'number' => $this->toSemaphoreNumber($phone),
-                'message' => 'Your FarSell verification code is {otp}. It expires in 10 minutes.',
-                'code' => $code,
-            ])
-            ->throw();
-    }
-
     private function assertChannel(string $channel): void
     {
         if (! in_array($channel, [VerificationChallenge::EMAIL, VerificationChallenge::PHONE], true)) {
@@ -121,18 +90,4 @@ class ContactVerificationService
         }
     }
 
-    private function toSemaphoreNumber(?string $phone): string
-    {
-        $digits = preg_replace('/\D/', '', (string) $phone);
-
-        if (str_starts_with($digits, '09') && strlen($digits) === 11) {
-            return '63'.substr($digits, 1);
-        }
-
-        if (str_starts_with($digits, '9') && strlen($digits) === 10) {
-            return '63'.$digits;
-        }
-
-        return $digits;
-    }
 }

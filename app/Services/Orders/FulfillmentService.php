@@ -13,6 +13,7 @@ use App\Models\RiderBarangayAssignment;
 use App\Models\RiderProfile;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class FulfillmentService
@@ -32,6 +33,7 @@ class FulfillmentService
                 'status' => Status::Pending,
                 'subtotal' => $items->sum('line_total'),
                 'shipping_fee' => (intdiv($fee, $groups->count()) + ($index++ < $fee % $groups->count() ? 1 : 0)) / 100,
+                ...$this->deliveryPin(),
             ]);
             $order->items()->whereIn('id', $items->pluck('id'))->update(['fulfillment_id' => $fulfillment->id]);
             $fulfillment->events()->create(['actor_id' => $order->user_id, 'status' => Status::Pending->value, 'note' => 'Order placed.']);
@@ -125,12 +127,21 @@ class FulfillmentService
                 abort_unless($actor->role === UserRole::Rider && $rider?->user_id === $actor->id && $rider->isApproved(), 403);
                 $this->expect($part, $action === 'pickup' ? Status::Assigned : Status::InTransit);
                 $next = $action === 'pickup' ? Status::InTransit : Status::Delivered;
+                if ($action === 'pickup') {
+                    $this->ensureDeliveryPin($part);
+                }
                 if ($action === 'deliver') {
                     if ($order->payment_method === PaymentMethod::Cod && ! filter_var($data['cod_collected'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
                         throw ValidationException::withMessages(['cod_collected' => 'Confirm that the exact COD amount was collected before recording delivery.']);
                     }
                     $note = $data['delivery_note'];
                     $part->delivery_note = $note;
+                    $part->delivery_recipient_name = $data['delivery_recipient_name'];
+                    $part->delivery_photo_path = $data['delivery_photo_path'] ?? null;
+                    $this->ensureDeliveryPin($part);
+                    if (! Hash::check($data['delivery_pin'], $part->delivery_pin_hash)) {
+                        throw ValidationException::withMessages(['delivery_pin' => 'The delivery PIN does not match. Ask the buyer for the current PIN.']);
+                    }
                     if ($order->payment_method === PaymentMethod::Cod) {
                         $part->cod_collected_at = now();
                     }
@@ -204,5 +215,19 @@ class FulfillmentService
             $order->stock_released_at = now();
         }
         $order->save();
+    }
+
+    private function deliveryPin(): array
+    {
+        $pin = (string) random_int(100000, 999999);
+
+        return ['delivery_pin' => $pin, 'delivery_pin_hash' => Hash::make($pin)];
+    }
+
+    private function ensureDeliveryPin(Fulfillment $part): void
+    {
+        if (! $part->delivery_pin_hash) {
+            $part->forceFill($this->deliveryPin());
+        }
     }
 }

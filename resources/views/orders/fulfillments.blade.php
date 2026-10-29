@@ -11,6 +11,17 @@
             @if($part->rider)<p class="mt-2 text-sm">Rider: {{ $part->rider->user?->name ?? 'Unavailable account' }}</p>@endif
             @if($part->rejection_reason)<p class="mt-2 text-sm text-error">Reason: {{ $part->rejection_reason }}</p>@endif
             @if($part->cod_collected_at)<p class="mt-2 text-sm">COD collected: ₱{{ number_format($part->amount(), 2) }}</p>@endif
+            @if($part->status === \App\Enums\FulfillmentStatus::InTransit && auth()->id() === $order->user_id && $part->delivery_pin)
+                <div class="mt-3 rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm">
+                    <p class="font-semibold">Delivery PIN: {{ $part->delivery_pin }}</p>
+                    <p class="mt-1 text-text-muted">Give this six-digit PIN to the rider only when they hand over the shipment.</p>
+                </div>
+            @endif
+            @if($part->delivery_recipient_name)<p class="mt-2 text-sm">Received by: {{ $part->delivery_recipient_name }}</p>@endif
+            @if($part->delivery_note)<p class="mt-2 text-sm">Delivery note: {{ $part->delivery_note }}</p>@endif
+            @if($part->delivery_photo_path && (auth()->id() === $order->user_id || auth()->user()?->role === \App\Enums\UserRole::Admin))
+                <p class="mt-2 text-sm"><a class="text-accent underline" href="{{ route('fulfillments.proof-photo', $part) }}">View proof photo</a></p>
+            @endif
             <ol class="mt-5 text-sm" aria-label="Shipment history">
                 @foreach($part->events as $event)
                     @php

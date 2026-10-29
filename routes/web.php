@@ -72,12 +72,14 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
+Route::get('/fulfillments/{fulfillment}/proof-photo', [FulfillmentController::class, 'proofPhoto'])->middleware('auth')->name('fulfillments.proof-photo');
 
 Route::middleware('auth')->prefix('/account/verify')->name('contact-verification.')->group(function () {
     Route::get('/', [ContactVerificationController::class, 'show'])->name('show');
-    Route::post('/choose', [ContactVerificationController::class, 'choose'])->middleware('throttle:3,1')->name('choose');
-    Route::post('/{channel}/send', [ContactVerificationController::class, 'send'])->middleware('throttle:3,1')->name('send');
+    Route::post('/choose', [ContactVerificationController::class, 'choose'])->middleware('throttle:otp-send')->name('choose');
+    Route::post('/{channel}/send', [ContactVerificationController::class, 'send'])->middleware('throttle:otp-send')->name('send');
     Route::post('/{channel}', [ContactVerificationController::class, 'verify'])->middleware('throttle:10,1')->name('verify');
+    Route::post('/phone/firebase', [ContactVerificationController::class, 'verifyFirebasePhone'])->middleware('throttle:10,1')->name('phone.firebase');
 });
 
 Route::get('/admin', DashboardController::class)
