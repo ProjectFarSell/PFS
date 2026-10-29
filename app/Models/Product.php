@@ -88,7 +88,7 @@ class Product extends Model
 
         $baseUrl = rtrim(config('filesystems.disks.r2.url'), '/');
 
-        return $baseUrl . '/' . ltrim($this->image_path, '/');
+        return $baseUrl.'/'.ltrim($this->image_path, '/');
     }
 
     public function availableStock(): int
@@ -108,7 +108,7 @@ class Product extends Model
 
     public function scopeWithAvailableStock($query)
     {
-        return $query->addSelect(DB::raw(
+        return $query->select('products.*')->addSelect(DB::raw(
             'CASE WHEN products.has_variants = 1 THEN COALESCE('
             .'(SELECT SUM(product_variants.stock) FROM product_variants '
             .'WHERE product_variants.product_id = products.id AND product_variants.is_active = 1), 0) '

@@ -7,6 +7,7 @@ use App\Models\Address;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\PsgcCityMunicipality;
 use App\Models\Shop;
 use App\Models\User;
 use App\Support\Cart;
@@ -38,7 +39,16 @@ class SellerProductManagementTest extends TestCase
     {
         Storage::fake('r2');
         $seller = User::factory()->create();
-        $this->actingAs($seller)->post(route('seller.apply.store'), ['shop_name' => 'Professor Demo Shop', 'city' => 'Manila', 'description' => 'Collectibles for a class demo'])->assertRedirect();
+        $city = PsgcCityMunicipality::factory()->create();
+        $category = Category::factory()->create();
+        $this->actingAs($seller)->post(route('seller.apply.store'), [
+            'shop_name' => 'Professor Demo Shop',
+            'psgc_region_id' => $city->province->psgc_region_id,
+            'psgc_province_id' => $city->psgc_province_id,
+            'psgc_city_municipality_id' => $city->id,
+            'category_ids' => [$category->id],
+            'description' => 'Collectibles for a class demo',
+        ])->assertRedirect();
         $application = $seller->sellerApplication;
         $this->actingAs(User::factory()->create(['role' => UserRole::Admin]))->post(route('admin.sellers.review', $application), ['decision' => 'approve', 'confirmed' => '1', 'revision' => $application->revision])->assertSessionHasNoErrors();
         $seller->refresh();
