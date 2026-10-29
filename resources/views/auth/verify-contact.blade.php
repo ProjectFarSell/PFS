@@ -8,9 +8,6 @@
         <h1 class="mt-2 text-2xl font-bold text-text-base">{{ $channel ? 'Verify your '.$channel : 'Verify your Account' }}</h1>
         <p class="mt-2 text-sm leading-relaxed text-text-muted">{{ $channel === 'phone' ? 'Firebase will send a verification code by SMS after its security check.' : ($channel ? 'Enter the six-digit code sent to your chosen verification method. Codes expire after 10 minutes.' : 'Choose one method to receive your six-digit verification code.') }}</p>
 
-        @if (session('status'))
-            <div class="mt-4 rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success" role="status">{{ session('status') }}</div>
-        @endif
         @if ($errors->any())
             <div class="alert-error mt-4" role="alert">{{ $errors->first() }}</div>
         @endif

@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductInventoryController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\RiderApplicationController;
+use App\Http\Controllers\Admin\RiderRecordsController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\SellerApplicationController;
 use App\Http\Controllers\Auth\ContactVerificationController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -22,10 +24,15 @@ use App\Http\Controllers\Catalog\ShopController;
 use App\Http\Controllers\Chat\ConversationController;
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\FulfillmentController;
+use App\Http\Controllers\OrderFeedbackController;
+use App\Http\Controllers\ProductReviewMediaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Rider\DashboardController as RiderDashboardController;
 use App\Http\Controllers\Rider\DeliveryRequestController;
+use App\Http\Controllers\Rider\EarningsController;
+use App\Http\Controllers\Rider\HistoryController;
 use App\Http\Controllers\Rider\RiderRegistrationController;
+use App\Http\Controllers\RiderDeliveryRatingController;
 use App\Http\Controllers\Seller\ApplicationController as SellerApplication;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
 use App\Http\Controllers\Seller\ProductController as SellerProducts;
@@ -73,6 +80,7 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 Route::get('/fulfillments/{fulfillment}/proof-photo', [FulfillmentController::class, 'proofPhoto'])->middleware('auth')->name('fulfillments.proof-photo');
+Route::get('/reviews/media/{media}', [ProductReviewMediaController::class, 'show'])->name('reviews.media');
 
 Route::middleware('auth')->prefix('/account/verify')->name('contact-verification.')->group(function () {
     Route::get('/', [ContactVerificationController::class, 'show'])->name('show');
@@ -108,6 +116,14 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/ca
 Route::get('/admin/partners', [PartnerController::class, 'index'])
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.partners.index');
+
+Route::get('/admin/rider-records', [RiderRecordsController::class, 'index'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.rider-records.index');
+
+Route::get('/admin/reviews', [ReviewController::class, 'index'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.reviews.index');
 
 Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/riders')->name('admin.riders.')->group(function () {
     Route::get('/', [RiderApplicationController::class, 'index'])->name('index');
@@ -148,6 +164,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/rider/delivery-requests', [DeliveryRequestController::class, 'index'])->middleware([EnsureUserHasRole::class.':rider', 'throttle:30,1'])->name('rider.delivery-requests');
     Route::get('/fulfillments', [FulfillmentController::class, 'index'])->middleware(EnsureUserHasRole::class.':admin,seller,rider')->name('fulfillments.index');
     Route::post('/fulfillments/{fulfillment}', [FulfillmentController::class, 'update'])->middleware([EnsureUserHasRole::class.':admin,seller,rider,buyer', 'throttle:60,1'])->name('fulfillments.update');
+    Route::post('/fulfillments/{fulfillment}/rating', [RiderDeliveryRatingController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('fulfillments.rating.store');
+    Route::get('/fulfillments/{fulfillment}/feedback', [OrderFeedbackController::class, 'create'])->middleware(EnsureUserHasRole::class.':buyer')->name('orders.feedback.create');
+    Route::post('/fulfillments/{fulfillment}/feedback', [OrderFeedbackController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('orders.feedback.store');
     Route::get('/seller/apply/locations/provinces', [SellerApplication::class, 'provinces'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('seller.apply.locations.provinces');
     Route::get('/seller/apply/locations/cities-municipalities', [SellerApplication::class, 'citiesMunicipalities'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('seller.apply.locations.cities-municipalities');
     Route::get('/seller/apply', [SellerApplication::class, 'show'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('seller.apply');
@@ -171,6 +190,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/rider/apply', [RiderRegistrationController::class, 'store'])->middleware(EnsureUserHasRole::class.':buyer');
     Route::get('/rider/profile', [RiderRegistrationController::class, 'profile'])->middleware(EnsureUserHasRole::class.':buyer,rider')->name('rider.profile');
     Route::get('/rider/dashboard', RiderDashboardController::class)->middleware(EnsureUserHasRole::class.':rider')->name('rider.dashboard');
+    Route::get('/rider/earnings', [EarningsController::class, 'index'])->middleware(EnsureUserHasRole::class.':rider')->name('rider.earnings.index');
+    Route::get('/rider/history', [HistoryController::class, 'index'])->middleware(EnsureUserHasRole::class.':rider')->name('rider.history.index');
 
     Route::get('account/addresses/locations/provinces', [AddressController::class, 'provinces'])->middleware(EnsureUserHasRole::class.':buyer')->name('account.addresses.locations.provinces');
     Route::get('account/addresses/locations/cities-municipalities', [AddressController::class, 'citiesMunicipalities'])->middleware(EnsureUserHasRole::class.':buyer')->name('account.addresses.locations.cities-municipalities');

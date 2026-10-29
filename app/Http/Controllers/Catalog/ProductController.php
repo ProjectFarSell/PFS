@@ -182,6 +182,10 @@ class ProductController extends Controller
             }
         }
 
-        return view('catalog.show', compact('product', 'related', 'etaHours'));
+        $reviews = $product->reviews()->with(['buyer:id,name', 'orderItem:id,variant_options,product_sku', 'media'])
+            ->latest('id')->paginate(5, ['*'], 'reviews_page')->withQueryString();
+        $reviewAverage = $product->reviews()->avg('rating');
+
+        return view('catalog.show', compact('product', 'related', 'etaHours', 'reviews', 'reviewAverage'));
     }
 }

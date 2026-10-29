@@ -157,11 +157,6 @@
          ══════════════════════════════════════════════════════ --}}
     <div class="flex-1 min-w-0">
 
-        {{-- Flash status --}}
-        @if (session('status'))
-            <p class="alert-success mb-4">{{ session('status') }}</p>
-        @endif
-
         {{-- ── PROFILE panel ──────────────────────────────────────── --}}
         <div x-show="activeTab === 'profile'">
             <div class="fs-card p-5">

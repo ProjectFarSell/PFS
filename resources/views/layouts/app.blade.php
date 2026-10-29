@@ -322,7 +322,7 @@
 
     {{-- ── Flash status ────────────────────────────────────────────── --}}
     @if (session('status'))
-        <div class="mx-auto max-w-7xl px-4 pt-4">
+        <div data-flash-message role="status">
             <p class="alert-success">{{ session('status') }}</p>
         </div>
     @endif

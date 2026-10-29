@@ -47,6 +47,10 @@
             @if($part->status === \App\Enums\FulfillmentStatus::Delivered && auth()->id() === $order->user_id)
                 <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4">@csrf <p class="mb-3 text-sm">Confirm only after receiving this shop's items.</p><button name="action" value="complete" class="btn-accent">Confirm received / Complete shipment</button></form>
             @endif
+            @if($part->status === \App\Enums\FulfillmentStatus::Completed && auth()->id() === $order->user_id)
+                @php($reviewed = $part->feedback && $part->items->every(fn ($item) => $item->review) && (!$part->rider_id || $part->riderRating))
+                <a href="{{ route('orders.feedback.create', $part) }}" class="btn-accent mt-4 inline-flex">{{ $reviewed ? 'View your feedback' : 'Rate products & delivery' }}</a>
+            @endif
         </section>
     @endforeach
 </div>

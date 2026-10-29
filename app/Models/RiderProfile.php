@@ -54,6 +54,16 @@ class RiderProfile extends Model
         return $this->hasMany(RiderBarangayAssignment::class);
     }
 
+    public function earnings(): HasMany
+    {
+        return $this->hasMany(RiderEarning::class);
+    }
+
+    public function deliveryRatings(): HasMany
+    {
+        return $this->hasMany(RiderDeliveryRating::class);
+    }
+
     public function isApproved(): bool
     {
         return $this->status === RiderStatus::Approved;

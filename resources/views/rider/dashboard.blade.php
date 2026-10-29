@@ -37,7 +37,7 @@
         </section>
     @else
         @if(auth()->user()->role === \App\Enums\UserRole::Rider)
-            <section class="fs-card p-5 mt-5">
+            <section id="delivery-requests" class="fs-card p-5 mt-5 scroll-mt-32">
                 <h2 class="font-semibold">Delivery requests</h2>
                 <p class="text-sm text-text-muted mt-2">Requests match your registered city: {{ $profile->city }}. Going unavailable does not cancel accepted deliveries.</p>
                 <form method="post" action="{{ route('rider.availability') }}" class="my-4">
@@ -60,6 +60,27 @@
                 </div>
             @endforeach
         </dl>
+
+        <section class="fs-card mb-5 p-5" aria-labelledby="rider-feedback-heading">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 id="rider-feedback-heading" class="font-semibold">Buyer delivery feedback</h2>
+                    <p class="mt-1 text-sm text-text-muted">{{ $ratingStats->total }} {{ (int) $ratingStats->total === 1 ? 'rating' : 'ratings' }} · {{ $ratingStats->total ? number_format((float) $ratingStats->average, 1).' / 5 average' : 'No ratings yet' }}</p>
+                </div>
+                <a href="{{ route('rider.history.index') }}" class="text-sm text-accent underline">View delivery history</a>
+            </div>
+            @if($recentRatings->isNotEmpty())
+                <ul class="mt-3 space-y-2">
+                    @foreach($recentRatings as $rating)
+                        <li class="rounded-lg border border-surface-border p-3 text-sm">
+                            <span class="font-medium">{{ $rating->rating }} / 5</span>
+                            @if($rating->tags)<p class="mt-1 text-xs text-text-muted">{{ implode(' · ', $rating->tags) }}</p>@endif
+                            @if($rating->feedback)<p class="mt-1 text-text-muted">{{ $rating->feedback }}</p>@else<p class="mt-1 text-text-muted">No written comment.</p>@endif
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </section>
 
         <section aria-labelledby="rider-deliveries" class="fs-card p-4 sm:p-5">
             <div class="flex flex-wrap items-start justify-between gap-4">

@@ -10,6 +10,7 @@ use App\Models\Fulfillment;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\RiderBarangayAssignment;
+use App\Models\RiderEarning;
 use App\Models\RiderProfile;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -164,6 +165,16 @@ class FulfillmentService
 
             $part->status = $next;
             $part->save();
+            if ($next === Status::Completed && $part->rider_id !== null) {
+                RiderEarning::query()->firstOrCreate(
+                    ['fulfillment_id' => $part->id],
+                    [
+                        'rider_profile_id' => $part->rider_id,
+                        'amount' => $part->shipping_fee,
+                        'earned_at' => now(),
+                    ]
+                );
+            }
             if ($next === Status::Ready) {
                 app(DeliveryRequestService::class)->notifyRiders($part);
             }
