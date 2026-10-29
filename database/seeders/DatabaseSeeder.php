@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $this->call(DemoCatalogProductsSeeder::class);
         $this->call(SellerDemoProductsSeeder::class);
 
         if ($buyer->addresses()->count() === 0) {
