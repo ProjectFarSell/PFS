@@ -49,18 +49,7 @@ class RegisterController extends Controller
         $request->session()->regenerate();
         GuestSession::forget();
 
-        if (CheckoutIntent::active()) {
-            return redirect()->intended(route('checkout.create'));
-        }
-
-        if ($intent === 'rider') {
-            return redirect()->route('rider.register');
-        }
-
-        if ($intent === 'seller') {
-            return redirect()->route('seller.apply');
-        }
-
-        return redirect()->route('home');
+        // Keep the browser on its current local hostname so the new session cookie remains available.
+        return redirect()->away('/account/verify');
     }
 }

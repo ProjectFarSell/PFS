@@ -35,6 +35,22 @@
             </form>
         </section>
 
+        @php
+            $verificationChannel = $user->verification_channel;
+            $isVerified = $verificationChannel === 'email' ? (bool) $user->email_verified_at : ($verificationChannel === 'phone' && (bool) $user->phone_verified_at);
+        @endphp
+        <section class="fs-card p-5" aria-labelledby="account-verification">
+            <h2 id="account-verification" class="font-semibold">Account verification</h2>
+            @if ($isVerified)
+                <p class="mt-1 text-sm text-success">Your {{ $verificationChannel }} is verified.</p>
+            @elseif ($verificationChannel)
+                <p class="mt-1 text-sm text-text-muted">Your {{ $verificationChannel }} verification is not complete yet.</p>
+            @else
+                <p class="mt-1 text-sm text-text-muted">Choose email or phone verification when you are ready.</p>
+            @endif
+            <a href="/account/verify" class="btn-outline mt-4 inline-flex">{{ $isVerified ? 'View verification' : 'Verify account' }}</a>
+        </section>
+
         <section class="fs-card p-5" aria-labelledby="change-password">
             <h2 id="change-password" class="font-semibold">Change password</h2>
             <p class="mt-1 text-sm text-text-muted">You will be signed out after changing your password. Other sessions will be invalidated; your current session cart will be cleared.</p>

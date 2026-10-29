@@ -53,6 +53,7 @@ class ProfileCrudTest extends TestCase
             $this->assertSame('+63 917 123 4567', $user->phone);
             $this->assertSame($role, $user->role);
             $this->assertSame($originalPassword, $user->password);
+            $this->actingAs($user)->get(route('account.profile.edit'))->assertSee('Account verification')->assertSee('href="/account/verify"', false);
         }
         $this->assertSame($other->name, $other->fresh()->name);
         $this->assertSame($other->email, $other->fresh()->email);
@@ -82,6 +83,16 @@ class ProfileCrudTest extends TestCase
             ->assertSessionHasNoErrors();
         $this->assertNull($user->fresh()->phone);
         $this->assertSame($verifiedAt, $user->fresh()->email_verified_at->toISOString());
+    }
+
+    public function test_changing_a_verified_phone_requires_verification_again(): void
+    {
+        $user = User::factory()->create(['phone' => '09171234567', 'phone_verified_at' => now()]);
+
+        $this->actingAs($user)->patch(route('account.profile.update'), $this->details($user, ['phone' => '09179999999']))
+            ->assertSessionHasNoErrors();
+
+        $this->assertNull($user->fresh()->phone_verified_at);
     }
 
     public function test_invalid_details_and_case_insensitive_duplicate_email_are_rejected_without_password_flash(): void

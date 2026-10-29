@@ -34,7 +34,7 @@ class SellerApprovalTest extends TestCase
     public function test_seller_signup_stays_buyer_and_routes_to_application(): void
     {
         $this->post(route('register'), ['name' => 'Seller applicant', 'email' => 'applicant@example.test', 'password' => 'password', 'password_confirmation' => 'password', 'intent' => 'seller'])
-            ->assertRedirect(route('seller.apply'));
+            ->assertRedirect('/account/verify');
         $user = User::sole();
         $this->assertSame(UserRole::Buyer, $user->role);
         $this->get(route('seller.apply'))->assertOk()->assertSee('Open your FarSell shop');

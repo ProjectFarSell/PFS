@@ -47,4 +47,11 @@ return [
         'from' => env('INVOICE_GENERATOR_FROM', env('APP_NAME', 'FarSell')),
     ],
 
+    'otp' => [
+        'sms_driver' => env('OTP_SMS_DRIVER', 'log'),
+        'semaphore' => [
+            'api_key' => env('SEMAPHORE_API_KEY'),
+        ],
+    ],
+
 ];

@@ -21,7 +21,7 @@ class CheckoutSignInTest extends TestCase
         $this->get(route('login'))->assertOk()->assertSee('Log in to checkout')
             ->assertSee('Create an account')->assertSee(route('register'), false)
             ->assertDontSee('Continue as guest')->assertDontSee(route('guest.start'), false);
-        $this->get(route('register'))->assertOk()->assertSee('Create account and continue')
+        $this->get(route('register'))->assertOk()->assertSee('Create Account and continue')
             ->assertSee(route('login'), false)->assertDontSee('Continue as guest');
         $this->assertSame([$product->id => 2], session(Cart::SESSION_KEY));
     }
@@ -59,7 +59,7 @@ class CheckoutSignInTest extends TestCase
         $this->post(route('register'), [
             'name' => 'New checkout buyer', 'email' => 'checkout@example.test',
             'password' => 'password123', 'password_confirmation' => 'password123', 'intent' => 'buyer',
-        ])->assertRedirect(route('checkout.create'));
+        ])->assertRedirect('/account/verify');
         $this->assertAuthenticated();
         $this->get(route('checkout.create'))->assertRedirect(route('account.addresses.create'))
             ->assertSessionHas('checkout.needs_address', true);
@@ -73,7 +73,7 @@ class CheckoutSignInTest extends TestCase
             'name' => 'New buyer', 'email' => 'invalid',
             'password' => 'password123', 'password_confirmation' => 'password123',
         ])->assertRedirect(route('register'))->assertSessionHasErrors(['email'], null, 'register');
-        $this->get(route('register'))->assertOk()->assertSee('Create account and continue');
+        $this->get(route('register'))->assertOk()->assertSee('Create Account and continue');
         $this->get(route('login'))->assertSee('Log in to checkout')->assertDontSee('Continue as guest');
         $this->assertGuest();
     }

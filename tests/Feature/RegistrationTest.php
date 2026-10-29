@@ -22,7 +22,7 @@ class RegistrationTest extends TestCase
 
         $this->assertAuthenticated();
         $this->assertDatabaseHas('users', ['email' => 'buyer@test.com']);
-        $response->assertRedirect(route('home'));
+        $response->assertRedirect('/account/verify');
     }
 
     public function test_role_stays_buyer_regardless_of_intent(): void
@@ -53,7 +53,7 @@ class RegistrationTest extends TestCase
             'intent' => 'rider',
         ]);
 
-        $response->assertRedirect(route('rider.register'));
+        $response->assertRedirect('/account/verify');
     }
 
     public function test_registration_requires_valid_email(): void
@@ -80,5 +80,18 @@ class RegistrationTest extends TestCase
 
         $response->assertSessionHasErrors('password', null, 'register');
         $this->assertGuest();
+    }
+
+    public function test_registration_defers_verification_method_selection(): void
+    {
+        $response = $this->post('/register', [
+            'name' => 'Email Only',
+            'email' => 'email-only@test.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertRedirect('/account/verify');
+        $this->assertDatabaseHas('users', ['email' => 'email-only@test.com', 'phone' => null, 'verification_channel' => null]);
     }
 }

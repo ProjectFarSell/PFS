@@ -11,9 +11,10 @@ use App\Http\Controllers\Admin\ProductInventoryController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\RiderApplicationController;
 use App\Http\Controllers\Admin\SellerApplicationController;
+use App\Http\Controllers\Auth\ContactVerificationController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\GuestSessionController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Catalog\ProductController;
@@ -71,6 +72,13 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
+
+Route::middleware('auth')->prefix('/account/verify')->name('contact-verification.')->group(function () {
+    Route::get('/', [ContactVerificationController::class, 'show'])->name('show');
+    Route::post('/choose', [ContactVerificationController::class, 'choose'])->middleware('throttle:3,1')->name('choose');
+    Route::post('/{channel}/send', [ContactVerificationController::class, 'send'])->middleware('throttle:3,1')->name('send');
+    Route::post('/{channel}', [ContactVerificationController::class, 'verify'])->middleware('throttle:10,1')->name('verify');
+});
 
 Route::get('/admin', DashboardController::class)
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])

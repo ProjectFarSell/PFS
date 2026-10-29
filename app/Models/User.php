@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
-use App\Models\SavedItem;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,6 +22,7 @@ class User extends Authenticatable
         'password',
         'role',
         'phone',
+        'verification_channel',
         'avatar_path',
         'google_id',
     ];
@@ -36,6 +36,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
         ];
@@ -47,7 +48,7 @@ class User extends Authenticatable
             return Storage::disk('public')->url($this->avatar_path);
         }
 
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=FFFFFF&background=282832&bold=true';
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&color=FFFFFF&background=282832&bold=true';
     }
 
     public function getInitialsAttribute(): string
@@ -86,6 +87,11 @@ class User extends Authenticatable
     public function savedItems(): HasMany
     {
         return $this->hasMany(SavedItem::class);
+    }
+
+    public function verificationChallenges(): HasMany
+    {
+        return $this->hasMany(VerificationChallenge::class);
     }
 
     public function hasSavedProduct(int $productId): bool

@@ -74,6 +74,9 @@ class ProfileController extends Controller
                 $this->clearPasswordResetTokens($account);
                 $account->email_verified_at = null;
             }
+            if ($account->phone !== ($data['phone'] ?? null)) {
+                $account->phone_verified_at = null;
+            }
             // Explicit allowlist: never accept role, approval fields or another user's ID.
             $account->fill([
                 'name' => $data['name'],
