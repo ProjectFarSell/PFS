@@ -13,6 +13,7 @@ use App\Models\RiderBarangayAssignment;
 use App\Models\RiderEarning;
 use App\Models\RiderProfile;
 use App\Models\User;
+use App\Services\Notifications\OrderNotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -178,8 +179,9 @@ class FulfillmentService
             if ($next === Status::Ready) {
                 app(DeliveryRequestService::class)->notifyRiders($part);
             }
-            $part->events()->create(['actor_id' => $actor->id, 'status' => $next->value, 'note' => $note]);
+            $event = $part->events()->create(['actor_id' => $actor->id, 'status' => $next->value, 'note' => $note]);
             $this->syncOrder($order);
+            app(OrderNotificationService::class)->shipmentChanged($event);
         }, 3);
     }
 

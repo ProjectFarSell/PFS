@@ -38,6 +38,7 @@
                     <a href="{{ route('admin.riders.barangays.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.riders.barangays.index')) aria-current="page" @endif>Barangay Assignments</a>
                     <a href="{{ route('admin.rider-records.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.rider-records.*')) aria-current="page" @endif>Rider Records</a>
                     <a href="{{ route('admin.reviews.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.reviews.*')) aria-current="page" @endif>Reviews</a>
+                    <a href="{{ route('admin.notifications.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.notifications.*')) aria-current="page" @endif>Notifications</a>
                     <a href="{{ route('fulfillments.index') }}" class="portal-nav-link" @if(request()->routeIs('fulfillments.*')) aria-current="page" @endif>Dispatch</a>
                 @elseif($portalRole === \App\Enums\UserRole::Seller)
                     <a href="{{ route('seller.dashboard') }}" class="portal-nav-link">Dashboard</a>

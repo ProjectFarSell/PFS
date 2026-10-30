@@ -4,14 +4,17 @@ namespace App\Providers;
 
 use App\Contracts\DeliveryEtaService;
 use App\Contracts\DeliveryFeeService;
+use App\Contracts\OrderNotificationSender;
 use App\Models\Category;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Services\Checkout\FlatRateDeliveryFeeService;
 use App\Services\Delivery\CityBasedDeliveryEtaService;
+use App\Services\Notifications\MailOrderNotificationSender;
 use App\Support\Cart;
 use App\Enums\UserRole;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Foundation\DevCommands;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
@@ -27,10 +30,16 @@ class AppServiceProvider extends ServiceProvider
         ));
 
         $this->app->bind(DeliveryEtaService::class, CityBasedDeliveryEtaService::class);
+        $this->app->bind(OrderNotificationSender::class, MailOrderNotificationSender::class);
     }
 
     public function boot(): void
     {
+        if ($this->app->runningInConsole() && $this->app->environment('local')) {
+            DevCommands::artisan('notifications:work', 'notifications');
+            DevCommands::artisan('schedule:work', 'scheduler');
+        }
+
         RateLimiter::for('otp-send', function (Request $request): Limit {
             return Limit::perMinute(3)
                 ->by('otp-send:'.($request->user()?->id ?? $request->ip()))

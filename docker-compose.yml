@@ -36,6 +36,15 @@ services:
     networks:
       - farsell
 
+  mailpit:
+    image: axllent/mailpit:v1.27.4
+    profiles: [mail]
+    ports:
+      - "127.0.0.1:8025:8025"
+      - "127.0.0.1:1025:1025"
+    networks:
+      - farsell
+
   vite:
     image: node:20-alpine
     working_dir: /var/www/html

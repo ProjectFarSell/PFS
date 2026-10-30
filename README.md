@@ -266,6 +266,46 @@ Validation on Windows: `php -d extension=gd vendor/phpunit/phpunit/phpunit` enab
 
 Automatic offer timing: run `php artisan schedule:work` in a separate terminal for minute-by-minute dispatch even when rider dashboards are closed. Open dashboards also check every 15 seconds. Run `php artisan riders:dispatch` to trigger one dispatch pass manually. An expired offer can never be accepted, even if the next scheduler pass has not yet run. Apply all migrations before starting the scheduler.
 
+## Background order notifications
+
+Order confirmation emails, new shop orders, buyer shipment updates, rider assignments, and rider completion/earnings messages use the `notifications` queue. Notification records commit with their order or shipment event. Jobs are added after the transaction commits; a queue outage leaves a pending record for the scheduler to recover. Each event/recipient has one notification record. Workers skip already-sent messages, outdated shipment updates, inactive assignments, and changed recipient addresses. Delayed status messages describe the recorded event and link to the current authenticated order/delivery page; they do not contain private pickup addresses, buyer addresses, or delivery PINs.
+
+Apply migrations, then keep the notification worker and scheduler running in separate terminals:
+
+```powershell
+php artisan migrate
+php artisan notifications:work
+```
+
+```powershell
+php artisan schedule:work
+```
+
+`composer dev` also starts the notification worker and scheduler in the local environment. Starting only `php artisan serve` or Vite does not start these workers. `php artisan notifications:work --once` handles one available job; `php artisan notifications:dispatch` manually queues pending records after an enqueueing failure.
+
+The default `NOTIFICATION_MAILER=log` writes test emails to the Laravel log. To inspect messages in a local SMTP inbox, start the optional [Mailpit sandbox](https://mailpit.axllent.org/docs/install/docker/):
+
+```powershell
+docker compose --profile mail up -d mailpit
+```
+
+Set these values in your own `.env`, then run `php artisan config:clear` and restart the notification worker:
+
+```dotenv
+ORDER_NOTIFICATIONS_ENABLED=true
+NOTIFICATION_QUEUE_CONNECTION=database
+NOTIFICATION_QUEUE=notifications
+NOTIFICATION_MAILER=mailpit
+MAILPIT_HOST=127.0.0.1
+MAILPIT_SMTP_PORT=1025
+```
+
+Use `MAILPIT_HOST=mailpit` when PHP runs in the same Docker Compose network. Open `http://localhost:8025` to inspect captured messages. The optional container binds its inbox and SMTP ports to the local computer. Mailpit requires no API key. For an actual email provider, select an already configured Laravel mailer with `NOTIFICATION_MAILER` (for example, `smtp` uses the existing `MAIL_*` settings). Email OTP continues to use `MAIL_MAILER` directly so its immediate success/failure and resend timing remain consistent.
+
+**Admin → Notifications** shows pending, queued, sending, retrying, sent, failed, and skipped deliveries, with attempt counts and retry timing. A message gets up to four automatic attempts, with delays of 60, 300, and 900 seconds. Failed or pending messages can be retried manually from this page. Pending recovery runs every minute through the scheduler. `php artisan queue:failed` shows Laravel's failed-job records; manually requeueing a message from the admin page retains the earlier failure as history. Changing mail/queue settings requires restarting long-running workers (`php artisan queue:restart`, or stop and restart the local worker).
+
+Sent means the chosen mail transport accepted the message; log and Mailpit sends are test deliveries. Email inbox delivery receipts are not tracked. SMTP provides no shared transaction with the application database, so a worker crash after SMTP acceptance but before recording success can produce a duplicate on retry. Notification failures do not undo a committed order or delivery transition. Set `ORDER_NOTIFICATIONS_ENABLED=false` to stop creating/enqueueing new notification records; already-queued jobs remain eligible for processing.
+
 ## Guest-first storefront
 
 Opening `/` now displays the marketplace directly, for both visitors and signed-in users. `/home` remains compatible and renders the same storefront. Visitors can browse products/shops and add to cart without signing in or starting a guest-mode session. Header/mobile navigation still provides login and registration; checkout, account/order pages, and seller/rider applications continue to require authentication. Checkout login/registration preserves the cart and intended checkout destination.

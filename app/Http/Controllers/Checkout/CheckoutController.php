@@ -6,10 +6,10 @@ use App\Contracts\DeliveryFeeService;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
-use App\Mail\OrderConfirmationMail;
 use App\Models\Order;
 use App\Services\Invoices\InvoiceGeneratorApi;
 use App\Services\Orders\FulfillmentService;
+use App\Services\Notifications\OrderNotificationService;
 use App\Services\Orders\StockReservationService;
 use App\Support\Cart;
 use Illuminate\Http\RedirectResponse;
@@ -17,7 +17,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -120,20 +119,12 @@ class CheckoutController extends Controller
 
             $this->stock->reserve($lockedLines);
             app(FulfillmentService::class)->createForOrder($order);
+            app(OrderNotificationService::class)->orderPlaced($order);
 
             return $order;
         });
 
         Cart::clearCheckout();
-
-        try {
-            Mail::to($order->guest_email)->send(new OrderConfirmationMail($order->load('items')));
-        } catch (\Throwable $exception) {
-            Log::warning('Order confirmation email could not be sent.', [
-                'order_id' => $order->id,
-                'exception' => $exception::class,
-            ]);
-        }
 
         return redirect()->route('orders.show', $order)->with('status', 'Order placed.');
     }

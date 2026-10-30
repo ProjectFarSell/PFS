@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\RiderApplicationController;
 use App\Http\Controllers\Admin\RiderRecordsController;
 use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\SellerApplicationController;
 use App\Http\Controllers\Auth\ContactVerificationController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -124,6 +125,11 @@ Route::get('/admin/rider-records', [RiderRecordsController::class, 'index'])
 Route::get('/admin/reviews', [ReviewController::class, 'index'])
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.reviews.index');
+
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/notifications')->name('admin.notifications.')->group(function () {
+    Route::get('/', [NotificationController::class, 'index'])->name('index');
+    Route::post('/{delivery}/retry', [NotificationController::class, 'retry'])->middleware('throttle:10,1')->name('retry');
+});
 
 Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/riders')->name('admin.riders.')->group(function () {
     Route::get('/', [RiderApplicationController::class, 'index'])->name('index');
