@@ -22,6 +22,7 @@ return new class extends Migration
     {
         Schema::table('shops', function (Blueprint $table) {
             $table->dropForeign(['psgc_city_municipality_id']);
+            $table->dropIndex(['psgc_city_municipality_id']);
             $table->dropColumn('psgc_city_municipality_id');
         });
     }

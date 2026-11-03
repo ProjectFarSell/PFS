@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
+use App\Services\Operations\ReleaseReadiness;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -89,6 +90,16 @@ class ReleaseHardeningTest extends TestCase
             $this->assertStringContainsString('must not be seeded', $exception->getMessage());
         }
         $this->assertDatabaseCount('users', 0);
+    }
+
+    public function test_local_settings_cannot_pass_a_production_readiness_check(): void
+    {
+        config(['app.debug' => true, 'app.key' => '', 'app.url' => 'http://localhost:8000', 'session.secure' => false, 'release.allow_demo_payments' => true]);
+        $checks = collect(app(ReleaseReadiness::class)->checks(true))->keyBy('name');
+        foreach (['deployment_environment', 'debug_disabled', 'stable_application_key', 'https_url', 'secure_session_cookies', 'real_payment_mode'] as $name) {
+            $this->assertFalse($checks[$name]['pass']);
+        }
+        $this->artisan('release:check', ['--boot' => true, '--json' => true])->assertFailed();
     }
 
     public function test_shop_query_count_does_not_grow_with_each_rendered_product(): void

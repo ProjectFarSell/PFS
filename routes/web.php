@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\OperationsController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\PrivacyRequestController;
 use App\Http\Controllers\Admin\ProductInventoryController;
@@ -42,12 +43,20 @@ use App\Http\Controllers\Seller\ProductController as SellerProducts;
 use App\Http\Middleware\EnsureBuyerOrGuest;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\RedirectPrivateRolesFromStorefront;
+use App\Services\Operations\OperationalStatus;
 use Illuminate\Support\Facades\Route;
 
 // ── Portal / entry point ──────────────────────────────────────────────────────
 // Browsing is public by default. Keep both route names/URLs compatible
 // with existing links; neither requires a guest-session entry step.
 Route::view('/privacy', 'privacy')->name('privacy');
+Route::get('/ready', function (OperationalStatus $status) {
+    $healthy = $status->inspect()['healthy'];
+
+    return response()->json(['status' => $healthy ? 'ready' : 'unavailable'], $healthy ? 200 : 503);
+})->name('health.ready');
+Route::get('/admin/operations', OperationsController::class)
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])->name('admin.operations');
 Route::middleware(RedirectPrivateRolesFromStorefront::class)->group(function () {
     Route::get('/', HomeController::class)->name('welcome');
 
