@@ -7,6 +7,7 @@ use App\Models\Shop;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ReleaseHardeningTest extends TestCase
@@ -90,4 +91,22 @@ class ReleaseHardeningTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    public function test_shop_query_count_does_not_grow_with_each_rendered_product(): void
+    {
+        $buyer = User::factory()->create();
+        $shop = Shop::factory()->create();
+        Product::factory()->create(['shop_id' => $shop->id]);
+        $this->actingAs($buyer);
+        DB::enableQueryLog();
+        $this->get(route('shops.show', $shop))->assertOk();
+        $small = count(DB::getQueryLog());
+        DB::disableQueryLog();
+        Product::factory()->count(11)->create(['shop_id' => $shop->id]);
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+        $this->get(route('shops.show', $shop))->assertOk();
+        $large = count(DB::getQueryLog());
+        DB::disableQueryLog();
+        $this->assertLessThanOrEqual($small + 3, $large, 'Shop cards must not issue a shop/category/save query for every product.');
+    }
 }

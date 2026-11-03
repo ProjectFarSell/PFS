@@ -167,7 +167,7 @@ class ProductController extends Controller
         $product->load(['shop', 'category', 'variants' => fn ($q) => $q->where('is_active', true)->orderBy('id')]);
 
         $related = Product::query()
-            ->with('shop')
+            ->with(['shop', 'category'])
             ->visible()
             ->where('category_id', $product->category_id)
             ->whereKeyNot($product->id)
@@ -186,6 +186,9 @@ class ProductController extends Controller
             ->latest('id')->paginate(5, ['*'], 'reviews_page')->withQueryString();
         $reviewAverage = $product->reviews()->avg('rating');
 
-        return view('catalog.show', compact('product', 'related', 'etaHours', 'reviews', 'reviewAverage'));
+        $savedProductIds = auth()->user()?->role === UserRole::Buyer
+            ? auth()->user()->savedItems()->pluck('product_id')->all() : [];
+
+        return view('catalog.show', compact('product', 'related', 'etaHours', 'reviews', 'reviewAverage', 'savedProductIds'));
     }
 }
