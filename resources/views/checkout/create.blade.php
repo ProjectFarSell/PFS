@@ -29,7 +29,9 @@
             <label class="block text-sm">Payment
                 <select name="payment_method" class="mt-1 w-full rounded-lg border-surface-border text-sm focus:border-accent focus:ring-accent">
                     <option value="cod" @selected(old('payment_method') === 'cod')>Cash on delivery</option>
-                    <option value="gateway_stub" @selected(old('payment_method') === 'gateway_stub')>Card / e-wallet (stub)</option>
+                    @if(config('release.allow_demo_payments'))
+                        <option value="gateway_stub" @selected(old('payment_method') === 'gateway_stub')>Card / e-wallet (stub)</option>
+                    @endif
                 </select>
             </label>
 

@@ -8,8 +8,9 @@ use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\Invoices\InvoiceGeneratorApi;
-use App\Services\Orders\FulfillmentService;
 use App\Services\Notifications\OrderNotificationService;
+use App\Services\Orders\CheckoutAvailability;
+use App\Services\Orders\FulfillmentService;
 use App\Services\Orders\StockReservationService;
 use App\Support\Cart;
 use Illuminate\Http\RedirectResponse;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
@@ -30,6 +32,7 @@ class CheckoutController extends Controller
 
     public function create(Request $request): View|RedirectResponse
     {
+        app(CheckoutAvailability::class)->ensureOpen();
         if (Cart::checkoutCount() === 0) {
             return redirect()->route('cart.index')->with('status', 'Your cart is empty.');
         }
@@ -62,6 +65,7 @@ class CheckoutController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        app(CheckoutAvailability::class)->ensureOpen();
         if (Cart::checkoutCount() === 0) {
             return redirect()->route('cart.index');
         }
@@ -79,6 +83,9 @@ class CheckoutController extends Controller
             ->with(['psgcRegion', 'psgcProvince', 'psgcCityMunicipality', 'psgcBarangay'])
             ->findOrFail($data['address_id']);
         $paymentMethod = PaymentMethod::from($data['payment_method']);
+        if ($paymentMethod === PaymentMethod::GatewayStub && ! config('release.allow_demo_payments')) {
+            throw ValidationException::withMessages(['payment_method' => 'This payment method is unavailable. Please use cash on delivery.']);
+        }
         $initialStatus = $paymentMethod === PaymentMethod::Cod
             ? OrderStatus::PendingPayment
             : OrderStatus::Paid;
@@ -86,6 +93,7 @@ class CheckoutController extends Controller
 
         $order = DB::transaction(function () use ($lines, $address, $paymentMethod, $initialStatus): Order {
             $lockedLines = $this->stock->lockAndPrepare($lines);
+            app(CheckoutAvailability::class)->ensureServiceable($address, $lockedLines);
             $subtotal = (float) $lockedLines->sum('line_total');
             $shipping = $this->deliveryFees->calculate($address, $lockedLines);
 
