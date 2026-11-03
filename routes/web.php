@@ -178,6 +178,12 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/se
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::middleware(EnsureUserHasRole::class.':buyer')->prefix('account/notifications')->name('account.notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Account\NotificationController::class, 'index'])->name('index');
+        Route::get('/unread', [App\Http\Controllers\Account\NotificationController::class, 'unread'])->middleware('throttle:30,1')->name('unread');
+        Route::post('/read-all', [App\Http\Controllers\Account\NotificationController::class, 'readAll'])->name('read-all');
+        Route::post('/{notification}/open', [App\Http\Controllers\Account\NotificationController::class, 'open'])->name('open');
+    });
     Route::get('/chat', [ConversationController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('chat.index');
     Route::get('/chat/widget/conversations', [ConversationController::class, 'widgetConversations'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('chat.widget.conversations');
     Route::post('/chat/products/{product}', [ConversationController::class, 'start'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('chat.start');

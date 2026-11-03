@@ -172,6 +172,7 @@
                     @endauth
 
                     @if($canUseCart)
+                    <x-buyer-notification-bell />
                     {{-- Cart --}}
                     <a href="{{ route('cart.index') }}"
                        class="theme-toggle relative"

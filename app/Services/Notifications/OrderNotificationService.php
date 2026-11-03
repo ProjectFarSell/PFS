@@ -18,6 +18,7 @@ class OrderNotificationService
 {
     public function orderPlaced(Order $order): void
     {
+        app(BuyerInbox::class)->record($order, 'order:'.$order->id.':placed', 'Order placed', 'Your order '.$order->number.' is awaiting seller confirmation.');
         if (! config('notifications.enabled')) return;
         $order->loadMissing(['buyer', 'fulfillments.shop.owner']);
         $this->record('order:'.$order->id.':confirmation', 'order_confirmation', $order->buyer, $order, null, null, [
@@ -41,6 +42,9 @@ class OrderNotificationService
 
     public function shipmentChanged(FulfillmentEvent $event): void
     {
+        $event->loadMissing('fulfillment.order');
+        $shipment = $event->fulfillment;
+        app(BuyerInbox::class)->record($shipment->order, 'event:'.$event->id, 'Shipment: '.FulfillmentStatus::from($event->status)->label(), $shipment->shop_name.' — '.FulfillmentStatus::from($event->status)->label().'.');
         if (! config('notifications.enabled')) return;
         $event->loadMissing(['fulfillment.order.buyer', 'fulfillment.shop.owner', 'fulfillment.rider.user']);
         $part = $event->fulfillment;
