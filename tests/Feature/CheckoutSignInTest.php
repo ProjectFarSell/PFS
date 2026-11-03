@@ -56,7 +56,7 @@ class CheckoutSignInTest extends TestCase
     {
         $product = Product::factory()->create();
         $this->withSession([Cart::SESSION_KEY => [$product->id => 1]])->get(route('checkout.create'));
-        $this->post(route('register'), [
+        $this->post(route('register'), ['privacy_consent' => '1',
             'name' => 'New checkout buyer', 'email' => 'checkout@example.test',
             'password' => 'password123', 'password_confirmation' => 'password123', 'intent' => 'buyer',
         ])->assertRedirect('/account/verify');

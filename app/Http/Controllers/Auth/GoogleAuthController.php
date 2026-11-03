@@ -7,21 +7,30 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Support\CheckoutIntent;
 use App\Support\GuestSession;
+use App\Support\PrivacyNotice;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Throwable;
 
 class GoogleAuthController extends Controller
 {
-    public function redirect(Request $request): RedirectResponse
+    public function redirect(Request $request): View
     {
+        return view('auth.google-consent');
+    }
+
+    public function start(Request $request): RedirectResponse
+    {
+        $request->validate(['privacy_consent' => ['required', 'accepted']]);
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google sign-in is not configured.');
         $state = Str::random(40);
         $request->session()->put('google_oauth_state', $state);
+        $request->session()->put('google_privacy_consent', PrivacyNotice::VERSION);
         $query = http_build_query([
             'client_id' => config('services.google.client_id'),
             'redirect_uri' => config('services.google.redirect'),
@@ -37,7 +46,9 @@ class GoogleAuthController extends Controller
     public function callback(Request $request): RedirectResponse
     {
         $state = $request->session()->pull('google_oauth_state');
+        $consent = $request->session()->pull('google_privacy_consent');
         abort_unless(is_string($state) && hash_equals($state, (string) $request->query('state')), 419, 'Google sign-in expired. Please try again.');
+        abort_unless($consent === PrivacyNotice::VERSION, 419, 'Please review the privacy notice before signing in with Google.');
         if ($request->query('error') || ! $request->filled('code')) {
             return to_route('login')->withErrors(['google' => 'Google sign-in was cancelled.']);
         }
@@ -86,6 +97,7 @@ class GoogleAuthController extends Controller
             }
         }
 
+        $user->forceFill(['privacy_accepted_at' => now(), 'privacy_notice_version' => PrivacyNotice::VERSION])->save();
         Auth::login($user, true);
         $request->session()->regenerate();
         GuestSession::forget();

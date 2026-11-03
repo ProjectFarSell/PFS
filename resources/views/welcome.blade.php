@@ -81,13 +81,14 @@
                             @else
                                 <div><label for="reg_intent" class="fs-label">I'm here to</label><select id="reg_intent" name="intent" class="fs-input"><option value="buyer">Discover &amp; shop</option><option value="seller" @selected(old('intent', request('intent')) === 'seller')>Sell on FarSell</option><option value="rider" @selected(old('intent', request('intent')) === 'rider')>Deliver &amp; earn</option></select><p class="mt-1.5 text-xs text-text-muted">Start as a buyer. Seller and rider access follow application review.</p></div>
                             @endif
+                            <label class="flex items-start gap-2 text-xs text-text-muted" for="privacy-consent"><input id="privacy-consent" type="checkbox" name="privacy_consent" value="1" required @checked(old('privacy_consent')) class="mt-1 rounded border-surface-border text-accent"><span>I have read the <a href="{{ route('privacy') }}" target="_blank" rel="noopener" class="text-accent underline">privacy notice</a> and agree to the collection and use of my data for my FarSell account and requested services.</span></label>
                             <button type="submit" :disabled="registerLoading" class="btn-accent w-full min-h-12"><span x-text="registerLoading ? 'Creating Account…' : @js($checkoutIntent ? 'Create Account and continue' : 'Create Account')">{{ $checkoutIntent ? 'Create Account and continue' : 'Create Account' }}</span><span x-show="!registerLoading" aria-hidden="true">→</span></button>
                         </form>
                         @include('auth.partials.google-access')
                         <p class="mt-4 text-center text-sm text-text-muted">Already part of FarSell? <a href="{{ route('login') }}" @click.prevent="tab = 'login'; $nextTick(() => $refs.loginTab.focus())" class="inline-flex min-h-11 items-center font-semibold text-accent hover:underline">Log in</a></p>
                     </div>
                 </div>
-                <p class="mt-5 border-t border-surface-border/40 pt-4 text-center text-xs text-text-muted">FarSell Marketplace — Quality Deals &amp; Local Surplus</p>
+                <p class="mt-5 border-t border-surface-border/40 pt-4 text-center text-xs text-text-muted">FarSell Marketplace — Quality Deals &amp; Local Surplus · <a href="{{ route('privacy') }}" class="text-accent underline">Privacy notice</a></p>
             </div>
         </section>
     </div>

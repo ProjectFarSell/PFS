@@ -484,6 +484,27 @@ PHP code follows [Laravel Pint](https://laravel.com/docs/pint) (PSR-12 based). R
 
 ## Integration verification
 
+### Privacy and Topic 9 security checks
+
+Run `php artisan migrate` after pulling the privacy update. `/privacy` describes the data collected, service providers, account choices, and retention limits. Registration requires an unchecked privacy consent checkbox and records the notice version and acceptance time. Google sign-in first displays a consent screen; existing accounts can also record acceptance through the privacy page linked from profile settings.
+
+Profile settings include an account-deletion review request for all account roles. Admins open **Privacy requests** from the admin dashboard and save a response visible only to the account holder and admins. A review response does not delete an account or its orders. The existing immediate-deletion option remains limited to eligible buyers without marketplace history. Default avatar initials are generated locally.
+
+The activity report and numbered screenshots are generated under `security-report/`. Its group number, section, and member names are intentionally blank. The local HTTP test is recorded as an HTTPS failure; a trusted HTTPS deployment must be tested separately. To reproduce the browser evidence on Windows with Microsoft Edge installed:
+
+```bash
+npm run build
+node tools/security-check/capture.mjs
+```
+
+The capture script uses its own SQLite database under ignored `storage/app/security-check/`, dummy accounts, and a temporary loopback server on port 8019. It blocks outbound font/avatar requests, disables email notifications, uses built frontend assets, and closes the temporary browser/server when finished. It refuses to run with cached Laravel configuration. Port 9239 is used for the temporary headless browser's loopback debugging connection. No real user database is seeded or inspected by these scripts.
+
+Run the privacy/access regression checks with:
+
+```bash
+php artisan test --filter="PrivacySecurityCheckTest|RegistrationTest|CheckoutSignInTest|SellerApprovalTest|AdminLoginTest|ProfileCrudTest|RoleIsolationTest"
+```
+
 Run automated checks against the isolated SQLite test database:
 
 ```bash

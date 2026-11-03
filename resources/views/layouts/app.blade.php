@@ -427,7 +427,7 @@
                     <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-3">About</h3>
                     <ul class="space-y-2 text-sm">
                         <li><span class="text-xs">About FarSell (coming soon)</span></li>
-                        <li><span class="text-xs">Privacy Policy (coming soon)</span></li>
+                        <li><a href="{{ route('privacy') }}" class="text-xs hover:text-white">Privacy notice</a></li>
                         <li><span class="text-xs">Terms of Service (coming soon)</span></li>
                         <li><span class="text-xs">Contact Us (coming soon)</span></li>
                     </ul>

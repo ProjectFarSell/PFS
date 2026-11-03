@@ -14,6 +14,7 @@ class RegistrationTest extends TestCase
     public function test_user_can_register(): void
     {
         $response = $this->post('/register', [
+            'privacy_consent' => '1',
             'name' => 'Test Buyer',
             'email' => 'buyer@test.com',
             'password' => 'password123',
@@ -30,6 +31,7 @@ class RegistrationTest extends TestCase
         // Regression test: registering with intent=rider or intent=seller must
         // NOT grant that role immediately. Role only changes on actual approval.
         $this->post('/register', [
+            'privacy_consent' => '1',
             'name' => 'Aspiring Rider',
             'email' => 'aspiring-rider@test.com',
             'password' => 'password123',
@@ -46,6 +48,7 @@ class RegistrationTest extends TestCase
     public function test_rider_intent_redirects_to_rider_registration(): void
     {
         $response = $this->post('/register', [
+            'privacy_consent' => '1',
             'name' => 'Aspiring Rider',
             'email' => 'aspiring-rider2@test.com',
             'password' => 'password123',
@@ -59,6 +62,7 @@ class RegistrationTest extends TestCase
     public function test_registration_requires_valid_email(): void
     {
         $response = $this->post('/register', [
+            'privacy_consent' => '1',
             'name' => 'Test User',
             'email' => 'not-an-email',
             'password' => 'password123',
@@ -72,6 +76,7 @@ class RegistrationTest extends TestCase
     public function test_registration_requires_matching_password_confirmation(): void
     {
         $response = $this->post('/register', [
+            'privacy_consent' => '1',
             'name' => 'Test User',
             'email' => 'mismatch@test.com',
             'password' => 'password123',
@@ -85,6 +90,7 @@ class RegistrationTest extends TestCase
     public function test_registration_defers_verification_method_selection(): void
     {
         $response = $this->post('/register', [
+            'privacy_consent' => '1',
             'name' => 'Email Only',
             'email' => 'email-only@test.com',
             'password' => 'password123',

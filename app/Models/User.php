@@ -37,6 +37,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
+            'privacy_accepted_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
         ];
@@ -48,7 +49,10 @@ class User extends Authenticatable
             return Storage::disk('public')->url($this->avatar_path);
         }
 
-        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&color=FFFFFF&background=282832&bold=true';
+        $initials = htmlspecialchars($this->initials, ENT_QUOTES | ENT_XML1, 'UTF-8');
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><rect width="96" height="96" rx="48" fill="#282832"/><text x="48" y="51" text-anchor="middle" dominant-baseline="middle" fill="white" font-family="Arial,sans-serif" font-size="34">'.$initials.'</text></svg>';
+
+        return 'data:image/svg+xml,'.rawurlencode($svg);
     }
 
     public function getInitialsAttribute(): string

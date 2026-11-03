@@ -2,17 +2,19 @@
 
 use App\Http\Controllers\Account\AddressController;
 use App\Http\Controllers\Account\OrderController;
+use App\Http\Controllers\Account\PrivacyController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\SavedItemController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductInventoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\PrivacyRequestController;
+use App\Http\Controllers\Admin\ProductInventoryController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RiderApplicationController;
 use App\Http\Controllers\Admin\RiderRecordsController;
-use App\Http\Controllers\Admin\ReviewController;
-use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\SellerApplicationController;
 use App\Http\Controllers\Auth\ContactVerificationController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -25,9 +27,9 @@ use App\Http\Controllers\Catalog\ShopController;
 use App\Http\Controllers\Chat\ConversationController;
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\FulfillmentController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderFeedbackController;
 use App\Http\Controllers\ProductReviewMediaController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Rider\DashboardController as RiderDashboardController;
 use App\Http\Controllers\Rider\DeliveryRequestController;
 use App\Http\Controllers\Rider\EarningsController;
@@ -45,6 +47,7 @@ use Illuminate\Support\Facades\Route;
 // ── Portal / entry point ──────────────────────────────────────────────────────
 // Browsing is public by default. Keep both route names/URLs compatible
 // with existing links; neither requires a guest-session entry step.
+Route::view('/privacy', 'privacy')->name('privacy');
 Route::middleware(RedirectPrivateRolesFromStorefront::class)->group(function () {
     Route::get('/', HomeController::class)->name('welcome');
 
@@ -71,6 +74,7 @@ Route::middleware(EnsureBuyerOrGuest::class)->group(function () {
 // ── Guest-only auth routes ────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
+    Route::post('/auth/google/start', [GoogleAuthController::class, 'start'])->middleware('throttle:10,1')->name('auth.google.start');
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
@@ -131,6 +135,11 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/no
     Route::post('/{delivery}/retry', [NotificationController::class, 'retry'])->middleware('throttle:10,1')->name('retry');
 });
 
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/privacy-requests')->name('admin.privacy-requests.')->group(function () {
+    Route::get('/', [PrivacyRequestController::class, 'index'])->name('index');
+    Route::post('/{deletionRequest}/review', [PrivacyRequestController::class, 'review'])->middleware('throttle:10,1')->name('review');
+});
+
 Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/riders')->name('admin.riders.')->group(function () {
     Route::get('/', [RiderApplicationController::class, 'index'])->name('index');
     Route::get('/barangays', [RiderApplicationController::class, 'barangayAssignments'])->name('barangays.index');
@@ -179,6 +188,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/seller/apply', [SellerApplication::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer,seller', 'throttle:10,1'])->name('seller.apply.store');
     Route::get('/account/profile', [ProfileController::class, 'show'])->name('account.profile');
     Route::get('/account/profile/edit', [ProfileController::class, 'edit'])->name('account.profile.edit');
+    Route::post('/account/privacy/consent', [PrivacyController::class, 'consent'])->middleware('throttle:5,1')->name('account.privacy.consent');
+    Route::post('/account/privacy/deletion-request', [PrivacyController::class, 'requestDeletion'])->middleware('throttle:5,1')->name('account.privacy.deletion-request');
     Route::patch('/account/profile', [ProfileController::class, 'update'])->middleware('throttle:10,1')->name('account.profile.update');
     Route::put('/account/profile/password', [ProfileController::class, 'password'])->middleware('throttle:10,1')->name('account.profile.password');
     Route::delete('/account/profile', [ProfileController::class, 'destroy'])->middleware('throttle:5,1')->name('account.profile.destroy');

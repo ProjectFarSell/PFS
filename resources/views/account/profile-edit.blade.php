@@ -7,6 +7,29 @@
         <a href="{{ route('account.profile') }}" class="text-sm text-accent underline">Back to My Profile</a>
         <h1 class="text-xl font-semibold">Edit profile &amp; security</h1>
 
+        <section class="fs-card p-5" aria-labelledby="privacy-settings">
+            <h2 id="privacy-settings" class="font-semibold">Privacy &amp; account deletion requests</h2>
+            <a href="{{ route('privacy') }}" class="mt-2 inline-block text-sm text-accent underline">Read the privacy notice and manage consent</a>
+            @if($user->privacy_accepted_at)
+                <p class="mt-2 text-xs text-text-muted">Privacy version {{ $user->privacy_notice_version }} accepted {{ $user->privacy_accepted_at->format('Y-m-d H:i') }}.</p>
+            @else
+                <p class="mt-2 text-xs text-text-muted">This existing account has no recorded privacy acknowledgement yet. You can review and accept the notice above.</p>
+            @endif
+            <p class="mt-3 text-sm text-text-muted">Ask an administrator to review account deletion, including accounts with orders or applications. Requests do not automatically erase your account or marketplace records.</p>
+            @if($deletionRequest)
+                <p role="status" class="mt-3 text-sm font-semibold">Request status: {{ ucfirst($deletionRequest->status) }}</p>
+                @if($deletionRequest->response)<p class="mt-2 whitespace-pre-wrap text-sm">{{ $deletionRequest->response }}</p>@endif
+            @endif
+            @if(!$deletionRequest || $deletionRequest->status !== 'pending')
+                <form method="post" action="{{ route('account.privacy.deletion-request') }}" class="mt-4 space-y-3">@csrf
+                    <label for="deletion-request-confirm" class="block text-sm">Type DELETE to request admin review</label>
+                    <input id="deletion-request-confirm" name="confirmation" required pattern="DELETE" autocomplete="off" class="fs-input" placeholder="DELETE">
+                    @error('confirmation', 'privacy')<p role="alert" class="text-sm text-error">{{ $message }}</p>@enderror
+                    <button class="btn-outline">Request account deletion review</button>
+                </form>
+            @endif
+        </section>
+
         <section class="fs-card p-5" aria-labelledby="edit-details">
             <h2 id="edit-details" class="font-semibold">Account details</h2>
             <p class="mt-1 text-sm text-text-muted">Update your name, sign-in email, and contact number. This does not change saved delivery addresses or past orders.</p>

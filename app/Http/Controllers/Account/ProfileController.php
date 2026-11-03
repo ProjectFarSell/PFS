@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Account;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\AccountDeletionRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,6 +51,7 @@ class ProfileController extends Controller
         return view('account.profile-edit', [
             'user' => $request->user(),
             'deletionBlocked' => $this->deletionBlocked($request->user()),
+            'deletionRequest' => AccountDeletionRequest::where('user_id', $request->user()->id)->first(),
         ]);
     }
 
