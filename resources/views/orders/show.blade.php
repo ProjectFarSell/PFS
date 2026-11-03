@@ -7,6 +7,19 @@
         <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-accent hover:text-accent">&larr; My Orders</a>
     @endif
     <h1 class="text-lg font-semibold">Order {{ $order->number }}</h1>
+    @if($errors->any())<div role="alert" class="my-4 rounded-xl border border-error p-4">{{ $errors->first() }}</div>@endif
+    @if($order->cancelled_at)
+        <p class="my-3 text-sm">Cancelled {{ $order->cancelled_at->format('M j, Y g:i A') }}: {{ $order->cancellation_reason }}</p>
+    @elseif(auth()->user()->role === \App\Enums\UserRole::Buyer && $order->canBuyerCancel())
+        <details class="my-4 rounded-xl border border-surface-border p-4 print:hidden">
+            <summary class="cursor-pointer font-semibold">Cancel order</summary>
+            <p class="my-2 text-sm">Cancel all remaining shipments before a rider is assigned. Reserved stock will be restored.</p>
+            <form method="post" action="{{ route('orders.cancel', $order) }}" class="space-y-3">@csrf
+                <label class="block text-sm">Reason<textarea name="reason" required minlength="5" maxlength="1000" class="mt-1 block w-full rounded-lg border border-surface-border bg-surface p-3">{{ old('reason') }}</textarea></label>
+                <button class="btn-outline" type="submit">Confirm cancellation</button>
+            </form>
+        </details>
+    @endif
     <p class="text-sm text-text-muted mt-1">{{ $order->status->label() }} · {{ $order->payment_method === \App\Enums\PaymentMethod::Cod ? 'Cash on delivery' : 'Demo prepaid payment' }}</p>
     @if(auth()->user()->role === \App\Enums\UserRole::Buyer)
         <div class="mt-3 flex flex-wrap gap-2 print:hidden">

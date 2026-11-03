@@ -8,7 +8,6 @@ use App\Enums\PaymentMethod;
 use App\Enums\UserRole;
 use App\Models\Fulfillment;
 use App\Models\Order;
-use App\Models\Product;
 use App\Models\RiderBarangayAssignment;
 use App\Models\RiderEarning;
 use App\Models\RiderProfile;
@@ -82,14 +81,7 @@ class FulfillmentService
                     $note = $data['reason'];
                     $part->rejection_reason = $note;
                     if ($order->stock_reserved_at && ! $order->stock_released_at && ! $part->stock_released_at) {
-                        foreach ($part->items()->orderBy('product_id')->get() as $item) {
-                            if ($item->product_variant_id) {
-                                \App\Models\ProductVariant::query()->whereKey($item->product_variant_id)->increment('stock', $item->qty);
-                                if ($item->product_id && $item->variant?->is_active) Product::query()->whereKey($item->product_id)->increment('stock', $item->qty);
-                            } elseif ($item->product_id) {
-                                Product::query()->whereKey($item->product_id)->increment('stock', $item->qty);
-                            }
-                        }
+                        app(StockReservationService::class)->releaseItems($part->items()->orderBy('product_id')->get());
                         $part->stock_released_at = now();
                     }
                 }
@@ -210,7 +202,7 @@ class FulfillmentService
     private function syncOrder(Order $order): void
     {
         $parts = $order->fulfillments()->get();
-        $active = $parts->reject(fn ($part) => $part->status === Status::Rejected);
+        $active = $parts->reject(fn ($part) => in_array($part->status, [Status::Rejected, Status::Cancelled], true));
         $stages = [Status::Pending, Status::Accepted, Status::Ready, Status::Assigned, Status::InTransit, Status::Delivered, Status::Completed];
         $earliest = $active->sortBy(fn ($part) => array_search($part->status, $stages, true))->first()?->status;
         $order->status = match ($earliest) {

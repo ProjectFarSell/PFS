@@ -151,7 +151,7 @@ class CheckoutController extends Controller
         $this->authorize('view', $order);
         $order->load('items');
 
-        if ($document === 'invoice' && filled(config('services.invoice_generator.api_key'))) {
+        if ($document === 'invoice' && $order->billableItems()->isNotEmpty() && filled(config('services.invoice_generator.api_key'))) {
             try {
                 $pdf = $invoiceGenerator->generate($order);
 

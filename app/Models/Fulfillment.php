@@ -71,6 +71,6 @@ class Fulfillment extends Model
 
     public function amount(): float
     {
-        return $this->status === FulfillmentStatus::Rejected ? 0 : (float) $this->subtotal + (float) $this->shipping_fee;
+        return in_array($this->status, [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled], true) ? 0 : (float) $this->subtotal + (float) $this->shipping_fee;
     }
 }

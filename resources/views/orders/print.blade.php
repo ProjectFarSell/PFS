@@ -30,7 +30,9 @@
         <p class="muted">The PDF service is not configured yet, so this invoice is shown in the browser’s print-ready format.</p>
     @endif
 
+    @php($documentItems = $order->billableItems())
     <h1>{{ $document === 'invoice' ? 'Invoice' : 'Packing slip' }}</h1>
+    @if($order->status === \App\Enums\OrderStatus::Cancelled)<p><strong>Cancelled — no payment due. Do not ship.</strong></p>@endif
     <p class="muted">FarSell · Order {{ $order->number }} · {{ $order->created_at->format('M j, Y') }}</p>
     <p><strong>Ship to</strong><br>{{ $order->guest_name }}<br>{{ $order->ship_to }}</p>
 
@@ -44,7 +46,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($order->items as $item)
+            @foreach($documentItems as $item)
                 <tr>
                     <td>{{ $item->name }}@if($item->variant_options)<br><span class="muted">{{ collect($item->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }}</span>@endif</td>
                     <td>{{ $item->product_sku ?? 'Unavailable' }}</td>
@@ -60,9 +62,9 @@
 
     @if($document === 'invoice')
         <div class="totals">
-            <p><span>Subtotal</span><span>PHP {{ number_format((float) $order->subtotal, 2) }}</span></p>
-            <p><span>Shipping</span><span>PHP {{ number_format((float) $order->shipping_fee, 2) }}</span></p>
-            <p><strong>Total</strong><strong>PHP {{ number_format((float) $order->total, 2) }}</strong></p>
+            <p><span>Subtotal</span><span>PHP {{ number_format((float) $documentItems->sum('line_total'), 2) }}</span></p>
+            <p><span>Shipping</span><span>PHP {{ number_format($order->billableShipping(), 2) }}</span></p>
+            <p><strong>Total</strong><strong>PHP {{ number_format((float) $documentItems->sum('line_total') + $order->billableShipping(), 2) }}</strong></p>
         </div>
     @endif
 </body>

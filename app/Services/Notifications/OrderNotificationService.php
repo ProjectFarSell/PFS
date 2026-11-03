@@ -19,7 +19,9 @@ class OrderNotificationService
     public function orderPlaced(Order $order): void
     {
         app(BuyerInbox::class)->record($order, 'order:'.$order->id.':placed', 'Order placed', 'Your order '.$order->number.' is awaiting seller confirmation.');
-        if (! config('notifications.enabled')) return;
+        if (! config('notifications.enabled')) {
+            return;
+        }
         $order->loadMissing(['buyer', 'fulfillments.shop.owner']);
         $this->record('order:'.$order->id.':confirmation', 'order_confirmation', $order->buyer, $order, null, null, [
             'title' => 'Order confirmation',
@@ -45,7 +47,9 @@ class OrderNotificationService
         $event->loadMissing('fulfillment.order');
         $shipment = $event->fulfillment;
         app(BuyerInbox::class)->record($shipment->order, 'event:'.$event->id, 'Shipment: '.FulfillmentStatus::from($event->status)->label(), $shipment->shop_name.' — '.FulfillmentStatus::from($event->status)->label().'.');
-        if (! config('notifications.enabled')) return;
+        if (! config('notifications.enabled')) {
+            return;
+        }
         $event->loadMissing(['fulfillment.order.buyer', 'fulfillment.shop.owner', 'fulfillment.rider.user']);
         $part = $event->fulfillment;
         $order = $part->order;
@@ -68,6 +72,7 @@ class OrderNotificationService
                 FulfillmentStatus::Delivered => 'Your shipment was marked delivered. Confirm receipt after checking your items.',
                 FulfillmentStatus::Completed => 'You confirmed receipt. You can now review your products and delivery.',
                 FulfillmentStatus::Rejected => 'The seller could not fulfill this shipment. Open your order for the updated total and details.',
+                FulfillmentStatus::Cancelled => 'You cancelled this shipment before rider assignment.',
                 default => 'Your shipment has been updated.',
             },
             'detail' => $status === FulfillmentStatus::Rejected ? $part->rejection_reason : null,
@@ -85,11 +90,15 @@ class OrderNotificationService
             ]);
         }
 
-        if (in_array($status, [FulfillmentStatus::Delivered, FulfillmentStatus::Completed], true)) {
+        if (in_array($status, [FulfillmentStatus::Delivered, FulfillmentStatus::Completed, FulfillmentStatus::Cancelled], true)) {
             $this->record('event:'.$event->id.':seller', 'seller_shipment_update', $part->shop?->owner, $order, $part, $event, [
                 ...$base,
                 'title' => 'Shop shipment: '.$status->label(),
-                'message' => $status === FulfillmentStatus::Completed ? 'The buyer confirmed receipt of your shipment.' : 'The rider marked your shipment delivered.',
+                'message' => match ($status) {
+                    FulfillmentStatus::Completed => 'The buyer confirmed receipt of your shipment.',
+                    FulfillmentStatus::Cancelled => 'The buyer cancelled this shipment before rider assignment. Do not prepare or hand it over.',
+                    default => 'The rider marked your shipment delivered.',
+                },
                 'action_path' => route('fulfillments.index', [], false),
                 'action_label' => 'Open shop orders',
             ]);
@@ -118,11 +127,15 @@ class OrderNotificationService
 
     public function enqueue(int $id): bool
     {
-        if (! config('notifications.enabled')) return false;
+        if (! config('notifications.enabled')) {
+            return false;
+        }
         try {
             return DB::transaction(function () use ($id) {
                 $delivery = NotificationDelivery::query()->whereKey($id)->where('status', 'pending')->lockForUpdate()->first();
-                if (! $delivery) return false;
+                if (! $delivery) {
+                    return false;
+                }
                 $delivery->update(['status' => 'queued', 'queued_at' => now(), 'next_retry_at' => null]);
 
                 // The domain transaction has already committed. With the database queue,
@@ -155,7 +168,9 @@ class OrderNotificationService
 
     private function record(string $key, string $type, ?User $recipient, Order $order, ?Fulfillment $part, ?FulfillmentEvent $event, array $payload): void
     {
-        if (! $recipient || ! filter_var($recipient->email, FILTER_VALIDATE_EMAIL)) return;
+        if (! $recipient || ! filter_var($recipient->email, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
 
         // This row commits with the order/event; failed enqueueing leaves a recoverable pending record.
         $delivery = NotificationDelivery::query()->firstOrCreate(['event_key' => $key], [

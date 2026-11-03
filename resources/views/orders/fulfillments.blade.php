@@ -1,6 +1,6 @@
 @if($errors->any())<div role="alert" class="mt-4 text-error">@foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>@endif
-<p class="mt-3 font-semibold">Total after rejected shipments: ₱{{ number_format($order->fulfillments->sum(fn ($part) => $part->amount()), 2) }}</p>
-<p class="mt-2 text-xs text-text-muted">Each shop prepares and delivers its items separately. Delivery fees are split between shipments; a rejected shipment's fee is waived. Overall status follows the least advanced active shipment.</p>
+<p class="mt-3 font-semibold">Current shipment total: ₱{{ number_format($order->fulfillments->sum(fn ($part) => $part->amount()), 2) }}</p>
+<p class="mt-2 text-xs text-text-muted">Each shop prepares and delivers its items separately. Delivery fees are split between shipments; cancelled and rejected shipments have no payable amount. Overall status follows the least advanced active shipment.</p>
 @if($order->payment_method === \App\Enums\PaymentMethod::GatewayStub)<p class="mt-2 text-xs text-text-muted">Demo payment only. No real charge or refund is processed.</p>@endif
 <div class="mt-5 space-y-4">
     @foreach($order->fulfillments as $part)
@@ -25,8 +25,8 @@
             <ol class="mt-5 text-sm" aria-label="Shipment history">
                 @foreach($part->events as $event)
                     @php
-                        $isCurrent = $loop->last && !in_array($part->status, [\App\Enums\FulfillmentStatus::Completed, \App\Enums\FulfillmentStatus::Rejected], true);
-                        $isRejected = $event->status === 'rejected';
+                        $isCurrent = $loop->last && !in_array($part->status, [\App\Enums\FulfillmentStatus::Completed, \App\Enums\FulfillmentStatus::Rejected, \App\Enums\FulfillmentStatus::Cancelled], true);
+                        $isRejected = in_array($event->status, ['rejected', 'cancelled'], true);
                     @endphp
                     <li class="relative flex gap-4 {{ $loop->last ? '' : 'pb-6' }}" @if($isCurrent) aria-current="step" @endif>
                         <div class="relative flex w-5 shrink-0 justify-center" aria-hidden="true">

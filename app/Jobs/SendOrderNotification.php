@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Contracts\OrderNotificationSender;
 use App\Enums\FulfillmentStatus;
+use App\Enums\OrderStatus;
 use App\Enums\UserRole;
 use App\Models\NotificationDelivery;
 use Illuminate\Bus\Queueable;
@@ -37,7 +38,9 @@ class SendOrderNotification implements ShouldQueue
     public function handle(OrderNotificationSender $sender): void
     {
         $delivery = NotificationDelivery::query()->find($this->deliveryId);
-        if (! $delivery || in_array($delivery->status, ['sent', 'skipped'], true)) return;
+        if (! $delivery || in_array($delivery->status, ['sent', 'skipped'], true)) {
+            return;
+        }
 
         $reason = $this->skipReason($delivery);
         if ($reason !== null) {
@@ -83,14 +86,24 @@ class SendOrderNotification implements ShouldQueue
     private function skipReason(NotificationDelivery $delivery): ?string
     {
         $delivery->loadMissing(['order', 'recipient', 'fulfillment.shop', 'fulfillment.rider.user']);
-        if (! $delivery->order || ! $delivery->recipient) return 'Order or recipient account is no longer available.';
-        if (strcasecmp($delivery->recipient->email, $delivery->recipient_email) !== 0) return 'The recipient email address changed after this event.';
+        if (! $delivery->order || ! $delivery->recipient) {
+            return 'Order or recipient account is no longer available.';
+        }
+        if (strcasecmp($delivery->recipient->email, $delivery->recipient_email) !== 0) {
+            return 'The recipient email address changed after this event.';
+        }
 
         $part = $delivery->fulfillment;
         if ($delivery->type === 'order_confirmation') {
+            if ($delivery->order->status === OrderStatus::Cancelled) {
+                return 'The order was cancelled before its confirmation email was sent.';
+            }
+
             return $delivery->order->user_id === $delivery->recipient_user_id ? null : 'The order recipient changed.';
         }
-        if (! $part) return 'Shipment is no longer available.';
+        if (! $part) {
+            return 'Shipment is no longer available.';
+        }
 
         if ($delivery->type === 'seller_new_order') {
             return $part->shop?->user_id === $delivery->recipient_user_id && $part->status === FulfillmentStatus::Pending
@@ -107,11 +120,15 @@ class SendOrderNotification implements ShouldQueue
 
             return $part->status === FulfillmentStatus::Completed ? null : 'This shipment is no longer completed.';
         }
-        if (! in_array($delivery->type, ['shipment_update', 'seller_shipment_update'], true)) return 'Unknown notification type.';
+        if (! in_array($delivery->type, ['shipment_update', 'seller_shipment_update'], true)) {
+            return 'Unknown notification type.';
+        }
         $recipientMatches = $delivery->type === 'shipment_update'
             ? $delivery->order->user_id === $delivery->recipient_user_id
             : $part->shop?->user_id === $delivery->recipient_user_id;
-        if (! $recipientMatches) return 'The shipment recipient changed.';
+        if (! $recipientMatches) {
+            return 'The shipment recipient changed.';
+        }
 
         return $delivery->fulfillment_event_id === $part->events()->reorder()->latest('id')->value('id')
             ? null : 'A newer shipment update superseded this message.';

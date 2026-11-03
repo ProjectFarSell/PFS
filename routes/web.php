@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Account\AddressController;
+use App\Http\Controllers\Account\CancelOrderController;
 use App\Http\Controllers\Account\OrderController;
 use App\Http\Controllers\Account\PrivacyController;
 use App\Http\Controllers\Account\ProfileController;
@@ -211,6 +212,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'create'])->middleware(EnsureUserHasRole::class.':buyer')->name('checkout.create');
     Route::post('/checkout', [CheckoutController::class, 'store'])->middleware(EnsureUserHasRole::class.':buyer')->name('checkout.store');
     Route::get('/orders', [OrderController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer')->name('orders.index');
+    Route::post('/orders/{order}/cancel', CancelOrderController::class)->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('orders.cancel');
     Route::get('/orders/{order}', [CheckoutController::class, 'show'])->middleware(EnsureUserHasRole::class.':buyer,admin')->name('orders.show');
     Route::get('/orders/{order}/print/{document}', [CheckoutController::class, 'print'])->middleware(EnsureUserHasRole::class.':buyer,admin')->whereIn('document', ['invoice', 'packing-slip'])->name('orders.print');
 

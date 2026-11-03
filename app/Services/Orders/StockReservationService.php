@@ -67,15 +67,24 @@ class StockReservationService
 
         $order->loadMissing('items');
 
-        foreach ($order->items as $item) {
+        $this->releaseItems($order->items);
+
+        $order->forceFill(['stock_released_at' => now()])->save();
+    }
+
+    public function releaseItems(Collection $items): void
+    {
+        foreach ($items as $item) {
             if ($item->product_variant_id) {
-                ProductVariant::query()->whereKey($item->product_variant_id)->increment('stock', $item->qty);
-                if ($item->product_id && $item->variant?->is_active) Product::query()->whereKey($item->product_id)->increment('stock', $item->qty);
+                $variant = ProductVariant::query()->lockForUpdate()->find($item->product_variant_id);
+                $variant?->increment('stock', $item->qty);
+                if ($item->product_id && $variant?->is_active) {
+                    Product::query()->lockForUpdate()->find($item->product_id)?->increment('stock', $item->qty);
+                }
             } elseif ($item->product_id) {
-                Product::query()->whereKey($item->product_id)->increment('stock', $item->qty);
+                Product::query()->lockForUpdate()->find($item->product_id)?->increment('stock', $item->qty);
             }
         }
 
-        $order->forceFill(['stock_released_at' => now()])->save();
     }
 }
