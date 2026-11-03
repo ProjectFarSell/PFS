@@ -41,4 +41,5 @@
     @endif
     <p class="mt-3 font-semibold">Original total ₱{{ number_format((float) $order->total, 2) }}</p>
     <p class="text-xs text-text-muted mt-2">Ship to {{ $order->ship_to }}</p>
+    @include('orders.return-actions')
 @endsection

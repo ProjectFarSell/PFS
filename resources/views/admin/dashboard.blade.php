@@ -11,6 +11,7 @@
         </div>
         <div class="flex flex-wrap gap-2">
             <a href="{{ route('admin.operations') }}" class="btn-outline min-h-11">Operations</a>
+            <a href="{{ route('returns.index') }}" class="btn-outline min-h-11">Returns & refunds</a>
             <a href="{{ route('admin.privacy-requests.index') }}" class="btn-outline min-h-11">Privacy requests</a>
             <a href="{{ route('admin.categories.index') }}" class="btn-outline min-h-11">Manage categories</a>
             <a href="{{ route('fulfillments.index', ['status' => 'ready']) }}" class="btn-accent min-h-11">Dispatch shipments <span aria-hidden="true">&#8594;</span></a>

@@ -92,6 +92,7 @@ class DatabaseRecovery
                 $roots = [
                     'private/rider-documents' => config('filesystems.disks.local.root').'/rider-documents',
                     'private/delivery-proof' => config('filesystems.disks.local.root').'/delivery-proof',
+                    'private/return-evidence' => config('filesystems.disks.local.root').'/return-evidence',
                     'private/product-review-media' => config('filesystems.disks.local.root').'/product-review-media',
                     'public' => config('filesystems.disks.public.root'),
                 ];

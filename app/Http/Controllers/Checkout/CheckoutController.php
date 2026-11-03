@@ -140,7 +140,7 @@ class CheckoutController extends Controller
     public function show(Order $order): View
     {
         $this->authorize('view', $order);
-        $order->load(['items', 'fulfillments.items.review', 'fulfillments.events', 'fulfillments.rider.user', 'fulfillments.riderRating', 'fulfillments.feedback']);
+        $order->load(['items.returnRequest', 'fulfillments.items.review', 'fulfillments.events', 'fulfillments.rider.user', 'fulfillments.riderRating', 'fulfillments.feedback']);
 
         return view('orders.show', compact('order'));
     }

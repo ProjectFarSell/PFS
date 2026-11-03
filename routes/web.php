@@ -32,6 +32,7 @@ use App\Http\Controllers\FulfillmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderFeedbackController;
 use App\Http\Controllers\ProductReviewMediaController;
+use App\Http\Controllers\ReturnRequestController;
 use App\Http\Controllers\Rider\DashboardController as RiderDashboardController;
 use App\Http\Controllers\Rider\DeliveryRequestController;
 use App\Http\Controllers\Rider\EarningsController;
@@ -179,6 +180,12 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/se
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::middleware(EnsureUserHasRole::class.':buyer,seller,admin')->group(function () {
+        Route::get('/returns', [ReturnRequestController::class, 'index'])->name('returns.index');
+        Route::get('/returns/{returnRequest}/evidence', [ReturnRequestController::class, 'evidence'])->name('returns.evidence');
+        Route::post('/returns/{returnRequest}/review', [ReturnRequestController::class, 'review'])->middleware([EnsureUserHasRole::class.':seller,admin', 'throttle:20,1'])->name('returns.review');
+    });
+    Route::post('/order-items/{item}/return', [ReturnRequestController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('returns.store');
     Route::middleware(EnsureUserHasRole::class.':buyer')->prefix('account/notifications')->name('account.notifications.')->group(function () {
         Route::get('/', [App\Http\Controllers\Account\NotificationController::class, 'index'])->name('index');
         Route::get('/unread', [App\Http\Controllers\Account\NotificationController::class, 'unread'])->middleware('throttle:30,1')->name('unread');

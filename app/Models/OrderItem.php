@@ -52,4 +52,14 @@ class OrderItem extends Model
     {
         return $this->hasOne(ProductReview::class);
     }
+
+    public function fulfillment(): BelongsTo
+    {
+        return $this->belongsTo(Fulfillment::class);
+    }
+
+    public function returnRequest(): HasOne
+    {
+        return $this->hasOne(ReturnRequest::class);
+    }
 }
