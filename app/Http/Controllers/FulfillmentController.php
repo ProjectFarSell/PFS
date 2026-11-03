@@ -7,6 +7,7 @@ use App\Enums\UserRole;
 use App\Models\Fulfillment;
 use App\Models\RiderProfile;
 use App\Services\Orders\FulfillmentService;
+use App\Services\Security\SafeImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -50,13 +51,17 @@ class FulfillmentController extends Controller
             'pickup_contact' => ['required_if:action,ready,request_rider', 'nullable', 'string', 'max:255'],
         ]);
         $photoPath = $data['action'] === 'deliver' && $request->hasFile('delivery_photo')
-            ? $request->file('delivery_photo')->store('delivery-proof', 'local')
+            ? app(SafeImage::class)->store($request->file('delivery_photo'), 'delivery-proof', 'local', 'delivery_photo')
             : null;
-        if ($photoPath) $data['delivery_photo_path'] = $photoPath;
+        if ($photoPath) {
+            $data['delivery_photo_path'] = $photoPath;
+        }
         try {
             $service->act($fulfillment, $request->user(), $data['action'], $data);
         } catch (\Throwable $exception) {
-            if ($photoPath) Storage::disk('local')->delete($photoPath);
+            if ($photoPath) {
+                Storage::disk('local')->delete($photoPath);
+            }
             throw $exception;
         }
 

@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Models\OrderItem;
 use App\Models\ReturnRequest;
 use App\Services\Orders\ReturnRequestService;
+use App\Services\Security\SafeImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -42,7 +43,7 @@ class ReturnRequestController extends Controller
             'details' => ['required', 'string', 'min:10', 'max:2000'],
             'evidence' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
-        $path = $request->file('evidence')?->store('return-evidence', 'local');
+        $path = $request->hasFile('evidence') ? app(SafeImage::class)->store($request->file('evidence'), 'return-evidence', 'local', 'evidence') : null;
         try {
             $service->submit($item, $request->user(), [...$data, 'evidence_path' => $path]);
         } catch (\Throwable $exception) {

@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\ProductReview;
 use App\Models\RiderDeliveryRating;
 use App\Models\ShipmentFeedback;
+use App\Services\Security\SafeImage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -89,7 +90,9 @@ class OrderFeedbackController extends Controller
         try {
             foreach ($fulfillment->items->filter(fn ($item) => ! $item->review) as $item) {
                 foreach ($data['reviews'][$item->id]['media'] ?? [] as $file) {
-                    $path = $file->store('product-review-media', 'local');
+                    $path = str_starts_with((string) $file->getMimeType(), 'image/')
+                        ? app(SafeImage::class)->store($file, 'product-review-media', 'local', 'reviews.'.$item->id.'.media')
+                        : $file->store('product-review-media', 'local');
                     if (! $path) {
                         throw new RuntimeException('Review attachments could not be saved.');
                     }
@@ -107,7 +110,9 @@ class OrderFeedbackController extends Controller
                 $used = [];
 
                 foreach ($part->items()->get() as $item) {
-                    if ($item->review()->exists()) continue;
+                    if ($item->review()->exists()) {
+                        continue;
+                    }
                     $entry = $data['reviews'][$item->id];
                     $review = ProductReview::query()->create([
                         'order_item_id' => $item->id,

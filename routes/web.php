@@ -251,7 +251,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/account/saved/{product}', [SavedItemController::class, 'destroy'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:30,1'])->name('account.saved.destroy');
 
     Route::get('/rider/apply', [RiderRegistrationController::class, 'create'])->middleware(EnsureUserHasRole::class.':buyer')->name('rider.register');
-    Route::post('/rider/apply', [RiderRegistrationController::class, 'store'])->middleware(EnsureUserHasRole::class.':buyer');
+    Route::post('/rider/apply', [RiderRegistrationController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:5,1']);
     Route::get('/rider/profile', [RiderRegistrationController::class, 'profile'])->middleware(EnsureUserHasRole::class.':buyer,rider')->name('rider.profile');
     Route::get('/rider/dashboard', RiderDashboardController::class)->middleware(EnsureUserHasRole::class.':rider')->name('rider.dashboard');
     Route::get('/rider/earnings', [EarningsController::class, 'index'])->middleware(EnsureUserHasRole::class.':rider')->name('rider.earnings.index');
