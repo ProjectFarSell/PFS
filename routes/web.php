@@ -42,6 +42,7 @@ use App\Http\Controllers\RiderDeliveryRatingController;
 use App\Http\Controllers\Seller\ApplicationController as SellerApplication;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
 use App\Http\Controllers\Seller\ProductController as SellerProducts;
+use App\Http\Controllers\Seller\SalesController;
 use App\Http\Middleware\EnsureBuyerOrGuest;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\RedirectPrivateRolesFromStorefront;
@@ -164,6 +165,9 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/ri
 Route::get('/seller', SellerDashboardController::class)
     ->middleware(['auth', EnsureUserHasRole::class.':seller'])
     ->name('seller.dashboard');
+
+Route::get('/seller/sales', SalesController::class)
+    ->middleware(['auth', EnsureUserHasRole::class.':seller'])->name('seller.sales');
 
 Route::middleware(['auth', EnsureUserHasRole::class.':seller'])->prefix('seller/products')->name('seller.products.')->group(function () {
     Route::get('/create', [SellerProducts::class, 'create'])->name('create');
