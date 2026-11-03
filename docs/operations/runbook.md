@@ -2,6 +2,8 @@
 
 This runbook is for the existing Laravel web app. Production actions below are instructions for the selected hosting environment, not actions already performed. Cloudflare setup remains a separate team task.
 
+See [account protection](../account-protection.md) for admin authenticator enrollment, recovery codes, session revocation, suspension, audit records, and the guarded `ops:reset-admin-mfa` recovery command. Preserve APP_KEY for encrypted authenticator secrets as well as delivery PINs.
+
 ## Commands and where to check
 
 | Action | Command / page |

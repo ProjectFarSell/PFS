@@ -41,12 +41,12 @@ class CategoryController extends Controller
             throw ValidationException::withMessages(['name' => 'A category with that name or URL slug already exists.']);
         }
 
-        Category::query()->create([
+        DB::transaction(fn () => Category::query()->create([
             'name' => trim($data['name']),
             'slug' => $slug,
             'icon' => filled($data['icon'] ?? null) ? trim($data['icon']) : null,
             'sort_order' => $data['sort_order'] ?? 0,
-        ]);
+        ]));
 
         return to_route('admin.categories.index')->with('status', 'Category created. It is now available in product listings and seller applications.');
     }
@@ -59,12 +59,12 @@ class CategoryController extends Controller
             throw ValidationException::withMessages(['name' => 'A category with that name or URL slug already exists.']);
         }
 
-        $category->update([
+        DB::transaction(fn () => $category->update([
             'name' => trim($data['name']),
             'slug' => $slug,
             'icon' => filled($data['icon'] ?? null) ? trim($data['icon']) : null,
             'sort_order' => $data['sort_order'] ?? 0,
-        ]);
+        ]));
 
         return to_route('admin.categories.index')->with('status', 'Category updated.');
     }

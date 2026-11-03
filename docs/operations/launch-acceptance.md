@@ -16,6 +16,7 @@ P1 accountable/backend: __________  P2 UI approval: __________  P3 QA approval: 
 | Production demo accounts/data absent; real administrator provisioned | | P1 | Pending |
 | Approved pilot geography and participant list documented | | P3 with P1/P2 support | Pending |
 | Buyer signup, privacy consent, chosen OTP, login/logout, profile and deletion request | | P2/P3 | Pending |
+| Admin MFA enrollment/recovery, sensitive-action confirmation, device revocation, suspension and audit trail checked on hosted setup | | P1/P3 | Pending |
 | Buyer/seller/rider/admin boundaries and private documents checked on hosted setup | | P1/P3 | Pending |
 | Variant/SKU, cart, owned address, prices, COD checkout, stock reserve and rejection release | | P1/P3 | Pending |
 | Seller accepts/readies, rider assignment/pickup, correct PIN/proof/COD handover, buyer completion | | P1/P3 | Pending |

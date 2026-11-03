@@ -17,6 +17,7 @@ class ReleaseReadiness
         };
         $add('deployment_environment', app()->environment('production', 'staging'), 'Set the correct production/staging environment; keep local environments separate.');
         $add('debug_disabled', config('app.debug') === false, 'Disable APP_DEBUG.');
+        $add('admin_security_gates', config('security.admin_mfa_required') && config('security.sensitive_confirmation_required'), 'Require admin MFA and recent identity confirmation before administrative writes.');
         $key = (string) config('app.key');
         $decoded = str_starts_with($key, 'base64:') ? base64_decode(substr($key, 7), true) : $key;
         $add('stable_application_key', is_string($decoded) && Encrypter::supported($decoded, config('app.cipher')), 'Provision and preserve APP_KEY; keep an offline protected copy for encrypted delivery PINs.');

@@ -96,7 +96,7 @@ class ReleaseHardeningTest extends TestCase
     {
         config(['app.debug' => true, 'app.key' => '', 'app.url' => 'http://localhost:8000', 'session.secure' => false, 'release.allow_demo_payments' => true]);
         $checks = collect(app(ReleaseReadiness::class)->checks(true))->keyBy('name');
-        foreach (['deployment_environment', 'debug_disabled', 'stable_application_key', 'https_url', 'secure_session_cookies', 'real_payment_mode'] as $name) {
+        foreach (['deployment_environment', 'debug_disabled', 'stable_application_key', 'https_url', 'secure_session_cookies', 'real_payment_mode', 'admin_security_gates'] as $name) {
             $this->assertFalse($checks[$name]['pass']);
         }
         $this->artisan('release:check', ['--boot' => true, '--json' => true])->assertFailed();

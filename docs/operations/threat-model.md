@@ -28,6 +28,10 @@ This review covers the current Laravel web app. It is a working threat model, no
 
 ## Findings to revisit before go-live
 
+The additional [account protection controls](../account-protection.md) require admin authenticator MFA, recent identity confirmation for admin writes, account suspension/session revocation, selected change auditing, and decoding/re-encoding of newly uploaded photos. Google reauthentication cannot substitute for the enrolled admin MFA gate. Operator MFA recovery requires independent identity verification; the application cannot perform that human check.
+
+The audit trail covers model/service writes, not arbitrary database SQL. Photos are rewritten, while PDFs/videos are not malware-scanned. Existing media is not retroactively rewritten. These limits remain part of the hosting review.
+
 1. Validate actual SQL concurrency and account/storage privileges on the chosen database.
 2. Configure shared persistent sessions/cache for more than one app instance. An in-memory limiter is not sufficient across instances.
 3. Verify every hosted TLS hop and cookie attributes in a browser; application header configuration is not proof of TLS.

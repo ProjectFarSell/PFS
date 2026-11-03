@@ -9,6 +9,14 @@ use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\ReturnRequest;
+use App\Models\RiderProfile;
+use App\Models\SellerApplication;
+use App\Models\Shop;
+use App\Models\User;
+use App\Observers\SecurityAuditObserver;
 use App\Services\Checkout\FlatRateDeliveryFeeService;
 use App\Services\Delivery\CityBasedDeliveryEtaService;
 use App\Services\Notifications\MailOrderNotificationSender;
@@ -35,6 +43,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        foreach ([Category::class, Product::class, ProductVariant::class, SellerApplication::class, RiderProfile::class, Shop::class, ReturnRequest::class, User::class] as $model) {
+            $model::observe(SecurityAuditObserver::class);
+        }
         RateLimiter::for('login', fn (Request $request) => [
             Limit::perMinute(5)->by('login:'.hash('sha256', (is_string($request->input('email')) ? mb_strtolower($request->input('email')) : '').':'.$request->ip())),
             Limit::perMinute(30)->by('login-ip:'.$request->ip()),

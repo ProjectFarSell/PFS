@@ -30,6 +30,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'mfa_secret',
+        'mfa_recovery_codes',
+        'mfa_last_step',
+        'suspension_reason',
     ];
 
     protected function casts(): array
@@ -40,6 +44,12 @@ class User extends Authenticatable
             'privacy_accepted_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
+            'security_version' => 'integer',
+            'suspended_at' => 'datetime',
+            'mfa_secret' => 'encrypted',
+            'mfa_confirmed_at' => 'datetime',
+            'mfa_recovery_codes' => 'array',
+            'mfa_last_step' => 'integer',
         ];
     }
 

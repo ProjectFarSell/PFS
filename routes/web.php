@@ -6,6 +6,7 @@ use App\Http\Controllers\Account\OrderController;
 use App\Http\Controllers\Account\PrivacyController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\SavedItemController;
+use App\Http\Controllers\Account\SecurityController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -87,7 +88,6 @@ Route::middleware(EnsureBuyerOrGuest::class)->group(function () {
 Route::middleware('guest')->group(function () {
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
     Route::post('/auth/google/start', [GoogleAuthController::class, 'start'])->middleware('throttle:10,1')->name('auth.google.start');
-    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:login');
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
@@ -96,6 +96,25 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+
+Route::middleware('auth')->prefix('account/security')->name('security.')->group(function () {
+    Route::get('/', [SecurityController::class, 'index'])->name('index');
+    Route::post('/confirm', [SecurityController::class, 'confirm'])->middleware('throttle:5,1')->name('confirm');
+    Route::post('/google', [GoogleAuthController::class, 'reauthenticate'])->middleware('throttle:5,1')->name('google');
+    Route::post('/mfa/setup', [SecurityController::class, 'beginMfa'])->middleware('throttle:5,1')->name('mfa.setup');
+    Route::post('/mfa/enable', [SecurityController::class, 'enableMfa'])->middleware('throttle:5,1')->name('mfa.enable');
+    Route::post('/mfa/recovery-codes', [SecurityController::class, 'regenerateCodes'])->middleware('throttle:5,1')->name('mfa.recovery');
+    Route::post('/sessions/revoke-others', [SecurityController::class, 'revokeOthers'])->middleware('throttle:5,1')->name('sessions.revoke');
+});
+
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->group(function () {
+    Route::get('/admin/security/accounts', [App\Http\Controllers\Admin\SecurityController::class, 'index'])->name('admin.security.accounts');
+    Route::get('/admin/security/accounts/suspended', [App\Http\Controllers\Admin\SecurityController::class, 'suspended'])->name('admin.security.accounts.suspended');
+    Route::get('/admin/security/accounts/restore', [App\Http\Controllers\Admin\SecurityController::class, 'restoration'])->name('admin.security.accounts.restore');
+    Route::post('/admin/security/accounts/{user}', [App\Http\Controllers\Admin\SecurityController::class, 'update'])->middleware('throttle:10,1')->name('admin.security.accounts.update');
+    Route::get('/admin/security/audit', [App\Http\Controllers\Admin\SecurityController::class, 'audit'])->name('admin.security.audit');
+});
 Route::get('/fulfillments/{fulfillment}/proof-photo', [FulfillmentController::class, 'proofPhoto'])->middleware('auth')->name('fulfillments.proof-photo');
 Route::get('/reviews/media/{media}', [ProductReviewMediaController::class, 'show'])->name('reviews.media');
 

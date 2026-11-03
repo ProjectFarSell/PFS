@@ -3,6 +3,7 @@
 @section('title', 'Edit profile · FarSell')
 
 @section('content')
+    <a href="{{ route('security.index') }}" class="mb-4 inline-block text-sm text-accent underline">Account security & signed-in devices</a>
     <div class="mx-auto max-w-2xl space-y-5">
         <a href="{{ route('account.profile') }}" class="text-sm text-accent underline">Back to My Profile</a>
         <h1 class="text-xl font-semibold">Edit profile &amp; security</h1>

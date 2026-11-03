@@ -66,7 +66,7 @@ class RiderProfile extends Model
 
     public function isApproved(): bool
     {
-        return $this->status === RiderStatus::Approved;
+        return $this->status === RiderStatus::Approved && $this->user()->whereNull('suspended_at')->exists();
     }
 
     public function reviewer(): BelongsTo
