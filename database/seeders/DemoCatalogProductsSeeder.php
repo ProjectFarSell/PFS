@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Shop;
+use App\Support\DevelopmentData;
 use Illuminate\Database\Seeder;
 use RuntimeException;
 
@@ -12,6 +13,7 @@ class DemoCatalogProductsSeeder extends Seeder
     /** Seed the 24 sample catalog listings used by the demo shop. */
     public function run(): void
     {
+        DevelopmentData::assertAllowed();
         $shop = Shop::query()->where('slug', 'metro-surplus')->firstOrFail();
         $category = Category::query()->where('name', "Women's")->firstOrFail();
         $path = database_path('seeders/demo-catalog-products.json');

@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Shop;
+use App\Support\DevelopmentData;
 use Illuminate\Database\Seeder;
 use RuntimeException;
 
@@ -14,6 +14,7 @@ class SellerDemoProductsSeeder extends Seeder
     /** Seed a small, repeatable catalog for exercising seller variants and checkout. */
     public function run(): void
     {
+        DevelopmentData::assertAllowed();
         $shop = Shop::query()->where('slug', 'metro-surplus')->firstOrFail();
 
         $products = [

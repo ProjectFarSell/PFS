@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Support\DevelopmentData;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -11,6 +12,7 @@ class DemoAccountsSeeder extends Seeder
 {
     public function run(): void
     {
+        DevelopmentData::assertAllowed();
         $this->call(AdminUserSeeder::class);
 
         foreach ([

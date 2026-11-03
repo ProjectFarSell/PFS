@@ -26,7 +26,7 @@ class ProductController extends Controller
             'shop.*' => ['integer', 'distinct', 'exists:shops,id'],
             'shop_search' => ['nullable', 'string', 'max:120'],
             'price_min' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
-            'price_max' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'gte:price_min'],
+            'price_max' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', ...($request->filled('price_min') ? ['gte:price_min'] : [])],
             'sort' => ['nullable', 'string', 'in:relevance,price_asc,price_desc,newest'],
             'city_id' => ['nullable', 'integer', 'exists:psgc_cities_municipalities,id'],
         ]);

@@ -22,8 +22,11 @@ if [ ! -f vendor/autoload.php ]; then
   composer install --no-interaction --prefer-dist
 fi
 
-php artisan key:generate --force --ansi
+if [ -z "${APP_KEY:-}" ] && ! grep -q '^APP_KEY=.' .env; then
+  php artisan key:generate --force --ansi
+fi
 php artisan storage:link --force --ansi
-php artisan migrate --seed --force --ansi
+php artisan migrate --force --ansi
+if [ "${SEED_DEMO_DATA:-false}" = "true" ]; then php artisan db:seed --force --ansi; fi
 
 exec "$@"

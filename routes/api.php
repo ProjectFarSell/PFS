@@ -10,5 +10,5 @@ Route::prefix('v1')->group(function (): void {
         'api_version' => 'v1',
     ]);
 
-    Route::get('/catalog', [CatalogController::class, 'index']);
+    Route::get('/catalog', [CatalogController::class, 'index'])->middleware('throttle:catalog-api');
 });

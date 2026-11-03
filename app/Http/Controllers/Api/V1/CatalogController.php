@@ -16,9 +16,19 @@ class CatalogController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $request->validate([
+            'q' => ['nullable', 'string', 'max:120'],
+            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'shop_id' => ['nullable', 'integer', 'exists:shops,id'],
+            'city_id' => ['nullable', 'integer', 'exists:psgc_cities_municipalities,id'],
+            'price_min' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
+            'price_max' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', ...($request->filled('price_min') ? ['gte:price_min'] : [])],
+            'sort' => ['nullable', 'in:newest,price_asc,price_desc'],
+            'page' => ['nullable', 'integer', 'min:1'],
+        ]);
         $query = Product::query()
             ->with(['shop:id,name,slug', 'category:id,name,slug'])
-            ->where('is_active', true)
+            ->visible()->withAvailableStock()
             ->latest();
 
         if ($search = $request->string('q')->trim()->toString()) {
@@ -63,8 +73,8 @@ class CatalogController extends Controller
             'description' => $product->description,
             'price' => (float) $product->price,
             'compare_at_price' => $product->compare_at_price ? (float) $product->compare_at_price : null,
-            'stock' => $product->stock,
-            'image_url' => $product->image_path ? asset('storage/'.$product->image_path) : null,
+            'stock' => $product->availableStock(),
+            'image_url' => $product->imageUrl(),
             'shop' => [
                 'name' => $product->shop->name,
                 'slug' => $product->shop->slug,
