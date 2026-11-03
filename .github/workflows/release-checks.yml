@@ -1,0 +1,52 @@
+name: Release checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      DB_URL: ''
+      MAIL_MAILER: array
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, mbstring, gd, zip
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: composer install --prefer-dist --no-interaction
+      - run: cp .env.example .env
+      - run: php artisan key:generate
+      - run: npm ci --ignore-scripts
+      - run: composer audit --locked --no-interaction
+      - run: npm audit
+      - run: npm run build
+      - run: node tools/check-assets.mjs
+      - run: node --test tests/Frontend/*.test.cjs
+      - run: php artisan test --compact
+      - run: php artisan ops:rehearse
+      - run: php artisan view:cache
+      - run: php artisan route:cache
+      - run: git diff --exit-code -- composer.lock package-lock.json

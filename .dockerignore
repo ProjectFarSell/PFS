@@ -52,3 +52,13 @@ Homestead.yaml
 _ide_helper.php
 .DS_Store
 Thumbs.db
+
+# Never bake local records, private uploads, backups, or evidence into an image.
+database/*.sqlite*
+database/data/product-images
+storage/app/*
+bootstrap/cache/*.php
+security-report
+handouts
+assignment-evidence
+tools/security-check

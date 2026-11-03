@@ -484,6 +484,21 @@ PHP code follows [Laravel Pint](https://laravel.com/docs/pint) (PSR-12 based). R
 
 ## Integration verification
 
+### P1 Weeks 9–12: operations and release preparation
+
+The [week-by-week audit](docs/operations/weeks-9-12.md) distinguishes implemented repository safeguards from the actual beta, hosting, and launch work still pending. Cloudflare setup is reserved for the team. Start with the [operating/recovery runbook](docs/operations/runbook.md), [threat model](docs/operations/threat-model.md), and [launch acceptance sheet](docs/operations/launch-acceptance.md).
+
+- Admin dashboard → **Operations** shows runtime and technical release checks; **Notifications** remains the email retry monitor.
+- `php artisan ops:status --json` checks DB/background-process health. `/up` is boot health; `/ready` adds DB, queue failures and, in production, actual worker/scheduler heartbeats.
+- `php artisan release:check` is read-only and intentionally fails under ordinary local settings. It cannot approve a production launch or certify TLS/provider recovery.
+- `CHECKOUT_ENABLED=false` pauses new orders while keeping browsing/existing delivery records available. `BETA_ENABLED=true` enforces `BETA_CITY_IDS` for pickup and delivery; an empty list fails closed.
+- Production must set `ALLOW_DEMO_PAYMENTS=false`. Real non-COD payments are not implemented by the demo gateway.
+- `php artisan ops:rehearse` exercises migration rollback/reapply and encrypted restore on a new dummy SQLite database. SQLite backups require a strong `BACKUP_PASSWORD`; cloud objects and MySQL/provider restoration need separate hosting-specific procedures.
+- Demo seeders refuse production, startup no longer automatically seeds accounts, and an existing APP_KEY is preserved. Provision actual administrators with the interactive `ops:create-admin` command rather than default credentials.
+- `deploy/production.env.example` contains placeholders only. Do not overwrite an existing local `.env` with production settings.
+
+GitHub release checks run backend/frontend tests, advisory audits, builds, bundle budgets, recovery rehearsal, and template/route compilation. They do not deploy the website. `node tools/check-assets.mjs` checks the built assets locally.
+
 ### Privacy and Topic 9 security checks
 
 Run `php artisan migrate` after pulling the privacy update. `/privacy` describes the data collected, service providers, account choices, and retention limits. Registration requires an unchecked privacy consent checkbox and records the notice version and acceptance time. Google sign-in first displays a consent screen; existing accounts can also record acceptance through the privacy page linked from profile settings.
