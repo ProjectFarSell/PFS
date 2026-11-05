@@ -6,6 +6,7 @@ use App\Enums\FulfillmentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Fulfillment extends Model
 {
@@ -19,6 +20,7 @@ class Fulfillment extends Model
             'shipping_fee' => 'decimal:2',
             'cod_collected_at' => 'datetime',
             'stock_released_at' => 'datetime',
+            'delivery_pin' => 'encrypted',
         ];
     }
 
@@ -52,8 +54,23 @@ class Fulfillment extends Model
         return $this->hasMany(FulfillmentEvent::class)->orderBy('id');
     }
 
+    public function riderEarning(): HasOne
+    {
+        return $this->hasOne(RiderEarning::class);
+    }
+
+    public function riderRating(): HasOne
+    {
+        return $this->hasOne(RiderDeliveryRating::class);
+    }
+
+    public function feedback(): HasOne
+    {
+        return $this->hasOne(ShipmentFeedback::class);
+    }
+
     public function amount(): float
     {
-        return $this->status === FulfillmentStatus::Rejected ? 0 : (float) $this->subtotal + (float) $this->shipping_fee;
+        return in_array($this->status, [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled], true) ? 0 : (float) $this->subtotal + (float) $this->shipping_fee;
     }
 }

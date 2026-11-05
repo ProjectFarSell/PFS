@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Services\Security\AccountSecurity;
 use App\Support\CheckoutIntent;
 use App\Support\GuestSession;
 use Illuminate\Http\RedirectResponse;
@@ -41,6 +42,14 @@ class LoginController extends Controller
         }
 
         $request->session()->regenerate();
+        if ($request->user()->suspended_at) {
+            Auth::guard('web')->logoutCurrentDevice();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return to_route('login')->withErrors(['email' => 'This account is suspended. Contact an administrator.'], 'login');
+        }
+        app(AccountSecurity::class)->start($request, $request->user());
         GuestSession::forget();
 
         $destination = match ($request->user()->role) {

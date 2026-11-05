@@ -14,6 +14,8 @@ use App\Models\Shop;
 use App\Models\User;
 use App\Support\Cart;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class FulfillmentFlowTest extends TestCase
@@ -99,11 +101,26 @@ class FulfillmentFlowTest extends TestCase
         $this->actingAs($rider->user)->get('/rider/dashboard')->assertOk()->assertSee($c['order']->number);
         $this->actingAs($rider->user)->get('/fulfillments')->assertOk()->assertSee('224.50')->assertSee('Confirm pickup')->assertSee('123 Shop Street');
         $this->action($rider->user, $c['part'], 'pickup')->assertSessionHasNoErrors();
-        $this->action($rider->user, $c['part'], 'deliver', ['delivery_note' => 'Handed to buyer'])->assertSessionHasErrors('cod_collected');
+        $pin = $c['part']->fresh()->delivery_pin;
+        $this->action($rider->user, $c['part'], 'deliver', [
+            'delivery_note' => 'Handed to buyer',
+            'delivery_recipient_name' => 'Private Buyer',
+            'delivery_pin' => $pin,
+        ])->assertSessionHasErrors('cod_collected');
         $this->assertSame(FulfillmentStatus::InTransit, $c['part']->fresh()->status);
-        $this->action($rider->user, $c['part'], 'deliver', ['delivery_note' => 'Handed to buyer', 'cod_collected' => 1])->assertSessionHasNoErrors();
+        $this->action($rider->user, $c['part'], 'deliver', [
+            'delivery_note' => 'Handed to buyer',
+            'delivery_recipient_name' => 'Private Buyer',
+            'delivery_pin' => $pin,
+            'cod_collected' => 1,
+        ])->assertSessionHasNoErrors();
         $this->assertNotNull($c['part']->fresh()->cod_collected_at);
-        $this->action($rider->user, $c['part'], 'deliver', ['delivery_note' => 'Duplicate', 'cod_collected' => 1])->assertSessionHasErrors('fulfillment');
+        $this->action($rider->user, $c['part'], 'deliver', [
+            'delivery_note' => 'Duplicate',
+            'delivery_recipient_name' => 'Private Buyer',
+            'delivery_pin' => $pin,
+            'cod_collected' => 1,
+        ])->assertSessionHasErrors('fulfillment');
         $this->actingAs($rider->user)->get('/fulfillments')->assertDontSee('Private buyer address');
         $this->actingAs($c['buyer'])->get(route('orders.show', $c['order']))->assertSee('Confirm received');
         $this->action($c['buyer'], $c['part'], 'complete')->assertSessionHasNoErrors();
@@ -157,12 +174,58 @@ class FulfillmentFlowTest extends TestCase
         $this->action($c['seller'], $c['part'], 'ready');
         $this->action($admin, $c['part'], 'assign', ['rider_id' => $rider->id]);
         $this->action($rider->user, $c['part'], 'pickup');
-        $this->action($rider->user, $c['part'], 'deliver', ['delivery_note' => 'Received by buyer'])->assertSessionHasNoErrors();
+        $this->action($rider->user, $c['part'], 'deliver', [
+            'delivery_note' => 'Received by buyer',
+            'delivery_recipient_name' => 'Private Buyer',
+            'delivery_pin' => $c['part']->fresh()->delivery_pin,
+        ])->assertSessionHasNoErrors();
         $this->assertNull($c['part']->fresh()->cod_collected_at);
         $this->action(User::factory()->create(), $c['part'], 'complete')->assertForbidden();
         $this->action($admin, $c['part'], 'complete')->assertForbidden();
         $this->action($c['buyer'], $c['part'], 'complete')->assertSessionHasNoErrors();
         $this->assertSame(OrderStatus::Paid, $c['order']->fresh()->status);
         $this->assertSame(FulfillmentStatus::Pending, $c['otherPart']->fresh()->status);
+    }
+
+    public function test_delivery_proof_requires_the_buyer_pin_and_keeps_the_photo_private(): void
+    {
+        Storage::fake('local');
+        $c = $this->checkout('gateway_stub');
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $rider = $this->rider();
+        $this->action($c['seller'], $c['part'], 'accept');
+        $this->action($c['seller'], $c['part'], 'ready');
+        $this->action($admin, $c['part'], 'assign', ['rider_id' => $rider->id]);
+        $this->action($rider->user, $c['part'], 'pickup');
+
+        $this->actingAs($rider->user)->post(route('fulfillments.update', $c['part']), [
+            'action' => 'deliver',
+            'delivery_note' => 'Handed over at the gate',
+            'delivery_recipient_name' => 'Private Buyer',
+            'delivery_pin' => '000000',
+            'delivery_photo' => UploadedFile::fake()->image('handover.jpg'),
+        ])->assertSessionHasErrors('delivery_pin');
+        $this->assertSame(FulfillmentStatus::InTransit, $c['part']->fresh()->status);
+        Storage::disk('local')->assertDirectoryEmpty('delivery-proof');
+
+        $pin = $c['part']->fresh()->delivery_pin;
+        $this->actingAs($rider->user)->post(route('fulfillments.update', $c['part']), [
+            'action' => 'deliver',
+            'delivery_note' => 'Handed over at the gate',
+            'delivery_recipient_name' => 'Private Buyer',
+            'delivery_pin' => $pin,
+            'delivery_photo' => UploadedFile::fake()->image('handover.jpg'),
+        ])->assertSessionHasNoErrors();
+
+        $part = $c['part']->fresh();
+        $this->assertSame('Private Buyer', $part->delivery_recipient_name);
+        $this->assertSame('Handed over at the gate', $part->delivery_note);
+        $this->assertNotNull($part->delivery_photo_path);
+        Storage::disk('local')->assertExists($part->delivery_photo_path);
+        $this->actingAs($c['buyer'])->get(route('orders.show', $c['order']))
+            ->assertOk()->assertSee('Received by: Private Buyer')->assertSee('View proof photo');
+        $this->actingAs($c['buyer'])->get(route('fulfillments.proof-photo', $part))->assertOk();
+        $this->actingAs($rider->user)->get(route('fulfillments.proof-photo', $part))->assertOk();
+        $this->actingAs(User::factory()->create())->get(route('fulfillments.proof-photo', $part))->assertNotFound();
     }
 }

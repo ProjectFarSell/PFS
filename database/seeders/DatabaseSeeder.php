@@ -6,12 +6,15 @@ use App\Models\Category;
 use App\Models\PsgcBarangay;
 use App\Models\Shop;
 use App\Models\User;
+use App\Support\DevelopmentData;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        DevelopmentData::assertAllowed();
         $this->call(PsgcGeographySeeder::class);
 
         $this->call(DemoAccountsSeeder::class);
@@ -29,7 +32,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Gadgets', 'icon' => 'G', 'sort_order' => 7],
             ['name' => 'Surplus', 'icon' => 'X', 'sort_order' => 8],
         ])->map(fn (array $row) => Category::query()->firstOrCreate(
-            ['slug' => \Illuminate\Support\Str::slug($row['name'])],
+            ['slug' => Str::slug($row['name'])],
             $row
         ));
 
@@ -44,6 +47,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $this->call(DemoCatalogProductsSeeder::class);
         $this->call(SellerDemoProductsSeeder::class);
 
         if ($buyer->addresses()->count() === 0) {

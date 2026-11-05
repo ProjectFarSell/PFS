@@ -62,7 +62,7 @@ class AdminLoginTest extends TestCase
             ->assertSee('autocomplete="username"', false);
         $this->get(route('welcome'))->assertOk()->assertViewIs('home')
             ->assertDontSee('Email or admin username')->assertSee(route('login'), false);
-        $this->post(route('register'), [
+        $this->post(route('register'), ['privacy_consent' => '1',
             'name' => 'Admin attempt', 'email' => 'admin', 'password' => 'password', 'password_confirmation' => 'password',
         ])->assertSessionHasErrors(['email'], null, 'register');
         $this->assertDatabaseCount('users', 0);

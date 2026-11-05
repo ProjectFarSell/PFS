@@ -1,6 +1,6 @@
 @if($errors->any())<div role="alert" class="mt-4 text-error">@foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>@endif
-<p class="mt-3 font-semibold">Total after rejected shipments: ₱{{ number_format($order->fulfillments->sum(fn ($part) => $part->amount()), 2) }}</p>
-<p class="mt-2 text-xs text-text-muted">Each shop prepares and delivers its items separately. Delivery fees are split between shipments; a rejected shipment's fee is waived. Overall status follows the least advanced active shipment.</p>
+<p class="mt-3 font-semibold">Current shipment total: ₱{{ number_format($order->fulfillments->sum(fn ($part) => $part->amount()), 2) }}</p>
+<p class="mt-2 text-xs text-text-muted">Each shop prepares and delivers its items separately. Delivery fees are split between shipments; cancelled and rejected shipments have no payable amount. Overall status follows the least advanced active shipment.</p>
 @if($order->payment_method === \App\Enums\PaymentMethod::GatewayStub)<p class="mt-2 text-xs text-text-muted">Demo payment only. No real charge or refund is processed.</p>@endif
 <div class="mt-5 space-y-4">
     @foreach($order->fulfillments as $part)
@@ -11,11 +11,22 @@
             @if($part->rider)<p class="mt-2 text-sm">Rider: {{ $part->rider->user?->name ?? 'Unavailable account' }}</p>@endif
             @if($part->rejection_reason)<p class="mt-2 text-sm text-error">Reason: {{ $part->rejection_reason }}</p>@endif
             @if($part->cod_collected_at)<p class="mt-2 text-sm">COD collected: ₱{{ number_format($part->amount(), 2) }}</p>@endif
+            @if($part->status === \App\Enums\FulfillmentStatus::InTransit && auth()->id() === $order->user_id && $part->delivery_pin)
+                <div class="mt-3 rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm">
+                    <p class="font-semibold">Delivery PIN: {{ $part->delivery_pin }}</p>
+                    <p class="mt-1 text-text-muted">Give this six-digit PIN to the rider only when they hand over the shipment.</p>
+                </div>
+            @endif
+            @if($part->delivery_recipient_name)<p class="mt-2 text-sm">Received by: {{ $part->delivery_recipient_name }}</p>@endif
+            @if($part->delivery_note)<p class="mt-2 text-sm">Delivery note: {{ $part->delivery_note }}</p>@endif
+            @if($part->delivery_photo_path && (auth()->id() === $order->user_id || auth()->user()?->role === \App\Enums\UserRole::Admin))
+                <p class="mt-2 text-sm"><a class="text-accent underline" href="{{ route('fulfillments.proof-photo', $part) }}">View proof photo</a></p>
+            @endif
             <ol class="mt-5 text-sm" aria-label="Shipment history">
                 @foreach($part->events as $event)
                     @php
-                        $isCurrent = $loop->last && !in_array($part->status, [\App\Enums\FulfillmentStatus::Completed, \App\Enums\FulfillmentStatus::Rejected], true);
-                        $isRejected = $event->status === 'rejected';
+                        $isCurrent = $loop->last && !in_array($part->status, [\App\Enums\FulfillmentStatus::Completed, \App\Enums\FulfillmentStatus::Rejected, \App\Enums\FulfillmentStatus::Cancelled], true);
+                        $isRejected = in_array($event->status, ['rejected', 'cancelled'], true);
                     @endphp
                     <li class="relative flex gap-4 {{ $loop->last ? '' : 'pb-6' }}" @if($isCurrent) aria-current="step" @endif>
                         <div class="relative flex w-5 shrink-0 justify-center" aria-hidden="true">
@@ -35,6 +46,10 @@
             </ol>
             @if($part->status === \App\Enums\FulfillmentStatus::Delivered && auth()->id() === $order->user_id)
                 <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4">@csrf <p class="mb-3 text-sm">Confirm only after receiving this shop's items.</p><button name="action" value="complete" class="btn-accent">Confirm received / Complete shipment</button></form>
+            @endif
+            @if($part->status === \App\Enums\FulfillmentStatus::Completed && auth()->id() === $order->user_id)
+                @php($reviewed = $part->feedback && $part->items->every(fn ($item) => $item->review) && (!$part->rider_id || $part->riderRating))
+                <a href="{{ route('orders.feedback.create', $part) }}" class="btn-accent mt-4 inline-flex">{{ $reviewed ? 'View your feedback' : 'Rate products & delivery' }}</a>
             @endif
         </section>
     @endforeach

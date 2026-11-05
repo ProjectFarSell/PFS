@@ -78,10 +78,23 @@ class RiderRegistrationTest extends TestCase
             'vehicle_type' => 'motorcycle',
             'license_no' => 'LIC-12345',
             'city' => 'Quezon City',
-            'id_document' => UploadedFile::fake()->create('id.webp', 100, 'image/webp'),
+            'id_document' => UploadedFile::fake()->image('id.webp'),
         ])->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('rider_documents', ['document_type' => 'id']);
+    }
+
+    public function test_later_invalid_photo_cleans_up_earlier_uploads(): void
+    {
+        Storage::fake('local');
+        $this->actingAs(User::factory()->create())->post('/rider/apply', [
+            'vehicle_type' => 'motorcycle', 'license_no' => 'LIC-TEST', 'city' => 'Quezon City',
+            'license_document' => UploadedFile::fake()->image('license.png'),
+            'id_document' => UploadedFile::fake()->create('invalid.webp', 100, 'image/webp'),
+        ])->assertSessionHasErrors('id_document');
+        $this->assertDatabaseCount('rider_documents', 0);
+        $this->assertDatabaseCount('rider_profiles', 0);
+        $this->assertCount(0, Storage::disk('local')->allFiles('rider-documents'));
     }
 
     public function test_updating_details_keeps_existing_documents_and_saves_the_phone_number(): void

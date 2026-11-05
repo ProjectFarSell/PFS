@@ -6,6 +6,7 @@
         <h1 class="text-xl font-semibold">{{ $application->shop_name }}</h1>
         <span class="badge badge-neutral mt-3">{{ ucfirst($application->status) }}</span>
         <dl class="mt-4 space-y-3 text-sm">
+            <div><dt class="text-text-muted">Product categories</dt><dd class="mt-1">{{ $categories->isNotEmpty() ? $categories->join(', ') : 'Not supplied' }}</dd></div>
             @foreach(['Applicant' => $application->user->name, 'Email' => $application->user->email, 'Current role' => $application->user->role->value, 'City' => $application->city, 'Tagline' => $application->tagline, 'What they will sell' => $application->description] as $label => $value)
                 <div><dt class="text-text-muted">{{ $label }}</dt><dd class="mt-1 whitespace-pre-line break-words">{{ $value ?: 'Not supplied' }}</dd></div>
             @endforeach

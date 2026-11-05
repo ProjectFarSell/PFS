@@ -47,6 +47,11 @@ class Shop extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function fulfillments(): HasMany
+    {
+        return $this->hasMany(Fulfillment::class);
+    }
+
     public function psgcCityMunicipality(): BelongsTo
     {
         return $this->belongsTo(PsgcCityMunicipality::class);

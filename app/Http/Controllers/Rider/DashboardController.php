@@ -21,7 +21,10 @@ class DashboardController extends Controller
 
         if (! $canViewDeliveries) {
             // Applicants may see their own status, never any assignment data.
-            return view('rider.dashboard', compact('profile', 'canViewDeliveries'));
+            $ratingStats = null;
+            $recentRatings = collect();
+
+            return view('rider.dashboard', compact('profile', 'canViewDeliveries', 'ratingStats', 'recentRatings'));
         }
 
         $activeStatuses = [OrderStatus::Assigned->value, OrderStatus::InTransit->value];
@@ -56,6 +59,9 @@ class DashboardController extends Controller
             ->when($selectedStatus, fn ($query) => $query->where('status', $selectedStatus))
             ->orderBy('created_at')->orderBy('id')->paginate(10)->withQueryString();
 
-        return view('rider.dashboard', compact('profile', 'canViewDeliveries', 'stats', 'deliveries', 'selectedStatus', 'shipments'));
+        $ratingStats = $profile->deliveryRatings()->selectRaw('COUNT(*) AS total, AVG(rating) AS average')->first();
+        $recentRatings = $profile->deliveryRatings()->latest()->limit(3)->get(['rating', 'feedback', 'tags', 'created_at']);
+
+        return view('rider.dashboard', compact('profile', 'canViewDeliveries', 'stats', 'deliveries', 'selectedStatus', 'shipments', 'ratingStats', 'recentRatings'));
     }
 }

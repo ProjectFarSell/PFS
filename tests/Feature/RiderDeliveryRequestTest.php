@@ -53,6 +53,17 @@ class RiderDeliveryRequestTest extends TestCase
             ->post(route('fulfillments.update', $part), ['action' => 'claim']);
     }
 
+    public function test_browser_navigation_opens_the_request_panel_while_polling_returns_json(): void
+    {
+        $rider = $this->rider();
+        $panelUrl = route('rider.dashboard').'#delivery-requests';
+        $this->actingAs($rider->user)->get(route('rider.dashboard'))->assertOk()
+            ->assertSee('href="'.$panelUrl.'"', false)
+            ->assertSee('id="delivery-requests"', false);
+        $this->get(route('rider.delivery-requests'))->assertRedirect($panelUrl);
+        $this->getJson(route('rider.delivery-requests'))->assertOk()->assertJsonPath('count', 0)->assertJsonStructure(['count', 'html']);
+    }
+
     public function test_ready_notifies_only_eligible_riders_and_feed_hides_private_details(): void
     {
         $rider = $this->rider('  quezon   CITY ');

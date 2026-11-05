@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Support\CheckoutIntent;
 use App\Support\GuestSession;
+use App\Support\PrivacyNotice;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,7 +32,8 @@ class RegisterController extends Controller
             'email' => ['required', 'email', 'max:180', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::defaults()],
             'intent' => ['nullable', 'in:buyer,seller,rider'],
-        ])->validateWithBag('register');
+            'privacy_consent' => ['required', 'accepted'],
+        ], ['privacy_consent.accepted' => 'Please read and agree to the privacy notice.', 'privacy_consent.required' => 'Please read and agree to the privacy notice.'])->validateWithBag('register');
 
         // Role stays Buyer at registration. Seller/Rider access is granted only
         // after the relevant application is actually approved, not on signup intent.
@@ -44,23 +46,14 @@ class RegisterController extends Controller
             'role' => UserRole::Buyer,
         ]);
 
+        $user->forceFill(['privacy_accepted_at' => now(), 'privacy_notice_version' => PrivacyNotice::VERSION])->save();
+
         event(new Registered($user));
         Auth::login($user);
         $request->session()->regenerate();
         GuestSession::forget();
 
-        if (CheckoutIntent::active()) {
-            return redirect()->intended(route('checkout.create'));
-        }
-
-        if ($intent === 'rider') {
-            return redirect()->route('rider.register');
-        }
-
-        if ($intent === 'seller') {
-            return redirect()->route('seller.apply');
-        }
-
-        return redirect()->route('home');
+        // Keep the browser on its current local hostname so the new session cookie remains available.
+        return redirect()->away('/account/verify');
     }
 }

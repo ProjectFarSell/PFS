@@ -8,11 +8,13 @@ use App\Enums\PaymentMethod;
 use App\Enums\UserRole;
 use App\Models\Fulfillment;
 use App\Models\Order;
-use App\Models\Product;
 use App\Models\RiderBarangayAssignment;
+use App\Models\RiderEarning;
 use App\Models\RiderProfile;
 use App\Models\User;
+use App\Services\Notifications\OrderNotificationService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class FulfillmentService
@@ -32,6 +34,7 @@ class FulfillmentService
                 'status' => Status::Pending,
                 'subtotal' => $items->sum('line_total'),
                 'shipping_fee' => (intdiv($fee, $groups->count()) + ($index++ < $fee % $groups->count() ? 1 : 0)) / 100,
+                ...$this->deliveryPin(),
             ]);
             $order->items()->whereIn('id', $items->pluck('id'))->update(['fulfillment_id' => $fulfillment->id]);
             $fulfillment->events()->create(['actor_id' => $order->user_id, 'status' => Status::Pending->value, 'note' => 'Order placed.']);
@@ -78,14 +81,7 @@ class FulfillmentService
                     $note = $data['reason'];
                     $part->rejection_reason = $note;
                     if ($order->stock_reserved_at && ! $order->stock_released_at && ! $part->stock_released_at) {
-                        foreach ($part->items()->orderBy('product_id')->get() as $item) {
-                            if ($item->product_variant_id) {
-                                \App\Models\ProductVariant::query()->whereKey($item->product_variant_id)->increment('stock', $item->qty);
-                                if ($item->product_id && $item->variant?->is_active) Product::query()->whereKey($item->product_id)->increment('stock', $item->qty);
-                            } elseif ($item->product_id) {
-                                Product::query()->whereKey($item->product_id)->increment('stock', $item->qty);
-                            }
-                        }
+                        app(StockReservationService::class)->releaseItems($part->items()->orderBy('product_id')->get());
                         $part->stock_released_at = now();
                     }
                 }
@@ -125,12 +121,21 @@ class FulfillmentService
                 abort_unless($actor->role === UserRole::Rider && $rider?->user_id === $actor->id && $rider->isApproved(), 403);
                 $this->expect($part, $action === 'pickup' ? Status::Assigned : Status::InTransit);
                 $next = $action === 'pickup' ? Status::InTransit : Status::Delivered;
+                if ($action === 'pickup') {
+                    $this->ensureDeliveryPin($part);
+                }
                 if ($action === 'deliver') {
                     if ($order->payment_method === PaymentMethod::Cod && ! filter_var($data['cod_collected'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
                         throw ValidationException::withMessages(['cod_collected' => 'Confirm that the exact COD amount was collected before recording delivery.']);
                     }
                     $note = $data['delivery_note'];
                     $part->delivery_note = $note;
+                    $part->delivery_recipient_name = $data['delivery_recipient_name'];
+                    $part->delivery_photo_path = $data['delivery_photo_path'] ?? null;
+                    $this->ensureDeliveryPin($part);
+                    if (! Hash::check($data['delivery_pin'], $part->delivery_pin_hash)) {
+                        throw ValidationException::withMessages(['delivery_pin' => 'The delivery PIN does not match. Ask the buyer for the current PIN.']);
+                    }
                     if ($order->payment_method === PaymentMethod::Cod) {
                         $part->cod_collected_at = now();
                     }
@@ -153,11 +158,22 @@ class FulfillmentService
 
             $part->status = $next;
             $part->save();
+            if ($next === Status::Completed && $part->rider_id !== null) {
+                RiderEarning::query()->firstOrCreate(
+                    ['fulfillment_id' => $part->id],
+                    [
+                        'rider_profile_id' => $part->rider_id,
+                        'amount' => $part->shipping_fee,
+                        'earned_at' => now(),
+                    ]
+                );
+            }
             if ($next === Status::Ready) {
                 app(DeliveryRequestService::class)->notifyRiders($part);
             }
-            $part->events()->create(['actor_id' => $actor->id, 'status' => $next->value, 'note' => $note]);
+            $event = $part->events()->create(['actor_id' => $actor->id, 'status' => $next->value, 'note' => $note]);
             $this->syncOrder($order);
+            app(OrderNotificationService::class)->shipmentChanged($event);
         }, 3);
     }
 
@@ -186,7 +202,7 @@ class FulfillmentService
     private function syncOrder(Order $order): void
     {
         $parts = $order->fulfillments()->get();
-        $active = $parts->reject(fn ($part) => $part->status === Status::Rejected);
+        $active = $parts->reject(fn ($part) => in_array($part->status, [Status::Rejected, Status::Cancelled], true));
         $stages = [Status::Pending, Status::Accepted, Status::Ready, Status::Assigned, Status::InTransit, Status::Delivered, Status::Completed];
         $earliest = $active->sortBy(fn ($part) => array_search($part->status, $stages, true))->first()?->status;
         $order->status = match ($earliest) {
@@ -204,5 +220,19 @@ class FulfillmentService
             $order->stock_released_at = now();
         }
         $order->save();
+    }
+
+    private function deliveryPin(): array
+    {
+        $pin = (string) random_int(100000, 999999);
+
+        return ['delivery_pin' => $pin, 'delivery_pin_hash' => Hash::make($pin)];
+    }
+
+    private function ensureDeliveryPin(Fulfillment $part): void
+    {
+        if (! $part->delivery_pin_hash) {
+            $part->forceFill($this->deliveryPin());
+        }
     }
 }

@@ -172,6 +172,7 @@
                     @endauth
 
                     @if($canUseCart)
+                    <x-buyer-notification-bell />
                     {{-- Cart --}}
                     <a href="{{ route('cart.index') }}"
                        class="theme-toggle relative"
@@ -322,7 +323,7 @@
 
     {{-- ── Flash status ────────────────────────────────────────────── --}}
     @if (session('status'))
-        <div class="mx-auto max-w-7xl px-4 pt-4">
+        <div data-flash-message role="status">
             <p class="alert-success">{{ session('status') }}</p>
         </div>
     @endif
@@ -427,7 +428,7 @@
                     <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-3">About</h3>
                     <ul class="space-y-2 text-sm">
                         <li><span class="text-xs">About FarSell (coming soon)</span></li>
-                        <li><span class="text-xs">Privacy Policy (coming soon)</span></li>
+                        <li><a href="{{ route('privacy') }}" class="text-xs hover:text-white">Privacy notice</a></li>
                         <li><span class="text-xs">Terms of Service (coming soon)</span></li>
                         <li><span class="text-xs">Contact Us (coming soon)</span></li>
                     </ul>

@@ -1,4 +1,6 @@
 import './bootstrap';
+import './flash-messages';
+import './product-feedback';
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rider;
 use App\Enums\RiderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\Security\SafeImage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -43,66 +44,79 @@ class RiderRegistrationController extends Controller
 
         $user = $request->user();
         $replacedPaths = [];
+        $newPaths = [];
 
-        DB::transaction(function () use ($user, $request, $data, &$replacedPaths) {
-            // Serialize submissions and admin decisions on the same account.
-            $user = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
-            $existing = $user->riderProfile()->lockForUpdate()->first();
-            if ($existing && in_array($existing->status, [RiderStatus::Approved, RiderStatus::Suspended], true)) {
-                throw ValidationException::withMessages(['application' => 'An approved or suspended application cannot be resubmitted. Contact an administrator.']);
-            }
+        try {
+            DB::transaction(function () use ($user, $request, $data, &$replacedPaths, &$newPaths) {
+                // Serialize submissions and admin decisions on the same account.
+                $user = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+                $existing = $user->riderProfile()->lockForUpdate()->first();
+                if ($existing && in_array($existing->status, [RiderStatus::Approved, RiderStatus::Suspended], true)) {
+                    throw ValidationException::withMessages(['application' => 'An approved or suspended application cannot be resubmitted. Contact an administrator.']);
+                }
 
-            if ($request->has('phone')) {
-                $user->update(['phone' => $data['phone'] ?? null]);
-            }
+                if ($request->has('phone')) {
+                    $user->update(['phone' => $data['phone'] ?? null]);
+                }
 
-            // Submission never grants a role; only an admin approval does.
-            $profile = $user->riderProfile()->updateOrCreate(
-                ['user_id' => $user->id],
-                [
-                    'vehicle_type' => $data['vehicle_type'],
-                    'plate_number' => $data['plate_number'] ?? null,
-                    'license_no' => $data['license_no'],
-                    'city' => $data['city'],
-                    'bio' => $data['bio'] ?? null,
-                    'status' => RiderStatus::Pending,
-                    'reviewed_at' => null,
-                    'reviewed_by' => null,
-                    'review_note' => null,
-                ]
-            );
+                // Submission never grants a role; only an admin approval does.
+                $profile = $user->riderProfile()->updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'vehicle_type' => $data['vehicle_type'],
+                        'plate_number' => $data['plate_number'] ?? null,
+                        'license_no' => $data['license_no'],
+                        'city' => $data['city'],
+                        'bio' => $data['bio'] ?? null,
+                        'status' => RiderStatus::Pending,
+                        'reviewed_at' => null,
+                        'reviewed_by' => null,
+                        'review_note' => null,
+                    ]
+                );
 
-            // Unchanged document types remain on file. A new upload replaces only
-            // that type and must be reviewed again.
-            $uploads = [
-                'license_document' => 'license',
-                'id_document' => 'id',
-                'vehicle_reg_document' => 'vehicle_reg',
-            ];
+                // Unchanged document types remain on file. A new upload replaces only
+                // that type and must be reviewed again.
+                $uploads = [
+                    'license_document' => 'license',
+                    'id_document' => 'id',
+                    'vehicle_reg_document' => 'vehicle_reg',
+                ];
 
-            foreach ($uploads as $field => $documentType) {
-                if ($request->hasFile($field)) {
-                    $path = $request->file($field)->store('rider-documents', 'local');
-                    $document = $profile->documents()
-                        ->where('document_type', $documentType)
-                        ->latest('id')
-                        ->first();
-
-                    if ($document) {
-                        if ($document->file_path !== $path) {
-                            $replacedPaths[] = $document->file_path;
+                foreach ($uploads as $field => $documentType) {
+                    if ($request->hasFile($field)) {
+                        $file = $request->file($field);
+                        $path = str_starts_with((string) $file->getMimeType(), 'image/')
+                            ? app(SafeImage::class)->store($file, 'rider-documents', 'local', $field, 5242880)
+                            : $file->store('rider-documents', 'local');
+                        if (! $path) {
+                            throw ValidationException::withMessages([$field => 'Document storage is unavailable. Please try again.']);
                         }
-                        $document->update(['file_path' => $path, 'verified' => false]);
-                    } else {
-                        $profile->documents()->create([
-                            'document_type' => $documentType,
-                            'file_path' => $path,
-                            'verified' => false,
-                        ]);
+                        $newPaths[] = $path;
+                        $document = $profile->documents()
+                            ->where('document_type', $documentType)
+                            ->latest('id')
+                            ->first();
+
+                        if ($document) {
+                            if ($document->file_path !== $path) {
+                                $replacedPaths[] = $document->file_path;
+                            }
+                            $document->update(['file_path' => $path, 'verified' => false]);
+                        } else {
+                            $profile->documents()->create([
+                                'document_type' => $documentType,
+                                'file_path' => $path,
+                                'verified' => false,
+                            ]);
+                        }
                     }
                 }
-            }
-        });
+            });
+        } catch (\Throwable $exception) {
+            Storage::disk('local')->delete($newPaths);
+            throw $exception;
+        }
 
         foreach (array_unique($replacedPaths) as $oldPath) {
             Storage::disk('local')->delete($oldPath);

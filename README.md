@@ -237,7 +237,7 @@ Run `php artisan migrate --env=local` for the review metadata fields when using 
 
 Run `php artisan migrate --env=local` and `php artisan storage:link --env=local` for local setup; use the appropriate environment in other installations. The storage link serves **public product photos**, not private rider documents. Category records must exist before creating products; the editor explains this if none are configured. Do not run a fresh migration or reseed an existing working database just to enable this feature.
 
-Stock in the editor is **available stock excluding reservations**. Saving an outdated edit is rejected if stock or listing data changed, and conflict reloads use current values. Products are unpublished rather than hard-deleted to retain order ownership/history. No seller product-transfer or deletion endpoint exists. Replaced images are retained on disk for now; cleanup can be added separately. Product variants, galleries, real payment processing, payout accounting, and business-document verification are not included in this MVP.
+Stock in the editor is **available stock excluding reservations**. Saving an outdated edit is rejected if stock or listing data changed, and conflict reloads use current values. Products are unpublished rather than hard-deleted to retain order ownership/history. No seller product-transfer or deletion endpoint exists. Replaced images are retained on disk for now; cleanup can be added separately. Product variants, galleries, real payment processing, payout disbursement/accounting, and business-document verification are not included in this MVP.
 
 ---
 
@@ -252,15 +252,59 @@ Every new checkout creates one shipment per shop with item ownership and shop-na
 3. **Rider Dashboard → Manage pickups and deliveries**: see only assigned active shipments, pickup details, delivery address, and the amount due for that shipment. Confirm pickup to mark out for delivery. Delivery requires a recipient/handover note and, for COD, confirmation of the displayed cash amount collected.
 4. **Buyer → My Orders → View details**: follow timestamped shipment history, see rejections and COD collection, and confirm receipt after delivery to complete that shipment. An order is completed when all non-rejected shipments are completed; all-rejected orders are cancelled. Otherwise its summary follows the least advanced active shipment.
 
+Completed shipments credit the rider with that shipment's full allocated delivery fee. Riders can review their earnings ledger and delivery history from the rider portal. Buyers can submit one 1–5 star rating and optional written feedback after confirming receipt. The admin **Rider Records** page reviews shipment status history, earnings entries, and buyer feedback. These are records only: the app does not transfer money or calculate additional bonuses or commissions.
+
+After confirming receipt, buyers can open **Rate products & delivery** on the shipment. The form accepts one review per purchased item, with product stars, optional text, anonymous public posting, up to three photos, and one MP4/WebM video. It also records seller-service, delivery-speed, and rider-service scores with optional rider feedback tags. Existing rider ratings are preserved when adding item reviews later. Product pages display verified purchase reviews; **Admin → Reviews** displays item reviews and service scores. Review media stays in private local storage and is served through a visibility-checked route, so it does not require a public storage link. Upload limits shown in the form respect PHP's configured limits, with application caps of 4 MB per photo and 20 MB per video.
+
 State changes are transactional and serialize on the parent order. Repeated actions, skipped steps, cross-shop access, unassigned riders, suspended riders, and non-owner completion attempts are rejected. The old whole-order state machine cannot bypass these rules for orders with shipments. Delivered shipments disappear from riders' active address views, while delivered/completed counts remain visible.
 
-Payment and delivery limits: card/e-wallet payments are still demos, and no real charge or refund is processed. COD records a rider's confirmation, not a bank settlement or seller payout. Delivery evidence is text, not photo/GPS verification. Reassignment, failed delivery/returns, disputes, live location tracking, and automatic completion are not included. Request notifications are in-app; there are no SMS, email, browser push, or closed-app alerts. Availability is manually controlled, not device-presence detection.
+Payment and delivery limits: card/e-wallet payments are still demos, and no real charge or refund is processed. COD records a rider's confirmation, not a bank settlement or seller payout. Riders may attach an optional delivery proof photo using the web form; camera-first capture and GPS verification are not included. Reassignment, failed delivery/returns, disputes, live location tracking, and automatic completion are not included. Request notifications are in-app; there are no sound/vibration offer popups, SMS, email, browser push, or closed-app alerts. Availability is manually controlled, not device-presence detection. The web app does not provide turn-by-turn navigation, offline delivery actions, barcode/QR scanning, or route optimization.
 
 The rider request migration defaults all riders to unavailable. Marking ready snapshots the shop city and triggers automatic offers; availability changes and dashboard polling also advance pending offers. The live queue shows only the current unexpired offer addressed to that rider. Claiming rechecks approval, availability, city and shipment state in the same parent-order transaction used by admin assignment. Before acceptance, requests expose only shop, shipment number and city; private contact, address and COD details remain restricted to assigned riders.
 
 Validation on Windows: `php -d extension=gd vendor/phpunit/phpunit/phpunit` enables GD for image-upload tests without changing `php.ini`. Also run `node --test tests/Frontend/*.test.cjs` and `npm.cmd run build`.
 
 Automatic offer timing: run `php artisan schedule:work` in a separate terminal for minute-by-minute dispatch even when rider dashboards are closed. Open dashboards also check every 15 seconds. Run `php artisan riders:dispatch` to trigger one dispatch pass manually. An expired offer can never be accepted, even if the next scheduler pass has not yet run. Apply all migrations before starting the scheduler.
+
+## Background order notifications
+
+Order confirmation emails, new shop orders, buyer shipment updates, rider assignments, and rider completion/earnings messages use the `notifications` queue. Notification records commit with their order or shipment event. Jobs are added after the transaction commits; a queue outage leaves a pending record for the scheduler to recover. Each event/recipient has one notification record. Workers skip already-sent messages, outdated shipment updates, inactive assignments, and changed recipient addresses. Delayed status messages describe the recorded event and link to the current authenticated order/delivery page; they do not contain private pickup addresses, buyer addresses, or delivery PINs.
+
+Apply migrations, then keep the notification worker and scheduler running in separate terminals:
+
+```powershell
+php artisan migrate
+php artisan notifications:work
+```
+
+```powershell
+php artisan schedule:work
+```
+
+`composer dev` also starts the notification worker and scheduler in the local environment. Starting only `php artisan serve` or Vite does not start these workers. `php artisan notifications:work --once` handles one available job; `php artisan notifications:dispatch` manually queues pending records after an enqueueing failure.
+
+The default `NOTIFICATION_MAILER=log` writes test emails to the Laravel log. To inspect messages in a local SMTP inbox, start the optional [Mailpit sandbox](https://mailpit.axllent.org/docs/install/docker/):
+
+```powershell
+docker compose --profile mail up -d mailpit
+```
+
+Set these values in your own `.env`, then run `php artisan config:clear` and restart the notification worker:
+
+```dotenv
+ORDER_NOTIFICATIONS_ENABLED=true
+NOTIFICATION_QUEUE_CONNECTION=database
+NOTIFICATION_QUEUE=notifications
+NOTIFICATION_MAILER=mailpit
+MAILPIT_HOST=127.0.0.1
+MAILPIT_SMTP_PORT=1025
+```
+
+Use `MAILPIT_HOST=mailpit` when PHP runs in the same Docker Compose network. Open `http://localhost:8025` to inspect captured messages. The optional container binds its inbox and SMTP ports to the local computer. Mailpit requires no API key. For an actual email provider, select an already configured Laravel mailer with `NOTIFICATION_MAILER` (for example, `smtp` uses the existing `MAIL_*` settings). Email OTP continues to use `MAIL_MAILER` directly so its immediate success/failure and resend timing remain consistent.
+
+**Admin → Notifications** shows pending, queued, sending, retrying, sent, failed, and skipped deliveries, with attempt counts and retry timing. A message gets up to four automatic attempts, with delays of 60, 300, and 900 seconds. Failed or pending messages can be retried manually from this page. Pending recovery runs every minute through the scheduler. `php artisan queue:failed` shows Laravel's failed-job records; manually requeueing a message from the admin page retains the earlier failure as history. Changing mail/queue settings requires restarting long-running workers (`php artisan queue:restart`, or stop and restart the local worker).
+
+Sent means the chosen mail transport accepted the message; log and Mailpit sends are test deliveries. Email inbox delivery receipts are not tracked. SMTP provides no shared transaction with the application database, so a worker crash after SMTP acceptance but before recording success can produce a duplicate on retry. Notification failures do not undo a committed order or delivery transition. Set `ORDER_NOTIFICATIONS_ENABLED=false` to stop creating/enqueueing new notification records; already-queued jobs remain eligible for processing.
 
 ## Guest-first storefront
 
@@ -439,6 +483,42 @@ PHP code follows [Laravel Pint](https://laravel.com/docs/pint) (PSR-12 based). R
 ```
 
 ## Integration verification
+
+### P1 Weeks 9–12: operations and release preparation
+
+The [week-by-week audit](docs/operations/weeks-9-12.md) distinguishes implemented repository safeguards from the actual beta, hosting, and launch work still pending. Cloudflare setup is reserved for the team. Start with the [operating/recovery runbook](docs/operations/runbook.md), [threat model](docs/operations/threat-model.md), and [launch acceptance sheet](docs/operations/launch-acceptance.md).
+
+- Admin dashboard → **Operations** shows runtime and technical release checks; **Notifications** remains the email retry monitor.
+- `php artisan ops:status --json` checks DB/background-process health. `/up` is boot health; `/ready` adds DB, queue failures and, in production, actual worker/scheduler heartbeats.
+- `php artisan release:check` is read-only and intentionally fails under ordinary local settings. It cannot approve a production launch or certify TLS/provider recovery.
+- `CHECKOUT_ENABLED=false` pauses new orders while keeping browsing/existing delivery records available. `BETA_ENABLED=true` enforces `BETA_CITY_IDS` for pickup and delivery; an empty list fails closed.
+- Production must set `ALLOW_DEMO_PAYMENTS=false`. Real non-COD payments are not implemented by the demo gateway.
+- `php artisan ops:rehearse` exercises migration rollback/reapply and encrypted restore on a new dummy SQLite database. SQLite backups require a strong `BACKUP_PASSWORD`; cloud objects and MySQL/provider restoration need separate hosting-specific procedures.
+- Demo seeders refuse production, startup no longer automatically seeds accounts, and an existing APP_KEY is preserved. Provision actual administrators with the interactive `ops:create-admin` command rather than default credentials.
+- `deploy/production.env.example` contains placeholders only. Do not overwrite an existing local `.env` with production settings.
+
+GitHub release checks run backend/frontend tests, advisory audits, builds, bundle budgets, recovery rehearsal, and template/route compilation. They do not deploy the website. `node tools/check-assets.mjs` checks the built assets locally.
+
+### Privacy and Topic 9 security checks
+
+Run `php artisan migrate` after pulling the privacy update. `/privacy` describes the data collected, service providers, account choices, and retention limits. Registration requires an unchecked privacy consent checkbox and records the notice version and acceptance time. Google sign-in first displays a consent screen; existing accounts can also record acceptance through the privacy page linked from profile settings.
+
+Profile settings include an account-deletion review request for all account roles. Admins open **Privacy requests** from the admin dashboard and save a response visible only to the account holder and admins. A review response does not delete an account or its orders. The existing immediate-deletion option remains limited to eligible buyers without marketplace history. Default avatar initials are generated locally.
+
+The activity report and numbered screenshots are generated under `security-report/`. Its group number, section, and member names are intentionally blank. The local HTTP test is recorded as an HTTPS failure; a trusted HTTPS deployment must be tested separately. To reproduce the browser evidence on Windows with Microsoft Edge installed:
+
+```bash
+npm run build
+node tools/security-check/capture.mjs
+```
+
+The capture script uses its own SQLite database under ignored `storage/app/security-check/`, dummy accounts, and a temporary loopback server on port 8019. It blocks outbound font/avatar requests, disables email notifications, uses built frontend assets, and closes the temporary browser/server when finished. It refuses to run with cached Laravel configuration. Port 9239 is used for the temporary headless browser's loopback debugging connection. No real user database is seeded or inspected by these scripts.
+
+Run the privacy/access regression checks with:
+
+```bash
+php artisan test --filter="PrivacySecurityCheckTest|RegistrationTest|CheckoutSignInTest|SellerApprovalTest|AdminLoginTest|ProfileCrudTest|RoleIsolationTest"
+```
 
 Run automated checks against the isolated SQLite test database:
 

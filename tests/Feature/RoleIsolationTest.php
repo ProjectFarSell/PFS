@@ -89,7 +89,7 @@ class RoleIsolationTest extends TestCase
     {
         $admin = User::factory()->create(['role' => UserRole::Admin]);
         $this->actingAs($admin)->get(route('admin.dashboard'))
-            ->assertOk()->assertSee('Seller Approvals')->assertDontSee('href="'.route('home').'"', false);
+            ->assertOk()->assertSee('Partners')->assertDontSee('href="'.route('home').'"', false);
 
         $rider = User::factory()->rider()->create();
         $this->actingAs($rider)->get(route('rider.dashboard'))

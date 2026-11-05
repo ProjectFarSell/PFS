@@ -61,8 +61,8 @@ class InvoiceGeneratorApi
                 'discounts' => false,
                 'shipping' => true,
             ],
-            'shipping' => (float) $order->shipping_fee,
-            'items' => $order->items->map(function ($item): array {
+            'shipping' => $order->billableShipping(),
+            'items' => $order->billableItems()->map(function ($item): array {
                 $options = collect($item->variant_options ?? [])
                     ->map(fn ($value, $name) => $name.': '.$value)
                     ->join(', ');
@@ -77,7 +77,7 @@ class InvoiceGeneratorApi
                     'quantity' => (int) $item->qty,
                     'unit_cost' => (float) $item->unit_price,
                 ];
-            })->all(),
+            })->values()->all(),
         ];
     }
 }

@@ -6,9 +6,10 @@ use App\Contracts\DeliveryFeeService;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
-use App\Mail\OrderConfirmationMail;
 use App\Models\Order;
 use App\Services\Invoices\InvoiceGeneratorApi;
+use App\Services\Notifications\OrderNotificationService;
+use App\Services\Orders\CheckoutAvailability;
 use App\Services\Orders\FulfillmentService;
 use App\Services\Orders\StockReservationService;
 use App\Support\Cart;
@@ -17,9 +18,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
@@ -31,6 +32,7 @@ class CheckoutController extends Controller
 
     public function create(Request $request): View|RedirectResponse
     {
+        app(CheckoutAvailability::class)->ensureOpen();
         if (Cart::checkoutCount() === 0) {
             return redirect()->route('cart.index')->with('status', 'Your cart is empty.');
         }
@@ -63,6 +65,7 @@ class CheckoutController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        app(CheckoutAvailability::class)->ensureOpen();
         if (Cart::checkoutCount() === 0) {
             return redirect()->route('cart.index');
         }
@@ -80,6 +83,9 @@ class CheckoutController extends Controller
             ->with(['psgcRegion', 'psgcProvince', 'psgcCityMunicipality', 'psgcBarangay'])
             ->findOrFail($data['address_id']);
         $paymentMethod = PaymentMethod::from($data['payment_method']);
+        if ($paymentMethod === PaymentMethod::GatewayStub && ! config('release.allow_demo_payments')) {
+            throw ValidationException::withMessages(['payment_method' => 'This payment method is unavailable. Please use cash on delivery.']);
+        }
         $initialStatus = $paymentMethod === PaymentMethod::Cod
             ? OrderStatus::PendingPayment
             : OrderStatus::Paid;
@@ -87,6 +93,7 @@ class CheckoutController extends Controller
 
         $order = DB::transaction(function () use ($lines, $address, $paymentMethod, $initialStatus): Order {
             $lockedLines = $this->stock->lockAndPrepare($lines);
+            app(CheckoutAvailability::class)->ensureServiceable($address, $lockedLines);
             $subtotal = (float) $lockedLines->sum('line_total');
             $shipping = $this->deliveryFees->calculate($address, $lockedLines);
 
@@ -120,20 +127,12 @@ class CheckoutController extends Controller
 
             $this->stock->reserve($lockedLines);
             app(FulfillmentService::class)->createForOrder($order);
+            app(OrderNotificationService::class)->orderPlaced($order);
 
             return $order;
         });
 
         Cart::clearCheckout();
-
-        try {
-            Mail::to($order->guest_email)->send(new OrderConfirmationMail($order->load('items')));
-        } catch (\Throwable $exception) {
-            Log::warning('Order confirmation email could not be sent.', [
-                'order_id' => $order->id,
-                'exception' => $exception::class,
-            ]);
-        }
 
         return redirect()->route('orders.show', $order)->with('status', 'Order placed.');
     }
@@ -141,7 +140,7 @@ class CheckoutController extends Controller
     public function show(Order $order): View
     {
         $this->authorize('view', $order);
-        $order->load(['items', 'fulfillments.items', 'fulfillments.events', 'fulfillments.rider.user']);
+        $order->load(['items.returnRequest', 'fulfillments.items.review', 'fulfillments.events', 'fulfillments.rider.user', 'fulfillments.riderRating', 'fulfillments.feedback']);
 
         return view('orders.show', compact('order'));
     }
@@ -152,7 +151,7 @@ class CheckoutController extends Controller
         $this->authorize('view', $order);
         $order->load('items');
 
-        if ($document === 'invoice' && filled(config('services.invoice_generator.api_key'))) {
+        if ($document === 'invoice' && $order->billableItems()->isNotEmpty() && filled(config('services.invoice_generator.api_key'))) {
             try {
                 $pdf = $invoiceGenerator->generate($order);
 

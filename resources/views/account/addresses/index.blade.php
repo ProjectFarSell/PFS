@@ -10,9 +10,6 @@
             <a href="{{ route('account.addresses.create') }}" class="text-sm text-accent hover:text-accent">Add new</a>
         </div>
 
-        @if (session('status'))
-            <p class="rounded-lg bg-emerald-50 text-emerald-800 text-sm px-3 py-2 mb-3">{{ session('status') }}</p>
-        @endif
         @forelse ($addresses as $address)
             <div class="rounded-xl bg-surface border border-surface-border p-4 mb-3">
                 <div class="flex items-start justify-between">

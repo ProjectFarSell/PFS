@@ -30,6 +30,9 @@ class DeliveryRequestController extends Controller
     {
         $profile = $request->user()->riderProfile;
         abort_unless($request->user()->role === UserRole::Rider && $profile?->isApproved(), 403);
+        if (! $request->expectsJson()) {
+            return to_route('rider.dashboard')->withFragment('delivery-requests');
+        }
         $service->dispatchPending();
         $query = $service->requests($profile);
         $count = (clone $query)->count();

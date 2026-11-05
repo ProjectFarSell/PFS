@@ -2,7 +2,7 @@
 FROM node:22-alpine AS frontend
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci --ignore-scripts
 COPY . .
 RUN npm run build
 
@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     zip \
     unzip \
-    && docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer 2.x
@@ -43,13 +43,13 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Enable Apache mod_rewrite for Laravel routing
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers expires
 
-# Prepare SQLite database file and assign write permissions to Apache
-RUN mkdir -p /var/www/html/database \
-    && touch /var/www/html/database/database.sqlite \
-    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+COPY docker/production-entrypoint.sh /usr/local/bin/farsell-production
+COPY docker/assets.conf /etc/apache2/conf-available/farsell-assets.conf
+RUN chmod +x /usr/local/bin/farsell-production && a2enconf farsell-assets \
+    && mkdir -p storage/app/private storage/app/public storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
 
-# Run migrations and start Apache (dynamically binding Render's $PORT)
-CMD ["sh", "-c", "if [ -f /etc/secrets/.env ]; then cp /etc/secrets/.env /var/www/html/.env; fi && mkdir -p /var/www/html/database && touch /var/www/html/database/database.sqlite && php artisan config:clear && php artisan route:clear && php artisan view:clear && php artisan migrate --force --seed && (chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database || true) && (chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database || true) && apache2-foreground"]
+ENTRYPOINT ["farsell-production"]
+CMD ["apache2-foreground"]

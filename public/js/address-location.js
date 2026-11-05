@@ -4,8 +4,10 @@
         if (form.dataset.locationReady) return;
         form.dataset.locationReady = 'true';
 
-        const fields = ['psgc_region_id', 'psgc_province_id', 'psgc_city_municipality_id', 'psgc_barangay_id']
+        const fieldNames = (form.dataset.locationFieldNames || 'psgc_region_id,psgc_province_id,psgc_city_municipality_id,psgc_barangay_id').split(',');
+        const fields = fieldNames
             .map((name) => form.elements.namedItem(name));
+        if (fields.some((field) => !field)) return;
         const initial = fields.map((field) => field.dataset.selected || field.value);
         const placeholders = fields.map((field) => field.options[0].textContent);
         const status = form.querySelector('[data-location-status]');
@@ -16,7 +18,7 @@
         let retryAction;
 
         function updateSave() {
-            save.disabled = fields.some((field) => field.disabled || !field.value);
+            if (save) save.disabled = fields.some((field) => field.disabled || !field.value);
         }
 
         async function loadFrom(start, restore = false) {
@@ -25,8 +27,8 @@
             controller = new AbortController();
             const requestController = controller;
             const signal = requestController.signal;
-            retry.hidden = true;
-            status.textContent = '';
+            if (retry) retry.hidden = true;
+            if (status) status.textContent = '';
             for (let i = start; i < fields.length; i++) {
                 fields[i].replaceChildren(new Option(placeholders[i], ''));
                 fields[i].disabled = true;
@@ -38,7 +40,7 @@
                 const parent = fields[i - 1].value;
                 const url = new URL(field.dataset.url, window.location.origin);
                 url.searchParams.set(field.dataset.parentParam, parent);
-                status.textContent = 'Loading locations…';
+                if (status) status.textContent = 'Loading locations…';
                 const timeout = setTimeout(() => requestController.abort(), 15000);
                 try {
                     const response = await fetch(url, {
@@ -57,11 +59,11 @@
                     if (!rows.length) throw new Error('No locations available');
                     // Set the saved value after inserting options (edit/validation reload).
                     if (restore) field.value = initial[i];
-                    status.textContent = '';
+                    if (status) status.textContent = '';
                 } catch {
                     if (version !== generation) return;
-                    status.textContent = 'Unable to load locations. Check your connection or sign in again, then retry.';
-                    retry.hidden = false;
+                    if (status) status.textContent = 'Unable to load locations. Check your connection or sign in again, then retry.';
+                    if (retry) retry.hidden = false;
                     retryAction = () => loadFrom(i, restore);
                     break;
                 } finally {
@@ -75,11 +77,11 @@
             if (index < fields.length - 1) loadFrom(index + 1);
             else updateSave();
         }));
-        retry.addEventListener('click', () => retryAction?.());
+        retry?.addEventListener('click', () => retryAction?.());
         form.addEventListener('submit', (event) => {
             if (fields.some((field) => field.disabled || !field.value)) {
                 event.preventDefault();
-                status.textContent = 'Select all four address levels before saving.';
+                if (status) status.textContent = `Select all ${fields.length} location levels before saving.`;
             }
         });
         loadFrom(1, true);

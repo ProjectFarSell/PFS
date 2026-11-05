@@ -1,16 +1,28 @@
 <?php
 
 use App\Http\Controllers\Account\AddressController;
+use App\Http\Controllers\Account\CancelOrderController;
 use App\Http\Controllers\Account\OrderController;
+use App\Http\Controllers\Account\PrivacyController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\SavedItemController;
+use App\Http\Controllers\Account\SecurityController;
+use App\Http\Controllers\Admin\BuyerController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\OperationsController;
 use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\PrivacyRequestController;
+use App\Http\Controllers\Admin\ProductInventoryController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RiderApplicationController;
+use App\Http\Controllers\Admin\RiderRecordsController;
 use App\Http\Controllers\Admin\SellerApplicationController;
+use App\Http\Controllers\Auth\ContactVerificationController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\GuestSessionController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Catalog\ProductController;
@@ -19,20 +31,36 @@ use App\Http\Controllers\Chat\ConversationController;
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\FulfillmentController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderFeedbackController;
+use App\Http\Controllers\ProductReviewMediaController;
+use App\Http\Controllers\ReturnRequestController;
 use App\Http\Controllers\Rider\DashboardController as RiderDashboardController;
 use App\Http\Controllers\Rider\DeliveryRequestController;
+use App\Http\Controllers\Rider\EarningsController;
+use App\Http\Controllers\Rider\HistoryController;
 use App\Http\Controllers\Rider\RiderRegistrationController;
+use App\Http\Controllers\RiderDeliveryRatingController;
 use App\Http\Controllers\Seller\ApplicationController as SellerApplication;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
 use App\Http\Controllers\Seller\ProductController as SellerProducts;
+use App\Http\Controllers\Seller\SalesController;
 use App\Http\Middleware\EnsureBuyerOrGuest;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\RedirectPrivateRolesFromStorefront;
+use App\Services\Operations\OperationalStatus;
 use Illuminate\Support\Facades\Route;
 
 // ── Portal / entry point ──────────────────────────────────────────────────────
 // Browsing is public by default. Keep both route names/URLs compatible
 // with existing links; neither requires a guest-session entry step.
+Route::view('/privacy', 'privacy')->name('privacy');
+Route::get('/ready', function (OperationalStatus $status) {
+    $healthy = $status->inspect()['healthy'];
+
+    return response()->json(['status' => $healthy ? 'ready' : 'unavailable'], $healthy ? 200 : 503);
+})->name('health.ready');
+Route::get('/admin/operations', OperationsController::class)
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])->name('admin.operations');
 Route::middleware(RedirectPrivateRolesFromStorefront::class)->group(function () {
     Route::get('/', HomeController::class)->name('welcome');
 
@@ -59,23 +87,89 @@ Route::middleware(EnsureBuyerOrGuest::class)->group(function () {
 // ── Guest-only auth routes ────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
-    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+    Route::post('/auth/google/start', [GoogleAuthController::class, 'start'])->middleware('throttle:10,1')->name('auth.google.start');
     Route::get('/login', [LoginController::class, 'create'])->name('login');
-    Route::post('/login', [LoginController::class, 'store']);
+    Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:login');
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
-    Route::post('/register', [RegisterController::class, 'store']);
+    Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:signup');
     Route::post('/guest', [GuestSessionController::class, 'store'])->name('guest.start');
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+
+Route::middleware('auth')->prefix('account/security')->name('security.')->group(function () {
+    Route::get('/', [SecurityController::class, 'index'])->name('index');
+    Route::post('/confirm', [SecurityController::class, 'confirm'])->middleware('throttle:5,1')->name('confirm');
+    Route::post('/google', [GoogleAuthController::class, 'reauthenticate'])->middleware('throttle:5,1')->name('google');
+    Route::post('/mfa/setup', [SecurityController::class, 'beginMfa'])->middleware('throttle:5,1')->name('mfa.setup');
+    Route::post('/mfa/enable', [SecurityController::class, 'enableMfa'])->middleware('throttle:5,1')->name('mfa.enable');
+    Route::post('/mfa/recovery-codes', [SecurityController::class, 'regenerateCodes'])->middleware('throttle:5,1')->name('mfa.recovery');
+    Route::post('/sessions/revoke-others', [SecurityController::class, 'revokeOthers'])->middleware('throttle:5,1')->name('sessions.revoke');
+});
+
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->group(function () {
+    Route::get('/admin/security/accounts', [App\Http\Controllers\Admin\SecurityController::class, 'index'])->name('admin.security.accounts');
+    Route::get('/admin/security/accounts/suspended', [App\Http\Controllers\Admin\SecurityController::class, 'suspended'])->name('admin.security.accounts.suspended');
+    Route::get('/admin/security/accounts/restore', [App\Http\Controllers\Admin\SecurityController::class, 'restoration'])->name('admin.security.accounts.restore');
+    Route::post('/admin/security/accounts/{user}', [App\Http\Controllers\Admin\SecurityController::class, 'update'])->middleware('throttle:10,1')->name('admin.security.accounts.update');
+    Route::get('/admin/security/audit', [App\Http\Controllers\Admin\SecurityController::class, 'audit'])->name('admin.security.audit');
+});
+Route::get('/fulfillments/{fulfillment}/proof-photo', [FulfillmentController::class, 'proofPhoto'])->middleware('auth')->name('fulfillments.proof-photo');
+Route::get('/reviews/media/{media}', [ProductReviewMediaController::class, 'show'])->name('reviews.media');
+
+Route::middleware('auth')->prefix('/account/verify')->name('contact-verification.')->group(function () {
+    Route::get('/', [ContactVerificationController::class, 'show'])->name('show');
+    Route::post('/choose', [ContactVerificationController::class, 'choose'])->middleware('throttle:otp-send')->name('choose');
+    Route::post('/{channel}/send', [ContactVerificationController::class, 'send'])->middleware('throttle:otp-send')->name('send');
+    Route::post('/{channel}', [ContactVerificationController::class, 'verify'])->middleware('throttle:10,1')->name('verify');
+    Route::post('/phone/firebase', [ContactVerificationController::class, 'verifyFirebasePhone'])->middleware('throttle:10,1')->name('phone.firebase');
+});
 
 Route::get('/admin', DashboardController::class)
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.dashboard');
 
+Route::get('/admin/dashboard/summary', [DashboardController::class, 'summary'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.dashboard.summary');
+
+Route::get('/admin/buyers', [BuyerController::class, 'index'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.buyers.index');
+
+Route::get('/admin/products', [ProductInventoryController::class, 'index'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.products.index');
+
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/categories')->name('admin.categories.')->group(function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('index');
+    Route::post('/', [CategoryController::class, 'store'])->middleware('throttle:30,1')->name('store');
+    Route::put('/{category}', [CategoryController::class, 'update'])->middleware('throttle:30,1')->name('update');
+    Route::delete('/{category}', [CategoryController::class, 'destroy'])->middleware('throttle:30,1')->name('destroy');
+});
+
 Route::get('/admin/partners', [PartnerController::class, 'index'])
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.partners.index');
+
+Route::get('/admin/rider-records', [RiderRecordsController::class, 'index'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.rider-records.index');
+
+Route::get('/admin/reviews', [ReviewController::class, 'index'])
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.reviews.index');
+
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/notifications')->name('admin.notifications.')->group(function () {
+    Route::get('/', [NotificationController::class, 'index'])->name('index');
+    Route::post('/{delivery}/retry', [NotificationController::class, 'retry'])->middleware('throttle:10,1')->name('retry');
+});
+
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/privacy-requests')->name('admin.privacy-requests.')->group(function () {
+    Route::get('/', [PrivacyRequestController::class, 'index'])->name('index');
+    Route::post('/{deletionRequest}/review', [PrivacyRequestController::class, 'review'])->middleware('throttle:10,1')->name('review');
+});
 
 Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/riders')->name('admin.riders.')->group(function () {
     Route::get('/', [RiderApplicationController::class, 'index'])->name('index');
@@ -90,6 +184,9 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/ri
 Route::get('/seller', SellerDashboardController::class)
     ->middleware(['auth', EnsureUserHasRole::class.':seller'])
     ->name('seller.dashboard');
+
+Route::get('/seller/sales', SalesController::class)
+    ->middleware(['auth', EnsureUserHasRole::class.':seller'])->name('seller.sales');
 
 Route::middleware(['auth', EnsureUserHasRole::class.':seller'])->prefix('seller/products')->name('seller.products.')->group(function () {
     Route::get('/create', [SellerProducts::class, 'create'])->name('create');
@@ -106,6 +203,18 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/se
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::middleware(EnsureUserHasRole::class.':buyer,seller,admin')->group(function () {
+        Route::get('/returns', [ReturnRequestController::class, 'index'])->name('returns.index');
+        Route::get('/returns/{returnRequest}/evidence', [ReturnRequestController::class, 'evidence'])->name('returns.evidence');
+        Route::post('/returns/{returnRequest}/review', [ReturnRequestController::class, 'review'])->middleware([EnsureUserHasRole::class.':seller,admin', 'throttle:20,1'])->name('returns.review');
+    });
+    Route::post('/order-items/{item}/return', [ReturnRequestController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('returns.store');
+    Route::middleware(EnsureUserHasRole::class.':buyer')->prefix('account/notifications')->name('account.notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Account\NotificationController::class, 'index'])->name('index');
+        Route::get('/unread', [App\Http\Controllers\Account\NotificationController::class, 'unread'])->middleware('throttle:30,1')->name('unread');
+        Route::post('/read-all', [App\Http\Controllers\Account\NotificationController::class, 'readAll'])->name('read-all');
+        Route::post('/{notification}/open', [App\Http\Controllers\Account\NotificationController::class, 'open'])->name('open');
+    });
     Route::get('/chat', [ConversationController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('chat.index');
     Route::get('/chat/widget/conversations', [ConversationController::class, 'widgetConversations'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('chat.widget.conversations');
     Route::post('/chat/products/{product}', [ConversationController::class, 'start'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('chat.start');
@@ -116,16 +225,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/rider/delivery-requests', [DeliveryRequestController::class, 'index'])->middleware([EnsureUserHasRole::class.':rider', 'throttle:30,1'])->name('rider.delivery-requests');
     Route::get('/fulfillments', [FulfillmentController::class, 'index'])->middleware(EnsureUserHasRole::class.':admin,seller,rider')->name('fulfillments.index');
     Route::post('/fulfillments/{fulfillment}', [FulfillmentController::class, 'update'])->middleware([EnsureUserHasRole::class.':admin,seller,rider,buyer', 'throttle:60,1'])->name('fulfillments.update');
+    Route::post('/fulfillments/{fulfillment}/rating', [RiderDeliveryRatingController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('fulfillments.rating.store');
+    Route::get('/fulfillments/{fulfillment}/feedback', [OrderFeedbackController::class, 'create'])->middleware(EnsureUserHasRole::class.':buyer')->name('orders.feedback.create');
+    Route::post('/fulfillments/{fulfillment}/feedback', [OrderFeedbackController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('orders.feedback.store');
+    Route::get('/seller/apply/locations/provinces', [SellerApplication::class, 'provinces'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('seller.apply.locations.provinces');
+    Route::get('/seller/apply/locations/cities-municipalities', [SellerApplication::class, 'citiesMunicipalities'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('seller.apply.locations.cities-municipalities');
     Route::get('/seller/apply', [SellerApplication::class, 'show'])->middleware(EnsureUserHasRole::class.':buyer,seller')->name('seller.apply');
     Route::post('/seller/apply', [SellerApplication::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer,seller', 'throttle:10,1'])->name('seller.apply.store');
     Route::get('/account/profile', [ProfileController::class, 'show'])->name('account.profile');
     Route::get('/account/profile/edit', [ProfileController::class, 'edit'])->name('account.profile.edit');
+    Route::post('/account/privacy/consent', [PrivacyController::class, 'consent'])->middleware('throttle:5,1')->name('account.privacy.consent');
+    Route::post('/account/privacy/deletion-request', [PrivacyController::class, 'requestDeletion'])->middleware('throttle:5,1')->name('account.privacy.deletion-request');
     Route::patch('/account/profile', [ProfileController::class, 'update'])->middleware('throttle:10,1')->name('account.profile.update');
     Route::put('/account/profile/password', [ProfileController::class, 'password'])->middleware('throttle:10,1')->name('account.profile.password');
     Route::delete('/account/profile', [ProfileController::class, 'destroy'])->middleware('throttle:5,1')->name('account.profile.destroy');
     Route::get('/checkout', [CheckoutController::class, 'create'])->middleware(EnsureUserHasRole::class.':buyer')->name('checkout.create');
     Route::post('/checkout', [CheckoutController::class, 'store'])->middleware(EnsureUserHasRole::class.':buyer')->name('checkout.store');
     Route::get('/orders', [OrderController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer')->name('orders.index');
+    Route::post('/orders/{order}/cancel', CancelOrderController::class)->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('orders.cancel');
     Route::get('/orders/{order}', [CheckoutController::class, 'show'])->middleware(EnsureUserHasRole::class.':buyer,admin')->name('orders.show');
     Route::get('/orders/{order}/print/{document}', [CheckoutController::class, 'print'])->middleware(EnsureUserHasRole::class.':buyer,admin')->whereIn('document', ['invoice', 'packing-slip'])->name('orders.print');
 
@@ -134,9 +251,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/account/saved/{product}', [SavedItemController::class, 'destroy'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:30,1'])->name('account.saved.destroy');
 
     Route::get('/rider/apply', [RiderRegistrationController::class, 'create'])->middleware(EnsureUserHasRole::class.':buyer')->name('rider.register');
-    Route::post('/rider/apply', [RiderRegistrationController::class, 'store'])->middleware(EnsureUserHasRole::class.':buyer');
+    Route::post('/rider/apply', [RiderRegistrationController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:5,1']);
     Route::get('/rider/profile', [RiderRegistrationController::class, 'profile'])->middleware(EnsureUserHasRole::class.':buyer,rider')->name('rider.profile');
     Route::get('/rider/dashboard', RiderDashboardController::class)->middleware(EnsureUserHasRole::class.':rider')->name('rider.dashboard');
+    Route::get('/rider/earnings', [EarningsController::class, 'index'])->middleware(EnsureUserHasRole::class.':rider')->name('rider.earnings.index');
+    Route::get('/rider/history', [HistoryController::class, 'index'])->middleware(EnsureUserHasRole::class.':rider')->name('rider.history.index');
 
     Route::get('account/addresses/locations/provinces', [AddressController::class, 'provinces'])->middleware(EnsureUserHasRole::class.':buyer')->name('account.addresses.locations.provinces');
     Route::get('account/addresses/locations/cities-municipalities', [AddressController::class, 'citiesMunicipalities'])->middleware(EnsureUserHasRole::class.':buyer')->name('account.addresses.locations.cities-municipalities');

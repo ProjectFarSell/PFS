@@ -45,8 +45,17 @@ return [
             'port' => env('MAIL_PORT', 2525),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
+            'timeout' => (int) env('MAIL_TIMEOUT', 15),
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        ],
+
+        'mailpit' => [
+            'transport' => 'smtp',
+            'scheme' => 'smtp',
+            'host' => env('MAILPIT_HOST', '127.0.0.1'),
+            'port' => (int) env('MAILPIT_SMTP_PORT', 1025),
+            'timeout' => 10,
+            'local_domain' => 'localhost',
         ],
 
         'ses' => [

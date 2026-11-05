@@ -26,7 +26,7 @@ class ProductController extends Controller
             'shop.*' => ['integer', 'distinct', 'exists:shops,id'],
             'shop_search' => ['nullable', 'string', 'max:120'],
             'price_min' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
-            'price_max' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'gte:price_min'],
+            'price_max' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', ...($request->filled('price_min') ? ['gte:price_min'] : [])],
             'sort' => ['nullable', 'string', 'in:relevance,price_asc,price_desc,newest'],
             'city_id' => ['nullable', 'integer', 'exists:psgc_cities_municipalities,id'],
         ]);
@@ -167,7 +167,7 @@ class ProductController extends Controller
         $product->load(['shop', 'category', 'variants' => fn ($q) => $q->where('is_active', true)->orderBy('id')]);
 
         $related = Product::query()
-            ->with('shop')
+            ->with(['shop', 'category'])
             ->visible()
             ->where('category_id', $product->category_id)
             ->whereKeyNot($product->id)
@@ -182,6 +182,13 @@ class ProductController extends Controller
             }
         }
 
-        return view('catalog.show', compact('product', 'related', 'etaHours'));
+        $reviews = $product->reviews()->with(['buyer:id,name', 'orderItem:id,variant_options,product_sku', 'media'])
+            ->latest('id')->paginate(5, ['*'], 'reviews_page')->withQueryString();
+        $reviewAverage = $product->reviews()->avg('rating');
+
+        $savedProductIds = auth()->user()?->role === UserRole::Buyer
+            ? auth()->user()->savedItems()->pluck('product_id')->all() : [];
+
+        return view('catalog.show', compact('product', 'related', 'etaHours', 'reviews', 'reviewAverage', 'savedProductIds'));
     }
 }

@@ -87,10 +87,16 @@
                 @elseif($role === \App\Enums\UserRole::Rider && $part->status === \App\Enums\FulfillmentStatus::Assigned)
                     <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4">@csrf <button name="action" value="pickup" class="btn-accent">Confirm pickup / Out for delivery</button></form>
                 @elseif($role === \App\Enums\UserRole::Rider && $part->status === \App\Enums\FulfillmentStatus::InTransit)
-                    <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4 space-y-3">
+                    <form method="post" action="{{ route('fulfillments.update', $part) }}" enctype="multipart/form-data" class="mt-4 space-y-3">
                         @csrf <input type="hidden" name="action" value="deliver">
-                        <label class="block" for="delivery-note-{{ $part->id }}">Delivery confirmation (recipient name and handover details)</label>
+                        <label class="block" for="delivery-recipient-{{ $part->id }}">Recipient name</label>
+                        <input id="delivery-recipient-{{ $part->id }}" name="delivery_recipient_name" required maxlength="120" class="w-full rounded-lg">
+                        <label class="block" for="delivery-pin-{{ $part->id }}">Buyer delivery PIN</label>
+                        <input id="delivery-pin-{{ $part->id }}" name="delivery_pin" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required class="w-full rounded-lg">
+                        <label class="block" for="delivery-note-{{ $part->id }}">Handover details</label>
                         <textarea id="delivery-note-{{ $part->id }}" name="delivery_note" required maxlength="1000" class="w-full rounded-lg"></textarea>
+                        <label class="block" for="delivery-photo-{{ $part->id }}">Proof photo (optional)</label>
+                        <input id="delivery-photo-{{ $part->id }}" type="file" name="delivery_photo" accept="image/jpeg,image/png,image/webp" class="w-full rounded-lg">
                         @if($part->order->payment_method === \App\Enums\PaymentMethod::Cod)
                             <label class="block"><input type="checkbox" name="cod_collected" value="1" required> I collected ₱{{ number_format($part->amount(), 2) }} in cash.</label>
                         @endif

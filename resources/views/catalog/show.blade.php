@@ -121,6 +121,8 @@
         </div>
     </div>
 
+    @include('catalog.partials.reviews')
+
     @if ($related->isNotEmpty())
         <h2 class="text-base font-semibold mt-8 mb-3">More in {{ $product->category?->name }}</h2>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">

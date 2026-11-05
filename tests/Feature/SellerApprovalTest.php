@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Enums\UserRole;
+use App\Models\Category;
+use App\Models\PsgcCityMunicipality;
 use App\Models\SellerApplication;
 use App\Models\Shop;
 use App\Models\User;
@@ -16,7 +18,19 @@ class SellerApprovalTest extends TestCase
 
     private function data(): array
     {
-        return ['shop_name' => 'Karl Test Shop', 'city' => 'Manila', 'tagline' => 'Surplus finds', 'description' => 'Household goods and collectibles'];
+        $city = PsgcCityMunicipality::factory()->create();
+        $category = Category::factory()->create();
+
+        return [
+            'shop_name' => 'Karl Test Shop',
+            'city' => $city->name,
+            'psgc_region_id' => $city->province->psgc_region_id,
+            'psgc_province_id' => $city->psgc_province_id,
+            'psgc_city_municipality_id' => $city->id,
+            'category_ids' => [$category->id],
+            'tagline' => 'Surplus finds',
+            'description' => 'Household goods and collectibles',
+        ];
     }
 
     private function application(?User $user = null): SellerApplication
@@ -33,8 +47,8 @@ class SellerApprovalTest extends TestCase
 
     public function test_seller_signup_stays_buyer_and_routes_to_application(): void
     {
-        $this->post(route('register'), ['name' => 'Seller applicant', 'email' => 'applicant@example.test', 'password' => 'password', 'password_confirmation' => 'password', 'intent' => 'seller'])
-            ->assertRedirect(route('seller.apply'));
+        $this->post(route('register'), ['privacy_consent' => '1', 'name' => 'Seller applicant', 'email' => 'applicant@example.test', 'password' => 'password', 'password_confirmation' => 'password', 'intent' => 'seller'])
+            ->assertRedirect('/account/verify');
         $user = User::sole();
         $this->assertSame(UserRole::Buyer, $user->role);
         $this->get(route('seller.apply'))->assertOk()->assertSee('Open your FarSell shop');
@@ -117,7 +131,9 @@ class SellerApprovalTest extends TestCase
         $other = $this->application();
         $buyer = User::factory()->create();
         $this->actingAs($buyer)->get(route('seller.apply', ['user_id' => $other->user_id]))->assertOk()->assertDontSee($other->shop_name);
-        $this->postJson(route('seller.apply.store'), [])->assertUnprocessable()->assertJsonValidationErrors(['shop_name', 'city', 'description']);
+        $this->postJson(route('seller.apply.store'), [])->assertUnprocessable()->assertJsonValidationErrors([
+            'shop_name', 'psgc_region_id', 'psgc_province_id', 'psgc_city_municipality_id', 'category_ids', 'description',
+        ]);
         $this->post(route('seller.apply.store'), $this->data())->assertSessionHasNoErrors();
         $this->delete(route('account.profile.destroy'), ['current_password' => 'password', 'confirmation' => 'DELETE'])->assertSessionHasErrors('account', null, 'deletion');
         $this->assertDatabaseHas('users', ['id' => $buyer->id]);

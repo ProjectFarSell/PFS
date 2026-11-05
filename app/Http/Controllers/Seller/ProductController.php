@@ -6,14 +6,16 @@ use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Shop;
+use App\Services\Security\SafeImage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -53,6 +55,7 @@ class ProductController extends Controller
         }
 
         $product->load('variants');
+
         return view('seller.product-form', ['product' => $product, 'categories' => Category::orderBy('sort_order')->get()]);
     }
 
@@ -73,7 +76,7 @@ class ProductController extends Controller
             $product = DB::transaction(function () use ($request, $shop, $data, $variants, $hasVariants, &$path) {
                 $lockedShop = Shop::whereKey($shop->id)->lockForUpdate()->firstOrFail();
                 abort_unless($lockedShop->is_active, 403);
-                $path = $request->file('image')?->store('products', 'r2');
+                $path = $request->hasFile('image') ? app(SafeImage::class)->store($request->file('image'), 'products', 'r2') : null;
                 if ($path === false) {
                     throw ValidationException::withMessages(['image' => 'Image could not be saved. Please try again.']);
                 }
@@ -84,7 +87,10 @@ class ProductController extends Controller
                 if (! $hasVariants && blank($product->sku)) {
                     $product->forceFill(['sku' => $this->generatedProductSku($product)])->save();
                 }
-                if ($hasVariants) $this->saveVariants($product, $variants);
+                if ($hasVariants) {
+                    $this->saveVariants($product, $variants);
+                }
+
                 return $product;
             });
         } catch (\Throwable $e) {
@@ -120,7 +126,7 @@ class ProductController extends Controller
                     throw ValidationException::withMessages(['version' => 'This listing or its stock changed. Reload the editor before saving; your changes were not applied.']);
                 }
                 if ($request->hasFile('image')) {
-                    $path = $request->file('image')->store('products', 'r2');
+                    $path = app(SafeImage::class)->store($request->file('image'), 'products', 'r2');
                     if (! $path) {
                         throw ValidationException::withMessages(['image' => 'Image could not be saved. Please try again.']);
                     }
@@ -129,8 +135,9 @@ class ProductController extends Controller
                 }
                 // Preserve slug, shop ownership, order snapshots and reserved stock.
                 $product->fill($data)->save();
-                if ($hasVariants) $this->saveVariants($product, $variants);
-                else {
+                if ($hasVariants) {
+                    $this->saveVariants($product, $variants);
+                } else {
                     $product->variants()->update(['is_active' => false]);
                     if (blank($product->sku)) {
                         $product->forceFill(['sku' => $this->generatedProductSku($product)])->save();
@@ -178,7 +185,7 @@ class ProductController extends Controller
         ]);
         unset($data['image']);
 
-        if (filled($data['sku'] ?? null) && \App\Models\ProductVariant::where('sku', $data['sku'])->exists()) {
+        if (filled($data['sku'] ?? null) && ProductVariant::where('sku', $data['sku'])->exists()) {
             throw ValidationException::withMessages(['sku' => 'That SKU is already in use by a product variant. Enter a unique SKU.']);
         }
 
@@ -189,7 +196,7 @@ class ProductController extends Controller
     {
         $base = $this->productSkuPrefix($product).'-'.str_pad((string) $product->id, 4, '0', STR_PAD_LEFT);
         $sku = $base;
-        while (Product::where('sku', $sku)->where('id', '!=', $product->id)->exists() || \App\Models\ProductVariant::where('sku', $sku)->exists()) {
+        while (Product::where('sku', $sku)->where('id', '!=', $product->id)->exists() || ProductVariant::where('sku', $sku)->exists()) {
             $sku = $base.'-'.Str::upper(Str::random(2));
         }
 
@@ -251,7 +258,9 @@ class ProductController extends Controller
                 [$name, $value] = array_pad(explode(':', $pair, 2), 2, '');
                 $name = trim($name);
                 $value = trim($value);
-                if ($name !== '' && $value !== '') $options[Str::title($name)] = $value;
+                if ($name !== '' && $value !== '') {
+                    $options[Str::title($name)] = $value;
+                }
             }
             if (! $options) {
                 throw ValidationException::withMessages(['variants' => 'Enter options as Name: Value, such as Size: M, Color: Red.']);
@@ -281,7 +290,7 @@ class ProductController extends Controller
                 $variant->save();
                 $sku = $this->generatedVariantSku($product, $options, (int) $variant->id);
             }
-            if (Product::where('sku', $sku)->exists() || \App\Models\ProductVariant::where('sku', $sku)->where('id', '!=', $variant->id ?? 0)->exists()) {
+            if (Product::where('sku', $sku)->exists() || ProductVariant::where('sku', $sku)->where('id', '!=', $variant->id ?? 0)->exists()) {
                 throw ValidationException::withMessages(['variants' => "SKU {$sku} is already in use. Each product or variant must have a unique SKU."]);
             }
             $variant->sku = $sku;
