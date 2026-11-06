@@ -12,6 +12,7 @@ use App\Models\DeliveryAttempt;
 use App\Models\Message;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\ReplacementRequest;
 use App\Models\ReturnRequest;
 use App\Models\RiderProfile;
 use App\Models\SellerApplication;
@@ -44,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        foreach ([Category::class, Product::class, ProductVariant::class, SellerApplication::class, RiderProfile::class, Shop::class, ReturnRequest::class, User::class, DeliveryAttempt::class] as $model) {
+        foreach ([Category::class, Product::class, ProductVariant::class, SellerApplication::class, RiderProfile::class, Shop::class, ReturnRequest::class, User::class, DeliveryAttempt::class, ReplacementRequest::class] as $model) {
             $model::observe(SecurityAuditObserver::class);
         }
         RateLimiter::for('login', fn (Request $request) => [

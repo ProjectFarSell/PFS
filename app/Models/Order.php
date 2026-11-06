@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 class Order extends Model
@@ -104,5 +105,10 @@ class Order extends Model
     public function fulfillments(): HasMany
     {
         return $this->hasMany(Fulfillment::class);
+    }
+
+    public function replacementSource(): HasOne
+    {
+        return $this->hasOne(ReplacementRequest::class, 'new_order_id');
     }
 }

@@ -62,4 +62,9 @@ class OrderItem extends Model
     {
         return $this->hasOne(ReturnRequest::class);
     }
+
+    public function replacementRequest(): HasOne
+    {
+        return $this->hasOne(ReplacementRequest::class);
+    }
 }

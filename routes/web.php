@@ -33,6 +33,7 @@ use App\Http\Controllers\FulfillmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderFeedbackController;
 use App\Http\Controllers\ProductReviewMediaController;
+use App\Http\Controllers\ReplacementController;
 use App\Http\Controllers\ReturnRequestController;
 use App\Http\Controllers\Rider\DashboardController as RiderDashboardController;
 use App\Http\Controllers\Rider\DeliveryRequestController;
@@ -203,6 +204,15 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/se
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::middleware(EnsureUserHasRole::class.':buyer,seller,admin')->group(function () {
+        Route::get('/replacements', [ReplacementController::class, 'index'])->name('replacements.index');
+        Route::post('/replacements/{replacement}/review', [ReplacementController::class, 'review'])->middleware([EnsureUserHasRole::class.':seller,admin', 'throttle:20,1'])->name('replacements.review');
+    });
+    Route::middleware(EnsureUserHasRole::class.':buyer')->group(function () {
+        Route::get('/order-items/{item}/replacement', [ReplacementController::class, 'create'])->name('replacements.create');
+        Route::post('/order-items/{item}/replacement', [ReplacementController::class, 'store'])->middleware('throttle:10,1')->name('replacements.store');
+        Route::post('/replacements/{replacement}/checkout', [ReplacementController::class, 'checkout'])->middleware('throttle:10,1')->name('replacements.checkout');
+    });
     Route::middleware(EnsureUserHasRole::class.':buyer,seller,admin')->group(function () {
         Route::get('/returns', [ReturnRequestController::class, 'index'])->name('returns.index');
         Route::get('/returns/{returnRequest}/evidence', [ReturnRequestController::class, 'evidence'])->name('returns.evidence');

@@ -7,6 +7,7 @@
         <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-accent hover:text-accent">&larr; My Orders</a>
     @endif
     <h1 class="text-lg font-semibold">Order {{ $order->number }}</h1>
+    @if($order->replacementSource)<p class="mt-2 text-sm">Replacement order linked to {{ $order->replacementSource->item->order->number }}. Prices and delivery charges were reviewed at checkout.</p>@endif
     @if($errors->any())<div role="alert" class="my-4 rounded-xl border border-error p-4">{{ $errors->first() }}</div>@endif
     @if($order->cancelled_at)
         <p class="my-3 text-sm">Cancelled {{ $order->cancelled_at->format('M j, Y g:i A') }}: {{ $order->cancellation_reason }}</p>

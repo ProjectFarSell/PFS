@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\DeliveryAttempt;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\ReplacementRequest;
 use App\Models\ReturnRequest;
 use App\Models\RiderProfile;
 use App\Models\SellerApplication;
@@ -26,6 +27,7 @@ class SecurityAuditObserver
         ReturnRequest::class => ['status', 'approved_amount', 'return_required', 'return_received_at', 'refunded_at'],
         User::class => ['role', 'suspended_at', 'security_version', 'mfa_confirmed_at'],
         DeliveryAttempt::class => ['fulfillment_id', 'number', 'reason', 'contact_method'],
+        ReplacementRequest::class => ['order_item_id', 'product_variant_id', 'quantity', 'status', 'reviewed_by', 'new_order_id'],
     ];
 
     public function created(Model $model): void

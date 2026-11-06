@@ -1,7 +1,13 @@
 @if(auth()->user()->role === \App\Enums\UserRole::Buyer)
 <section class="mt-6 space-y-3 print:hidden">
     <a href="{{ route('returns.index') }}" class="text-accent underline text-sm">My returns & refunds</a>
+    <a href="{{ route('replacements.index') }}" class="ml-3 text-accent underline text-sm">My replacement requests</a>
     @foreach($order->items as $item)
+        @if($item->replacementRequest)
+            <p class="text-sm">Replacement for {{ $item->name }}: {{ ucfirst($item->replacementRequest->status) }}. <a href="{{ route('replacements.index') }}" class="text-accent underline">View request</a></p>
+        @elseif($order->payment_method->value === 'cod' && $order->fulfillments->firstWhere('id', $item->fulfillment_id)?->status->value === 'returned')
+            <p><a href="{{ route('replacements.create', $item) }}" class="text-accent underline text-sm">Request another variant: {{ $item->name }}</a></p>
+        @endif
         @if($item->returnRequest)
             <p class="text-sm">{{ $item->name }}: {{ $item->returnRequest->label() }}</p>
         @elseif(in_array($order->fulfillments->firstWhere('id', $item->fulfillment_id)?->status->value, ['delivered', 'completed'], true))
