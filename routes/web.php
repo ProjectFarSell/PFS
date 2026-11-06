@@ -45,6 +45,7 @@ use App\Http\Controllers\Seller\ApplicationController as SellerApplication;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
 use App\Http\Controllers\Seller\ProductController as SellerProducts;
 use App\Http\Controllers\Seller\SalesController;
+use App\Http\Controllers\SettlementController;
 use App\Http\Middleware\EnsureBuyerOrGuest;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\RedirectPrivateRolesFromStorefront;
@@ -213,6 +214,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/order-items/{item}/replacement', [ReplacementController::class, 'store'])->middleware('throttle:10,1')->name('replacements.store');
         Route::post('/replacements/{replacement}/checkout', [ReplacementController::class, 'checkout'])->middleware('throttle:10,1')->name('replacements.checkout');
     });
+    Route::get('/settlements', SettlementController::class)->middleware(EnsureUserHasRole::class.':seller,admin')->name('settlements.index');
     Route::middleware(EnsureUserHasRole::class.':buyer,seller,admin')->group(function () {
         Route::get('/returns', [ReturnRequestController::class, 'index'])->name('returns.index');
         Route::get('/returns/{returnRequest}/evidence', [ReturnRequestController::class, 'evidence'])->name('returns.evidence');

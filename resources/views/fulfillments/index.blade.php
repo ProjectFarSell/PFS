@@ -46,6 +46,8 @@
                     <p class="mt-2 text-sm">Item subtotal: ₱{{ number_format((float) $part->subtotal, 2) }}</p>
                 @endif
                 @if($part->rider)<p class="mt-2 text-sm">Rider: {{ $part->rider->user?->name ?? 'Unavailable account' }}</p>@endif
+                @if($part->fee_policy && ($isSeller || $isAdmin))<p class="mt-2 text-xs text-text-muted">Goods commission: {{ number_format($part->fee_policy['commission_bps'] / 100, 2) }}%. Seller entitlement is recorded after buyer completion. Buyer delivery charges are separate.</p>@endif
+                @if($part->fee_policy && !$isSeller)<p class="mt-2 text-xs text-text-muted">Rider pay on buyer-confirmed completion: PHP {{ number_format($part->fee_policy['rider_pay_cents'] / 100, 2) }}.</p>@endif
                 @if($part->rejection_reason)<p class="mt-2 text-sm text-error">Rejection reason: {{ $part->rejection_reason }}</p>@endif
                 @if($isSeller && $part->status === \App\Enums\FulfillmentStatus::Pending)
                     <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4">@csrf <button name="action" value="accept" class="btn-accent">Accept order</button></form>

@@ -9,6 +9,7 @@ use App\Models\FulfillmentEvent;
 use App\Models\NotificationDelivery;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\Orders\SettlementService;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -124,11 +125,11 @@ class OrderNotificationService
             ]);
         }
 
-        if ($status === FulfillmentStatus::Completed && $part->rider_id !== null) {
+        if ($status === FulfillmentStatus::Completed && $part->rider_id !== null && $part->riderEarning()->exists()) {
             $this->record('event:'.$event->id.':rider-completion', 'rider_completion', $part->rider?->user, $order, $part, $event, [
                 ...$base,
                 'title' => 'Delivery completed',
-                'message' => 'The buyer confirmed receipt. PHP '.number_format((float) $part->shipping_fee, 2).' has been recorded in your earnings ledger.',
+                'message' => 'The buyer confirmed receipt. PHP '.number_format(app(SettlementService::class)->riderPay($part), 2).' has been recorded in your earnings ledger.',
                 'action_path' => route('rider.earnings.index', [], false),
                 'action_label' => 'View earnings',
             ]);

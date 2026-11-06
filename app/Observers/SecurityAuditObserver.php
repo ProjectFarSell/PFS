@@ -10,6 +10,8 @@ use App\Models\ReplacementRequest;
 use App\Models\ReturnRequest;
 use App\Models\RiderProfile;
 use App\Models\SellerApplication;
+use App\Models\SettlementAdjustment;
+use App\Models\ShipmentSettlement;
 use App\Models\Shop;
 use App\Models\User;
 use App\Services\Security\AuditTrail;
@@ -28,6 +30,8 @@ class SecurityAuditObserver
         User::class => ['role', 'suspended_at', 'security_version', 'mfa_confirmed_at'],
         DeliveryAttempt::class => ['fulfillment_id', 'number', 'reason', 'contact_method'],
         ReplacementRequest::class => ['order_item_id', 'product_variant_id', 'quantity', 'status', 'reviewed_by', 'new_order_id'],
+        ShipmentSettlement::class => ['fulfillment_id', 'goods_cents', 'delivery_cents', 'commission_bps', 'commission_cents', 'seller_cents', 'rider_cents', 'cod_cost_cents', 'operating_cost_cents', 'contribution_cents'],
+        SettlementAdjustment::class => ['shipment_settlement_id', 'return_request_id', 'refund_cents', 'commission_reversal_cents', 'seller_debit_cents'],
     ];
 
     public function created(Model $model): void

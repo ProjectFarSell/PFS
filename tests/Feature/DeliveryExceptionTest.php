@@ -57,7 +57,7 @@ class DeliveryExceptionTest extends TestCase
         $this->completeShipment($s);
         $this->assertSame('completed', $s['order']->fresh()->status->value);
         $this->assertDatabaseCount('delivery_attempts', 1);
-        $this->assertDatabaseHas('rider_earnings', ['fulfillment_id' => $s['part']->id, 'amount' => 49]);
+        $this->assertDatabaseHas('rider_earnings', ['fulfillment_id' => $s['part']->id, 'amount' => 40]);
     }
 
     public function test_return_requires_seller_receipt_then_restores_stock_once_and_waives_cod(): void

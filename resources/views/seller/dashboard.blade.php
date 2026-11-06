@@ -3,7 +3,7 @@
 @section('title', 'Seller Dashboard · FarSell')
 
 @section('content')
-    <div class="mb-4 flex flex-wrap gap-3">@if($shop)<a href="{{ route('seller.sales') }}" class="btn-outline">Sales summary</a>@endif<a href="{{ route('returns.index') }}" class="btn-outline">Returns & refunds</a><a href="{{ route('replacements.index') }}" class="btn-outline">Replacement requests</a></div>
+    <div class="mb-4 flex flex-wrap gap-3">@if($shop)<a href="{{ route('seller.sales') }}" class="btn-outline">Sales summary</a><a href="{{ route('settlements.index') }}" class="btn-outline">Commissions & settlements</a>@endif<a href="{{ route('returns.index') }}" class="btn-outline">Returns & refunds</a><a href="{{ route('replacements.index') }}" class="btn-outline">Replacement requests</a></div>
     <section class="fs-card-raised p-5 sm:p-7">
         <p class="text-xs font-semibold uppercase tracking-widest text-accent">Seller Dashboard</p>
         <h1 class="mt-2 text-2xl font-semibold">{{ $shop?->name ?? 'Your seller workspace' }}</h1>

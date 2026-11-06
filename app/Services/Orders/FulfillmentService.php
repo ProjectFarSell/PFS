@@ -34,6 +34,7 @@ class FulfillmentService
                 'status' => Status::Pending,
                 'subtotal' => $items->sum('line_total'),
                 'shipping_fee' => (intdiv($fee, $groups->count()) + ($index++ < $fee % $groups->count() ? 1 : 0)) / 100,
+                'fee_policy' => app(SettlementService::class)->policy(),
                 ...$this->deliveryPin(),
             ]);
             $order->items()->whereIn('id', $items->pluck('id'))->update(['fulfillment_id' => $fulfillment->id]);
@@ -163,12 +164,14 @@ class FulfillmentService
 
             $part->status = $next;
             $part->save();
-            if ($next === Status::Completed && $part->rider_id !== null) {
+            if ($next === Status::Completed && $part->rider_id !== null
+                && (! $part->fee_policy || ($order->payment_method === PaymentMethod::Cod && $part->cod_collected_at))) {
+                app(SettlementService::class)->complete($part);
                 RiderEarning::query()->firstOrCreate(
                     ['fulfillment_id' => $part->id],
                     [
                         'rider_profile_id' => $part->rider_id,
-                        'amount' => $part->shipping_fee,
+                        'amount' => app(SettlementService::class)->riderPay($part),
                         'earned_at' => now(),
                     ]
                 );

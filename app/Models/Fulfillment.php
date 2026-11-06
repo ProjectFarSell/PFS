@@ -23,6 +23,7 @@ class Fulfillment extends Model
             'delivery_pin' => 'encrypted',
             'retry_at' => 'datetime',
             'returned_at' => 'datetime',
+            'fee_policy' => 'array',
         ];
     }
 
@@ -79,5 +80,10 @@ class Fulfillment extends Model
     public function attempts(): HasMany
     {
         return $this->hasMany(DeliveryAttempt::class)->orderBy('number');
+    }
+
+    public function settlement(): HasOne
+    {
+        return $this->hasOne(ShipmentSettlement::class);
     }
 }
