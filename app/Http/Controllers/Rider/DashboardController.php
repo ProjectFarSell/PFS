@@ -27,7 +27,7 @@ class DashboardController extends Controller
             return view('rider.dashboard', compact('profile', 'canViewDeliveries', 'ratingStats', 'recentRatings'));
         }
 
-        $activeStatuses = [OrderStatus::Assigned->value, OrderStatus::InTransit->value];
+        $activeStatuses = [OrderStatus::Assigned->value, OrderStatus::InTransit->value, 'delivery_failed', 'returning'];
         $validated = $request->validate(['status' => ['nullable', Rule::in($activeStatuses)]]);
         $selectedStatus = $validated['status'] ?? null;
 

@@ -65,10 +65,10 @@ class Order extends Model
     public function billableItems(): Collection
     {
         $this->loadMissing(['items', 'fulfillments']);
-        if ($this->status === OrderStatus::Cancelled) {
+        if (in_array($this->status, [OrderStatus::Cancelled, OrderStatus::Returned], true)) {
             return collect();
         }
-        $excluded = $this->fulfillments->whereIn('status', [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled])->pluck('id');
+        $excluded = $this->fulfillments->whereIn('status', [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled, FulfillmentStatus::Returned])->pluck('id');
 
         return $this->items->reject(fn ($item) => $excluded->contains($item->fulfillment_id));
     }
@@ -76,14 +76,14 @@ class Order extends Model
     public function billableShipping(): float
     {
         $this->loadMissing('fulfillments');
-        if ($this->status === OrderStatus::Cancelled) {
+        if (in_array($this->status, [OrderStatus::Cancelled, OrderStatus::Returned], true)) {
             return 0;
         }
         if ($this->fulfillments->isEmpty()) {
             return (float) $this->shipping_fee;
         }
 
-        return (float) $this->fulfillments->reject(fn ($part) => in_array($part->status->value, ['rejected', 'cancelled'], true))->sum('shipping_fee');
+        return (float) $this->fulfillments->reject(fn ($part) => in_array($part->status->value, ['rejected', 'cancelled', 'returned'], true))->sum('shipping_fee');
     }
 
     public function rider(): BelongsTo

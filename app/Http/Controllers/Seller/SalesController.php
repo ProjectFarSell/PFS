@@ -69,8 +69,8 @@ class SalesController extends Controller
             'refunds' => $reimbursed,
             'net' => round((float) $gross - (float) $reimbursed, 2),
             'demo' => (clone $base)->where('orders.payment_method', '!=', 'cod')->sum('order_items.line_total'),
-            'pending' => $shop->fulfillments()->whereNotIn('status', ['completed', 'rejected', 'cancelled'])->whereBetween('created_at', [$start, $end])->count(),
-            'cancelled' => $shop->fulfillments()->whereIn('status', ['rejected', 'cancelled'])->whereBetween('created_at', [$start, $end])->count(),
+            'pending' => $shop->fulfillments()->whereNotIn('status', ['completed', 'rejected', 'cancelled', 'returned'])->whereBetween('created_at', [$start, $end])->count(),
+            'cancelled' => $shop->fulfillments()->whereIn('status', ['rejected', 'cancelled', 'returned'])->whereBetween('created_at', [$start, $end])->count(),
         ];
         $bestSellers = (clone $sales)->select('order_items.product_id', 'order_items.name', 'order_items.product_sku')
             ->selectRaw('SUM(order_items.qty) as units, SUM(order_items.line_total) as merchandise_sales')

@@ -9,6 +9,9 @@
             <ul class="mt-3 text-sm space-y-2">@foreach($part->items as $item)<li class="flex justify-between gap-3"><span>{{ $item->name }}@if($item->variant_options) ({{ collect($item->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $item->qty }}<span class="mt-0.5 block text-xs text-text-muted">SKU: {{ $item->product_sku ?? 'Unavailable' }}</span></span><span>₱{{ number_format((float) $item->line_total, 2) }}</span></li>@endforeach</ul>
             <p class="mt-3 text-sm">Shipment total: ₱{{ number_format($part->amount(), 2) }} (delivery allocation ₱{{ number_format((float) $part->shipping_fee, 2) }})</p>
             @if($part->rider)<p class="mt-2 text-sm">Rider: {{ $part->rider->user?->name ?? 'Unavailable account' }}</p>@endif
+            @if($part->retry_at)<p class="mt-2 text-sm">Scheduled retry: {{ $part->retry_at->format('M j, Y g:i A T') }}</p>@endif
+            @if($part->status->value === 'returning')<p class="mt-2 text-sm">Returning to seller. No delivery or payment confirmation has been recorded.</p>@endif
+            @if($part->returned_at)<p class="mt-2 text-sm">Seller received returned goods {{ $part->returned_at->format('M j, Y g:i A') }}. No COD is due for these items.</p>@endif
             @if($part->rejection_reason)<p class="mt-2 text-sm text-error">Reason: {{ $part->rejection_reason }}</p>@endif
             @if($part->cod_collected_at)<p class="mt-2 text-sm">COD collected: ₱{{ number_format($part->amount(), 2) }}</p>@endif
             @if($part->status === \App\Enums\FulfillmentStatus::InTransit && auth()->id() === $order->user_id && $part->delivery_pin)

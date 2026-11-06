@@ -12,6 +12,8 @@
         <div class="flex flex-wrap gap-2">
             <a href="{{ route('admin.operations') }}" class="btn-outline min-h-11">Operations</a>
             <a href="{{ route('returns.index') }}" class="btn-outline min-h-11">Returns & refunds</a>
+            <a href="{{ route('fulfillments.index', ['status' => 'delivery_failed']) }}" class="btn-outline min-h-11">Failed deliveries</a>
+            <a href="{{ route('fulfillments.index', ['status' => 'returning']) }}" class="btn-outline min-h-11">Returns to seller</a>
             <a href="{{ route('admin.security.accounts') }}" class="btn-outline min-h-11">Account protection</a>
             <a href="{{ route('admin.security.audit') }}" class="btn-outline min-h-11">Audit trail</a>
             <a href="{{ route('admin.privacy-requests.index') }}" class="btn-outline min-h-11">Privacy requests</a>

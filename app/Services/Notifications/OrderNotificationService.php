@@ -68,11 +68,16 @@ class OrderNotificationService
                 FulfillmentStatus::Accepted => 'The seller has accepted your order and is preparing the items.',
                 FulfillmentStatus::Ready => 'Your items are ready for rider pickup.',
                 FulfillmentStatus::Assigned => 'A rider has been assigned to this shipment.',
-                FulfillmentStatus::InTransit => 'Your rider has collected this shipment and is on the way.',
+                FulfillmentStatus::InTransit => $part->retry_at?->isFuture()
+                    ? 'Admin scheduled another delivery attempt. Open your order for the planned date and time.'
+                    : 'Your rider has collected this shipment and is on the way.',
                 FulfillmentStatus::Delivered => 'Your shipment was marked delivered. Confirm receipt after checking your items.',
                 FulfillmentStatus::Completed => 'You confirmed receipt. You can now review your products and delivery.',
                 FulfillmentStatus::Rejected => 'The seller could not fulfill this shipment. Open your order for the updated total and details.',
                 FulfillmentStatus::Cancelled => 'You cancelled this shipment before rider assignment.',
+                FulfillmentStatus::DeliveryFailed => 'A delivery attempt failed. Admin will review retry or return arrangements. No delivery completion was recorded.',
+                FulfillmentStatus::Returning => 'This uncollected COD shipment is being returned to the seller.',
+                FulfillmentStatus::Returned => 'The seller confirmed receipt of the returned shipment. No COD payment is due for these items.',
                 default => 'Your shipment has been updated.',
             },
             'detail' => $status === FulfillmentStatus::Rejected ? $part->rejection_reason : null,
@@ -90,13 +95,28 @@ class OrderNotificationService
             ]);
         }
 
-        if (in_array($status, [FulfillmentStatus::Delivered, FulfillmentStatus::Completed, FulfillmentStatus::Cancelled], true)) {
+        if ($status === FulfillmentStatus::Returning || ($status === FulfillmentStatus::InTransit && $part->retry_at)) {
+            $this->record('event:'.$event->id.':rider-exception', 'rider_exception_update', $part->rider?->user, $order, $part, $event, [
+                ...$base,
+                'title' => 'Delivery instructions updated',
+                'message' => $status === FulfillmentStatus::Returning
+                    ? 'Admin arranged return to seller. Open this shipment for the return instructions; do not collect COD.'
+                    : 'Admin scheduled another delivery attempt. Open this shipment for the date and instructions.',
+                'action_path' => route('fulfillments.index', [], false),
+                'action_label' => 'Open delivery instructions',
+            ]);
+        }
+
+        if (in_array($status, [FulfillmentStatus::Delivered, FulfillmentStatus::Completed, FulfillmentStatus::Cancelled, FulfillmentStatus::DeliveryFailed, FulfillmentStatus::Returning, FulfillmentStatus::Returned], true)) {
             $this->record('event:'.$event->id.':seller', 'seller_shipment_update', $part->shop?->owner, $order, $part, $event, [
                 ...$base,
                 'title' => 'Shop shipment: '.$status->label(),
                 'message' => match ($status) {
                     FulfillmentStatus::Completed => 'The buyer confirmed receipt of your shipment.',
                     FulfillmentStatus::Cancelled => 'The buyer cancelled this shipment before rider assignment. Do not prepare or hand it over.',
+                    FulfillmentStatus::DeliveryFailed => 'A delivery attempt failed. Review the shipment history.',
+                    FulfillmentStatus::Returning => 'Admin arranged return to your shop. Confirm receipt and inspect condition before restocking.',
+                    FulfillmentStatus::Returned => 'Your confirmation of the returned goods has been recorded.',
                     default => 'The rider marked your shipment delivered.',
                 },
                 'action_path' => route('fulfillments.index', [], false),

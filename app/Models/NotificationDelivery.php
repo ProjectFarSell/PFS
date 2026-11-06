@@ -16,6 +16,7 @@ class NotificationDelivery extends Model
         'seller_shipment_update' => 'Seller shipment update',
         'rider_assignment' => 'Rider assignment',
         'rider_completion' => 'Rider completion',
+        'rider_exception_update' => 'Rider retry / return instructions',
     ];
 
     protected $guarded = ['id'];

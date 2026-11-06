@@ -6,6 +6,7 @@ use App\Enums\FulfillmentStatus;
 use App\Enums\UserRole;
 use App\Models\Fulfillment;
 use App\Models\RiderProfile;
+use App\Services\Orders\DeliveryExceptionService;
 use App\Services\Orders\FulfillmentService;
 use App\Services\Security\SafeImage;
 use Illuminate\Http\Request;
@@ -18,13 +19,13 @@ class FulfillmentController extends Controller
     {
         $role = $request->user()->role;
         abort_unless(in_array($role, [UserRole::Seller, UserRole::Admin, UserRole::Rider], true), 403);
-        $query = Fulfillment::query()->with(['items', 'shop', 'order:id,number,payment_method,ship_to,guest_name', 'rider.user']);
+        $query = Fulfillment::query()->with(['items', 'attempts', 'events', 'shop', 'order:id,number,payment_method,ship_to,guest_name', 'rider.user']);
         if ($role === UserRole::Seller) {
             $query->whereHas('shop', fn ($q) => $q->where('user_id', $request->user()->id));
         } elseif ($role === UserRole::Rider) {
             $profile = $request->user()->riderProfile;
             abort_unless($profile?->isApproved(), 403);
-            $query->where('rider_id', $profile->id)->whereIn('status', ['assigned', 'in_transit']);
+            $query->where('rider_id', $profile->id)->whereIn('status', ['assigned', 'in_transit', 'delivery_failed', 'returning']);
         }
         $data = $request->validate(['status' => ['nullable', Rule::enum(FulfillmentStatus::class)]]);
         $query->when($data['status'] ?? null, fn ($q, $status) => $q->where('status', $status));
@@ -39,7 +40,13 @@ class FulfillmentController extends Controller
     public function update(Request $request, Fulfillment $fulfillment, FulfillmentService $service)
     {
         $data = $request->validate([
-            'action' => ['required', Rule::in(['accept', 'reject', 'ready', 'request_rider', 'assign', 'claim', 'decline', 'pickup', 'deliver', 'complete'])],
+            'action' => ['required', Rule::in(['accept', 'reject', 'ready', 'request_rider', 'assign', 'claim', 'decline', 'pickup', 'deliver', 'complete', 'fail', 'retry', 'return_to_seller', 'receive_return'])],
+            'failure_reason' => ['required_if:action,fail', 'nullable', Rule::in(DeliveryExceptionService::REASONS)],
+            'contact_method' => ['required_if:action,fail', 'nullable', Rule::in(['phone', 'chat', 'doorstep'])],
+            'exception_note' => ['required_if:action,fail,retry,return_to_seller,receive_return', 'nullable', 'string', 'min:10', 'max:1000'],
+            'retry_at' => ['required_if:action,retry', 'nullable', 'date', 'after:now', 'before:+14 days'],
+            'return_received' => ['accepted_if:action,receive_return'],
+            'return_disposition' => ['required_if:action,receive_return', 'nullable', Rule::in(['restock', 'quarantine'])],
             'reason' => ['required_if:action,reject', 'nullable', 'string', 'max:1000'],
             'rider_id' => ['required_if:action,assign', 'nullable', 'integer'],
             'delivery_note' => ['required_if:action,deliver', 'nullable', 'string', 'max:1000'],

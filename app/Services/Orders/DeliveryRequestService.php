@@ -44,7 +44,7 @@ class DeliveryRequestService
                 ->whereNotIn('id', $tried)->whereHas('user', fn ($q) => $q->where('role', 'rider'))->get()
                 ->filter(fn ($rider) => self::city($rider->city) === $part->pickup_city)
                 ->sortBy(fn ($rider) => [
-                    Fulfillment::where('rider_id', $rider->id)->whereIn('status', ['assigned', 'in_transit'])->count()
+                    Fulfillment::where('rider_id', $rider->id)->whereIn('status', ['assigned', 'in_transit', 'delivery_failed', 'returning'])->count()
                     + $rider->deliveries()->whereDoesntHave('fulfillments')->whereIn('status', ['assigned', 'in_transit'])->count()
                     + DB::table('rider_delivery_requests')->where('rider_id', $rider->id)
                         ->whereNull('declined_at')->where('expires_at', '>', now())

@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Category;
+use App\Models\DeliveryAttempt;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ReturnRequest;
@@ -24,6 +25,7 @@ class SecurityAuditObserver
         Shop::class => ['is_active'],
         ReturnRequest::class => ['status', 'approved_amount', 'return_required', 'return_received_at', 'refunded_at'],
         User::class => ['role', 'suspended_at', 'security_version', 'mfa_confirmed_at'],
+        DeliveryAttempt::class => ['fulfillment_id', 'number', 'reason', 'contact_method'],
     ];
 
     public function created(Model $model): void

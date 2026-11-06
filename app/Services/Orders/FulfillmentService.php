@@ -116,10 +116,15 @@ class FulfillmentService
                 $part->rider_id = $rider->id;
                 $next = Status::Assigned;
                 $note = 'Rider assigned: '.$rider->user->name;
+            } elseif (in_array($action, ['fail', 'retry', 'return_to_seller', 'receive_return'], true)) {
+                [$next, $note] = app(DeliveryExceptionService::class)->transition($order, $part, $actor, $action, $data);
             } elseif (in_array($action, ['pickup', 'deliver'], true)) {
                 $rider = RiderProfile::query()->lockForUpdate()->find($part->rider_id);
                 abort_unless($actor->role === UserRole::Rider && $rider?->user_id === $actor->id && $rider->isApproved(), 403);
                 $this->expect($part, $action === 'pickup' ? Status::Assigned : Status::InTransit);
+                if ($action === 'deliver' && $part->retry_at?->isFuture()) {
+                    throw ValidationException::withMessages(['fulfillment' => 'The retry is scheduled for a later time.']);
+                }
                 $next = $action === 'pickup' ? Status::InTransit : Status::Delivered;
                 if ($action === 'pickup') {
                     $this->ensureDeliveryPin($part);
@@ -202,11 +207,11 @@ class FulfillmentService
     private function syncOrder(Order $order): void
     {
         $parts = $order->fulfillments()->get();
-        $active = $parts->reject(fn ($part) => in_array($part->status, [Status::Rejected, Status::Cancelled], true));
+        $active = $parts->reject(fn ($part) => in_array($part->status, [Status::Rejected, Status::Cancelled, Status::Returned], true));
         $stages = [Status::Pending, Status::Accepted, Status::Ready, Status::Assigned, Status::InTransit, Status::Delivered, Status::Completed];
         $earliest = $active->sortBy(fn ($part) => array_search($part->status, $stages, true))->first()?->status;
         $order->status = match ($earliest) {
-            null => OrderStatus::Cancelled,
+            null => $parts->contains('status', Status::Returned) ? OrderStatus::Returned : OrderStatus::Cancelled,
             Status::Pending => $order->payment_method === PaymentMethod::Cod ? OrderStatus::PendingPayment : OrderStatus::Paid,
             Status::Accepted => OrderStatus::Confirmed,
             Status::Ready => OrderStatus::Packed,
@@ -216,6 +221,9 @@ class FulfillmentService
             Status::Completed => OrderStatus::Completed,
             default => $order->status,
         };
+        if ($active->contains(fn ($part) => in_array($part->status, [Status::DeliveryFailed, Status::Returning], true))) {
+            $order->status = OrderStatus::DeliveryIssue;
+        }
         if ($active->isEmpty() && $order->stock_reserved_at) {
             $order->stock_released_at = now();
         }

@@ -21,6 +21,8 @@ class Fulfillment extends Model
             'cod_collected_at' => 'datetime',
             'stock_released_at' => 'datetime',
             'delivery_pin' => 'encrypted',
+            'retry_at' => 'datetime',
+            'returned_at' => 'datetime',
         ];
     }
 
@@ -71,6 +73,11 @@ class Fulfillment extends Model
 
     public function amount(): float
     {
-        return in_array($this->status, [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled], true) ? 0 : (float) $this->subtotal + (float) $this->shipping_fee;
+        return in_array($this->status, [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled, FulfillmentStatus::Returned], true) ? 0 : (float) $this->subtotal + (float) $this->shipping_fee;
+    }
+
+    public function attempts(): HasMany
+    {
+        return $this->hasMany(DeliveryAttempt::class)->orderBy('number');
     }
 }

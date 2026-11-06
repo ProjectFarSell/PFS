@@ -103,6 +103,7 @@
                         <button class="btn-accent">Confirm delivered</button>
                     </form>
                 @endif
+                @include('fulfillments.exceptions')
                 @if($isAdmin)<a class="inline-block mt-4 text-sm text-accent underline" href="{{ route('orders.show', $part->order_id) }}">Order details and history</a>@endif
             </article>
         @empty
