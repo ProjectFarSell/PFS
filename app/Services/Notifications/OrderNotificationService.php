@@ -47,7 +47,7 @@ class OrderNotificationService
     {
         $event->loadMissing('fulfillment.order');
         $shipment = $event->fulfillment;
-        app(BuyerInbox::class)->record($shipment->order, 'event:'.$event->id, 'Shipment: '.FulfillmentStatus::from($event->status)->label(), $shipment->shop_name.' — '.FulfillmentStatus::from($event->status)->label().'.');
+        app(BuyerInbox::class)->record($shipment->order, 'event:'.$event->id, 'Shipment: '.$shipment->deliveryLabel(), $shipment->shop_name.' — '.$shipment->deliveryLabel().'.');
         if (! config('notifications.enabled')) {
             return;
         }
@@ -58,20 +58,20 @@ class OrderNotificationService
         $base = [
             'order_number' => $order->number,
             'shop_name' => $part->shop_name,
-            'status_label' => $status->label(),
+            'status_label' => $part->deliveryLabel(),
             'occurred_at' => $event->created_at->toIso8601String(),
         ];
 
         $this->record('event:'.$event->id.':buyer', 'shipment_update', $order->buyer, $order, $part, $event, [
             ...$base,
-            'title' => 'Shipment update: '.$status->label(),
+            'title' => 'Shipment update: '.$part->deliveryLabel(),
             'message' => match ($status) {
                 FulfillmentStatus::Accepted => 'The seller has accepted your order and is preparing the items.',
-                FulfillmentStatus::Ready => 'Your items are ready for rider pickup.',
-                FulfillmentStatus::Assigned => 'A rider has been assigned to this shipment.',
+                FulfillmentStatus::Ready => 'Your items are ready for pickup.',
+                FulfillmentStatus::Assigned => $part->usesExternalCourier() ? 'An external courier booking has been recorded. Open your order for its reference.' : 'A rider has been assigned to this shipment.',
                 FulfillmentStatus::InTransit => $part->retry_at?->isFuture()
                     ? 'Admin scheduled another delivery attempt. Open your order for the planned date and time.'
-                    : 'Your rider has collected this shipment and is on the way.',
+                    : 'Your delivery provider has collected this shipment and is on the way.',
                 FulfillmentStatus::Delivered => 'Your shipment was marked delivered. Confirm receipt after checking your items.',
                 FulfillmentStatus::Completed => 'You confirmed receipt. You can now review your products and delivery.',
                 FulfillmentStatus::Rejected => 'The seller could not fulfill this shipment. Open your order for the updated total and details.',
@@ -118,7 +118,7 @@ class OrderNotificationService
                     FulfillmentStatus::DeliveryFailed => 'A delivery attempt failed. Review the shipment history.',
                     FulfillmentStatus::Returning => 'Admin arranged return to your shop. Confirm receipt and inspect condition before restocking.',
                     FulfillmentStatus::Returned => 'Your confirmation of the returned goods has been recorded.',
-                    default => 'The rider marked your shipment delivered.',
+                    default => 'Your shipment was marked delivered.',
                 },
                 'action_path' => route('fulfillments.index', [], false),
                 'action_label' => 'Open shop orders',

@@ -25,6 +25,10 @@ class SettlementService
 
     public function riderPay(Fulfillment $part): float
     {
+        if ($part->usesExternalCourier()) {
+            return 0;
+        }
+
         return $part->fee_policy ? $part->fee_policy['rider_pay_cents'] / 100 : (float) $part->shipping_fee;
     }
 
@@ -35,6 +39,16 @@ class SettlementService
             return;
         }
         $policy = $part->fee_policy;
+        $external = $part->usesExternalCourier();
+        $booking = $external ? $part->courierBooking : null;
+        if ($external && (! $booking || $booking->isSandbox())) {
+            return;
+        }
+        if ($external && ($booking->cost_cents === null || $booking->status !== 'booked')) {
+            throw new \RuntimeException('Courier cost must be verified before settlement.');
+        }
+        $riderPay = $external ? 0 : $policy['rider_pay_cents'];
+        $courierCost = $external ? $booking->cost_cents : 0;
         $goods = (int) round((float) $part->subtotal * 100);
         $delivery = (int) round((float) $part->shipping_fee * 100);
         $commission = $this->commission($goods, $policy['commission_bps']);
@@ -45,9 +59,9 @@ class SettlementService
         ShipmentSettlement::firstOrCreate(['fulfillment_id' => $part->id], [
             'goods_cents' => $goods, 'delivery_cents' => $delivery,
             'commission_bps' => $policy['commission_bps'], 'commission_cents' => $commission,
-            'seller_cents' => $goods - $commission, 'rider_cents' => $policy['rider_pay_cents'],
+            'seller_cents' => $goods - $commission, 'rider_cents' => $riderPay, 'courier_cost_cents' => $courierCost,
             'cod_cost_cents' => $cod, 'operating_cost_cents' => $operating,
-            'contribution_cents' => $commission + $delivery - $policy['rider_pay_cents'] - $cod - $operating,
+            'contribution_cents' => $commission + $delivery - $riderPay - $courierCost - $cod - $operating,
             'earned_at' => now(),
         ]);
         foreach (ReturnRequest::whereHas('item', fn ($q) => $q->where('fulfillment_id', $part->id))->where('status', 'refunded')->orderBy('id')->get() as $case) {

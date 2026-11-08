@@ -2,6 +2,7 @@
 
 namespace App\Services\Orders;
 
+use App\Enums\DeliveryMethod;
 use App\Enums\FulfillmentStatus as Status;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
@@ -12,6 +13,7 @@ use App\Models\RiderBarangayAssignment;
 use App\Models\RiderEarning;
 use App\Models\RiderProfile;
 use App\Models\User;
+use App\Services\Logistics\ExternalDeliveryService;
 use App\Services\Notifications\OrderNotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -65,10 +67,16 @@ class FulfillmentService
                     'accept' => Status::Accepted, 'reject' => Status::Rejected, 'ready', 'request_rider' => Status::Ready
                 };
                 if (in_array($action, ['ready', 'request_rider'], true)) {
+                    if ($action === 'ready' && isset($data['delivery_method'])) {
+                        $part->delivery_method = DeliveryMethod::from($data['delivery_method']);
+                    }
+                    if ($action === 'request_rider' && $part->usesExternalCourier()) {
+                        throw ValidationException::withMessages(['fulfillment' => 'Use Logistics to arrange this external courier shipment.']);
+                    }
                     $part->pickup_address = $data['pickup_address'];
                     $part->pickup_contact = $data['pickup_contact'];
                     $shopCity = trim((string) $part->shop?->city);
-                    if ($shopCity === '' && ! $this->barangayRider($part)) {
+                    if (! $part->usesExternalCourier() && $shopCity === '' && ! $this->barangayRider($part)) {
                         throw ValidationException::withMessages([
                             'fulfillment' => 'Set the shop city before requesting a city-based rider, or assign a rider to the delivery barangay.',
                         ]);
@@ -77,6 +85,9 @@ class FulfillmentService
                     $note = $shopCity === ''
                         ? 'Shipment is ready for its designated barangay rider.'
                         : 'Rider request published for '.$shopCity.'.';
+                    if ($part->usesExternalCourier()) {
+                        $note = 'Ready for '.$part->delivery_method->label().'. Admin can arrange booking from Logistics.';
+                    }
                 }
                 if ($action === 'reject') {
                     $note = $data['reason'];
@@ -87,6 +98,7 @@ class FulfillmentService
                     }
                 }
             } elseif (in_array($action, ['claim', 'decline'], true)) {
+                abort_if($part->usesExternalCourier(), 403);
                 abort_unless($actor->role === UserRole::Rider, 403);
                 $rider = RiderProfile::query()->where('user_id', $actor->id)->lockForUpdate()->first();
                 abort_unless($rider?->isApproved() && $rider->is_available, 403);
@@ -108,6 +120,7 @@ class FulfillmentService
                 $next = Status::Assigned;
                 $note = 'Delivery request accepted by '.$actor->name;
             } elseif ($action === 'assign') {
+                abort_if($part->usesExternalCourier(), 403);
                 abort_unless($actor->role === UserRole::Admin, 403);
                 $this->expect($part, Status::Ready);
                 $rider = RiderProfile::query()->lockForUpdate()->find($data['rider_id']);
@@ -119,6 +132,8 @@ class FulfillmentService
                 $note = 'Rider assigned: '.$rider->user->name;
             } elseif (in_array($action, ['fail', 'retry', 'return_to_seller', 'receive_return'], true)) {
                 [$next, $note] = app(DeliveryExceptionService::class)->transition($order, $part, $actor, $action, $data);
+            } elseif (in_array($action, ['pickup', 'deliver'], true) && $part->usesExternalCourier()) {
+                [$next, $note] = app(ExternalDeliveryService::class)->transition($order, $part, $actor, $action, $data);
             } elseif (in_array($action, ['pickup', 'deliver'], true)) {
                 $rider = RiderProfile::query()->lockForUpdate()->find($part->rider_id);
                 abort_unless($actor->role === UserRole::Rider && $rider?->user_id === $actor->id && $rider->isApproved(), 403);
@@ -149,40 +164,51 @@ class FulfillmentService
             } else {
                 abort_unless($action === 'complete' && $order->user_id === $actor->id, 403);
                 $this->expect($part, Status::Delivered);
+                if ($part->usesExternalCourier() && ! $part->courierBooking?->isSandbox() && $order->payment_method === PaymentMethod::Cod && ! $part->cod_collected_at) {
+                    throw ValidationException::withMessages(['fulfillment' => 'Admin must verify courier COD collection before completion.']);
+                }
                 $next = Status::Completed;
                 $note = 'Buyer confirmed receipt.';
             }
 
-            if ($next === Status::Ready) {
-                $rider = $this->barangayRider($part);
-                if ($rider) {
-                    $part->rider_id = $rider->id;
-                    $next = Status::Assigned;
-                    $note = 'Automatically assigned to '.$rider->user->name.' for the delivery barangay.';
-                }
-            }
-
-            $part->status = $next;
-            $part->save();
-            if ($next === Status::Completed && $part->rider_id !== null
-                && (! $part->fee_policy || ($order->payment_method === PaymentMethod::Cod && $part->cod_collected_at))) {
-                app(SettlementService::class)->complete($part);
-                RiderEarning::query()->firstOrCreate(
-                    ['fulfillment_id' => $part->id],
-                    [
-                        'rider_profile_id' => $part->rider_id,
-                        'amount' => app(SettlementService::class)->riderPay($part),
-                        'earned_at' => now(),
-                    ]
-                );
-            }
-            if ($next === Status::Ready) {
-                app(DeliveryRequestService::class)->notifyRiders($part);
-            }
-            $event = $part->events()->create(['actor_id' => $actor->id, 'status' => $next->value, 'note' => $note]);
-            $this->syncOrder($order);
-            app(OrderNotificationService::class)->shipmentChanged($event);
+            $this->recordState($order, $part, $actor, $next, $note);
         }, 3);
+    }
+
+    /** Caller holds the parent order and shipment locks. */
+    public function recordState(Order $order, Fulfillment $part, User $actor, Status $next, ?string $note): void
+    {
+        if ($next === Status::Ready && ! $part->usesExternalCourier()) {
+            $rider = $this->barangayRider($part);
+            if ($rider) {
+                $part->rider_id = $rider->id;
+                $next = Status::Assigned;
+                $note = 'Automatically assigned to '.$rider->user->name.' for the delivery barangay.';
+            }
+        }
+
+        $part->status = $next;
+        $part->save();
+        if ($next === Status::Completed) {
+            app(SettlementService::class)->complete($part);
+        }
+        if ($next === Status::Completed && ! $part->usesExternalCourier() && $part->rider_id !== null
+            && (! $part->fee_policy || ($order->payment_method === PaymentMethod::Cod && $part->cod_collected_at))) {
+            RiderEarning::query()->firstOrCreate(
+                ['fulfillment_id' => $part->id],
+                [
+                    'rider_profile_id' => $part->rider_id,
+                    'amount' => app(SettlementService::class)->riderPay($part),
+                    'earned_at' => now(),
+                ]
+            );
+        }
+        if ($next === Status::Ready && ! $part->usesExternalCourier()) {
+            app(DeliveryRequestService::class)->notifyRiders($part);
+        }
+        $event = $part->events()->create(['actor_id' => $actor->id, 'status' => $next->value, 'note' => $note]);
+        $this->syncOrder($order);
+        app(OrderNotificationService::class)->shipmentChanged($event);
     }
 
     private function expect(Fulfillment $part, Status $expected): void

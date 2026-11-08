@@ -8,6 +8,7 @@ use App\Contracts\OrderNotificationSender;
 use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\Conversation;
+use App\Models\CourierBooking;
 use App\Models\DeliveryAttempt;
 use App\Models\Message;
 use App\Models\Product;
@@ -47,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        foreach ([Category::class, Product::class, ProductVariant::class, SellerApplication::class, RiderProfile::class, Shop::class, ReturnRequest::class, User::class, DeliveryAttempt::class, ReplacementRequest::class, ShipmentSettlement::class, SettlementAdjustment::class] as $model) {
+        foreach ([Category::class, Product::class, ProductVariant::class, SellerApplication::class, RiderProfile::class, Shop::class, ReturnRequest::class, User::class, DeliveryAttempt::class, ReplacementRequest::class, ShipmentSettlement::class, SettlementAdjustment::class, CourierBooking::class] as $model) {
             $model::observe(SecurityAuditObserver::class);
         }
         RateLimiter::for('login', fn (Request $request) => [

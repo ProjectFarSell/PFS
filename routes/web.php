@@ -32,6 +32,7 @@ use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\FulfillmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventoryRefreshController;
+use App\Http\Controllers\LogisticsController;
 use App\Http\Controllers\OrderFeedbackController;
 use App\Http\Controllers\ProductReviewMediaController;
 use App\Http\Controllers\ReplacementController;
@@ -207,6 +208,10 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/se
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::middleware(EnsureUserHasRole::class.':admin')->prefix('admin/logistics')->name('admin.logistics.')->group(function () {
+        Route::get('/', [LogisticsController::class, 'index'])->name('index');
+        Route::post('/{fulfillment}', [LogisticsController::class, 'update'])->middleware('throttle:15,1')->name('update');
+    });
     Route::get('/seller/inventory/stock', [InventoryRefreshController::class, 'seller'])->middleware([EnsureUserHasRole::class.':seller', 'throttle:60,1'])->name('seller.inventory.stock');
     Route::get('/admin/products/stock', [InventoryRefreshController::class, 'admin'])->middleware([EnsureUserHasRole::class.':admin', 'throttle:60,1'])->name('admin.products.stock');
     Route::middleware(EnsureUserHasRole::class.':buyer,seller,admin')->group(function () {

@@ -28,7 +28,7 @@
             <article class="fs-card p-5">
                 <div class="flex flex-wrap gap-3 justify-between items-center">
                     <h2 class="font-semibold">{{ $part->order->number }} · Shipment #{{ $part->id }}</h2>
-                    <span class="badge badge-neutral">{{ $part->status->label() }}</span>
+                    <span class="badge badge-neutral">{{ $part->deliveryLabel() }}</span>
                 </div>
                 <p class="mt-2 text-sm">{{ $part->shop_name }}</p>
                 <ul class="mt-3 space-y-1 text-sm">
@@ -47,7 +47,9 @@
                 @endif
                 @if($part->rider)<p class="mt-2 text-sm">Rider: {{ $part->rider->user?->name ?? 'Unavailable account' }}</p>@endif
                 @if($part->fee_policy && ($isSeller || $isAdmin))<p class="mt-2 text-xs text-text-muted">Goods commission: {{ number_format($part->fee_policy['commission_bps'] / 100, 2) }}%. Seller entitlement is recorded after buyer completion. Buyer delivery charges are separate.</p>@endif
-                @if($part->fee_policy && !$isSeller)<p class="mt-2 text-xs text-text-muted">Rider pay on buyer-confirmed completion: PHP {{ number_format($part->fee_policy['rider_pay_cents'] / 100, 2) }}.</p>@endif
+                @include('fulfillments.courier')
+                @if($isAdmin)<a href="{{ route('admin.logistics.index', ['q' => $part->order->number]) }}" class="mt-3 inline-block text-sm text-accent underline">Manage logistics / courier booking</a>@endif
+                @if($part->fee_policy && !$isSeller && !$part->usesExternalCourier())<p class="mt-2 text-xs text-text-muted">Rider pay on buyer-confirmed completion: PHP {{ number_format($part->fee_policy['rider_pay_cents'] / 100, 2) }}.</p>@endif
                 @if($part->rejection_reason)<p class="mt-2 text-sm text-error">Rejection reason: {{ $part->rejection_reason }}</p>@endif
                 @if($isSeller && $part->status === \App\Enums\FulfillmentStatus::Pending)
                     <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4">@csrf <button name="action" value="accept" class="btn-accent">Accept order</button></form>
@@ -60,20 +62,26 @@
                             <button class="btn-outline">Confirm rejection</button>
                         </form>
                     </details>
-                @elseif($isSeller && ($part->status === \App\Enums\FulfillmentStatus::Accepted || ($part->status === \App\Enums\FulfillmentStatus::Ready && $part->pickup_city === null)))
+                @elseif($isSeller && ($part->status === \App\Enums\FulfillmentStatus::Accepted || ($part->status === \App\Enums\FulfillmentStatus::Ready && $part->pickup_city === null && !$part->usesExternalCourier())))
                     <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4 space-y-3">
                         @csrf <input type="hidden" name="action" value="{{ $part->status === \App\Enums\FulfillmentStatus::Ready ? 'request_rider' : 'ready' }}">
-                        <label class="block" for="pickup-address-{{ $part->id }}">Exact pickup address for the rider</label>
+                        @if($part->status === \App\Enums\FulfillmentStatus::Accepted)
+                            <label class="block text-sm" for="delivery-method-{{ $part->id }}">Delivery method</label>
+                            <select id="delivery-method-{{ $part->id }}" name="delivery_method" class="w-full rounded-lg">@foreach(\App\Enums\DeliveryMethod::cases() as $method)<option value="{{ $method->value }}" @selected($part->delivery_method === $method)>{{ $method->label() }}</option>@endforeach</select>
+                        @endif
+                        <label class="block" for="pickup-address-{{ $part->id }}">Exact pickup address</label>
                         <textarea id="pickup-address-{{ $part->id }}" name="pickup_address" required maxlength="1000" class="w-full rounded-lg"></textarea>
                         <label class="block" for="pickup-contact-{{ $part->id }}">Pickup contact name and phone</label>
                         <input id="pickup-contact-{{ $part->id }}" name="pickup_contact" required maxlength="255" class="w-full rounded-lg">
-                        <button class="btn-accent">{{ $part->status === \App\Enums\FulfillmentStatus::Ready ? 'Request a rider' : 'Mark ready for pickup & request rider' }}</button>
-                        <p class="text-xs text-text-muted">Available approved riders in {{ $part->shop?->city }} will receive an in-app delivery request when you mark this ready.</p>
+                        <button class="btn-accent">{{ $part->status === \App\Enums\FulfillmentStatus::Ready ? 'Request a rider' : 'Mark ready for pickup' }}</button>
+                        <p class="text-xs text-text-muted">FarSell riders use internal dispatch. For Lalamove, admin must arrange and verify the courier booking through Logistics.</p>
                     </form>
+                @elseif($isSeller && $part->status === \App\Enums\FulfillmentStatus::Ready && $part->usesExternalCourier())
+                    <p class="mt-4 text-sm font-semibold">Waiting for admin to arrange {{ $part->delivery_method->label() }} booking.</p>
                 @elseif($isSeller && $part->status === \App\Enums\FulfillmentStatus::Ready)
                     <p class="mt-4 text-sm font-semibold">Rider requested — waiting for acceptance</p>
                     <p class="mt-2 text-sm text-text-muted">Available approved riders in {{ ucwords($part->pickup_city) }} can accept this shipment. An administrator can also assign a rider.</p>
-                @elseif($isAdmin && $part->status === \App\Enums\FulfillmentStatus::Ready)
+                @elseif($isAdmin && $part->status === \App\Enums\FulfillmentStatus::Ready && !$part->usesExternalCourier())
                     @if($riders->isEmpty())
                         <p class="mt-4 text-sm">No approved riders available. <a class="text-accent underline" href="{{ route('admin.riders.index') }}">Review rider applications</a></p>
                     @else

@@ -23,7 +23,7 @@ class CancelOrder
                 return;
             }
             if (! $order->canBuyerCancel()) {
-                throw ValidationException::withMessages(['cancellation' => 'This order can no longer be cancelled. Cancellation is available only before rider assignment.']);
+                throw ValidationException::withMessages(['cancellation' => 'This order can no longer be cancelled. Cancellation is available only before rider assignment or an active/pending courier booking.']);
             }
             $parts = $order->fulfillments()->orderBy('id')->lockForUpdate()->get();
             foreach ($parts as $part) {

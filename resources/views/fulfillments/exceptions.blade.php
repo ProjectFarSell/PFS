@@ -21,13 +21,15 @@
     @if($part->attempts->count() < config('marketplace.max_delivery_attempts'))
     <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4 space-y-3">@csrf
         <input type="hidden" name="action" value="retry">
+        @if($part->usesExternalCourier())<label class="block text-sm"><input type="checkbox" name="courier_verified" value="1" required> I confirmed these retry arrangements with the courier</label>@endif
         <label class="block text-sm">Retry date/time ({{ config('app.timezone') }})<input type="datetime-local" name="retry_at" required class="mt-1 block w-full rounded-lg"></label>
         <label class="block text-sm">Buyer arrangement / instructions<textarea name="exception_note" required minlength="10" maxlength="1000" class="mt-1 block w-full rounded-lg"></textarea></label>
-        <button class="btn-accent">Schedule retry with current rider</button>
+        <button class="btn-accent">{{ $part->usesExternalCourier() ? 'Record agreed courier retry' : 'Schedule retry with current rider' }}</button>
     </form>
     @endif
     <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4 space-y-3 border-t border-surface-border pt-3">@csrf
         <input type="hidden" name="action" value="return_to_seller">
+        @if($part->usesExternalCourier())<label class="block text-sm"><input type="checkbox" name="courier_verified" value="1" required> I confirmed return arrangements with the courier</label>@endif
         <label class="block text-sm">Return instructions<textarea name="exception_note" required minlength="10" maxlength="1000" class="mt-1 block w-full rounded-lg"></textarea></label>
         <button class="btn-outline">Arrange return to seller</button>
     </form>

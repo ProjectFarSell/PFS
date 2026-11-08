@@ -27,6 +27,7 @@
             @if($isAdmin)
             <div><dt>Buyer delivery allocation</dt><dd>PHP {{ number_format($row->delivery_cents / 100, 2) }}</dd></div>
             <div><dt>Rider earnings</dt><dd>PHP {{ number_format($row->rider_cents / 100, 2) }}</dd></div>
+            <div><dt>External courier cost</dt><dd>PHP {{ number_format($row->courier_cost_cents / 100, 2) }}</dd></div>
             <div><dt>COD handling cost</dt><dd>PHP {{ number_format($row->cod_cost_cents / 100, 2) }}</dd></div>
             <div><dt>Operating cost allocation</dt><dd>PHP {{ number_format($row->operating_cost_cents / 100, 2) }}</dd></div>
             <div><dt>Platform contribution after reversals</dt><dd class="font-semibold">PHP {{ number_format(($row->contribution_cents - $reversal) / 100, 2) }}</dd></div>

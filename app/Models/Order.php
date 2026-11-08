@@ -58,9 +58,10 @@ class Order extends Model
             return false;
         }
 
-        return ! $this->fulfillments()->where(function ($q) {
-            $q->whereNotIn('status', ['pending', 'accepted', 'ready', 'rejected'])->orWhereNotNull('rider_id');
-        })->exists();
+        return ! $this->fulfillments()->whereHas('courierBooking', fn ($q) => $q->whereIn('status', ['submitting', 'unknown', 'booked']))->exists()
+            && ! $this->fulfillments()->where(function ($q) {
+                $q->whereNotIn('status', ['pending', 'accepted', 'ready', 'rejected'])->orWhereNotNull('rider_id');
+            })->exists();
     }
 
     public function billableItems(): Collection

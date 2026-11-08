@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DeliveryMethod;
 use App\Enums\FulfillmentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +25,7 @@ class Fulfillment extends Model
             'retry_at' => 'datetime',
             'returned_at' => 'datetime',
             'fee_policy' => 'array',
+            'delivery_method' => DeliveryMethod::class,
         ];
     }
 
@@ -85,5 +87,21 @@ class Fulfillment extends Model
     public function settlement(): HasOne
     {
         return $this->hasOne(ShipmentSettlement::class);
+    }
+
+    public function courierBooking(): HasOne
+    {
+        return $this->hasOne(CourierBooking::class);
+    }
+
+    public function usesExternalCourier(): bool
+    {
+        return ($this->delivery_method ?? DeliveryMethod::Internal) !== DeliveryMethod::Internal;
+    }
+
+    public function deliveryLabel(): string
+    {
+        return $this->usesExternalCourier() && $this->status === FulfillmentStatus::Assigned
+            ? 'External courier booked' : $this->status->label();
     }
 }

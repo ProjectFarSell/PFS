@@ -17,8 +17,14 @@ class DeliveryExceptionService
     /** Invoked within FulfillmentService's parent-order/fulfillment transaction. */
     public function transition(Order $order, Fulfillment $part, User $actor, string $action, array $data): array
     {
+        if ($part->usesExternalCourier() && $action !== 'receive_return') {
+            abort_unless($actor->role === UserRole::Admin, 403);
+            if (! filter_var($data['courier_verified'] ?? false, FILTER_VALIDATE_BOOLEAN) || $part->courierBooking?->status !== 'booked') {
+                $this->invalid('Verify the external courier instructions or event before recording it.');
+            }
+        }
         if ($action === 'fail') {
-            abort_unless($actor->role === UserRole::Rider && $part->rider?->user_id === $actor->id && $part->rider->isApproved(), 403);
+            abort_unless($part->usesExternalCourier() || ($actor->role === UserRole::Rider && $part->rider?->user_id === $actor->id && $part->rider->isApproved()), 403);
             $this->expect($part, Status::InTransit);
             if ($part->retry_at?->isFuture() || $part->cod_collected_at) {
                 $this->invalid('A scheduled retry is not due, or payment has already been collected. Contact admin.');
@@ -33,7 +39,7 @@ class DeliveryExceptionService
         if ($action === 'retry') {
             abort_unless($actor->role === UserRole::Admin, 403);
             $this->expect($part, Status::DeliveryFailed);
-            if ($part->attempts()->count() >= config('marketplace.max_delivery_attempts') || ! $part->rider?->isApproved()) {
+            if ($part->attempts()->count() >= config('marketplace.max_delivery_attempts') || (! $part->usesExternalCourier() && ! $part->rider?->isApproved())) {
                 $this->invalid('Retry limit reached or rider unavailable. Arrange return to seller.');
             }
             $part->retry_at = $data['retry_at'];
