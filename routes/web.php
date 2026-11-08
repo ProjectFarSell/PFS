@@ -31,6 +31,7 @@ use App\Http\Controllers\Chat\ConversationController;
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\FulfillmentController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InventoryRefreshController;
 use App\Http\Controllers\OrderFeedbackController;
 use App\Http\Controllers\ProductReviewMediaController;
 use App\Http\Controllers\ReplacementController;
@@ -72,6 +73,7 @@ Route::middleware(RedirectPrivateRolesFromStorefront::class)->group(function () 
     // ── Public catalog ────────────────────────────────────────────────────────────
     Route::get('/search', [ProductController::class, 'index'])->name('catalog.index');
     Route::get('/p/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('/p/{product}/availability', [InventoryRefreshController::class, 'product'])->middleware('throttle:60,1')->name('products.availability');
     Route::get('/shops', [ShopController::class, 'index'])->name('shops.index');
     Route::get('/shop/{shop}', [ShopController::class, 'show'])->name('shops.show');
 });
@@ -205,6 +207,8 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/se
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::get('/seller/inventory/stock', [InventoryRefreshController::class, 'seller'])->middleware([EnsureUserHasRole::class.':seller', 'throttle:60,1'])->name('seller.inventory.stock');
+    Route::get('/admin/products/stock', [InventoryRefreshController::class, 'admin'])->middleware([EnsureUserHasRole::class.':admin', 'throttle:60,1'])->name('admin.products.stock');
     Route::middleware(EnsureUserHasRole::class.':buyer,seller,admin')->group(function () {
         Route::get('/replacements', [ReplacementController::class, 'index'])->name('replacements.index');
         Route::post('/replacements/{replacement}/review', [ReplacementController::class, 'review'])->middleware([EnsureUserHasRole::class.':seller,admin', 'throttle:20,1'])->name('replacements.review');

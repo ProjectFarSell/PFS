@@ -1,6 +1,8 @@
 import './bootstrap';
 import './flash-messages';
 import './product-feedback';
+import './inventory-live';
+import productOptions from './product-options';
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
@@ -224,30 +226,7 @@ Alpine.data('chatThread', (conversationId, userId, endpoint, lastId) => ({
     },
 }));
 
-Alpine.data('productOptions', (variants = [], optionNames = []) => ({
-    qty: 1,
-    variants,
-    optionNames,
-    choices: Object.fromEntries(optionNames.map((name) => [name, ''])),
-    valuesFor(name) {
-        return [...new Set(this.variants.map((variant) => variant.options[name]).filter(Boolean))];
-    },
-    isAvailable(name, value) {
-        return this.variants.some((variant) => variant.options[name] === value
-            && this.optionNames.every((other) => other === name || !this.choices[other] || variant.options[other] === this.choices[other]));
-    },
-    clearUnavailable(name) {
-        for (const other of this.optionNames) {
-            if (other !== name && this.choices[other] && !this.isAvailable(other, this.choices[other])) {
-                this.choices[other] = '';
-            }
-        }
-    },
-    selectedVariant() {
-        if (!this.optionNames.length || this.optionNames.some((name) => !this.choices[name])) return null;
-        return this.variants.find((variant) => this.optionNames.every((name) => variant.options[name] === this.choices[name])) ?? null;
-    },
-}));
+Alpine.data('productOptions', productOptions);
 
 Alpine.data('quantityStepper', (initial = 1, max = 99, min = 1) => ({
     qty: initial,
