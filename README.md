@@ -202,14 +202,16 @@ php artisan db:seed --class=DemoAccountsSeeder
 
 For the standalone MySQL setup using `.env.local`, append `--env=local` to both commands. You can rerun the seeder whenever needed: it creates missing accounts without duplicating users or resetting existing names, roles, or passwords. Git pull updates the seeder code; run the command to populate each local database.
 
-To also create the demo seller's shop, sample products, and buyer address, run `php artisan db:seed` instead. The accounts-only command creates login accounts; seller shop setup and rider onboarding still apply.
+To also create the demo seller's shop, sample products, and buyer address, run `php artisan db:seed` instead. In local/testing environments, `DemoAccountsSeeder` also runs `DemoRiderProfileSeeder` to create a missing approved synthetic profile for `rider@farsell.test`. This fixes **Rider profile not found** on another computer after seeding. It does not create fake documents, reset passwords/roles, change existing application decisions, or overwrite existing profiles. Seller shop setup and onboarding for real rider accounts still apply.
+
+The synthetic demo rider starts unavailable. Turn on availability in the rider dashboard when you want eligible Quezon City delivery offers. If an existing demo profile is pending, rejected or suspended, review it through the normal admin workflow; reseeding does not approve it. A suspended account or an account with a different role is preserved and skipped. The profile seeder refuses production/staging use; automatic demo profile creation runs only in local/testing.
 
 | Role | Email | Name | Notes |
 |---|---|---|---|
 | Admin | `admin@farsell.test` | FarSell Admin | Marketplace dashboard, seller/rider application reviews, and authorized order details |
 | Buyer | `buyer@farsell.test` | Guest Buyer | Default shopping account, has a saved address |
 | Seller | `seller@farsell.test` | Demo Seller | Owns "Metro Surplus Co." shop with 24 products |
-| Rider | `rider@farsell.test` | Demo Rider | Rider account; profile/documents are submitted through onboarding |
+| Rider | `rider@farsell.test` | Demo Rider | Local/testing seed creates a missing approved synthetic Quezon City profile; availability starts off; no fabricated documents |
 
 > `db:seed` uses existing-record checks, but `migrate:fresh` **drops every table**. Never use it for a normal update or a database containing records you need. Back up data before any deliberate reset.
 
