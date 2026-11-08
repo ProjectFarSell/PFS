@@ -2,6 +2,8 @@
 
 A Laravel-powered marketplace for surplus goods, built for fast checkout and multi-role operation (buyers, sellers, riders, and admins).
 
+Courier logistics supports internal riders plus manually verified Lalamove bookings. Optional Lalamove sandbox support, setup, accounting and remaining provider requirements are documented in [docs/logistics.md](docs/logistics.md).
+
 ---
 
 ## Table of Contents
@@ -242,6 +244,12 @@ Run `php artisan migrate --env=local` and `php artisan storage:link --env=local`
 Stock in the editor is **available stock excluding reservations**. Saving an outdated edit is rejected if stock or listing data changed, and conflict reloads use current values. Products are unpublished rather than hard-deleted to retain order ownership/history. No seller product-transfer or deletion endpoint exists. Replaced images are retained on disk for now; cleanup can be added separately. Product variants, galleries, real payment processing, payout disbursement/accounting, and business-document verification are not included in this MVP.
 
 ---
+
+### Live stock on open pages
+
+Product availability and the currently displayed seller/admin inventory rows refresh every 10 seconds while visible, and immediately on tab focus, return navigation or visibility restoration. Refreshes preserve the buyer's size/color selection and adjust stock labels, quantity limits and purchase buttons. Seller counts use active variant quantities, matching checkout. Inventory refreshes do not replace rows, steal focus, or reset pagination; newly added listings appear after a page reload.
+
+Requests use uncached, rate-limited endpoints; seller results are limited to the signed-in shop and admin results require admin access. Hidden pages pause requests, stale responses are ignored, and a failed refresh retains the last known quantities with a notice. Checkout still validates stock transactionally; polling never reserves inventory and is not instant WebSocket delivery. Build the frontend after pulling these changes. No new environment variables, migrations or external services are required.
 
 ## Order fulfillment and delivery
 
