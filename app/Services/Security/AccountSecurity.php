@@ -3,6 +3,7 @@
 namespace App\Services\Security;
 
 use App\Models\User;
+use App\Support\DemoAccount;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,10 @@ class AccountSecurity
         $request->session()->forget(['security', 'password_hash_web']);
         $request->session()->regenerate();
         $request->session()->put('security.version', $user->security_version);
+        if (DemoAccount::exempt($user)) {
+            // The just-completed primary sign-in counts as password confirmation, not MFA.
+            $this->confirm($request);
+        }
     }
 
     public function confirm(Request $request): void
@@ -39,12 +44,12 @@ class AccountSecurity
 
     public function requiresAuthenticator(User $user): bool
     {
-        return $user->usesAuthenticator() && config('security.'.$user->role->value.'_mfa_required');
+        return ! DemoAccount::exempt($user) && $user->usesAuthenticator() && config('security.'.$user->role->value.'_mfa_required');
     }
 
     public function requiresOtp(User $user): bool
     {
-        return ! $user->usesAuthenticator() && config('security.login_otp_required');
+        return ! DemoAccount::exempt($user) && ! $user->usesAuthenticator() && config('security.login_otp_required');
     }
 
     public function otpFingerprint(User $user): string

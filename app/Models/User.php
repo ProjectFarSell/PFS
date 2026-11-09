@@ -45,6 +45,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => UserRole::class,
             'security_version' => 'integer',
+            'is_demo_account' => 'boolean',
             'suspended_at' => 'datetime',
             'mfa_secret' => 'encrypted',
             'mfa_confirmed_at' => 'datetime',

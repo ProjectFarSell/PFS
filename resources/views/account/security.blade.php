@@ -3,10 +3,11 @@
 @section('content')
 <div class="mx-auto max-w-3xl space-y-5">
     <h1 class="text-2xl font-bold">Account security</h1>
+    @if($demoExempt)<p class="fs-card p-4 text-sm" role="status">Demo account: OTP and authenticator checks are skipped in this local demo. Sensitive actions can still require your password.</p>@endif
     @if($errors->any())<div role="alert" class="rounded-xl border border-error p-4">{{ $errors->first() }}</div>@endif
     <section class="fs-card p-5 space-y-3">
         <h2 class="font-semibold">Confirm your identity</h2>
-        @if($user->usesAuthenticator() && $user->mfa_confirmed_at)
+        @if($user->usesAuthenticator() && $user->mfa_confirmed_at && !$demoExempt)
             <p class="text-sm">Enter a current authenticator code or an unused recovery code. Each code can only be used once. @unless($mfaVerified)Complete this check to access your account pages.@endunless</p>
             <form method="post" action="{{ route('security.confirm') }}" class="space-y-3">@csrf<label class="block text-sm">Authenticator or recovery code<input name="code" autocomplete="one-time-code" required maxlength="80" class="mt-1 block w-full rounded-lg border border-surface-border bg-surface p-3"></label><x-ui.button variant="primary" size="lg" type="submit">Verify code</x-ui.button></form>
         @else
@@ -16,7 +17,7 @@
         @endif
         @if($confirmed)<p class="text-sm text-accent">Identity recently confirmed. Return to your previous page to submit your action.</p>@endif
     </section>
-    @if($user->usesAuthenticator())
+    @if($user->usesAuthenticator() && !$demoExempt)
     <section class="fs-card p-5 space-y-3">
         <h2 class="font-semibold">Authenticator two-factor authentication</h2>
         @if(!$user->mfa_confirmed_at)
@@ -46,6 +47,10 @@
         <ul class="space-y-3 text-sm">@foreach($sessions as $session)<li class="rounded-lg border border-surface-border p-3"><p class="break-words">{{ \Illuminate\Support\Str::limit($session->user_agent ?: 'Unknown browser', 180) }}</p><p class="text-xs text-text-muted">Last active {{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans() }} @if($session->id === request()->session()->getId()) · This device @endif</p></li>@endforeach</ul>
         <form method="post" action="{{ route('security.sessions.revoke') }}">@csrf<x-ui.button variant="secondary" type="submit">Sign out other devices</x-ui.button></form>
     </section>
+<<<<<<< HEAD
     @if(!$user->usesAuthenticator() || $mfaVerified)<x-ui.button variant="link" :href="route('account.profile')" class="inline-block text-sm text-accent underline">Back to my account</x-ui.button>@endif
+=======
+    @if($demoExempt || !$user->usesAuthenticator() || $mfaVerified)<a href="{{ route('account.profile') }}" class="inline-block text-sm text-accent underline">Back to my account</a>@endif
+>>>>>>> ef592c746a196e10445f025dddee9fb95873fd5d
 </div>
 @endsection

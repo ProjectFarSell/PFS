@@ -55,7 +55,8 @@ class DemoAccountsSeederTest extends TestCase
         $rider = User::factory()->rider()->create(['email' => 'rider@farsell.test', 'name' => 'Existing Demo Rider', 'password' => 'changed-demo-password']);
         $before = $rider->fresh()->getAttributes();
         $this->seed(DemoAccountsSeeder::class);
-        $this->assertSame($before, $rider->fresh()->getAttributes());
+        $this->assertSame(collect($before)->except(['is_demo_account', 'updated_at'])->all(), collect($rider->fresh()->getAttributes())->except(['is_demo_account', 'updated_at'])->all());
+        $this->assertTrue($rider->fresh()->is_demo_account);
         $this->assertTrue($rider->fresh()->riderProfile->isApproved());
         $this->seed(DemoAccountsSeeder::class);
         $this->assertDatabaseCount('rider_profiles', 1);

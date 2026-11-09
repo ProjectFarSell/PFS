@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\Security\AccountSecurity;
 use App\Services\Security\AdminTwoFactor;
 use App\Services\Security\AuditTrail;
+use App\Support\DemoAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -38,8 +39,9 @@ class SecurityController extends Controller
             : collect();
         $mfaVerified = $user->mfa_confirmed_at && hash_equals($security->mfaFingerprint($user), (string) $request->session()->get('security.mfa', ''));
         $confirmed = $security->recentlyConfirmed($request);
+        $demoExempt = DemoAccount::exempt($user);
 
-        return view('account.security', compact('user', 'secret', 'qrCode', 'setupUpdated', 'recoveryCodes', 'sessions', 'mfaVerified', 'confirmed'));
+        return view('account.security', compact('user', 'secret', 'qrCode', 'setupUpdated', 'recoveryCodes', 'sessions', 'mfaVerified', 'confirmed', 'demoExempt'));
     }
 
     public function confirm(Request $request, AccountSecurity $security, AdminTwoFactor $mfa)
@@ -49,13 +51,14 @@ class SecurityController extends Controller
         if ($security->requiresOtp($user) && ! $security->otpVerified($request)) {
             throw ValidationException::withMessages(['identity' => 'Complete your email or phone sign-in code first.']);
         }
-        $valid = $user->usesAuthenticator() && $user->mfa_confirmed_at
+        $useAuthenticator = $user->usesAuthenticator() && $user->mfa_confirmed_at && ! DemoAccount::exempt($user);
+        $valid = $useAuthenticator
             ? $mfa->verify($user, $data['code'] ?? '')
             : Hash::check($data['password'] ?? '', $user->password);
         if (! $valid) {
             throw ValidationException::withMessages(['identity' => 'Your confirmation was not accepted. Use a current code, an unused recovery code, or the required password.']);
         }
-        if ($user->usesAuthenticator() && $user->mfa_confirmed_at) {
+        if ($useAuthenticator) {
             $request->session()->put('security.mfa', $security->mfaFingerprint($user));
         }
         $security->confirm($request);
@@ -70,7 +73,7 @@ class SecurityController extends Controller
 
     public function beginMfa(Request $request, AccountSecurity $security, AdminTwoFactor $mfa)
     {
-        abort_unless($request->user()->usesAuthenticator() && ! $request->user()->mfa_confirmed_at, 403);
+        abort_unless(! DemoAccount::exempt($request->user()) && $request->user()->usesAuthenticator() && ! $request->user()->mfa_confirmed_at, 403);
         $this->requireConfirmation($request, $security);
         $pending = $request->session()->get('security.pending_mfa');
         if ($pending && $pending['expires'] > now()->timestamp && strlen(Crypt::decryptString($pending['secret'])) === 32) {
@@ -83,7 +86,7 @@ class SecurityController extends Controller
 
     public function enableMfa(Request $request, AccountSecurity $security, AdminTwoFactor $mfa)
     {
-        abort_unless($request->user()->usesAuthenticator(), 403);
+        abort_unless(! DemoAccount::exempt($request->user()) && $request->user()->usesAuthenticator(), 403);
         $this->requireConfirmation($request, $security);
         $data = $request->validate(['code' => ['required', 'digits:6'], 'setup_id' => ['required', 'string', 'size:32']]);
         $pending = $request->session()->get('security.pending_mfa');
@@ -117,7 +120,7 @@ class SecurityController extends Controller
 
     public function regenerateCodes(Request $request, AccountSecurity $security, AdminTwoFactor $mfa)
     {
-        abort_unless($request->user()->usesAuthenticator() && $request->user()->mfa_confirmed_at, 403);
+        abort_unless(! DemoAccount::exempt($request->user()) && $request->user()->usesAuthenticator() && $request->user()->mfa_confirmed_at, 403);
         $this->requireConfirmation($request, $security);
         // A recently confirmed session is still required to have passed this account's MFA gate.
         abort_unless(hash_equals($security->mfaFingerprint($request->user()), (string) $request->session()->get('security.mfa', '')), 403);

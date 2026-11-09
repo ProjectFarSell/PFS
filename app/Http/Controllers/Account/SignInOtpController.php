@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Security\AccountSecurity;
 use App\Services\Security\AuditTrail;
 use App\Services\Security\SignInOtp;
+use App\Support\DemoAccount;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +17,7 @@ class SignInOtpController extends Controller
     public function show(Request $request, SignInOtp $otp, AccountSecurity $security)
     {
         abort_if($request->user()->usesAuthenticator(), 403);
-        if ($security->otpVerified($request)) {
+        if (DemoAccount::exempt($request->user()) || $security->otpVerified($request)) {
             return $security->returnAfterChallenge($request);
         }
 
@@ -28,7 +29,7 @@ class SignInOtpController extends Controller
 
     public function send(Request $request, SignInOtp $otp)
     {
-        abort_if($request->user()->usesAuthenticator(), 403);
+        abort_if($request->user()->usesAuthenticator() || DemoAccount::exempt($request->user()), 403);
         $data = $request->validate(['channel' => ['required', 'in:email,phone']]);
         try {
             $otp->issue($request, $data['channel']);
@@ -44,7 +45,7 @@ class SignInOtpController extends Controller
 
     public function verify(Request $request, SignInOtp $otp, AccountSecurity $security)
     {
-        abort_if($request->user()->usesAuthenticator(), 403);
+        abort_if($request->user()->usesAuthenticator() || DemoAccount::exempt($request->user()), 403);
         $data = $request->validate(['code' => ['required', 'digits:6']]);
         $identity = $otp->verifyEmail($request, $data['code']);
         if (! $identity) {
@@ -56,7 +57,7 @@ class SignInOtpController extends Controller
 
     public function phone(Request $request, SignInOtp $otp, AccountSecurity $security)
     {
-        abort_if($request->user()->usesAuthenticator(), 403);
+        abort_if($request->user()->usesAuthenticator() || DemoAccount::exempt($request->user()), 403);
         $data = $request->validate(['id_token' => ['required', 'string', 'max:10000']]);
         try {
             $identity = $otp->verifyPhone($request, $data['id_token']);
