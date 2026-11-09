@@ -198,6 +198,19 @@ The four reserved demo accounts below are marked `is_demo_account` by the truste
 
 After pulling this change, run `php artisan migrate`; for a missing demo account run `php artisan db:seed --class=DemoAccountsSeeder`. Neither resets existing passwords, roles, stock or authenticator secrets. Existing reserved accounts are classified only when their email and expected demo role match. Do not convert these reserved identities into real accounts; create a separate account for real use. Admin demo actions still require recent password confirmation when the five-minute confirmation expires. The Account security page labels the local demo exemption.
 
+#### Repair an incorrectly registered demo seller
+
+If `seller@farsell.test` was accidentally registered as a Buyer, explicitly run this local/demo repair after pulling:
+
+```bash
+php artisan migrate
+php artisan db:seed --class=DemoSellerAccountSeeder
+```
+
+Append `--env=local` if the app uses `.env.local`. This repair is restricted to `local`/`testing` and is **not** run automatically by `DatabaseSeeder` or `DemoAccountsSeeder`.
+
+For an unlinked Buyer using that reserved email, it removes the mistaken account and its recovery/session/verification records, then creates **Demo Seller**, password `password`, with the Seller role, demo exemption and its own active **Demo Seller Shop**. It refuses removal if the account has linked business/history records, is suspended or has an unexpected role. Review those cases manually. Existing correct Seller accounts keep their ID, password, authenticator setup and shop when rerun; a missing shop is created. Another seller's shop and products are never reassigned, so a newly created shop starts empty. Missing accounts can also be created with this command.
+
 Demo accounts are stored as PHP seeders so they travel with the GitHub repository. Database files and `.env` files should stay out of Git.
 
 After pulling the project and configuring your local database, create any missing demo accounts without adding sample products:
