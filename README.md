@@ -13,6 +13,7 @@ Courier logistics supports internal riders plus manually verified Lalamove booki
 - [Local Setup](#local-setup)
 - [Environment Configuration](#environment-configuration)
 - [Test Accounts](#test-accounts)
+- [Product Setup](#product-setup)
 - [Directory Structure](#directory-structure)
 - [User Roles](#user-roles)
 - [Platform Guidelines & Terms](#platform-guidelines--terms)
@@ -100,7 +101,7 @@ php artisan migrate
 php artisan db:seed
 ```
 
-For a new development database, this applies migrations and seeds four demo accounts, eight product categories, one demo shop, and 24 sample products. See [Test Accounts](#test-accounts).
+For a new development database, this applies migrations and seeds four demo accounts, eight product categories, one demo shop, 24 sample catalog products, and up to three extra variant demo listings. See [Test Accounts](#test-accounts) and [Product Setup](#product-setup).
 
 ### 6 — Install JS dependencies and build assets
 
@@ -212,7 +213,7 @@ The synthetic demo rider starts unavailable. Turn on availability in the rider d
 |---|---|---|---|
 | Admin | `admin@farsell.test` | FarSell Admin | Marketplace dashboard, seller/rider application reviews, and authorized order details |
 | Buyer | `buyer@farsell.test` | Guest Buyer | Default shopping account, has a saved address |
-| Seller | `seller@farsell.test` | Demo Seller | Owns "Metro Surplus Co." shop with 24 products |
+| Seller | `seller@farsell.test` | Demo Seller | Owns "Metro Surplus Co." shop with 24 catalog products plus up to three variant demos |
 | Rider | `rider@farsell.test` | Demo Rider | Local/testing seed creates a missing approved synthetic Quezon City profile; availability starts off; no fabricated documents |
 
 > `db:seed` uses existing-record checks, but `migrate:fresh` **drops every table**. Never use it for a normal update or a database containing records you need. Back up data before any deliberate reset.
@@ -231,17 +232,83 @@ Rider approvals are available from **Admin Dashboard → Review rider applicatio
 
 Run `php artisan migrate --env=local` for the review metadata fields when using the local environment. Duplicate/stale reviews are blocked. Approved/suspended rider applications cannot be reset through onboarding. Rider uploads remain optional in this MVP and application approval does not mark individual documents verified; formal document requirements and verification controls remain follow-up work. Only the latest review metadata is stored and is cleared on resubmission, not a permanent review history. Dispatch and fulfillment are available through the workflow below.
 
+## Product Setup
+
+### Seed the demo products on another computer
+
+Configure that computer's local database in its own `.env`, install the project dependencies, and run:
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+For the standalone setup using `.env.local`, use these commands instead:
+
+```bash
+php artisan migrate --env=local
+php artisan db:seed --env=local
+```
+
+Use the environment connected to the database your app actually runs against. This development/demo setup creates missing demo accounts, geography, categories, the **Metro Surplus Co.** shop, a buyer address, and these products:
+
+| Seeder | Products / prerequisites |
+|---|---|
+| `DemoCatalogProductsSeeder` | The 24 catalog records in `database/seeders/demo-catalog-products.json`; requires the `metro-surplus` shop and `Women's` category |
+| `SellerDemoProductsSeeder` | Up to three extra variant examples (`aga`, `borg`, `balls`); requires the demo shop and categories; matching existing SKUs are reused |
+
+`DatabaseSeeder` runs these in the required order. On a fresh demo database this normally gives 27 products. Existing matching listings are preserved, so the count can differ. Running only `DemoAccountsSeeder` does **not** add products.
+
+If the shop/categories are already set up and you only need to restore missing catalog entries, run:
+
+```bash
+php artisan db:seed --class=DemoCatalogProductsSeeder
+```
+
+For the separate variant examples, use `php artisan db:seed --class=SellerDemoProductsSeeder`. Append `--env=local` when appropriate.
+
+These seeders create missing records and preserve current stock/details on matching records. Reseeding does not refill sold stock or apply edits from the JSON file to existing listings; change those through the seller's editor. Seed only development/demo databases. Use `migrate`, **not** `migrate:fresh`, to retain existing accounts, orders and products. This documentation does not require reseeding a working database.
+
+### Configure the product photos
+
+Product metadata and photo paths are in the database; the image files are stored separately in the shared **Cloudflare R2 bucket**. The seeders do not upload images or copy another computer's database, `.env`, or bucket files.
+
+To display existing photos, configure the server's `CLOUDFLARE_R2_URL` with the shared public bucket URL or image domain. Visitors do not need credentials or their own `.env`. To upload/replace photos as a seller, the backend also needs the bucket's write credentials and endpoint:
+
+```dotenv
+CLOUDFLARE_R2_URL=https://YOUR-PUBLIC-IMAGE-HOST
+CLOUDFLARE_R2_BUCKET=YOUR-BUCKET-NAME
+CLOUDFLARE_R2_ENDPOINT=https://YOUR-ACCOUNT-ID.r2.cloudflarestorage.com
+CLOUDFLARE_R2_ACCESS_KEY_ID=
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=
+```
+
+Use the bucket root for the public URL; stored paths already include `products/`. Obtain write credentials privately from the team and keep them out of Git. After changing local configuration, run `php artisan config:clear`.
+
+The referenced objects must already exist at those exact paths and be publicly readable through that URL. A missing photo is not fixed by reseeding. `php artisan storage:link` serves local public files; it does not configure R2 or transfer bucket images. Product records can be created without a photo while R2 upload access is being configured.
+
 ### Seller onboarding and product listings
 
 1. Register with **I want to sell**, or open **My Profile → Open a shop**. Submit the proposed shop name, city, optional tagline, and what you will sell at `/seller/apply`. The account stays a buyer while awaiting review. Registration from checkout still returns to checkout; seller application is accessible afterward from Profile.
 2. Admin opens **Admin Dashboard → Review seller applications** (`/admin/sellers`). Approval transactionally creates one active shop and grants the seller role. Rejection requires an applicant-visible note and permits resubmission. Stale/duplicate reviews and conversion of rider/admin accounts are blocked.
-3. Seller opens **Seller Dashboard → Add product**. Enter category, description, PHP price, available stock, and an optional JPG/PNG/WebP photo (max 4 MB). Save as unpublished draft or publish immediately. Existing seller accounts with active shops retain access and do not need a replacement application.
+3. Seller signs in, completes authenticator setup/verification, and opens **Seller Dashboard → Add product**. Enter the product name, category, description, PHP price, available stock, and an optional JPG/PNG/WebP photo (max 4 MB). Choose **Unpublished / draft** or **Published — available to buyers**, then save. Existing seller accounts with active shops retain access and do not need a replacement application.
 4. Use **Edit listing** to change details, replace the photo, adjust available stock, or unpublish. Only the owning seller may mutate listings, even when URLs or submitted shop IDs are tampered with. Admin dashboard access does not grant seller product-editing access.
 5. A buyer can find published products on Home, Browse, or the shop storefront, add to cart, and use existing checkout. Orders reserve stock; sellers see only their relevant order items. Unpublished products and inactive shops cannot receive new purchases, including through a previously saved cart.
 
-Run `php artisan migrate --env=local` and `php artisan storage:link --env=local` for local setup; use the appropriate environment in other installations. The storage link serves **public product photos**, not private rider documents. Category records must exist before creating products; the editor explains this if none are configured. Do not run a fresh migration or reseed an existing working database just to enable this feature.
+Category records must exist before creating products. If the category list is empty, admin can create categories through **Admin → Categories**, or use the full demo seeder for a demo database. Seller photo uploads use the R2 settings above; private rider documents do not use the public image URL.
 
-Stock in the editor is **available stock excluding reservations**. Saving an outdated edit is rejected if stock or listing data changed, and conflict reloads use current values. Products are unpublished rather than hard-deleted to retain order ownership/history. No seller product-transfer or deletion endpoint exists. Replaced images are retained on disk for now; cleanup can be added separately. Product variants, galleries, real payment processing, payout disbursement/accounting, and business-document verification are not included in this MVP.
+For a plain product, enter **Available units** and an optional unique SKU of **8–12 characters**; leave SKU blank to generate one. For variants, enable **This product has options (size, color, etc.)** and add one row per combination. Enter **Size** and **Color** separately, each row's stock, an optional price override and SKU, and enable **Available to buyers** for sellable rows. Example: `S / Black` with 5 units, and `M / Black` with 3 units. Variant availability uses active rows rather than the parent product's stock field. Product IDs are assigned automatically; they are separate from SKUs.
+
+Stock in the editor is **available stock excluding reservations**. Saving an outdated edit is rejected if stock or listing data changed; reload the editor before saving again. Products are unpublished rather than hard-deleted to retain order ownership/history. Product variants and commission/accounting records are supported; real payment gateway processing, automated payouts and formal business-document verification remain separate work.
+
+### Check the products after setup
+
+1. Sign in as the owning seller, complete the authenticator step, and confirm the listings appear in the seller dashboard.
+2. Confirm the shop is active, the listing is published, and the selected variant is enabled and has stock.
+3. Browse as a guest or buyer. Open a product and verify its photo, PHP price, SKU, size/color selection and stock label. Choose a variant before using **Add to cart** or **Buy now**.
+4. For a checkout test, sign in as a buyer, complete email/phone OTP, choose an address, and place the order. Check the stock reservation and seller's order view. The seller account itself cannot purchase.
+
+If products are missing, confirm the app and seed command use the same database/environment. If only photos are missing, check `CLOUDFLARE_R2_URL` and the referenced bucket objects. If a listing is visible but purchase buttons are disabled, check the selected variant, stock and account role.
 
 ---
 
