@@ -2,6 +2,12 @@
 
 ## Role-based sign-in checks
 
+### Forgotten passwords
+
+The login page links to **Forgot password?**. Enter the account email, open the emailed reset link, choose and confirm a new password, then sign in again. This uses [Laravel's password broker](https://laravel.com/docs/12.x/passwords) and the configured mail transport (SMTP locally); no new mail provider or worker is required. `APP_URL` must be the intended, trusted application origin because recovery links are anchored to it rather than the requesting Host header.
+
+Links expire after 60 minutes, are stored as hashes, and work once. Invalid/expired/wrong-account links cannot reset a password. Requests are throttled and the public response is identical for existing, unknown and temporarily throttled accounts. A reset revokes active sessions, remembered logins and outstanding sign-in challenges. It preserves roles, suspension status, authenticator enrollment and recovery codes, and never signs the user in automatically. The normal OTP/authenticator step is still required afterward. Password recovery is email-based; losing an authenticator requires its recovery code or independently verified operator recovery.
+
 ### Sign-in methods
 
 Every fresh password login or Google sign-in now requires the account's second step:

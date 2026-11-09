@@ -24,7 +24,7 @@ class ResponseSecurity
         $response = $next($request);
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        $response->headers->set('Referrer-Policy', $request->routeIs('password.reset', 'password.store') ? 'no-referrer' : 'strict-origin-when-cross-origin');
         $response->headers->set('Content-Security-Policy', "base-uri 'self'; object-src 'none'; frame-ancestors 'self'");
         // Blade pages include sessions/CSRF tokens and may contain account-specific state.
         $response->headers->set('Cache-Control', 'private, no-store');

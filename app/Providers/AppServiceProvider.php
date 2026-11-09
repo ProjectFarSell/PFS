@@ -26,6 +26,7 @@ use App\Services\Checkout\FlatRateDeliveryFeeService;
 use App\Services\Delivery\CityBasedDeliveryEtaService;
 use App\Services\Notifications\MailOrderNotificationSender;
 use App\Support\Cart;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\DevCommands;
 use Illuminate\Http\Request;
@@ -48,6 +49,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Recovery links use the configured application origin, never an untrusted request Host.
+        ResetPassword::createUrlUsing(fn ($user, $token) => rtrim(config('app.url'), '/').route('password.reset', [
+            'token' => $token, 'email' => $user->getEmailForPasswordReset(),
+        ], false));
         foreach ([Category::class, Product::class, ProductVariant::class, SellerApplication::class, RiderProfile::class, Shop::class, ReturnRequest::class, User::class, DeliveryAttempt::class, ReplacementRequest::class, ShipmentSettlement::class, SettlementAdjustment::class, CourierBooking::class] as $model) {
             $model::observe(SecurityAuditObserver::class);
         }

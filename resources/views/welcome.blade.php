@@ -42,6 +42,7 @@
                         <p class="section-eyebrow">Your next find is waiting</p>
                         <h2 class="mt-2 text-3xl font-bold tracking-tight">{{ $checkoutIntent ? 'Log in to checkout' : 'Welcome back.' }}</h2>
                         <p class="mt-2 mb-6 text-sm text-text-muted leading-relaxed">{{ $checkoutIntent ? 'Sign in or create an account to place your order. Your cart will be kept.' : 'Good to see you again. Pick up where you left off.' }}</p>
+                        @if(session('status'))<p role="status" class="mb-4 rounded-lg border border-accent p-3 text-sm">{{ session('status') }}</p>@endif
                         @if ($errors->login->isNotEmpty())
                             <div class="alert-error mb-4" role="alert">{{ $errors->login->first() }}</div>
                         @elseif ($errors->any() && old('_form') !== 'register')
@@ -52,7 +53,10 @@
                             <input type="hidden" name="_form" value="login">
                             <div><label for="login-identifier" class="fs-label">Email or admin username</label><input id="login-identifier" type="text" name="email" value="{{ old('email') }}" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder="you@example.com or admin" class="fs-input"></div>
                             <div><label for="login_password" class="fs-label">Password</label><x-password-input id="login_password" /></div>
-                            <label class="inline-flex min-h-8 cursor-pointer items-center gap-2 text-sm text-text-muted"><input name="remember" type="checkbox" class="rounded border-surface-border text-accent focus:ring-accent"> Remember me</label>
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <label class="inline-flex min-h-8 cursor-pointer items-center gap-2 text-sm text-text-muted"><input name="remember" type="checkbox" class="rounded border-surface-border text-accent focus:ring-accent"> Remember me</label>
+                                <a href="{{ route('password.request') }}" class="inline-flex min-h-11 items-center text-sm font-semibold text-accent hover:underline">Forgot password?</a>
+                            </div>
                             <button type="submit" :disabled="loginLoading" class="btn-accent w-full min-h-12"><span x-text="loginLoading ? 'Signing in…' : 'Log in'">Log in</span><span x-show="!loginLoading" aria-hidden="true">→</span></button>
                         </form>
                         @include('auth.partials.google-access')
