@@ -194,6 +194,10 @@ DB_PASSWORD=your_password
 
 All seeded accounts use the password `password`.
 
+The four reserved demo accounts below are marked `is_demo_account` by the trusted seeders (and the additive migration for existing local demo records). In **local/testing only**, they sign in with their password and skip email/phone OTP and authenticator setup. Regular registered/provisioned accounts still use buyer/rider OTP or seller/admin authenticators. This exemption never applies in staging/production, and it does not apply to arbitrary `.test` emails or a demo flag submitted through signup/profile forms.
+
+After pulling this change, run `php artisan migrate`; for a missing demo account run `php artisan db:seed --class=DemoAccountsSeeder`. Neither resets existing passwords, roles, stock or authenticator secrets. Existing reserved accounts are classified only when their email and expected demo role match. Do not convert these reserved identities into real accounts; create a separate account for real use. Admin demo actions still require recent password confirmation when the five-minute confirmation expires. The Account security page labels the local demo exemption.
+
 Demo accounts are stored as PHP seeders so they travel with the GitHub repository. Database files and `.env` files should stay out of Git.
 
 After pulling the project and configuring your local database, create any missing demo accounts without adding sample products:
@@ -291,7 +295,7 @@ The referenced objects must already exist at those exact paths and be publicly r
 
 1. Register with **I want to sell**, or open **My Profile → Open a shop**. Submit the proposed shop name, city, optional tagline, and what you will sell at `/seller/apply`. The account stays a buyer while awaiting review. Registration from checkout still returns to checkout; seller application is accessible afterward from Profile.
 2. Admin opens **Admin Dashboard → Review seller applications** (`/admin/sellers`). Approval transactionally creates one active shop and grants the seller role. Rejection requires an applicant-visible note and permits resubmission. Stale/duplicate reviews and conversion of rider/admin accounts are blocked.
-3. Seller signs in, completes authenticator setup/verification, and opens **Seller Dashboard → Add product**. Enter the product name, category, description, PHP price, available stock, and an optional JPG/PNG/WebP photo (max 4 MB). Choose **Unpublished / draft** or **Published — available to buyers**, then save. Existing seller accounts with active shops retain access and do not need a replacement application.
+3. Seller signs in, completes authenticator setup/verification (skipped for the reserved local demo seller), and opens **Seller Dashboard → Add product**. Enter the product name, category, description, PHP price, available stock, and an optional JPG/PNG/WebP photo (max 4 MB). Choose **Unpublished / draft** or **Published — available to buyers**, then save. Existing seller accounts with active shops retain access and do not need a replacement application.
 4. Use **Edit listing** to change details, replace the photo, adjust available stock, or unpublish. Only the owning seller may mutate listings, even when URLs or submitted shop IDs are tampered with. Admin dashboard access does not grant seller product-editing access.
 5. A buyer can find published products on Home, Browse, or the shop storefront, add to cart, and use existing checkout. Orders reserve stock; sellers see only their relevant order items. Unpublished products and inactive shops cannot receive new purchases, including through a previously saved cart.
 
@@ -303,10 +307,10 @@ Stock in the editor is **available stock excluding reservations**. Saving an out
 
 ### Check the products after setup
 
-1. Sign in as the owning seller, complete the authenticator step, and confirm the listings appear in the seller dashboard.
+1. Sign in as the owning seller, complete the authenticator step if required, and confirm the listings appear in the seller dashboard.
 2. Confirm the shop is active, the listing is published, and the selected variant is enabled and has stock.
 3. Browse as a guest or buyer. Open a product and verify its photo, PHP price, SKU, size/color selection and stock label. Choose a variant before using **Add to cart** or **Buy now**.
-4. For a checkout test, sign in as a buyer, complete email/phone OTP, choose an address, and place the order. Check the stock reservation and seller's order view. The seller account itself cannot purchase.
+4. For a checkout test, sign in as a buyer, complete email/phone OTP if required, choose an address, and place the order. Reserved local demo accounts skip these second-factor checks. Check the stock reservation and seller's order view. The seller account itself cannot purchase.
 
 If products are missing, confirm the app and seed command use the same database/environment. If only photos are missing, check `CLOUDFLARE_R2_URL` and the referenced bucket objects. If a listing is visible but purchase buttons are disabled, check the selected variant, stock and account role.
 
