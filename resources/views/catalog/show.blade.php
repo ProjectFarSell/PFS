@@ -2,6 +2,10 @@
 
 @section('title', $product->name.' · FarSell')
 
+@if(auth()->user()?->role !== \App\Enums\UserRole::Seller)
+    @section('buyer-action-bar', 'true')
+@endif
+
 @section('content')
     @php
         $variantOptions = $product->variants->map(function ($variant) {
@@ -13,7 +17,8 @@
     <div class="grid md:grid-cols-2 gap-6">
         <div class="aspect-square rounded-2xl bg-surface border border-surface-border flex items-center justify-center text-text-muted">
             @if($product->image_path)
-                <img src="{{ $product->imageUrl() }}" alt="{{ $product->name }}" class="h-full w-full rounded-2xl object-cover">
+                <x-product-image :src="$product->imageUrl()" :alt="$product->name" width="640" height="640"
+                    :priority="true" class="h-full w-full rounded-2xl object-cover" />
             @else
                 {{ $product->category?->name }}
             @endif
@@ -32,7 +37,7 @@
             @if(isset($etaHours) && $etaHours !== null)
                 <p class="mt-2 text-sm font-medium" style="color:rgb(var(--color-text-base));">
                     <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold" style="background-color:rgb(var(--color-accent-subtle)); color:rgb(var(--color-accent));">
-                        🚚 Est. delivery: {{ $etaHours <= 4 ? '2–4 hours' : 'Next day' }}
+                        <x-ui.icon name="delivery" size="sm" class="inline-block align-text-bottom" /> Est. delivery: {{ $etaHours <= 4 ? '2–4 hours' : 'Next day' }}
                     </span>
                 </p>
             @endif
@@ -40,25 +45,21 @@
             @if (auth()->check() && auth()->user()->role === \App\Enums\UserRole::Buyer)
                 <div class="mt-3"
                      x-data="savedItem(@js(route('account.saved.store', $product)), @js(auth()->user()->hasSavedProduct($product->id)))">
-                    <button
+                    <x-ui.button variant="tertiary"
                         type="button"
                         @click="toggle()"
-                        :disabled="pending"
-                        :aria-pressed="saved"
-                        :aria-label="saved ? 'Remove from saved' : 'Save item'"
+                        ::disabled="pending"
+                        ::aria-pressed="saved"
+                        ::aria-label="saved ? 'Remove from saved' : 'Save item'"
                         class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors"
-                        :class="saved ? 'border-rose-300 text-rose-500 bg-rose-50' : 'border-surface-border text-text-muted hover:text-rose-400 hover:border-rose-300'"
+                        ::class="saved ? 'border-rose-300 text-rose-500 bg-rose-50' : 'border-surface-border text-text-muted hover:text-rose-400 hover:border-rose-300'"
                     >
                         {{-- Filled heart --}}
-                        <svg x-show="saved" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
-                            <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
-                        </svg>
+                        <x-ui.icon name="save" size="sm" variant="solid" x-show="saved" />
                         {{-- Outline heart --}}
-                        <svg x-show="!saved" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                        </svg>
+                        <x-ui.icon name="save" size="sm" x-show="!saved" />
                         <span x-text="saved ? 'Saved' : 'Save'"></span>
-                    </button>
+                    </x-ui.button>
                     <p x-show="error" x-text="error" class="mt-2 text-sm text-error" role="status" style="display:none;"></p>
                 </div>
             @endif
@@ -67,10 +68,10 @@
             @if(auth()->user()?->role === \App\Enums\UserRole::Seller)
                 <div class="mt-4 rounded-xl border border-surface-border bg-surface-muted p-3 text-sm text-text-muted">
                     Seller accounts can browse products, but purchasing is reserved for buyer accounts.
-                    <a href="{{ route('seller.dashboard') }}" class="font-semibold text-accent hover:underline">Return to Seller Dashboard</a>
+                    <x-ui.button variant="link" :href="route('seller.dashboard')" class="font-semibold text-accent hover:underline">Return to Seller Dashboard</x-ui.button>
                 </div>
             @else
-                <form method="post" action="{{ route('cart.store') }}" class="mt-4 flex flex-wrap items-end gap-3" x-data="productOptions(@js($variantOptions), @js($optionNames), @js(['url' => route('products.availability', $product), 'stock' => $product->availableStock(), 'hasVariants' => $product->has_variants]))" @pageshow.window="restoreSelection()">
+                <form method="post" action="{{ route('cart.store') }}" class="mt-4 flex flex-wrap items-end gap-3" data-product-options x-data="productOptions(@js($variantOptions), @js($optionNames), @js(['url' => route('products.availability', $product), 'stock' => $product->availableStock(), 'hasVariants' => $product->has_variants]))" @pageshow.window="restoreSelection()">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     @if($product->has_variants)
@@ -93,25 +94,25 @@
                     @endif
                     @php($quantityLimit = min(99, $product->availableStock()))
                     <div class="flex w-full flex-wrap items-center gap-3">
-                        <div class="inline-flex h-10 overflow-hidden rounded-md border border-surface-border" role="group" aria-label="Quantity">
-                            <button type="button" @click="qty = Math.max(1, Number(qty || 1) - 1)" x-bind:disabled="qty <= 1" class="w-10 border-r border-surface-border text-text-muted hover:bg-surface-muted disabled:opacity-40" aria-label="Decrease quantity">−</button>
-                            <input type="number" name="qty" x-model.number="qty" min="1" max="{{ $quantityLimit }}" x-bind:max="quantityLimit() || 1" x-bind:disabled="!canPurchase()" @disabled($quantityLimit < 1) class="h-full w-16 border-0 bg-transparent p-0 text-center text-sm focus:ring-0">
-                            <button type="button" @click="qty = Math.min(quantityLimit(), Number(qty || 1) + 1)" x-bind:disabled="!canPurchase() || qty >= quantityLimit()" class="w-10 border-l border-surface-border text-text-muted hover:bg-surface-muted disabled:opacity-40" aria-label="Increase quantity">+</button>
+                        <div class="inline-flex items-center gap-2" role="group" aria-label="Quantity">
+                            <x-ui.icon-button variant="secondary" label="Decrease quantity" icon="subtract" type="button" @click="qty = Math.max(1, Number(qty || 1) - 1)" x-bind:disabled="qty <= 1" class="disabled:opacity-40"></x-ui.icon-button>
+                            <input type="number" name="qty" aria-label="Quantity" x-model.number="qty" min="1" max="{{ $quantityLimit }}" x-bind:max="quantityLimit() || 1" x-bind:disabled="!canPurchase()" @disabled($quantityLimit < 1) class="fs-input min-h-target w-16 p-0 text-center text-sm md:min-h-target-desktop">
+                            <x-ui.icon-button variant="secondary" label="Increase quantity" icon="add" type="button" @click="qty = Math.min(quantityLimit(), Number(qty || 1) + 1)" x-bind:disabled="!canPurchase() || qty >= quantityLimit()" class="disabled:opacity-40"></x-ui.icon-button>
                         </div>
-                        <span class="text-xs font-semibold" role="status" x-text="stockLabel()" :class="stockLabel() === 'IN STOCK' ? 'text-green-600' : 'text-error'">{{ $quantityLimit > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}</span>
+                        <span class="text-xs font-semibold" role="status" x-text="stockLabel()" :class="stockLabel() === 'IN STOCK' ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-300'">{{ $quantityLimit > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}</span>
                     </div>
                     <div class="w-full">
-                        <div class="flex flex-wrap gap-2">
-                            <button type="submit" x-bind:disabled="!canPurchase()" @disabled($product->has_variants || $product->availableStock() < 1) class="rounded-full bg-violet-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700 disabled:opacity-50">Add to cart</button>
-                            <button type="submit" formaction="{{ route('cart.buy-now') }}" formmethod="post" x-bind:disabled="!canPurchase()" @disabled($product->has_variants || $product->availableStock() < 1) class="rounded-full border border-accent px-5 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/5 disabled:opacity-50">Buy now</button>
-                        </div>
+                        <x-bottom-actions buyer>
+                            <x-ui.button variant="primary" size="lg" type="submit" x-bind:disabled="!canPurchase()"  :disabled="$product->has_variants || $product->availableStock() < 1"  class="grow md:grow-0">Add to cart</x-ui.button>
+                            <x-ui.button variant="secondary" type="submit" formaction="{{ route('cart.buy-now') }}" formmethod="post" x-bind:disabled="!canPurchase()"  :disabled="$product->has_variants || $product->availableStock() < 1"  class="shrink-0">Buy now</x-ui.button>
+                        </x-bottom-actions>
                     </div>
                     <p class="w-full text-xs text-text-muted" role="status" x-text="stockMessage" x-show="stockMessage" x-cloak></p>
                 </form>
             @endif
 
             @if(auth()->user()?->role === \App\Enums\UserRole::Buyer)
-                <form method="post" action="{{ route('chat.start', $product) }}" class="mt-3">@csrf<button class="btn-outline">Chat with seller</button></form>
+                <form method="post" action="{{ route('chat.start', $product) }}" class="mt-3">@csrf<x-ui.button variant="secondary" type="submit">Chat with seller</x-ui.button></form>
             @elseif(!auth()->check())
                 <a href="{{ route('login') }}" class="mt-3 inline-block text-sm text-accent underline">Sign in to chat with seller</a>
             @endif

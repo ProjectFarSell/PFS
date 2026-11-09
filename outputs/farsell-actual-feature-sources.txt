@@ -1,0 +1,226 @@
+FARSELL TASK SOURCE NOTES
+
+Source references support implementation presence or documented pending work. Tests were inspected as evidence, not rerun.
+The simple task file intentionally leaves these source details out of each copy-and-paste description.
+
+D01 - Buyer registration and login
+Source: routes/web.php; tests/Feature/RegistrationTest.php
+
+D02 - Google sign-in
+Source: app/Http/Controllers/Auth/GoogleAuthController.php
+
+D03 - Email and phone verification
+Source: app/Http/Controllers/Auth/ContactVerificationController.php; tests/Feature/ContactVerificationTest.php
+
+D04 - Homepage and shop directory
+Source: resources/views/home.blade.php; tests/Feature/GuestStorefrontTest.php; tests/Feature/ShopDirectoryTest.php
+
+D05 - Product search and filters
+Source: app/Http/Controllers/Catalog/ProductController.php; tests/Feature/CatalogFilterTest.php
+
+D06 - Product details and variant selection
+Source: resources/views; tests/Feature/ProductImageManagementTest.php; tests/Feature/CartStockPolicyTest.php
+
+D07 - Shopping cart and Buy Now
+Source: app/Http/Controllers/Cart/CartController.php; tests/Feature/CartStockPolicyTest.php
+
+D08 - Saved products
+Source: app/Http/Controllers/Account/SavedItemController.php; tests/Feature/SavedItemTest.php
+
+D09 - Saved delivery addresses
+Source: app/Http/Controllers/Account/AddressController.php; tests/Feature/AddressPolicyTest.php
+
+D10 - Checkout and stock reservation
+Source: app/Services/Orders/StockReservationService.php; tests/Feature/CheckoutFlowTest.php
+
+D11 - Buyer order history and tracking
+Source: app/Http/Controllers/Account/OrderController.php; tests/Feature/OrderHistoryTest.php
+
+D12 - Invoices and packing slips
+Source: app/Http/Controllers/Checkout/CheckoutController.php; docs/buyer-and-seller-updates.md
+
+D13 - Buyer order cancellation
+Source: app/Http/Controllers/Account/CancelOrderController.php; tests/Feature/BuyerCancellationTest.php
+
+D14 - Buyer notification inbox
+Source: app/Http/Controllers/Account/NotificationController.php; tests/Feature/BuyerNotificationTest.php
+
+D15 - Buyer and seller messaging
+Source: app/Http/Controllers/Chat/ConversationController.php
+
+D16 - Product and delivery feedback
+Source: app/Http/Controllers/OrderFeedbackController.php; app/Http/Controllers/RiderDeliveryRatingController.php; tests/Feature/ProductFeedbackTest.php
+
+D17 - Return and refund requests
+Source: app/Http/Controllers/ReturnRequestController.php; tests/Feature/ReturnRequestTest.php
+
+D18 - Reimbursement records
+Source: app/Services/Orders/ReturnRequestService.php; docs/buyer-and-seller-updates.md
+
+D19 - Seller applications and approval
+Source: app/Http/Controllers/Seller/ApplicationController.php; tests/Feature/SellerApprovalTest.php
+
+D20 - Seller dashboard
+Source: app/Http/Controllers/Seller/DashboardController.php; tests/Feature/SellerDashboardTest.php
+
+D21 - Seller product listings
+Source: app/Http/Controllers/Seller/ProductController.php; tests/Feature/SellerProductManagementTest.php
+
+D22 - Product variants and inventory
+Source: app/Http/Controllers/Seller/ProductController.php; tests/Feature/CartStockPolicyTest.php
+
+D23 - Shop details and storefront
+Source: app/Http/Controllers/Seller/ApplicationController.php; app/Http/Controllers/Catalog/ShopController.php; tests/Feature/SellerProfileTest.php
+
+D24 - Seller order preparation
+Source: app/Services/Orders/FulfillmentService.php; tests/Feature/FulfillmentFlowTest.php
+
+D25 - Seller sales reports
+Source: app/Http/Controllers/Seller/SalesController.php; tests/Feature/SellerSalesTest.php
+
+D26 - Rider applications and approval
+Source: app/Http/Controllers/Rider/RiderRegistrationController.php; tests/Feature/AdminRiderApprovalTest.php
+
+D27 - Rider dashboard and availability
+Source: app/Http/Controllers/Rider/DashboardController.php; tests/Feature/RiderDashboardTest.php
+
+D28 - Delivery offers and automatic dispatch
+Source: app/Services/Orders/DeliveryRequestService.php; tests/Feature/RiderDeliveryRequestTest.php
+
+D29 - Barangay rider assignments
+Source: app/Http/Controllers/Admin/RiderApplicationController.php; tests/Feature/BarangayRiderRoutingTest.php
+
+D30 - Admin delivery assignment
+Source: app/Http/Controllers/FulfillmentController.php; app/Services/Orders/FulfillmentService.php
+
+D31 - Pickup and delivery confirmation
+Source: app/Services/Orders/FulfillmentService.php; tests/Feature/FulfillmentFlowTest.php
+
+D32 - Rider delivery history and earnings
+Source: app/Http/Controllers/Rider/HistoryController.php; app/Http/Controllers/Rider/EarningsController.php
+
+D33 - Admin dashboard and order monitoring
+Source: app/Http/Controllers/Admin/DashboardController.php; tests/Feature/AdminDashboardTest.php
+
+D34 - Admin buyer and partner records
+Source: app/Http/Controllers/Admin/BuyerController.php; app/Http/Controllers/Admin/PartnerController.php; app/Http/Controllers/Admin/RiderRecordsController.php
+
+D35 - Category management
+Source: app/Http/Controllers/Admin/CategoryController.php; routes/web.php
+
+D36 - Admin inventory and review viewing
+Source: app/Http/Controllers/Admin/ProductInventoryController.php; app/Http/Controllers/Admin/ReviewController.php
+
+D37 - Profile editing and password changes
+Source: app/Http/Controllers/Account/ProfileController.php; tests/Feature/ProfileCrudTest.php
+
+D38 - Privacy consent and deletion requests
+Source: app/Http/Controllers/Account/PrivacyController.php; app/Http/Controllers/Admin/PrivacyRequestController.php; tests/Feature/PrivacySecurityCheckTest.php
+
+D39 - Admin MFA and device security
+Source: app/Http/Controllers/Account/SecurityController.php; tests/Feature/AccountSecurityTest.php
+
+D40 - Account suspension and audit history
+Source: app/Http/Controllers/Admin/SecurityController.php; app/Services/Security/AuditTrail.php
+
+D41 - Light and dark themes
+Source: resources/views; resources/css; CONTEXT_HANDOVER.md
+
+D42 - Public catalogue API
+Source: routes/api.php; app/Http/Controllers/Api/V1/CatalogController.php
+
+D43 - Checkout pause and regional beta controls
+Source: docs/operations/weeks-9-12.md; tests/Feature/BetaRolloutTest.php
+
+D44 - Operations health and release checks
+Source: app/Http/Controllers/Admin/OperationsController.php; docs/operations/weeks-9-12.md
+
+D45 - Local encrypted backup and recovery tools
+Source: app/Services/Operations/DatabaseRecovery.php; tests/Feature/DatabaseRecoveryTest.php
+
+D46 - Admin notification monitor
+Source: app/Http/Controllers/Admin/NotificationController.php
+
+R01 - Choose the beta cities and participants
+Source: docs/operations/weeks-9-12.md
+
+R02 - Run the hosted buyer and seller walkthrough
+Source: docs/operations/launch-acceptance.md
+
+R03 - Run the hosted rider walkthrough
+Source: docs/operations/launch-acceptance.md
+
+R04 - Review the final screens on phones and computers
+Source: README.md; docs/operations/launch-acceptance.md
+
+R05 - Verify hosted Google and contact verification
+Source: docs/operations/launch-acceptance.md; app/Http/Controllers/Auth/ContactVerificationController.php
+
+R06 - Check real email notification delivery
+Source: docs/operations/launch-acceptance.md
+
+R07 - Test MySQL concurrency and hosted performance
+Source: docs/operations/weeks-9-12.md
+
+R08 - Configure hosting and background workers
+Source: docs/operations/weeks-9-12.md; docs/operations/launch-acceptance.md
+
+R09 - Coordinate the team's Cloudflare setup
+Source: docs/operations/weeks-9-12.md
+
+R10 - Verify trusted HTTPS and private pages
+Source: docs/operations/launch-acceptance.md
+
+R11 - Rehearse hosted database and file recovery
+Source: docs/operations/launch-acceptance.md
+
+R12 - Test hosted alerts and background-process health
+Source: docs/operations/launch-acceptance.md
+
+R13 - Run the regional beta and record feedback
+Source: docs/operations/weeks-9-12.md
+
+R14 - Complete the release and rollback review
+Source: docs/operations/launch-acceptance.md
+
+R15 - Confirm launch approval and support coverage
+Source: docs/operations/launch-acceptance.md
+
+R16 - Observe the release and record follow-up work
+Source: docs/operations/launch-acceptance.md
+
+F01 - Add a separate Logistics role
+Source: Teacher scope; current UserRole enum has no Logistics role
+
+F02 - Build the Logistics workspace
+Source: Teacher scope; existing delivery functions currently use admin access
+
+F03 - Add delivery performance reports
+Source: Teacher scope; dedicated Logistics report not confirmed in current controllers
+
+F04 - Add mobile token authentication
+Source: Teacher mobile scope; routes/api.php currently exposes only health and catalogue
+
+F05 - Add buyer cart and address API endpoints
+Source: Teacher mobile scope; existing web cart and address services
+
+F06 - Add mobile checkout and order API endpoints
+Source: Teacher mobile scope; existing web checkout and order services
+
+F07 - Add rider delivery API endpoints
+Source: Teacher mobile scope; existing web rider and fulfillment services
+
+F08 - Create the Flutter app and login screens
+Source: Teacher mobile scope; no pubspec.yaml located in the checkout
+
+F09 - Build Flutter product browsing and cart
+Source: Teacher mobile scope; depends on mobile cart API and Flutter setup
+
+F10 - Build Flutter checkout and order tracking
+Source: Teacher mobile scope; depends on buyer checkout/order API
+
+F11 - Build Flutter rider delivery screens
+Source: Teacher mobile scope; depends on rider API and Flutter setup
+
+F12 - Test the Flutter buyer and rider flows
+Source: Teacher mobile scope; depends on completed Flutter flows

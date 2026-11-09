@@ -1,10 +1,10 @@
 @extends('layouts.portal')
 @section('title', 'Review seller application · FarSell')
 @section('content')
-    <a href="{{ route('admin.sellers.index') }}" class="text-sm text-accent underline">Back to seller applications</a>
+    <x-ui.button variant="link" :href="route('admin.sellers.index')" class="text-sm text-accent underline">Back to seller applications</x-ui.button>
     <section class="fs-card mx-auto mt-4 max-w-2xl p-5">
         <h1 class="text-xl font-semibold">{{ $application->shop_name }}</h1>
-        <span class="badge badge-neutral mt-3">{{ ucfirst($application->status) }}</span>
+        <x-ui.status-pill :status="$application->status" class="mt-3" />
         <dl class="mt-4 space-y-3 text-sm">
             <div><dt class="text-text-muted">Product categories</dt><dd class="mt-1">{{ $categories->isNotEmpty() ? $categories->join(', ') : 'Not supplied' }}</dd></div>
             @foreach(['Applicant' => $application->user->name, 'Email' => $application->user->email, 'Current role' => $application->user->role->value, 'City' => $application->city, 'Tagline' => $application->tagline, 'What they will sell' => $application->description] as $label => $value)
@@ -18,7 +18,8 @@
                 <input type="hidden" name="revision" value="{{ $application->revision }}">
                 <label class="block text-sm">Review note (required for rejection; visible to applicant)<textarea name="review_note" maxlength="1000" rows="3" class="mt-1 w-full rounded-lg">{{ old('review_note') }}</textarea></label>
                 <label class="flex items-start gap-2 text-sm"><input type="checkbox" name="confirmed" value="1" required class="mt-1 rounded"><span>I reviewed this application. Approval creates an active shop and grants product-listing access immediately.</span></label>
-                <div class="flex flex-wrap gap-3"><button name="decision" value="approve" class="btn-accent">Approve seller</button><button name="decision" value="reject" class="btn-outline">Reject application</button></div>
+                <div class="flex justify-end"><x-ui.button variant="primary" size="lg" type="submit" name="decision" value="approve">Approve seller</x-ui.button></div>
+                <x-destructive-confirmation class="mt-4" name="Reject seller application" description="Submit the rejection with the review note entered above." submit-name="decision" submit-value="reject" />
             </form>
         @else
             <p class="mt-5 text-sm text-text-muted">Reviewed {{ $application->reviewed_at?->format('M j, Y g:i A') }} by {{ $application->reviewer?->name ?? 'Unavailable administrator' }}.</p>

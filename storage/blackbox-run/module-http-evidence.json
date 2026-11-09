@@ -1,0 +1,1327 @@
+{
+  "create_basket": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-923d026a-3d11-463c-aaa0-ef6bace9773d/edit",
+    "body": null
+  },
+  "product_price_0.99": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-0c614d1e-4193-4884-bdf1-c04f54816cb9/edit",
+    "body": null
+  },
+  "product_price_1.00": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-79748653-a264-497c-ac9f-7ae4a888d0a4/edit",
+    "body": null
+  },
+  "product_price_1.01": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-9d5e654c-8181-47a2-ba30-9d51a999227f/edit",
+    "body": null
+  },
+  "product_price_999999.99": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-1d2b698a-7f29-4597-9227-615a85cc228b/edit",
+    "body": null
+  },
+  "product_price_1000000.00": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-fa3afe40-f626-465c-9f90-6b6ed1b3d428/edit",
+    "body": null
+  },
+  "product_price_1000000.01": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-5a12b7e2-5f34-4cb9-9799-6f7b61c9afff/edit",
+    "body": null
+  },
+  "product_price_199.999": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The price field must have 0-2 decimal places.",
+      "errors": {
+        "price": [
+          "The price field must have 0-2 decimal places."
+        ]
+      }
+    }
+  },
+  "product_price_-1": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The price field must be at least 0.01.",
+      "errors": {
+        "price": [
+          "The price field must be at least 0.01."
+        ]
+      }
+    }
+  },
+  "product_price_abc": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The price field must be a number. (and 1 more error)",
+      "errors": {
+        "price": [
+          "The price field must be a number.",
+          "The price field must have 0-2 decimal places."
+        ]
+      }
+    }
+  },
+  "product_stock_0": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-b4f2fe9d-8070-418a-b350-3aac0d7311ac/edit",
+    "body": null
+  },
+  "product_stock_99999": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-4809be69-b7a2-4a37-97cc-b41e6ad3faa8/edit",
+    "body": null
+  },
+  "product_stock_100000": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-7955425d-4bc7-42c4-bd7d-20abce0c59bb/edit",
+    "body": null
+  },
+  "product_stock_-1": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The stock field must be at least 0.",
+      "errors": {
+        "stock": [
+          "The stock field must be at least 0."
+        ]
+      }
+    }
+  },
+  "product_stock_1.5": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The stock field must be an integer.",
+      "errors": {
+        "stock": [
+          "The stock field must be an integer."
+        ]
+      }
+    }
+  },
+  "product_name_AAAA": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/aaaa-794c64f5-5888-4ea8-9a2c-57dac21ca005/edit",
+    "body": null
+  },
+  "product_name_AAAAAAAAAAAAAAA": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-ef888698-f406-4f70-91e0-71aa9f683815/edit",
+    "body": null
+  },
+  "product_description_AAAAAAAAAAAAAAA": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/rattan-fruit-basket-f9d2e96a-1a38-48bd-a3d6-6510fe3d3358/edit",
+    "body": null
+  },
+  "minimal_draft": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The description field is required. (and 3 more errors)",
+      "errors": {
+        "description": [
+          "The description field is required."
+        ],
+        "category_id": [
+          "The category id field is required."
+        ],
+        "price": [
+          "The price field is required."
+        ],
+        "stock": [
+          "The stock field is required."
+        ]
+      }
+    }
+  },
+  "zero_image_publish": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/zero-image-product-7cd3fe05-945c-4d89-865e-3cc6d1019878/edit",
+    "body": null
+  },
+  "variant_three_types": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/three-dimension-variant-3973cc79-19f2-4595-be08-110861b91b12/edit",
+    "body": null
+  },
+  "search_Rattan Fruit Basket": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "basket_present": true,
+    "no_results": false
+  },
+  "search_rattan": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "basket_present": true,
+    "no_results": false
+  },
+  "search_RATTAN": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "basket_present": true,
+    "no_results": false
+  },
+  "search_  rattan  ": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "basket_present": true,
+    "no_results": false
+  },
+  "search_ratan baskt": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "basket_present": false,
+    "no_results": false
+  },
+  "search_zzqxw": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "basket_present": false,
+    "no_results": false
+  },
+  "search_<script>alert(1)</script>": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "basket_present": false,
+    "no_results": false
+  },
+  "search_' OR '1'='1": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "basket_present": false,
+    "no_results": false
+  },
+  "search_": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "basket_present": true,
+    "no_results": false
+  },
+  "search_   ": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "basket_present": true,
+    "no_results": false
+  },
+  "cart_add_20": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/search?clear_city=1&q=%20%20%20",
+    "body": null
+  },
+  "cart_qty_0": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/search?clear_city=1&q=%20%20%20",
+    "body": null
+  },
+  "cart_qty_1": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/search?clear_city=1&q=%20%20%20",
+    "body": null
+  },
+  "cart_qty_21": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "Only 20 units are currently available for this option.",
+      "errors": {
+        "qty": [
+          "Only 20 units are currently available for this option."
+        ]
+      }
+    }
+  },
+  "cart_qty_1.5": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The qty field must be an integer.",
+      "errors": {
+        "qty": [
+          "The qty field must be an integer."
+        ]
+      }
+    }
+  },
+  "cart_qty_-1": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The qty field must be at least 0.",
+      "errors": {
+        "qty": [
+          "The qty field must be at least 0."
+        ]
+      }
+    }
+  },
+  "cart_add_again": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/search?clear_city=1&q=%20%20%20",
+    "body": null
+  },
+  "checkout_no_payment": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The payment method field is required.",
+      "errors": {
+        "payment_method": [
+          "The payment method field is required."
+        ]
+      }
+    }
+  },
+  "chat_start": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/chat/1",
+    "body": null
+  },
+  "chat_length_0_False": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The body field is required.",
+      "errors": {
+        "body": [
+          "The body field is required."
+        ]
+      }
+    }
+  },
+  "chat_length_3_False": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The body field is required.",
+      "errors": {
+        "body": [
+          "The body field is required."
+        ]
+      }
+    }
+  },
+  "chat_length_1000_True": {
+    "status": 201,
+    "location": null,
+    "body": {
+      "id": 1,
+      "sender_id": 73,
+      "sender": "Guest Buyer",
+      "body": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "created_at": "Oct 17, 4:54 pm"
+    }
+  },
+  "chat_length_1001_True": {
+    "status": 201,
+    "location": null,
+    "body": {
+      "id": 2,
+      "sender_id": 73,
+      "sender": "Guest Buyer",
+      "body": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "created_at": "Oct 17, 4:54 pm"
+    }
+  },
+  "seller_chat_1001": {
+    "status": 201,
+    "location": null,
+    "body": {
+      "id": 3,
+      "sender_id": 74,
+      "sender": "Demo Seller",
+      "body": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+      "created_at": "Oct 17, 4:54 pm"
+    }
+  },
+  "profile_name_J": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/profile",
+    "body": null
+  },
+  "profile_name_Juan123": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/profile",
+    "body": null
+  },
+  "profile_name_JJJJJJJJ": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/profile",
+    "body": null
+  },
+  "email_change_immediate": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/profile",
+    "body": null
+  },
+  "address_phone_0917ABC4567": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "address_phone_0917-123-456": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "address_phone_12345678901": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "address_phone_02-8123-4567": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "address_number_6": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "address_number_7": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "address_number_8": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "address_number_9": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "address_number_10": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "address_number_11": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "address_number_12": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "delete_default_address": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "database": {
+    "profile": {
+      "name": "Guest Buyer",
+      "email": "module.changed@example.com",
+      "phone": "09171234567"
+    },
+    "address_count": 11,
+    "default_count": 0
+  },
+  "exact_tote_create": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/abaca-woven-tote-bag-3a81f8b4-bbd6-4638-a98a-7cb37ca4137b/edit",
+    "body": null
+  },
+  "tote_no_variant": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "Choose an available option before continuing.",
+      "errors": {
+        "variant_id": [
+          "Choose an available option before continuing."
+        ]
+      }
+    }
+  },
+  "tote_invalid_qty_0": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The qty field must be at least 1.",
+      "errors": {
+        "qty": [
+          "The qty field must be at least 1."
+        ]
+      }
+    }
+  },
+  "tote_invalid_qty_-1": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The qty field must be at least 1.",
+      "errors": {
+        "qty": [
+          "The qty field must be at least 1."
+        ]
+      }
+    }
+  },
+  "tote_invalid_qty_1.5": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The qty field must be an integer.",
+      "errors": {
+        "qty": [
+          "The qty field must be an integer."
+        ]
+      }
+    }
+  },
+  "tote_invalid_qty_abc": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The qty field must be an integer.",
+      "errors": {
+        "qty": [
+          "The qty field must be an integer."
+        ]
+      }
+    }
+  },
+  "tote_invalid_qty_21": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "Only 10 units are currently available for this option.",
+      "errors": {
+        "qty": [
+          "Only 10 units are currently available for this option."
+        ]
+      }
+    }
+  },
+  "tote_zero_stock_variant": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "Only 0 units are currently available for this option.",
+      "errors": {
+        "qty": [
+          "Only 0 units are currently available for this option."
+        ]
+      }
+    }
+  },
+  "tote_add_M_1": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/profile/edit",
+    "body": null
+  },
+  "tote_add_M_2": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/profile/edit",
+    "body": null
+  },
+  "cart_merged_747": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "has_747": true,
+    "tote_lines": 2
+  },
+  "tote_add_S_1": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/cart",
+    "body": null
+  },
+  "cart_two_variants": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "tote_lines": 3,
+    "has_199": true
+  },
+  "charger_create": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/usb-c-fast-charger-20w-a1e89ffe-2e82-4d4a-9e68-772515525b37/edit",
+    "body": null
+  },
+  "charger_cart": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/cart",
+    "body": null
+  },
+  "tote_buy_now": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/checkout",
+    "body": null
+  },
+  "buy_now_checkout": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "tote": true,
+    "charger": false,
+    "has_249": true
+  },
+  "buy_now_keeps_charger": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "charger": true
+  },
+  "save_tote_0": {
+    "status": 200,
+    "location": null,
+    "body": {
+      "saved": true
+    }
+  },
+  "save_tote_1": {
+    "status": 200,
+    "location": null,
+    "body": {
+      "saved": true
+    }
+  },
+  "unsave_tote": {
+    "status": 200,
+    "location": null,
+    "body": {
+      "saved": false
+    }
+  },
+  "switch_default": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/addresses",
+    "body": null
+  },
+  "default_preselected": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "checked_address": true
+  },
+  "charger_price_420": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/usb-c-fast-charger-20w-a1e89ffe-2e82-4d4a-9e68-772515525b37/edit",
+    "body": null
+  },
+  "cart_price_refresh": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "has_420": true
+  },
+  "stale_price_tampered_checkout": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/orders/1",
+    "body": null
+  },
+  "tampered_order_totals": {
+    "id": 1,
+    "subtotal": 480,
+    "shipping_fee": 49,
+    "total": 529
+  },
+  "other_buyer_order_access": {
+    "status": 403,
+    "location": null,
+    "body": null
+  },
+  "variant_fixture": {
+    "slug": "abaca-woven-tote-bag-3a81f8b4-bbd6-4638-a98a-7cb37ca4137b",
+    "product_id": 42,
+    "variants": [
+      {
+        "id": 41,
+        "options": "{\"Color\":\"Natural\",\"Size\":\"S\"}",
+        "stock": 10
+      },
+      {
+        "id": 42,
+        "options": "{\"Color\":\"Natural\",\"Size\":\"M\"}",
+        "stock": 8
+      },
+      {
+        "id": 43,
+        "options": "{\"Color\":\"Natural\",\"Size\":\"L\"}",
+        "stock": 5
+      },
+      {
+        "id": 44,
+        "options": "{\"Color\":\"Black\",\"Size\":\"S\"}",
+        "stock": 10
+      },
+      {
+        "id": 45,
+        "options": "{\"Color\":\"Black\",\"Size\":\"M\"}",
+        "stock": 0
+      },
+      {
+        "id": 46,
+        "options": "{\"Color\":\"Black\",\"Size\":\"L\"}",
+        "stock": 3
+      }
+    ]
+  },
+  "default_count_after_switch": 1,
+  "options_20": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/options-20-f4226317-85cb-4bb7-807c-d9ef89df8366/edit",
+    "body": null
+  },
+  "options_21": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/options-21-79910f94-4ae5-4f86-8b09-df0cb681f56f/edit",
+    "body": null
+  },
+  "duplicate_variant_options": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "Each option combination must be unique.",
+      "errors": {
+        "variants": [
+          "Each option combination must be unique."
+        ]
+      }
+    }
+  },
+  "empty_variant_options": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The variants.0.options_text field is required when has variants is 1.",
+      "errors": {
+        "variants.0.options_text": [
+          "The variants.0.options_text field is required when has variants is 1."
+        ]
+      }
+    }
+  },
+  "duplicate_sku_existing": {
+    "status": 500,
+    "location": null,
+    "body": {
+      "message": "SQLSTATE[23000]: Integrity constraint violation: 19 UNIQUE constraint failed: product_variants.sku (Connection: sqlite, Database: C:/Users/Kazu/PFS-main/storage/blackbox-run/test.sqlite, SQL: insert into \"product_variants\" (\"product_id\", \"sku\", \"options\", \"option_name\", \"option_value\", \"price_override\", \"stock\", \"is_active\", \"updated_at\", \"created_at\") values (46, MCH-TOTE-Natural-S, {\"Color\":\"Red\"}, Color, Red, ?, 1, 1, 2026-10-17 17:02:02, 2026-10-17 17:02:02))",
+      "exception": "Illuminate\\Database\\UniqueConstraintViolationException",
+      "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php",
+      "line": 857,
+      "trace": [
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php",
+          "line": 813,
+          "function": "runQueryCallback",
+          "class": "Illuminate\\Database\\Connection",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php",
+          "line": 590,
+          "function": "run",
+          "class": "Illuminate\\Database\\Connection",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php",
+          "line": 554,
+          "function": "statement",
+          "class": "Illuminate\\Database\\Connection",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\Processor.php",
+          "line": 32,
+          "function": "insert",
+          "class": "Illuminate\\Database\\Connection",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php",
+          "line": 4257,
+          "function": "processInsertGetId",
+          "class": "Illuminate\\Database\\Query\\Processors\\Processor",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php",
+          "line": 2281,
+          "function": "insertGetId",
+          "class": "Illuminate\\Database\\Query\\Builder",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php",
+          "line": 1687,
+          "function": "__call",
+          "class": "Illuminate\\Database\\Eloquent\\Builder",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php",
+          "line": 1603,
+          "function": "insertAndSetId",
+          "class": "Illuminate\\Database\\Eloquent\\Model",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php",
+          "line": 1407,
+          "function": "performInsert",
+          "class": "Illuminate\\Database\\Eloquent\\Model",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\app\\Http\\Controllers\\Seller\\ProductController.php",
+          "line": 201,
+          "function": "save",
+          "class": "Illuminate\\Database\\Eloquent\\Model",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\app\\Http\\Controllers\\Seller\\ProductController.php",
+          "line": 80,
+          "function": "saveVariants",
+          "class": "App\\Http\\Controllers\\Seller\\ProductController",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Concerns\\ManagesTransactions.php",
+          "line": 35,
+          "function": "{closure:App\\Http\\Controllers\\Seller\\ProductController::store():69}",
+          "class": "App\\Http\\Controllers\\Seller\\ProductController",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\DatabaseManager.php",
+          "line": 502,
+          "function": "transaction",
+          "class": "Illuminate\\Database\\Connection",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\Facades\\Facade.php",
+          "line": 364,
+          "function": "__call",
+          "class": "Illuminate\\Database\\DatabaseManager",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\app\\Http\\Controllers\\Seller\\ProductController.php",
+          "line": 69,
+          "function": "__callStatic",
+          "class": "Illuminate\\Support\\Facades\\Facade",
+          "type": "::"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php",
+          "line": 46,
+          "function": "store",
+          "class": "App\\Http\\Controllers\\Seller\\ProductController",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php",
+          "line": 276,
+          "function": "dispatch",
+          "class": "Illuminate\\Routing\\ControllerDispatcher",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php",
+          "line": 216,
+          "function": "runController",
+          "class": "Illuminate\\Routing\\Route",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 822,
+          "function": "run",
+          "class": "Illuminate\\Routing\\Route",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 180,
+          "function": "{closure:Illuminate\\Routing\\Router::runRouteWithinStack():821}",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\app\\Http\\Middleware\\EnsureUserHasRole.php",
+          "line": 21,
+          "function": "{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "App\\Http\\Middleware\\EnsureUserHasRole",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php",
+          "line": 52,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Routing\\Middleware\\SubstituteBindings",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\AuthenticateSession.php",
+          "line": 70,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Session\\Middleware\\AuthenticateSession",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\ThrottleRequests.php",
+          "line": 168,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\ThrottleRequests.php",
+          "line": 93,
+          "function": "handleRequest",
+          "class": "Illuminate\\Routing\\Middleware\\ThrottleRequests",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Routing\\Middleware\\ThrottleRequests",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Auth\\Middleware\\Authenticate.php",
+          "line": 63,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Auth\\Middleware\\Authenticate",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestForgery.php",
+          "line": 104,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\PreventRequestForgery",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php",
+          "line": 48,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\View\\Middleware\\ShareErrorsFromSession",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php",
+          "line": 120,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php",
+          "line": 63,
+          "function": "handleStatefulRequest",
+          "class": "Illuminate\\Session\\Middleware\\StartSession",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Session\\Middleware\\StartSession",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php",
+          "line": 36,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php",
+          "line": 74,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Cookie\\Middleware\\EncryptCookies",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 137,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 821,
+          "function": "then",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 800,
+          "function": "runRouteWithinStack",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 764,
+          "function": "runRoute",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 753,
+          "function": "dispatchToRoute",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+          "line": 200,
+          "function": "dispatch",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 180,
+          "function": "{closure:Illuminate\\Foundation\\Http\\Kernel::dispatchToRouter():197}",
+          "class": "Illuminate\\Foundation\\Http\\Kernel",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\mcp\\src\\Server\\Middleware\\AddWwwAuthenticateHeader.php",
+          "line": 21,
+          "function": "{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Laravel\\Mcp\\Server\\Middleware\\AddWwwAuthenticateHeader",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php",
+          "line": 21,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php",
+          "line": 31,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php",
+          "line": 21,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php",
+          "line": 51,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\TrimStrings",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php",
+          "line": 27,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\ValidatePostSize",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php",
+          "line": 110,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php",
+          "line": 61,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\HandleCors",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php",
+          "line": 58,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\TrustProxies",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php",
+          "line": 22,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePathEncoding.php",
+          "line": 28,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\ValidatePathEncoding",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 137,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+          "line": 175,
+          "function": "then",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+          "line": 144,
+          "function": "sendRequestThroughRouter",
+          "class": "Illuminate\\Foundation\\Http\\Kernel",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php",
+          "line": 1227,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Kernel",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\public\\index.php",
+          "line": 20,
+          "function": "handleRequest",
+          "class": "Illuminate\\Foundation\\Application",
+          "type": "->"
+        }
+      ]
+    }
+  },
+  "duplicate_publish_0": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/double-publish-probe-31c4bcb2-46cb-4029-b06e-a6c34b6ae77c/edit",
+    "body": null
+  },
+  "duplicate_publish_1": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/double-publish-probe-cc1f3572-3deb-4537-99e7-32e3c4c7b091/edit",
+    "body": null
+  },
+  "duplicate_publish_records": 2,
+  "tote_one_variant_order_cart": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/account/profile/edit",
+    "body": null
+  },
+  "tote_one_variant_order": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/orders/2",
+    "body": null
+  },
+  "variant_stock_after_order": [
+    {
+      "id": 41,
+      "stock": 10
+    },
+    {
+      "id": 42,
+      "stock": 7
+    },
+    {
+      "id": 43,
+      "stock": 5
+    },
+    {
+      "id": 44,
+      "stock": 10
+    },
+    {
+      "id": 45,
+      "stock": 0
+    },
+    {
+      "id": 46,
+      "stock": 3
+    }
+  ],
+  "rename_variant_after_order": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/products/abaca-woven-tote-bag-3a81f8b4-bbd6-4638-a98a-7cb37ca4137b/edit",
+    "body": null
+  },
+  "order_variant_snapshot": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "natural": true,
+    "price_249": true
+  },
+  "renamed_variant_page": {
+    "status": 200,
+    "location": null,
+    "body": null,
+    "beige": true,
+    "brown": true
+  },
+  "cart_user_id_tamper": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/p/abaca-woven-tote-bag-3a81f8b4-bbd6-4638-a98a-7cb37ca4137b",
+    "body": null
+  },
+  "other_cart_unchanged": true
+}

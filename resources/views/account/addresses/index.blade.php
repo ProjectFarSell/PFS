@@ -4,15 +4,15 @@
 
 @section('content')
     <div class="max-w-lg mx-auto">
-        <a href="{{ route('account.profile') }}" class="inline-block text-sm text-accent hover:text-accent mb-3">← My Profile</a>
-        <div class="flex items-center justify-between mb-3">
+        <a href="{{ route('account.profile') }}" class="inline-block text-sm text-accent hover:text-accent mb-3"><x-ui.icon name="previous" size="sm" class="inline-block align-text-bottom" /> My Profile</a>
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h1 class="text-lg font-semibold">My addresses</h1>
-            <a href="{{ route('account.addresses.create') }}" class="text-sm text-accent hover:text-accent">Add new</a>
+            <x-ui.button variant="primary" size="lg" :href="route('account.addresses.create')">Add address</x-ui.button>
         </div>
 
         @forelse ($addresses as $address)
             <div class="rounded-xl bg-surface border border-surface-border p-4 mb-3">
-                <div class="flex items-start justify-between">
+                <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <p class="text-sm font-medium">
                             {{ $address->label }}
@@ -26,12 +26,12 @@
                             <p class="text-xs text-text-muted mt-1">{{ $address->phone }}</p>
                         @endif
                     </div>
-                    <div class="flex gap-2 text-xs">
-                        <a href="{{ route('account.addresses.edit', $address) }}" class="text-accent hover:text-accent">Edit</a>
-                        <form method="post" action="{{ route('account.addresses.destroy', $address) }}" onsubmit="return confirm('Remove this address?')">
+                    <div class="ml-auto flex flex-wrap gap-4">
+                        <x-ui.button variant="link" :href="route('account.addresses.edit', $address)">Edit</x-ui.button>
+                        <form method="post" action="{{ route('account.addresses.destroy', $address) }}">
                             @csrf
                             @method('delete')
-                            <button class="text-text-muted hover:text-text-muted">Delete</button>
+                            <x-destructive-confirmation name="Delete address" :description="'Remove '.$address->label.' from your saved addresses.'" />
                         </form>
                     </div>
                 </div>

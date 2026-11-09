@@ -12,7 +12,7 @@
             <option value="email" @selected(($challenge?->channel ?? $user->verification_channel) !== 'phone')>Email: {{ $user->email }}</option>
             @if($user->phone && $phoneConfigured)<option value="phone" @selected(($challenge?->channel ?? $user->verification_channel) === 'phone')>Phone: {{ $user->phone }}</option>@endif
         </select>
-        <button class="btn-outline">{{ $challenge ? 'Request a new code' : 'Continue' }}</button>
+        <x-ui.button variant="secondary" type="submit">{{ $challenge ? 'Request a new code' : 'Continue' }}</x-ui.button>
         <p class="text-xs text-text-muted">Codes expire after ten minutes. Wait one minute between requests. Phone verification is available when a phone is saved and SMS is configured.</p>
     </form>
     @if($challenge && !$challenge->consumed_at && $challenge->expires_at->isFuture())
@@ -20,16 +20,16 @@
             <form method="post" action="{{ route('security.otp.verify') }}" class="space-y-3">@csrf
                 <label for="sign-in-code" class="block text-sm">Six-digit email code</label>
                 <input id="sign-in-code" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required class="fs-input">
-                <button class="btn-accent">Verify and continue</button>
+                <x-ui.button variant="primary" size="lg" type="submit">Verify and continue</x-ui.button>
             </form>
         @elseif($phoneConfigured)
             <div class="space-y-3" id="sign-in-phone" data-config='@json($firebase)' data-phone="{{ $firebasePhone }}" data-verify-url="{{ route('security.otp.phone') }}">
-                <button type="button" id="sign-in-send-sms" class="btn-outline">Send SMS code</button>
+                <x-ui.button variant="secondary" type="button" id="sign-in-send-sms">Send SMS code</x-ui.button>
                 <div id="sign-in-recaptcha"></div>
                 <div id="sign-in-phone-entry" class="hidden space-y-3">
                     <label for="sign-in-sms-code" class="block text-sm">Six-digit SMS code</label>
                     <input id="sign-in-sms-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" class="fs-input">
-                    <button type="button" id="sign-in-verify-sms" class="btn-accent">Verify and continue</button>
+                    <x-ui.button variant="primary" size="lg" type="button" id="sign-in-verify-sms">Verify and continue</x-ui.button>
                 </div>
                 <p id="sign-in-phone-message" role="status" class="text-sm"></p>
             </div>
@@ -38,7 +38,7 @@
         <p class="text-sm text-error">This challenge expired or was used. Request a new code to continue.</p>
     @endif
     <p class="text-xs text-text-muted">Cannot access either contact? Contact support. A new destination cannot be substituted during this sign-in.</p>
-    <form method="post" action="{{ route('logout') }}">@csrf<button class="text-sm text-accent underline">Sign out / use another account</button></form>
+    <form method="post" action="{{ route('logout') }}">@csrf<x-ui.button variant="tertiary" type="submit" class="text-sm text-accent underline">Sign out / use another account</x-ui.button></form>
 </div>
 @endsection
 @push('scripts')

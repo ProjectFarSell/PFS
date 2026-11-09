@@ -14,14 +14,14 @@
         @if($case->review_note)<p class="break-words text-sm">Review: {{ $case->review_note }}</p>@endif
         @if($case->newOrder)
             <p class="text-sm">Linked order: {{ $case->newOrder->number }} · {{ $case->newOrder->status->label() }}</p>
-            @if($role !== \App\Enums\UserRole::Seller)<a href="{{ route('orders.show', $case->newOrder) }}" class="text-sm text-accent underline">View replacement order</a>@endif
+            @if($role !== \App\Enums\UserRole::Seller)<x-ui.button variant="link" :href="route('orders.show', $case->newOrder)" class="text-sm text-accent underline">View replacement order</x-ui.button>@endif
         @elseif($role === \App\Enums\UserRole::Buyer && $case->status === 'approved')
-            <form method="post" action="{{ route('replacements.checkout', $case) }}">@csrf<button class="btn-accent">Review current price & checkout</button></form>
+            <form method="post" action="{{ route('replacements.checkout', $case) }}">@csrf<x-ui.button variant="primary" size="lg" type="submit">Review current price & checkout</x-ui.button></form>
         @elseif($role !== \App\Enums\UserRole::Buyer && $case->status === 'pending')
             <form method="post" action="{{ route('replacements.review', $case) }}" class="space-y-3">@csrf
                 <label class="block text-sm">Decision<select name="decision" class="mt-1 block w-full rounded-lg"><option value="approved">Approve new COD order</option><option value="rejected">Decline</option></select></label>
                 <label class="block text-sm">Review and instructions<textarea name="review_note" required minlength="10" maxlength="1000" class="mt-1 block w-full rounded-lg"></textarea></label>
-                <button class="btn-outline">Save decision</button>
+                <x-ui.button variant="secondary" type="submit">Save decision</x-ui.button>
             </form>
         @endif
     </article>

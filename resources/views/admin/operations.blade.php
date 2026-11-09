@@ -1,7 +1,7 @@
 @extends('layouts.portal')
 @section('title', 'Operations · FarSell')
 @section('content')
-<a href="{{ route('admin.dashboard') }}" class="text-accent underline">Back to admin dashboard</a>
+<x-ui.button variant="link" :href="route('admin.dashboard')" class="text-accent underline">Back to admin dashboard</x-ui.button>
 <h1 class="mt-5 text-2xl font-bold">Operations &amp; release checks</h1>
 <p class="mt-2 text-sm text-text-muted">Revision: {{ $revision }}. This page checks technical conditions; launch approval remains with the team.</p>
 <section class="fs-card mt-5 p-5"><h2 class="font-semibold">Runtime health</h2><dl class="mt-4 grid gap-3 sm:grid-cols-2">

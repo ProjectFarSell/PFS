@@ -27,7 +27,7 @@
 
         <section class="auth-form-side" aria-label="Your FarSell account">
             <div class="flex items-center justify-between gap-3">
-                <a href="{{ route('welcome') }}" class="inline-flex min-h-11 items-center gap-2 text-sm text-text-muted hover:text-accent"><span aria-hidden="true">←</span> Back to browsing</a>
+                <x-ui.button variant="tertiary" :href="route('welcome')" icon="previous">Back to browsing</x-ui.button>
                 <x-theme-toggle />
             </div>
             <div class="auth-form-content">
@@ -54,14 +54,14 @@
                             <div><label for="login-identifier" class="fs-label">Email or admin username</label><input id="login-identifier" type="text" name="email" value="{{ old('email') }}" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder="you@example.com or admin" class="fs-input"></div>
                             <div><label for="login_password" class="fs-label">Password</label><x-password-input id="login_password" /></div>
                             <div class="flex flex-wrap items-center justify-between gap-2">
-                                <label class="inline-flex min-h-8 cursor-pointer items-center gap-2 text-sm text-text-muted"><input name="remember" type="checkbox" class="rounded border-surface-border text-accent focus:ring-accent"> Remember me</label>
-                                <a href="{{ route('password.request') }}" class="inline-flex min-h-11 items-center text-sm font-semibold text-accent hover:underline">Forgot password?</a>
+                                <label class="inline-flex cursor-pointer items-center gap-2 text-sm text-text-muted"><input name="remember" type="checkbox" class="rounded border-surface-border text-accent focus:ring-accent"> Remember me</label>
+                                <x-ui.button :href="route('password.request')" variant="tertiary" class="text-accent">Forgot password?</x-ui.button>
                             </div>
-                            <button type="submit" :disabled="loginLoading" class="btn-accent w-full min-h-12"><span x-text="loginLoading ? 'Signing in…' : 'Log in'">Log in</span><span x-show="!loginLoading" aria-hidden="true">→</span></button>
+                            <x-ui.button variant="primary" size="lg" type="submit" loading-when="loginLoading" class="w-full min-h-12"><span x-text="loginLoading ? 'Signing in…' : 'Log in'">Log in</span><x-ui.icon name="next" size="sm" x-show="!loginLoading" /></x-ui.button>
                         </form>
                         @include('auth.partials.google-access')
-                        <p class="mt-5 text-center text-sm text-text-muted">New to FarSell? <a href="{{ route('register') }}" @click.prevent="tab = 'register'; $nextTick(() => $refs.registerTab.focus())" class="inline-flex min-h-11 items-center font-semibold text-accent hover:underline">Create an account</a></p>
-                        @if ($checkoutIntent)<a href="{{ route('cart.index') }}" class="mt-2 block text-center text-sm text-accent hover:underline">Back to cart</a>@endif
+                        <p class="mt-5 text-center text-sm text-text-muted">New to FarSell? <x-ui.button variant="tertiary" :href="route('register')" @click.prevent="tab = 'register'; $nextTick(() => $refs.registerTab.focus())" class="text-accent">Create an account</x-ui.button></p>
+                        @if ($checkoutIntent)<div class="mt-2 text-center"><x-ui.button variant="tertiary" :href="route('cart.index')" class="text-accent">Back to cart</x-ui.button></div>@endif
                     </div>
 
                     <div id="register-panel" role="tabpanel" aria-labelledby="register-tab" class="auth-form-panel" :data-active="tab === 'register' ? 'true' : 'false'" data-active="{{ $defaultTab === 'register' ? 'true' : 'false' }}" :inert="tab !== 'register'" @if ($defaultTab !== 'register') inert @endif>
@@ -86,10 +86,10 @@
                                 <div><label for="reg_intent" class="fs-label">I'm here to</label><select id="reg_intent" name="intent" class="fs-input"><option value="buyer">Discover &amp; shop</option><option value="seller" @selected(old('intent', request('intent')) === 'seller')>Sell on FarSell</option><option value="rider" @selected(old('intent', request('intent')) === 'rider')>Deliver &amp; earn</option></select><p class="mt-1.5 text-xs text-text-muted">Start as a buyer. Seller and rider access follow application review.</p></div>
                             @endif
                             <label class="flex items-start gap-2 text-xs text-text-muted" for="privacy-consent"><input id="privacy-consent" type="checkbox" name="privacy_consent" value="1" required @checked(old('privacy_consent')) class="mt-1 rounded border-surface-border text-accent"><span>I have read the <a href="{{ route('privacy') }}" target="_blank" rel="noopener" class="text-accent underline">privacy notice</a> and agree to the collection and use of my data for my FarSell account and requested services.</span></label>
-                            <button type="submit" :disabled="registerLoading" class="btn-accent w-full min-h-12"><span x-text="registerLoading ? 'Creating Account…' : @js($checkoutIntent ? 'Create Account and continue' : 'Create Account')">{{ $checkoutIntent ? 'Create Account and continue' : 'Create Account' }}</span><span x-show="!registerLoading" aria-hidden="true">→</span></button>
+                            <x-ui.button variant="primary" size="lg" type="submit" loading-when="registerLoading" class="w-full min-h-12"><span x-text="registerLoading ? 'Creating account…' : @js($checkoutIntent ? 'Create Account and continue' : 'Create Account')">{{ $checkoutIntent ? 'Create Account and continue' : 'Create Account' }}</span><x-ui.icon name="next" size="sm" x-show="!registerLoading" /></x-ui.button>
                         </form>
                         @include('auth.partials.google-access')
-                        <p class="mt-4 text-center text-sm text-text-muted">Already part of FarSell? <a href="{{ route('login') }}" @click.prevent="tab = 'login'; $nextTick(() => $refs.loginTab.focus())" class="inline-flex min-h-11 items-center font-semibold text-accent hover:underline">Log in</a></p>
+                        <p class="mt-4 text-center text-sm text-text-muted">Already part of FarSell? <x-ui.button variant="tertiary" :href="route('login')" @click.prevent="tab = 'login'; $nextTick(() => $refs.loginTab.focus())" class="text-accent">Log in</x-ui.button></p>
                     </div>
                 </div>
                 <p class="mt-5 border-t border-surface-border/40 pt-4 text-center text-xs text-text-muted">FarSell Marketplace — Quality Deals &amp; Local Surplus · <a href="{{ route('privacy') }}" class="text-accent underline">Privacy notice</a></p>

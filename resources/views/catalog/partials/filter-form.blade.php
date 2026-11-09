@@ -1,5 +1,5 @@
 {{--
-    Filter form body — rendered inside both the desktop aside and the mobile bottom-sheet.
+    Filter form body — shared by the responsive filter panel.
     All outer variables (q, activeCategory, activeShops, shopSearch, priceMin, priceMax, shops,
     cityId, activeCityId, cities, sameDay) must be in scope.
 --}}
@@ -119,13 +119,13 @@
         </label>
     </div>
 
-    <button type="submit" class="btn-accent w-full">Apply filters</button>
+    <x-ui.button variant="primary" size="lg" type="submit" class="w-full">Apply filters</x-ui.button>
 
     @if ($q || $activeCategory || $priceMin !== '' || $priceMax !== '' || !empty($activeShops) || $shopSearch || $activeCityId)
-        <a href="{{ route('catalog.index') }}{{ $activeCityId ? '?clear_city=1' : '' }}"
+        <x-ui.button variant="link" :href="route('catalog.index', $activeCityId ? ['clear_city' => 1] : [])"
            class="block text-center text-sm transition-colors hover:underline"
            style="color:rgb(var(--color-text-muted));">
             Clear all filters
-        </a>
+        </x-ui.button>
     @endif
 </form>

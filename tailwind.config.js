@@ -7,18 +7,32 @@ export default {
 
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.js',
+        './public/js/**/*.js',
     ],
 
     theme: {
         extend: {
+            borderRadius: {
+                ui: '0.75rem',
+            },
+            spacing: {
+                'target': '2.75rem',
+                'target-desktop': '2.5rem',
+                'target-primary': '3.25rem',
+            },
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
 
             colors: {
+                'ui-brand': 'rgb(var(--color-accent) / <alpha-value>)',
+                'ui-focus': 'rgb(var(--color-accent) / <alpha-value>)',
+                dashboard: {
+                    light: { 1: '#6d28d9', 2: '#0369a1', 3: '#047857', 4: '#b45309' },
+                    dark: { 1: '#c4b5fd', 2: '#7dd3fc', 3: '#6ee7b7', 4: '#fcd34d' },
+                },
                 // ── Semantic Accent (Dynamic: changes automatically in .dark) ──
                 accent: {
                     DEFAULT: 'rgb(var(--color-accent) / <alpha-value>)',

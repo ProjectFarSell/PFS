@@ -3,7 +3,7 @@
 @section('title', 'Active products · FarSell')
 
 @section('content')
-    <a href="{{ route('admin.dashboard') }}" class="text-sm text-accent underline">Back to Admin Dashboard</a>
+    <x-ui.button variant="link" :href="route('admin.dashboard')" class="text-sm text-accent underline">Back to Admin Dashboard</x-ui.button>
     <section class="fs-card mt-4 overflow-hidden" data-live-inventory data-stock-url="{{ route('admin.products.stock') }}">
         <div class="border-b border-surface-border p-5">
             <h1 class="text-xl font-semibold">Active products</h1>

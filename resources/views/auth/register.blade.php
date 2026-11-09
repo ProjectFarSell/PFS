@@ -42,7 +42,7 @@
                 </ul>
             @endif
 
-            <button class="w-full btn-accent rounded-full py-2.5">{{ $checkoutIntent ? 'Create account and continue' : 'Create account' }}</button>
+            <x-ui.button variant="primary" size="lg" type="submit" class="w-full">{{ $checkoutIntent ? 'Create account and continue' : 'Create account' }}</x-ui.button>
         </form>
 
         <p class="text-sm text-center text-text-muted mt-4">

@@ -5,7 +5,7 @@
 @section('content')
     <a href="{{ route('returns.index') }}" class="mb-4 inline-block text-sm text-accent underline">My returns & refunds</a>
     <a href="{{ route('replacements.index') }}" class="mb-4 ml-3 inline-block text-sm text-accent underline">My replacement requests</a>
-    <a href="{{ route('account.profile') }}" class="inline-block text-sm text-accent hover:text-accent mb-3">← My Profile</a>
+    <a href="{{ route('account.profile') }}" class="inline-block text-sm text-accent hover:text-accent mb-3"><x-ui.icon name="previous" size="sm" class="inline-block align-text-bottom" /> My Profile</a>
     <h1 class="text-lg font-semibold mb-1">My Orders</h1>
     <p class="text-sm text-text-muted mb-4">View your purchases and their current status.</p>
 
@@ -29,14 +29,14 @@
                             · {{ $order->payment_method === \App\Enums\PaymentMethod::Cod ? 'Cash on delivery' : 'Card / e-wallet (demo)' }}
                         </p>
                     </div>
-                    <a href="{{ route('orders.show', $order) }}" aria-label="View order {{ $order->number }}"
-                       class="rounded-full border border-violet-600 px-4 py-2 text-sm text-accent hover:bg-violet-50 transition-colors">View details</a>
+                    <x-ui.button variant="link" :href="route('orders.show', $order)" aria-label="View order {{ $order->number }}"
+                       >View details</x-ui.button>
                 </div>
             </article>
         @empty
             <div class="rounded-xl border border-surface-border bg-surface px-4 py-8 text-center">
                 <p class="font-medium">You haven't placed any orders yet.</p>
-                <a href="{{ route('home') }}" class="inline-block mt-3 rounded-full bg-violet-600 hover:bg-violet-700 px-5 py-2 text-sm text-white transition-colors">Browse products</a>
+                <x-ui.button :href="route('home')" variant="primary" size="lg" class="mt-3">Browse products</x-ui.button>
             </div>
         @endforelse
     </div>

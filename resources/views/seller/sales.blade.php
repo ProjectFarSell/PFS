@@ -2,12 +2,12 @@
 @section('title', 'Sales summary - FarSell')
 @section('content')
 <div class="space-y-6">
-    <div><a href="{{ route('seller.dashboard') }}" class="text-sm text-accent underline">Back to dashboard</a><h1 class="mt-2 text-2xl font-bold">{{ $shop->name }} — Sales summary</h1></div>
+    <div><x-ui.button variant="link" :href="route('seller.dashboard')" class="text-sm text-accent underline">Back to dashboard</x-ui.button><h1 class="mt-2 text-2xl font-bold">{{ $shop->name }} — Sales summary</h1></div>
     @if($errors->any())<p role="alert" class="text-error">{{ $errors->first() }}</p>@endif
     <form method="get" class="flex flex-wrap items-end gap-3">
         <label class="text-sm">From<input type="date" name="from" value="{{ $from }}" required class="mt-1 block rounded-lg border border-surface-border bg-surface p-2"></label>
         <label class="text-sm">To<input type="date" name="to" value="{{ $to }}" required class="mt-1 block rounded-lg border border-surface-border bg-surface p-2"></label>
-        <button class="btn-accent">Apply dates</button><button name="export" value="csv" class="btn-outline">Download CSV</button>
+        <x-ui.button variant="primary" size="lg" type="submit">Apply dates</x-ui.button><x-ui.button variant="secondary" type="submit" name="export" value="csv" icon="export">Download CSV</x-ui.button>
     </form>
     <p class="text-sm text-text-muted">Sales use buyer-confirmed shipment completion dates and merchandise amounts only. Delivery fees are rider earnings. Reimbursements use the date recorded, including refunds for older sales. Net here is sales less reimbursements, not profit. Demo payments are excluded. Existing completed shipments without a completion event use their last update date.</p>
     <dl class="grid grid-cols-2 gap-3 lg:grid-cols-4">

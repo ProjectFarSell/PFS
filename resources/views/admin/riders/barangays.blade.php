@@ -3,7 +3,7 @@
 @section('title', 'Barangay assignments · FarSell')
 
 @section('content')
-    <a href="{{ route('admin.dashboard') }}" class="text-sm text-accent underline">Back to Admin Dashboard</a>
+    <x-ui.button variant="link" :href="route('admin.dashboard')" class="text-sm text-accent underline">Back to Admin Dashboard</x-ui.button>
     <section class="fs-card mt-4 max-w-3xl p-5">
         <h1 class="text-xl font-semibold">Barangay assignments</h1>
         <p class="mt-2 text-sm text-text-muted">Assign one approved rider to each barangay. Ready shipments are sent directly to that rider.</p>
@@ -17,7 +17,7 @@
                     @endforeach
                 </select>
             </label>
-            <button class="btn-outline">Manage rider</button>
+            <x-ui.button variant="secondary" type="submit">Manage rider</x-ui.button>
         </form>
 
         @if($profile)
@@ -34,7 +34,7 @@
                             @endforeach
                         </select>
                     </label>
-                    <button class="btn-accent">Assign barangay</button>
+                    <x-ui.button variant="primary" size="lg" type="submit">Assign barangay</x-ui.button>
                 </form>
                 @error('psgc_barangay_id')<p role="alert" class="mt-2 text-sm text-error">{{ $message }}</p>@enderror
 
@@ -44,7 +44,7 @@
                             <span>{{ $assignment->barangay->name }}{{ $assignment->barangay->cityMunicipality ? ', '.$assignment->barangay->cityMunicipality->name : '' }}</span>
                             <form method="post" action="{{ route('admin.riders.barangays.destroy', [$profile, $assignment]) }}">
                                 @csrf @method('delete')
-                                <button class="text-sm text-error underline">Remove</button>
+                                <x-ui.button variant="tertiary" type="submit" class="text-sm text-error underline">Remove</x-ui.button>
                             </form>
                         </li>
                     @empty

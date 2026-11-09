@@ -2,7 +2,7 @@
 @section('title', 'Request replacement - FarSell')
 @section('content')
 <div class="mx-auto max-w-2xl space-y-4">
-    <a class="text-accent underline" href="{{ route('orders.show', $item->order) }}">Back to original order</a>
+    <x-ui.button variant="link" class="text-accent underline" :href="route('orders.show', $item->order)">Back to original order</x-ui.button>
     <h1 class="text-2xl font-bold">Request another variant</h1>
     <p>{{ $item->name }} · Original SKU: {{ $item->product_sku }}</p>
     <p class="text-sm text-text-muted">The seller received your original unpaid COD shipment. Request a replacement order for review. If approved, you must review current prices and delivery charges and place a new COD order. This is not a free exchange or an automatic charge.</p>
@@ -18,7 +18,7 @@
         @endif
         <label class="block text-sm">Quantity<input type="number" name="quantity" min="1" max="{{ min(99, $item->qty) }}" value="1" required class="mt-1 block w-full rounded-lg"></label>
         <label class="block text-sm">Reason and requested change<textarea name="note" required minlength="10" maxlength="1000" class="mt-1 block w-full rounded-lg">{{ old('note') }}</textarea></label>
-        <button class="btn-accent">Submit replacement request</button>
+        <x-ui.button variant="primary" size="lg" type="submit">Submit replacement request</x-ui.button>
     </form>
 </div>
 @endsection

@@ -1,8 +1,4 @@
-import './bootstrap';
 import './flash-messages';
-import './product-feedback';
-import './inventory-live';
-import productOptions from './product-options';
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
@@ -226,8 +222,6 @@ Alpine.data('chatThread', (conversationId, userId, endpoint, lastId) => ({
     },
 }));
 
-Alpine.data('productOptions', productOptions);
-
 Alpine.data('quantityStepper', (initial = 1, max = 99, min = 1) => ({
     qty: initial,
     max,
@@ -441,4 +435,39 @@ Alpine.data('chatDock', (conversationsUrl, chatBaseUrl, canChat, initialUnread =
     },
 }));
 
-Alpine.start();
+const alpineFeatures = [];
+
+if (document.querySelector('[data-dashboard-widgets]')) {
+    alpineFeatures.push(import('./dashboard').then(({ registerDashboards }) => registerDashboards(Alpine)));
+}
+
+if (document.querySelector('[data-demo-dashboard]')) {
+    alpineFeatures.push(import('./demo/dashboard').then(({ registerDemoDashboards }) => registerDemoDashboards(Alpine)));
+}
+
+if (document.querySelector('[data-product-options]')) {
+    alpineFeatures.push(import('./product-options').then(({ default: productOptions }) => {
+        Alpine.data('productOptions', productOptions);
+    }));
+}
+
+if (document.querySelector('[data-product-review-form]')) {
+    alpineFeatures.push(import('./product-feedback').then(({ default: productReviewForm }) => {
+        Alpine.data('productReviewForm', productReviewForm);
+    }));
+}
+
+if (document.querySelector('[data-live-inventory]')) {
+    import('./inventory-live').catch(error => console.error('Could not load inventory refresh.', error));
+}
+
+if (alpineFeatures.length) {
+    Promise.allSettled(alpineFeatures).then(results => {
+        for (const result of results) {
+            if (result.status === 'rejected') console.error('Could not load a page feature.', result.reason);
+        }
+        Alpine.start();
+    });
+} else {
+    Alpine.start();
+}

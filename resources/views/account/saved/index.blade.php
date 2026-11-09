@@ -20,7 +20,7 @@
     @else
         <div class="text-center py-16 text-text-muted">
             <p class="mb-3">No saved items yet.</p>
-            <a href="{{ route('catalog.index') }}" class="text-accent underline text-sm">Browse the catalogue</a>
+            <x-ui.button variant="link" :href="route('catalog.index')" class="text-accent underline text-sm">Browse the catalogue</x-ui.button>
         </div>
     @endif
 @endsection

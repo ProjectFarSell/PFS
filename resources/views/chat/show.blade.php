@@ -11,7 +11,7 @@
             @include('chat.partials.sidebar', ['activeConversation' => $conversation])
             <main class="flex min-h-[68vh] flex-col border-l border-surface-border">
                 <header class="flex min-h-[68px] items-center gap-3 border-b border-surface-border px-4 py-3">
-                    <a href="{{ route('chat.index') }}" class="mr-1 text-sm text-accent md:hidden">←</a>
+                    <x-ui.icon-button :href="route('chat.index')" icon="previous" label="Back to inbox" class="mr-1 md:hidden" />
                     <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-sm font-semibold text-accent">
                         {{ mb_strtoupper(mb_substr(auth()->id() === $conversation->buyer_id ? $conversation->shop->name : $conversation->buyer->name, 0, 1)) }}
                     </span>
@@ -41,7 +41,7 @@
                 <form method="post" action="{{ route('chat.send', $conversation) }}" class="flex items-end gap-2 border-t border-surface-border p-3">
                     @csrf
                     <textarea name="body" rows="2" maxlength="4000" required class="fs-input min-w-0 flex-1 resize-y" placeholder="Write a message…">{{ old('body') }}</textarea>
-                    <button class="btn-accent shrink-0">Send</button>
+                    <x-ui.button variant="primary" size="lg" type="submit" class="shrink-0">Send</x-ui.button>
                 </form>
                 @error('body')<p class="px-4 pb-3 text-sm text-error">{{ $message }}</p>@enderror
             </main>

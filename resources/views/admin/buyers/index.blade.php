@@ -3,7 +3,7 @@
 @section('title', 'Buyer accounts · FarSell')
 
 @section('content')
-    <a href="{{ route('admin.dashboard') }}" class="text-sm text-accent underline">Back to Admin Dashboard</a>
+    <x-ui.button variant="link" :href="route('admin.dashboard')" class="text-sm text-accent underline">Back to Admin Dashboard</x-ui.button>
     <section class="fs-card mt-4 p-5">
         <h1 class="text-xl font-semibold">Buyer accounts</h1>
         <p class="mt-2 text-sm text-text-muted">Marketplace buyer accounts and their order counts.</p>

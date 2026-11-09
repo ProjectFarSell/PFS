@@ -3,13 +3,13 @@
 @section('title', 'Rider records · FarSell')
 
 @section('content')
-    <a href="{{ route('admin.dashboard') }}" class="text-sm text-accent underline">Back to dashboard</a>
+    <x-ui.button variant="link" :href="route('admin.dashboard')" class="text-sm text-accent underline">Back to dashboard</x-ui.button>
     <section class="fs-card-raised mt-4 p-5">
         <h1 class="text-2xl font-semibold">Rider records</h1>
         <p class="mt-2 text-sm text-text-muted">Review delivery status history, completed-shipment earnings, and buyer feedback.</p>
         <nav class="mt-4 flex flex-wrap gap-2" aria-label="Rider record sections">
             @foreach(['history' => 'Delivery history', 'earnings' => 'Earnings', 'feedback' => 'Buyer feedback'] as $key => $label)
-                <a href="{{ route('admin.rider-records.index', ['section' => $key]) }}" @class(['btn-accent' => $section === $key, 'btn-outline' => $section !== $key]) @if($section === $key) aria-current="page" @endif>{{ $label }}</a>
+                <x-ui.button :href="route('admin.rider-records.index', ['section' => $key])" :variant="$section === $key ? 'primary' : 'secondary'" :aria-current="$section === $key ? 'page' : null">{{ $label }}</x-ui.button>
             @endforeach
         </nav>
     </section>

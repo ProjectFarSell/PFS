@@ -2,7 +2,7 @@
 
 @if (count($slides) > 0)
     <section
-        {{ $attributes->class(['relative overflow-hidden rounded-2xl']) }}
+        {{ $attributes->class(['relative rounded-2xl']) }}
         x-data="carousel({{ count($slides) }}, {{ (int) $autoplay }})"
         role="region"
         aria-roledescription="carousel"
@@ -17,7 +17,7 @@
         style="background-color: rgb(var(--color-surface-muted)); color: rgb(var(--color-text-base));"
     >
         <div
-            class="overflow-hidden"
+            @class(['overflow-hidden rounded-t-2xl', 'rounded-b-2xl' => count($slides) === 1])
             style="touch-action: pan-y pinch-zoom;"
             @touchstart.passive="onTouchStart($event)"
             @touchmove.passive="onTouchMove($event)"
@@ -67,38 +67,35 @@
         </div>
 
         @if (count($slides) > 1)
-            <div class="flex flex-wrap items-center justify-between gap-2 border-t p-3 sm:px-6" style="background-color: rgb(var(--color-surface)); border-color: rgb(var(--color-surface-border));">
-                <button
+            <div class="flex flex-wrap items-center justify-between gap-2 rounded-b-2xl border-t p-3 sm:px-6" style="background-color: rgb(var(--color-surface)); border-color: rgb(var(--color-surface-border));">
+                <x-ui.button variant="tertiary"
                     type="button"
                     @click="togglePlay()"
-                    :aria-pressed="userPaused"
-                    :disabled="reducedMotion || {{ (int) $autoplay }} <= 0"
+                    ::aria-pressed="userPaused"
+                    ::disabled="reducedMotion || {{ (int) $autoplay }} <= 0"
                     class="inline-flex h-11 w-11 items-center justify-center rounded-full text-sm font-semibold hover:bg-surface-muted disabled:opacity-60"
-                    :aria-label="userPaused ? 'Resume slideshow' : 'Pause slideshow'"
+                    ::aria-label="userPaused ? 'Resume slideshow' : 'Pause slideshow'"
                 >
-                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path :d="userPaused || reducedMotion ? 'M6 3L17 10L6 17Z' : 'M5 3H8V17H5ZM12 3H15V17H12Z'" d="M5 3H8V17H5ZM12 3H15V17H12Z"/></svg>
-                </button>
-                <div class="flex flex-wrap items-center justify-center" role="group" aria-label="Choose a slide">
+                    <x-ui.icon name="play" size="sm" x-show="userPaused || reducedMotion" x-cloak /><x-ui.icon name="pause" size="sm" x-show="!userPaused && !reducedMotion" />
+                </x-ui.button>
+                <p class="mr-auto text-sm text-text-muted" aria-hidden="true" x-text="(current + 1) + ' / ' + total"></p>
+                <x-ui.button variant="secondary" type="button" @click="next()" aria-label="Next slide">Next <x-ui.icon name="next" size="sm" /></x-ui.button>
+                <x-action-menu context="slideshow actions">
+                    <x-ui.button variant="tertiary" type="button" class="dropdown-item text-left justify-start"
+                            @click="prev(); open = false; $nextTick(() => $refs.trigger.focus())">Previous slide</x-ui.button>
+                    <p class="border-t border-surface-border px-4 pt-2 text-xs font-semibold text-text-muted">Choose a slide</p>
                     @foreach ($slides as $slide)
-                        <button
+                        <x-ui.button variant="tertiary"
                             type="button"
-                            @click="goTo({{ $loop->index }})"
+                            @click="goTo({{ $loop->index }}); open = false; $nextTick(() => $refs.trigger.focus())"
                             aria-label="Go to slide {{ $loop->iteration }}: {{ $slide['title'] }}"
-                            :aria-current="isActive({{ $loop->index }}) ? 'true' : 'false'"
-                            class="inline-flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                            ::aria-current="isActive({{ $loop->index }}) ? 'true' : 'false'"
+                            class="dropdown-item text-left justify-start"
                         >
-                            <span aria-hidden="true" class="h-2 rounded-full transition-all duration-300" style="background-color: rgb(var(--color-accent));" :class="isActive({{ $loop->index }}) ? 'w-5 opacity-100' : 'w-2 opacity-30'"></span>
-                        </button>
+                            {{ $loop->iteration }}. {{ $slide['title'] }}
+                        </x-ui.button>
                     @endforeach
-                </div>
-                <div class="flex items-center gap-1">
-                    <button type="button" @click="prev()" aria-label="Previous slide" class="inline-flex h-11 w-11 items-center justify-center rounded-full text-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-                        <span aria-hidden="true">&#8592;</span>
-                    </button>
-                    <button type="button" @click="next()" aria-label="Next slide" class="inline-flex h-11 w-11 items-center justify-center rounded-full text-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-                        <span aria-hidden="true">&#8594;</span>
-                    </button>
-                </div>
+                </x-action-menu>
             </div>
             <p class="sr-only" aria-live="polite" aria-atomic="true" x-text="paused ? 'Slide ' + (current + 1) + ' of ' + total : ''"></p>
         @endif

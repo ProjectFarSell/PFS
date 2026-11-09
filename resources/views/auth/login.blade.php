@@ -9,7 +9,7 @@
             <p class="text-sm text-text-muted mt-1">Sign in or create an account to place your order. Your cart will be kept.</p>
         @else
             <p class="text-sm text-text-muted mt-1">Sign in to manage your account and orders.</p>
-            <a href="{{ route('welcome') }}" class="mt-3 inline-block text-sm text-accent underline">Back to browsing</a>
+            <x-ui.button variant="link" :href="route('welcome')" class="mt-3 inline-block text-sm text-accent underline">Back to browsing</x-ui.button>
         @endif
 
         <form method="post" action="{{ route('login') }}" class="mt-4 space-y-3">
@@ -31,12 +31,12 @@
                 <p role="alert" class="text-sm text-error">{{ $errors->login->first() }}</p>
             @endif
 
-            <button class="w-full btn-accent rounded-full py-2.5">{{ $checkoutIntent ? 'Log in to checkout' : 'Log in' }}</button>
+            <x-ui.button variant="primary" size="lg" type="submit" class="w-full">{{ $checkoutIntent ? 'Log in to checkout' : 'Log in' }}</x-ui.button>
         </form>
 
         @if($checkoutIntent)
-            <a href="{{ route('register') }}" class="mt-3 w-full btn-outline rounded-full">Create an account</a>
-            <a href="{{ route('cart.index') }}" class="block mt-4 text-center text-sm text-text-muted underline">Back to cart</a>
+            <x-ui.button variant="secondary" :href="route('register')" class="mt-3 w-full">Create an account</x-ui.button>
+            <x-ui.button variant="link" :href="route('cart.index')" class="block mt-4 text-center text-sm text-text-muted underline">Back to cart</x-ui.button>
         @else
         <p class="text-sm text-center text-text-muted mt-4">
             New here?

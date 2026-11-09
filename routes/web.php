@@ -61,6 +61,13 @@ use Illuminate\Support\Facades\Route;
 // Browsing is public by default. Keep both route names/URLs compatible
 // with existing links; neither requires a guest-session entry step.
 Route::view('/privacy', 'privacy')->name('privacy');
+if (app()->environment('local')) {
+    Route::get('/styleguide', function () {
+        abort_unless(app()->environment('local'), 404);
+
+        return view('styleguide');
+    })->name('styleguide');
+}
 Route::get('/ready', function (OperationalStatus $status) {
     $healthy = $status->inspect()['healthy'];
 

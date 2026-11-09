@@ -20,7 +20,7 @@
 </head>
 <body>
     <div class="controls">
-        <button type="button" onclick="window.print()">Print {{ $document === 'invoice' ? 'invoice' : 'packing slip' }}</button>
+        <x-ui.button variant="tertiary" type="button" onclick="window.print()">Print {{ $document === 'invoice' ? 'invoice' : 'packing slip' }}</x-ui.button>
         <a href="{{ route('orders.show', $order) }}">Back to order</a>
     </div>
 

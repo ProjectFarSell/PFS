@@ -1,0 +1,1664 @@
+FARSELL TASK ENTRIES
+
+Copy the title and description into the matching fields, then select the assignee and deadline.
+Dates below are from the proposed schedule. Finished tasks have no recorded deadline.
+Finished means previously implemented; the evidence review is still included in the remaining tasks.
+
+FINISHED TASKS
+
+D01 - Buyer registration and login
+
+What needs doing?
+Buyer registration and login
+
+Details
+Let buyers create an account, sign in, and sign out. Keep their cart when they log in and ask them to sign in before checkout.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D02 - Product database setup
+
+What needs doing?
+Product database setup
+
+Details
+Set up products, variants, and photos so each item has the right details and images.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D03 - Saved delivery addresses
+
+What needs doing?
+Saved delivery addresses
+
+Details
+Let buyers save addresses and choose their region, province, city, and barangay. Make sure they can only use their own addresses.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D04 - Shopping cart
+
+What needs doing?
+Shopping cart
+
+Details
+Let buyers add items, change quantities, and remove products. Update the total and stop them from adding more than the available stock.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D05 - Checkout and stock handling
+
+What needs doing?
+Checkout and stock handling
+
+Details
+Create the order and reserve stock together. Keep the cart if checkout fails and make sure cancelled items are only restocked once.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D06 - Website themes and navigation
+
+What needs doing?
+Website themes and navigation
+
+Details
+Add light and dark themes with menus that work on both phones and computers. Remember the user's theme choice.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D07 - Login and signup pages
+
+What needs doing?
+Login and signup pages
+
+Details
+Build the login and signup screens with clear error messages. Bring buyers back to checkout after they sign in.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D08 - Homepage and shop directory
+
+What needs doing?
+Homepage and shop directory
+
+Details
+Let visitors browse products and active shops without signing in. Show a helpful message when there is nothing to display.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D09 - Profile and account settings
+
+What needs doing?
+Profile and account settings
+
+Details
+Let users update their details and password. Protect account deletion when the account still has orders or other marketplace records.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D10 - Seller application and approval
+
+What needs doing?
+Seller application and approval
+
+Details
+Let buyers apply to become sellers. Give admins a way to approve or reject applications and create a shop after approval.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D11 - Seller product management
+
+What needs doing?
+Seller product management
+
+Details
+Let sellers add products, upload photos, update stock, and publish listings. Keep them from editing another seller's products.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D12 - Seller dashboard
+
+What needs doing?
+Seller dashboard
+
+Details
+Show sellers their own inventory and order items. Keep other shops' records out of their dashboard.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D13 - Rider application and approval
+
+What needs doing?
+Rider application and approval
+
+Details
+Let users apply as riders and submit their documents privately. Give admins a way to review applications and approve eligible riders.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D14 - Rider dashboard
+
+What needs doing?
+Rider dashboard
+
+Details
+Show applicants their application status and approved riders their assigned deliveries. Keep each rider's delivery list private.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D15 - Seller order handling
+
+What needs doing?
+Seller order handling
+
+Details
+Let sellers accept, reject, and prepare their part of an order. Require pickup details before marking it ready and restore rejected stock only once.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D16 - Delivery offers and assignment
+
+What needs doing?
+Delivery offers and assignment
+
+Details
+Offer ready deliveries to eligible riders and allow admin assignment when needed. Retry expired offers and prevent two riders from claiming the same shipment.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D17 - Pickup and delivery updates
+
+What needs doing?
+Pickup and delivery updates
+
+Details
+Let assigned riders record pickup and delivery. Let buyers confirm receipt and keep a history of shipment updates.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D18 - Invoices and packing slips
+
+What needs doing?
+Invoices and packing slips
+
+Details
+Let buyers print documents for their own orders. Show the correct charges, including adjustments for cancelled items.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D19 - Buyer notifications
+
+What needs doing?
+Buyer notifications
+
+Details
+Give buyers an inbox for order and delivery updates. Let them mark notifications as read and see how many are unread.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D20 - Order cancellation
+
+What needs doing?
+Order cancellation
+
+Details
+Let buyers cancel before a rider is assigned. Save the reason and return stock without counting the same cancellation twice.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D21 - Returns and reimbursement records
+
+What needs doing?
+Returns and reimbursement records
+
+Details
+Let buyers request a return for eligible items and attach private evidence. Let admins record approved reimbursements without presenting them as automatic money transfers.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D22 - Seller sales summary
+
+What needs doing?
+Seller sales summary
+
+Details
+Show sellers their completed COD sales and recorded reimbursements. Add date filters and a CSV download containing only their shop's records.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D23 - Account security
+
+What needs doing?
+Account security
+
+Details
+Add extra sign-in protection for admins, let users revoke old sessions, and record important changes without saving secrets in the audit log.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+D24 - Product reviews
+
+What needs doing?
+Product reviews
+
+Details
+Let eligible buyers leave feedback on purchased products. Check uploaded media and reject reviews from users who are not eligible.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Not recorded (finished task)
+
+Status
+Done
+
+------------------------------------------------------------
+
+REMAINING TASKS
+
+P01 - Confirm the project scope
+
+What needs doing?
+Confirm the project scope
+
+Details
+Agree on what each of the five roles can do and which buyer and rider features belong in the mobile app. Confirm what is outside the release, including live payments and push notifications.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+November 10, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P02 - Set up the task board
+
+What needs doing?
+Set up the task board
+
+Details
+Add the tasks to the board with owners, deadlines, and details. Confirm the team leader and make sure everyone knows their responsibilities.
+Start after: P01.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+November 12, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P03 - Define role permissions
+
+What needs doing?
+Define role permissions
+
+Details
+Map out what Superadmin, Buyer, Seller, Logistics, and Rider can access. Keep delivery operations separate from full admin control.
+Start after: P01.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+November 12, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P04 - Plan the mobile screens
+
+What needs doing?
+Plan the mobile screens
+
+Details
+Sketch the buyer and rider screens and how users move between them. Include loading, empty, error, and offline states.
+Start after: P01.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+November 13, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P05 - Review finished-task evidence
+
+What needs doing?
+Review finished-task evidence
+
+Details
+Check the finished tasks and attach the relevant screenshots, test results, or code references. Confirm who owns each task and move anything unverified to review.
+Start after: P02.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+November 17, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P06 - Test the buyer website flow
+
+What needs doing?
+Test the buyer website flow
+
+Details
+Walk through browsing, cart, checkout, and invoice printing using test accounts. Check that unavailable stock and another buyer's address are rejected.
+Start after: P05.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+November 20, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P07 - Test the seller website flow
+
+What needs doing?
+Test the seller website flow
+
+Details
+Try seller application, approval, product publishing, and order preparation. Check a mixed-shop order and make sure sellers cannot access each other's records.
+Start after: P06.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+November 25, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P08 - Test the rider website flow
+
+What needs doing?
+Test the rider website flow
+
+Details
+Try rider approval, delivery offers, pickup, and delivery proof. Check expired offers, wrong rider access, and invalid delivery PINs.
+Start after: P07.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+November 30, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P09 - Add the Logistics role
+
+What needs doing?
+Add the Logistics role
+
+Details
+Create a separate role for delivery staff. Allow dispatch and monitoring while keeping admin security, global settings, and product management restricted.
+Start after: P03.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+November 16, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P10 - Separate admin and Logistics menus
+
+What needs doing?
+Separate admin and Logistics menus
+
+Details
+Give Superadmin and Logistics their own navigation links. Check that opening a restricted page directly still blocks access.
+Start after: P09.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+November 18, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P11 - Test access for all five roles
+
+What needs doing?
+Test access for all five roles
+
+Details
+Try the allowed and restricted actions for each role. Confirm that blocked actions do not change records or reveal private information.
+Start after: P09, P10.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+December 1, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P12 - Check user management
+
+What needs doing?
+Check user management
+
+Details
+Test account search, suspension, and role controls. Make sure suspended users lose access while their order history stays intact.
+Start after: P03.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+December 3, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P13 - Check product and review moderation
+
+What needs doing?
+Check product and review moderation
+
+Details
+Test admin controls for categories, products, and reviews. Reject invalid changes and keep a record of important moderation actions.
+Start after: P12.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+December 7, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P14 - Build admin order reports
+
+What needs doing?
+Build admin order reports
+
+Details
+Prepare order totals with date and status filters. Check the numbers against sample orders and make the CSV export safe to open in a spreadsheet.
+Start after: P03.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+November 19, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P15 - Create the admin reports page
+
+What needs doing?
+Create the admin reports page
+
+Details
+Show order summaries with date filters and a download button. Make sure the page and CSV show the same results.
+Start after: P14.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+November 23, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P16 - Add delivery and notification settings
+
+What needs doing?
+Add delivery and notification settings
+
+Details
+Let Superadmin update approved settings with proper validation. Keep past order charges unchanged when the delivery fee changes.
+Start after: P03.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+November 23, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P17 - Create the settings page
+
+What needs doing?
+Create the settings page
+
+Details
+Show the current settings in a simple form. Display clear errors for invalid values and confirm when changes are saved.
+Start after: P16.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+November 25, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P18 - Check shop profile editing
+
+What needs doing?
+Check shop profile editing
+
+Details
+Review the seller's shop-profile form and storefront. Make sure sellers can only update their own shop and only intended business details are public.
+Start after: P07.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+November 27, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P19 - Add seller promotion rules
+
+What needs doing?
+Add seller promotion rules
+
+Details
+Let sellers set valid discounts for their own products. Check promotion dates and calculate the final price on the server.
+Start after: P03.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+November 26, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P20 - Create promotion forms and price labels
+
+What needs doing?
+Create promotion forms and price labels
+
+Details
+Build the seller promotion form and show active discounts to buyers. Keep the displayed price and promotion dates clear.
+Start after: P19.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+December 1, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P21 - Test promotion prices
+
+What needs doing?
+Test promotion prices
+
+Details
+Check when discounts start and end. Make sure the product page, cart, and checkout use the correct price.
+Start after: P20.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+December 9, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P22 - Build the Logistics delivery queue
+
+What needs doing?
+Build the Logistics delivery queue
+
+Details
+Prepare a list of ready, assigned, and delayed shipments with useful filters. Only include the information needed to manage deliveries.
+Start after: P09.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+November 30, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P23 - Create the dispatch board
+
+What needs doing?
+Create the dispatch board
+
+Details
+Show the delivery queue and shipment history. Let Logistics filter by city and status without exposing full admin controls.
+Start after: P22.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+December 3, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P24 - Create manual rider assignment
+
+What needs doing?
+Create manual rider assignment
+
+Details
+Let Logistics choose an eligible rider for a shipment. Show a clear message if someone else assigns it first and prevent duplicate assignments.
+Start after: P23.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+December 7, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P25 - Build delivery report totals
+
+What needs doing?
+Build delivery report totals
+
+Details
+Prepare delivery counts by date and status. Check them against sample shipments and leave unnecessary personal details out of exports.
+Start after: P22.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+December 2, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P26 - Create the delivery reports page
+
+What needs doing?
+Create the delivery reports page
+
+Details
+Show delivery totals with filters and a CSV download. Keep the page and export consistent and available only to the right roles.
+Start after: P25.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+December 9, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P27 - Test simultaneous purchases and rider claims
+
+What needs doing?
+Test simultaneous purchases and rider claims
+
+Details
+Use an isolated MySQL test setup to try buying the last item and claiming the same delivery at the same time. Confirm there is no overselling or double assignment.
+Start after: P24.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+December 14, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P28 - Check automatic dispatch timing
+
+What needs doing?
+Check automatic dispatch timing
+
+Details
+Run the scheduler in the test environment. Confirm expired offers move to the next eligible rider without creating duplicate active offers.
+Start after: P22.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+December 15, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P29 - Check rider history and earnings
+
+What needs doing?
+Check rider history and earnings
+
+Details
+Review completed deliveries, proof access, and recorded earnings. Make sure riders only see their own records and recorded earnings are not shown as paid payouts.
+Start after: P08.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+December 17, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P30 - Plan the mobile API
+
+What needs doing?
+Plan the mobile API
+
+Details
+List the endpoints needed by each mobile screen. Define login requirements, returned data, pagination, and error messages before building the screens.
+Start after: P03, P04.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+December 4, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P31 - Add mobile login and logout endpoints
+
+What needs doing?
+Add mobile login and logout endpoints
+
+Details
+Let approved accounts sign in through the API and receive a token. Reject invalid credentials and invalidate the token when the user logs out.
+Start after: P30.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+December 9, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P32 - Set up the Flutter app
+
+What needs doing?
+Set up the Flutter app
+
+Details
+Create the app navigation and shared connection to the API. Run it on the target device and handle connection errors without crashing.
+Start after: P04, P30.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+December 11, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P33 - Build mobile sign-in
+
+What needs doing?
+Build mobile sign-in
+
+Details
+Create the login screen and store the session token securely. Restore valid sessions and return users to login when they sign out or lose access.
+Start after: P31, P32.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+December 16, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P34 - Add mobile product endpoints
+
+What needs doing?
+Add mobile product endpoints
+
+Details
+Provide product details, search filters, and paginated results. Keep unpublished products and inactive shops hidden.
+Start after: P30.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+December 11, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P35 - Build mobile product browsing
+
+What needs doing?
+Build mobile product browsing
+
+Details
+Create the product list, search, filters, and detail screens. Include useful loading, empty, and retry states.
+Start after: P32, P34.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+December 18, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P36 - Add mobile cart endpoints
+
+What needs doing?
+Add mobile cart endpoints
+
+Details
+Let signed-in buyers add items, change quantities, and remove products through the API. Check ownership, stock, and prices on the server.
+Start after: P31, P34.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+December 16, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P37 - Build the mobile cart
+
+What needs doing?
+Build the mobile cart
+
+Details
+Show cart items and totals with quantity and remove controls. Display stock errors clearly and only show changes after the server confirms them.
+Start after: P33, P35, P36.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+December 23, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P38 - Add mobile checkout endpoints
+
+What needs doing?
+Add mobile checkout endpoints
+
+Details
+Support saved addresses and checkout through the API. Reject another buyer's address and prevent repeated requests from creating duplicate orders.
+Start after: P36.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+December 22, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P39 - Build mobile checkout
+
+What needs doing?
+Build mobile checkout
+
+Details
+Let buyers choose an address, review charges, and place an order. Handle timeouts safely so retrying does not place the same order twice.
+Start after: P37, P38.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+December 28, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P40 - Add mobile order endpoints
+
+What needs doing?
+Add mobile order endpoints
+
+Details
+Return the signed-in buyer's order history and shipment updates. Keep results paginated and consistent with the website.
+Start after: P38.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+December 24, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P41 - Build mobile order tracking
+
+What needs doing?
+Build mobile order tracking
+
+Details
+Create order history and shipment timeline screens. Let buyers reopen orders and refresh their latest updates.
+Start after: P39, P40.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+December 30, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P42 - Add mobile rider-offer endpoints
+
+What needs doing?
+Add mobile rider-offer endpoints
+
+Details
+Let approved riders update availability and receive eligible offers. Hide private delivery details before assignment and prevent duplicate claims.
+Start after: P31, P22.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+December 28, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P43 - Build mobile rider offers
+
+What needs doing?
+Build mobile rider offers
+
+Details
+Create availability controls and delivery-offer screens with accept and decline actions. Prevent riders from accepting expired offers.
+Start after: P33, P42.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+January 4, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P44 - Add mobile delivery-action endpoints
+
+What needs doing?
+Add mobile delivery-action endpoints
+
+Details
+Let assigned riders record pickup and submit delivery proof. Reject invalid shipment changes, proof, and PINs without changing the delivery status.
+Start after: P42.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+December 31, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P45 - Build mobile delivery screens
+
+What needs doing?
+Build mobile delivery screens
+
+Details
+Show assigned pickup and delivery details. Add pickup and proof submission with clear feedback when something needs correcting.
+Start after: P43, P44.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+January 7, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P46 - Add mobile notification endpoints
+
+What needs doing?
+Add mobile notification endpoints
+
+Details
+Return the user's notifications and unread count. Allow read actions without exposing or changing another user's inbox.
+Start after: P31, P40.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+January 1, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P47 - Build the mobile notification inbox
+
+What needs doing?
+Build the mobile notification inbox
+
+Details
+Show updates and let buyers open the related order. Add offline messages and retry controls; this task covers the inbox, not background push.
+Start after: P33, P46.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+January 8, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P48 - Test mobile API security
+
+What needs doing?
+Test mobile API security
+
+Details
+Check invalid tokens, expired sessions, wrong roles, and another user's record IDs. Retry checkout and confirm it still creates only one order.
+Start after: P40, P44, P46.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+January 6, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P49 - Test the buyer mobile flow
+
+What needs doing?
+Test the buyer mobile flow
+
+Details
+Use the target device to sign in, browse, add to cart, check out, and track an order. Try lost connections and invalid inputs and record the results.
+Start after: P41, P47.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+January 13, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P50 - Test the rider mobile flow
+
+What needs doing?
+Test the rider mobile flow
+
+Details
+Use the target device to accept a delivery, record pickup, and submit proof. Check expired offers, wrong rider access, and revoked sessions.
+Start after: P45, P48.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+January 14, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P51 - Check returns, notifications, and reports
+
+What needs doing?
+Check returns, notifications, and reports
+
+Details
+Compare report totals with known test orders and reimbursements. Check that duplicate reimbursement recording fails and return evidence stays private.
+Start after: P15, P21, P26.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+December 22, 2026, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P52 - Fix mobile layouts and keyboard access
+
+What needs doing?
+Fix mobile layouts and keyboard access
+
+Details
+Review the main web forms for all five roles on narrow screens and in both themes. Fix overflow, unclear labels, focus problems, and hard-to-find errors.
+Start after: P10, P17, P24.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+January 12, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P53 - Prepare the staging site
+
+What needs doing?
+Prepare the staging site
+
+Details
+Set up HTTPS, production assets, the queue worker, and scheduler. Confirm the readiness check passes and test events and delivery offers are processed.
+Start after: P27, P28, P48.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+January 18, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P54 - Test backup restoration
+
+What needs doing?
+Test backup restoration
+
+Details
+Restore the database and private files into a separate test location. Check the expected records and file permissions without changing live data.
+Start after: P53.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+January 20, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P55 - Run the release security review
+
+What needs doing?
+Run the release security review
+
+Details
+Check admin MFA, production error settings, access restrictions, and secret handling. Clearly document which payment actions are demos or recorded COD activity.
+Start after: P48, P53.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+January 21, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P56 - Run the final acceptance walkthrough
+
+What needs doing?
+Run the final acceptance walkthrough
+
+Details
+Repeat the main web and mobile flows for all five roles. Fix and retest blocking issues, then record any remaining limitations.
+Start after: P49, P50, P51, P52, P54, P55.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+January 26, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P57 - Write the technical handover
+
+What needs doing?
+Write the technical handover
+
+Details
+Explain how to set up an isolated copy, how the main tables relate, and how the API works. Include safe setup steps and known limits.
+Start after: P55.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+January 25, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P58 - Write the user guides
+
+What needs doing?
+Write the user guides
+
+Details
+Prepare short instructions with screenshots for each role and the mobile flows. Include common errors and how users can recover.
+Start after: P41, P45, P52.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+January 14, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P59 - Prepare the submission and demo
+
+What needs doing?
+Prepare the submission and demo
+
+Details
+Gather the board, feature breakdown, assignments, timeline, system map, and team responsibilities. Prepare a repeatable demonstration that shows the finished work.
+Start after: P56, P57, P58.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+January 28, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------
+
+P60 - Complete the final handover
+
+What needs doing?
+Complete the final handover
+
+Details
+Review the submission with the team and attach the final evidence. Mark only accepted work as done and leave unfinished tasks visible.
+Start after: P59.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+February 1, 2027, 5:00 PM (Philippine time)
+
+Status
+To Do
+
+------------------------------------------------------------

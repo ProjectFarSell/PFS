@@ -5,7 +5,7 @@
     <h1 class="text-2xl font-bold">Returns & refunds</h1>
     <p class="text-sm text-text-muted">Requests cover merchandise, excluding delivery fees. Sellers recommend a decision; admins approve or reject. Reimbursements happen outside FarSell and are recorded here. Returned goods are not automatically restocked.</p>
     @if($errors->any())<div role="alert" class="rounded-xl border border-error p-4">{{ $errors->first() }}</div>@endif
-    <form method="get" class="flex flex-wrap gap-3"><label>Status <select name="status" class="rounded-lg border border-surface-border bg-surface p-2"><option value="">All requests</option>@foreach(\App\Models\ReturnRequest::STATUSES as $status)<option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>@endforeach</select></label><button class="btn-outline">Filter</button></form>
+    <form method="get" class="flex flex-wrap gap-3"><label>Status <select name="status" class="rounded-lg border border-surface-border bg-surface p-2"><option value="">All requests</option>@foreach(\App\Models\ReturnRequest::STATUSES as $status)<option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>@endforeach</select></label><x-ui.button variant="secondary" type="submit">Filter</x-ui.button></form>
     @forelse($cases as $case)
         <article class="rounded-xl border border-surface-border bg-surface p-5 space-y-3">
             <h2 class="font-bold">Request R{{ $case->id }} · {{ $case->item->name }}</h2>
@@ -15,7 +15,7 @@
             <p class="text-sm">Requested: PHP {{ number_format((float) $case->requested_amount, 2) }}@if($case->approved_amount !== null) · Approved: PHP {{ number_format((float) $case->approved_amount, 2) }}@endif</p>
             @if($case->return_required)<p class="text-sm">Return of goods required. Follow the handover instructions in the review below.</p>@endif
             @if($case->refunded_at)<p class="text-sm">Reimbursement recorded {{ $case->refunded_at->format('M j, Y g:i A') }} · Reference: {{ $case->refund_reference }}</p>@endif
-            @if($case->evidence_path)<a class="text-sm text-accent underline" href="{{ route('returns.evidence', $case) }}" target="_blank" rel="noopener">View private evidence photo</a>@endif
+            @if($case->evidence_path)<x-ui.button variant="link" class="text-sm text-accent underline" :href="route('returns.evidence', $case)" target="_blank" rel="noopener">View private evidence photo</x-ui.button>@endif
             <ol class="space-y-2 border-l border-surface-border pl-4 text-sm">
                 @foreach($case->events as $event)<li><time class="text-xs text-text-muted">{{ $event->created_at->format('M j, Y g:i A') }}</time><p>{{ ucfirst(str_replace('_', ' ', $event->status)) }}: {{ $event->note }}</p></li>@endforeach
             </ol>
@@ -35,7 +35,7 @@
                         <label class="block text-sm"><input type="checkbox" name="return_required" value="1"> Require returned goods before reimbursement</label>
                     @endif
                     <label class="block text-sm">Response / handover instructions<textarea name="note" required minlength="5" maxlength="2000" class="mt-1 block w-full rounded-lg border border-surface-border bg-surface p-2"></textarea></label>
-                    <button class="btn-accent">{{ $case->status === 'approved' ? 'Record reimbursement' : 'Submit review' }}</button>
+                    <x-ui.button variant="primary" size="lg" type="submit">{{ $case->status === 'approved' ? 'Record reimbursement' : 'Submit review' }}</x-ui.button>
                 </form>
             @endif
         </article>

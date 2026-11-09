@@ -16,16 +16,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'FarSell')</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <x-primary-font />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     {{-- Apply stored theme before first paint to prevent flash --}}
     <script src="{{ asset('js/theme.js') }}"></script>
 </head>
 
-<body class="min-h-screen flex flex-col antialiased font-sans transition-colors duration-200 {{ $canUseCart ? 'pb-20 md:pb-0' : '' }}"
+<body class="min-h-screen flex flex-col antialiased font-sans transition-colors duration-200 {{ $__env->hasSection('buyer-action-bar') ? 'pb-[calc(9rem+env(safe-area-inset-bottom))] md:pb-0' : ($canUseCart ? 'pb-20 md:pb-0' : '') }}"
       style="background-color: rgb(var(--color-surface)); color: rgb(var(--color-text-base));"
       x-data="{
           drawerOpen: false,
@@ -41,7 +39,7 @@
           }
       }"
       @keydown.escape.window="drawerOpen && closeDrawer()">
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] btn-accent">Skip to content</a>
+    <x-ui.button variant="primary" size="lg" href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60]">Skip to content</x-ui.button>
 
     {{-- ══════════════════════════════════════════════════════════════
          TOP NAVIGATION  —  Extremerate style
@@ -66,7 +64,7 @@
                 </a>
 
                 {{-- ── Desktop: category dropdown nav ────────────────── --}}
-                <nav class="hidden xl:flex items-center gap-1" aria-label="Category navigation">
+                <nav class="hidden xl:flex items-center gap-2" aria-label="Category navigation">
 
                     {{-- All Products --}}
                     <a href="{{ route('catalog.index') }}"
@@ -76,18 +74,13 @@
                     </a>
 
                     {{-- Categories mega-dropdown --}}
-                    <div class="relative" x-data="{ open: false }"
-                         @mouseenter="open = true" @mouseleave="open = false">
-                        <button @keydown.escape.window="open = false" @click.outside="open = false" @click="open = !open"
-                                class="nav-link px-3 py-1 flex items-center gap-1"
-                                :aria-expanded="open" aria-haspopup="true">
+                    <div class="relative" x-data="{ open: false }">
+                        <x-ui.button variant="tertiary" type="button" @keydown.escape.window="open = false" @click.outside="open = false" @click="open = !open"
+                                class="nav-link px-3 py-1 flex items-center gap-1 justify-start"
+                                ::aria-expanded="open" aria-haspopup="true">
                             Categories
-                            <svg class="h-3.5 w-3.5 transition-transform duration-150"
-                                 :class="open && 'rotate-180'"
-                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7"/>
-                            </svg>
-                        </button>
+                            <x-ui.icon name="expand" size="sm" class="transition-transform" x-bind:class="open && 'rotate-180'" />
+                        </x-ui.button>
 
                         <div x-show="open"
                              x-transition:enter="transition ease-out duration-150"
@@ -101,7 +94,7 @@
                             @foreach ($navCategories as $cat)
                                 <a href="{{ route('catalog.index', ['category' => $cat->id]) }}"
                                    class="dropdown-item">
-                                    <span class="text-base leading-none w-5 text-center">{{ $cat->icon }}</span>
+                                    <x-ui.icon name="browse" size="sm" />
                                     {{ $cat->name }}
                                 </a>
                             @endforeach
@@ -125,41 +118,36 @@
                      x-data="marketplaceSearch(@js(request('q', '')))" @click.outside="focused = false" @keydown.escape="focused = false">
                     <form action="{{ route('catalog.index') }}" method="get"
                           x-ref="searchForm" @submit="remember()" class="relative" role="search">
-                        <svg class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors"
-                             :style="focused ? 'color:rgb(var(--color-accent))' : 'color:rgb(var(--color-text-muted))'"
-                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="m21 21-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
-                        </svg>
+                        <x-ui.icon name="search" size="sm" class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" x-bind:class="{ 'text-accent': focused }" />
                         <input type="search" name="q" value="{{ request('q') }}" x-model="query" x-ref="searchInput" maxlength="120" autocomplete="off"
                                placeholder="Search items, shops, brands, surplus lots..."
                                aria-label="Search products"
                                @focus="focused = true" @focusout="if (!$el.parentElement.parentElement.contains($event.relatedTarget)) focused = false"
                                class="fs-input min-h-11 pl-10 pr-11 rounded-full">
-                        <button type="button" x-show="query.length > 0" @click="query = ''; $refs.searchInput.focus()" aria-label="Clear search" class="absolute right-0 top-0 theme-toggle" style="display:none;">×</button>
+                        <x-ui.icon-button variant="tertiary" label="Clear search" icon="close" type="button" x-show="query.length > 0" @click="query = ''; $refs.searchInput.focus()" class="absolute right-0 top-0 theme-toggle" style="display:none;"></x-ui.icon-button>
                     </form>
                     <div x-show="focused && !query.trim() && recent.length" class="search-recents" style="display:none;" @focusout="if (!$el.parentElement.contains($event.relatedTarget)) focused = false">
-                        <div class="flex items-center justify-between px-2"><p class="text-xs font-semibold text-text-muted">Recent searches</p><button type="button" @click="clearRecent()" class="min-h-11 px-2 text-xs text-accent">Clear history</button></div>
-                        <template x-for="term in recent" :key="term"><button type="button" @click="choose(term)" class="dropdown-item w-full rounded-xl text-left" x-text="term"></button></template>
+                        <div class="flex items-center justify-between px-2"><p class="text-xs font-semibold text-text-muted">Recent searches</p><x-ui.button variant="tertiary" size="sm" type="button" @click="clearRecent()" class="min-h-11 px-2 text-xs text-accent">Clear history</x-ui.button></div>
+                        <template x-for="term in recent" :key="term"><x-ui.button variant="tertiary" type="button" @click="choose(term)" class="dropdown-item w-full rounded-xl text-left justify-start" x-text="term"></x-ui.button></template>
                     </div>
                 </div>
 
                 {{-- ── Right icons cluster ─────────────────────────────── --}}
-                <div class="ml-auto flex items-center gap-1.5 shrink-0">
+                <div class="ml-auto flex shrink-0 items-center gap-2">
                     @guest
                         {{-- Guest pill --}}
                         <div class="hidden sm:flex items-center gap-1 rounded-full border min-h-11 px-3 py-1.5 text-sm transition-colors"
                              style="border-color: rgb(var(--color-surface-border) / 0.7); background-color: rgb(var(--color-surface));">
-                            <a href="{{ route('login') }}" class="font-medium hover:underline" style="color: rgb(var(--color-accent));">Sign in</a>
+                            <x-ui.button variant="tertiary" :href="route('login')" class="text-accent">Sign in</x-ui.button>
                             <span class="mx-1" style="color: rgb(var(--color-surface-border));">|</span>
-                            <a href="{{ route('register') }}" class="font-medium hover:underline" style="color: rgb(var(--color-accent));">Register</a>
+                            <x-ui.button variant="tertiary" :href="route('register')" class="text-accent">Register</x-ui.button>
                         </div>
                     @endguest
                     @auth
                         {{-- Auth pill — opens drawer --}}
-                        <button x-ref="profilePill"
+                        <x-ui.button variant="tertiary" type="button" x-ref="profilePill"
                                 @click="openDrawer()"
-                                :aria-expanded="drawerOpen"
+                                ::aria-expanded="drawerOpen"
                                 aria-haspopup="dialog"
                                 class="hidden sm:flex items-center gap-2 rounded-full border min-h-11 px-3 py-1.5 text-sm font-medium transition-colors hover:border-accent max-w-[160px]"
                                 style="border-color: rgb(var(--color-surface-border) / 0.7); background-color: rgb(var(--color-surface));">
@@ -168,20 +156,15 @@
                                 {{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
                             </span>
                             <span class="truncate max-w-[120px]">{{ auth()->user()->name }}</span>
-                        </button>
+                        </x-ui.button>
                     @endauth
 
                     @if($canUseCart)
                     <x-buyer-notification-bell />
                     {{-- Cart --}}
-                    <a href="{{ route('cart.index') }}"
-                       class="theme-toggle relative"
-                       aria-label="Cart{{ $cartCount > 0 ? " ($cartCount items)" : '' }}">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="1.8">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/>
-                        </svg>
+                    <x-ui.icon-button :href="route('cart.index')" class="relative"
+                       :label="$cartCount > 0 ? 'Cart ('.$cartCount.' items)' : 'Cart'">
+                        <x-ui.icon name="cart" />
                         @if ($cartCount > 0)
                             <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center
                                          rounded-full text-[9px] font-bold leading-none"
@@ -189,57 +172,38 @@
                                 {{ $cartCount > 9 ? '9+' : $cartCount }}
                             </span>
                         @endif
-                    </a>
+                    </x-ui.icon-button>
                     @endif
 
                     {{-- Compact account trigger below sm --}}
                     @auth
                         {{-- xs-only icon trigger (< sm, where pill is hidden) --}}
-                        <button @click="openDrawer()"
+                        <x-ui.icon-button variant="tertiary" label="Open account panel" type="button" @click="openDrawer()"
                                 class="theme-toggle sm:hidden"
-                                aria-label="Open account panel">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-                            </svg>
-                        </button>
+                               >
+                            <x-ui.icon name="account" />
+                        </x-ui.icon-button>
                     @endauth
 
                     {{-- Theme toggle --}}
-                    <button class="theme-toggle"
+                    <x-ui.button variant="tertiary" type="button" class="theme-toggle"
                             @click="$theme.toggle()"
-                            :aria-label="$theme.isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+                            ::aria-label="$theme.isDark ? 'Switch to light mode' : 'Switch to dark mode'"
                             x-data>
                         {{-- Sun (shown in dark mode) --}}
-                        <svg x-show="$theme.isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/>
-                        </svg>
+                        <x-ui.icon name="light" x-show="$theme.isDark" x-cloak />
                         {{-- Moon (shown in light mode) --}}
-                        <svg x-show="!$theme.isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 12c0 5.385 4.365 9.75 9.75 9.75 4.797 0 8.818-3.462 9.75-8.002-.083.084-.166.165-.25.252v-.002Z"/>
-                        </svg>
-                    </button>
+                        <x-ui.icon name="dark" x-show="!$theme.isDark" />
+                    </x-ui.button>
 
                     {{-- Mobile hamburger --}}
-                    <button class="theme-toggle xl:hidden"
+                    <x-ui.icon-button variant="tertiary" label="Toggle menu" type="button" class="theme-toggle xl:hidden"
                             @click="mobileOpen = !mobileOpen"
-                            :aria-expanded="mobileOpen"
-                            aria-label="Toggle menu">
-                        <svg x-show="!mobileOpen" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
-                        </svg>
-                        <svg x-show="mobileOpen" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="2" style="display:none;">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
+                            ::aria-expanded="mobileOpen"
+                           >
+                        <x-ui.icon name="menu" x-show="!mobileOpen" />
+                        <x-ui.icon name="close" x-show="mobileOpen" x-cloak />
+                    </x-ui.icon-button>
                 </div>
             </div>
         </div>
@@ -254,7 +218,7 @@
              x-transition:leave-end="opacity-0"
              class="xl:hidden border-t pb-4"
              style="display:none; background-color: rgb(var(--color-surface)); border-color: rgb(var(--color-surface-border) / 0.4);">
-            <nav class="mx-auto max-w-7xl px-4 pt-3 space-y-1" aria-label="Mobile navigation">
+            <nav class="mx-auto max-w-7xl space-y-2 px-4 pt-3" aria-label="Mobile navigation">
                 <a href="{{ route('home') }}" class="dropdown-item rounded-xl"
                    @if(request()->routeIs('home', 'welcome')) aria-current="page" @endif>Home</a>
                 <a href="{{ route('catalog.index') }}" class="dropdown-item rounded-xl"
@@ -264,19 +228,16 @@
 
                 {{-- Category links (collapsed by default) --}}
                 <div x-data="{ catOpen: false }">
-                    <button @click="catOpen = !catOpen"
-                            class="dropdown-item rounded-xl w-full text-left justify-between">
+                    <x-ui.button variant="tertiary" type="button" @click="catOpen = !catOpen"
+                            class="dropdown-item rounded-xl w-full text-left justify-between justify-start">
                         <span>Categories</span>
-                        <svg class="h-4 w-4 transition-transform" :class="catOpen && 'rotate-180'"
-                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div x-show="catOpen" class="pl-4 space-y-0.5 mt-1" style="display:none;">
+                        <x-ui.icon name="expand" size="sm" class="transition-transform" x-bind:class="catOpen && 'rotate-180'" />
+                    </x-ui.button>
+                    <div x-show="catOpen" class="mt-2 space-y-2 pl-4" style="display:none;">
                         @foreach ($navCategories as $cat)
                             <a href="{{ route('catalog.index', ['category' => $cat->id]) }}"
                                class="dropdown-item rounded-xl text-sm">
-                                <span>{{ $cat->icon }}</span> {{ $cat->name }}
+                                <x-ui.icon name="browse" size="sm" /> {{ $cat->name }}
                             </a>
                         @endforeach
                     </div>
@@ -309,8 +270,8 @@
 
                     <form method="post" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="dropdown-item rounded-xl w-full text-left"
-                                style="color: rgb(var(--color-error));">Sign out</button>
+                        <x-ui.button variant="tertiary" type="submit" class="dropdown-item rounded-xl w-full text-left justify-start"
+                                style="color: rgb(var(--color-error));">Sign out</x-ui.button>
                     </form>
                 @else
                     <a href="{{ route('login') }}" class="dropdown-item rounded-xl">Sign in</a>
@@ -332,9 +293,9 @@
     <div :inert="drawerOpen">
     @if(auth()->check() && auth()->user()->role === \App\Enums\UserRole::Rider)
         <nav aria-label="Rider workspace" class="mx-auto max-w-7xl px-4 pt-4 flex flex-wrap gap-3">
-            <a href="{{ route('rider.dashboard') }}" class="btn-outline" @if(request()->routeIs('rider.dashboard')) aria-current="page" @endif>Rider Dashboard</a>
+            <x-ui.button :href="route('rider.dashboard')" :aria-current="request()->routeIs('rider.dashboard') ? 'page' : null">Rider dashboard</x-ui.button>
             @if(auth()->user()->riderProfile?->isApproved())
-                <a href="{{ route('fulfillments.index') }}" class="btn-accent" @if(request()->routeIs('fulfillments.*')) aria-current="page" @endif>Pickups &amp; deliveries</a>
+                <x-ui.button :href="route('fulfillments.index')" variant="primary" size="lg" :aria-current="request()->routeIs('fulfillments.*') ? 'page' : null">Pickups &amp; deliveries</x-ui.button>
             @endif
         </nav>
     @endif
@@ -447,7 +408,7 @@
 
                 {{-- Payment method icons (SVG placeholder badges) --}}
                 <div class="flex items-center gap-2 flex-wrap">
-                    <span class="text-xs mr-1" style="color: rgb(var(--color-footer-text) / 0.5);">Payment:</span>
+                    <span class="text-xs mr-1 text-footer-text">Payment:</span>
                     @foreach (['COD', 'Card / e-wallet (demo only)'] as $method)
                         <span class="inline-flex items-center rounded px-2 py-0.5 text-[10px] font-semibold border"
                               style="border-color: rgb(255 255 255 / 0.15); color: rgb(var(--color-footer-text) / 0.7);">
@@ -458,25 +419,17 @@
 
                 {{-- Copyright + theme toggle --}}
                 <div class="flex items-center gap-3">
-                    <p class="text-xs" style="color: rgb(var(--color-footer-text) / 0.5);">
+                    <p class="text-xs text-footer-text">
                         &copy; {{ date('Y') }} FarSell. All rights reserved.
                     </p>
                     {{-- Compact theme toggle in footer --}}
-                    <button class="theme-toggle text-white/40 hover:text-white"
+                    <x-ui.icon-button variant="tertiary" label="Switch color theme" ::title="$theme.isDark ? 'Switch to light mode' : 'Switch to dark mode'" type="button" class="theme-toggle text-white/40 hover:text-white"
                             @click="$theme.toggle()"
                             x-data
-                            :aria-label="$theme.isDark ? 'Switch to light mode' : 'Switch to dark mode'">
-                        <svg x-show="$theme.isDark" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/>
-                        </svg>
-                        <svg x-show="!$theme.isDark" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor" stroke-width="2" style="display:none;">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 12c0 5.385 4.365 9.75 9.75 9.75 4.797 0 8.818-3.462 9.75-8.002-.083.084-.166.165-.25.252v-.002Z"/>
-                        </svg>
-                    </button>
+                            ::aria-label="$theme.isDark ? 'Switch to light mode' : 'Switch to dark mode'">
+                        <x-ui.icon name="light" size="sm" x-show="$theme.isDark" x-cloak />
+                        <x-ui.icon name="dark" size="sm" x-show="!$theme.isDark" />
+                    </x-ui.icon-button>
                 </div>
             </div>
         </div>
@@ -520,14 +473,12 @@
         <div class="flex items-center justify-between px-5 py-4 border-b"
              style="border-color: rgb(var(--color-surface-border) / 0.5);">
             <p class="text-sm font-semibold" style="color: rgb(var(--color-text-base));">Account</p>
-            <button x-ref="drawerClose"
+            <x-ui.icon-button variant="tertiary" label="Close account panel" type="button" x-ref="drawerClose"
                     @click="closeDrawer()"
                     class="theme-toggle"
-                    aria-label="Close account panel">
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
-                </svg>
-            </button>
+                   >
+                <x-ui.icon name="close" />
+            </x-ui.icon-button>
         </div>
 
         @auth
@@ -553,9 +504,7 @@
                 </div>
                 <div class="mt-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
                      style="background-color: rgb(var(--color-accent-subtle)); color: rgb(var(--color-accent));">
-                    <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
+                    <x-ui.icon name="rating" size="sm" variant="solid" />
                     0 pts &mdash; Loyalty Points
                 </div>
             </div>
@@ -566,7 +515,7 @@
             <div class="px-5 py-4">
                 <p class="text-xs font-semibold uppercase tracking-widest mb-2"
                    style="color: rgb(var(--color-text-muted));">Quick Links</p>
-                <nav class="space-y-0.5">
+                <nav class="space-y-2 [&>a]:min-h-target">
                     @if(auth()->user()->role === \App\Enums\UserRole::Buyer)
                     {{-- Wishlist / Saved Items --}}
                     <a href="{{ route('account.saved.index') }}"
@@ -575,18 +524,14 @@
                        style="color: rgb(var(--color-text-base));"
                        onmouseover="this.style.backgroundColor='rgb(var(--color-surface-muted))'"
                        onmouseout="this.style.backgroundColor=''">
-                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
-                        </svg>
+                        <x-ui.icon name="save" size="sm" />
                         <span class="text-sm">Wishlist</span>
                     </a>
                     @else
                     {{-- Wishlist (placeholder for non-buyers) --}}
                     <div class="flex items-center gap-3 rounded-xl px-3 py-2.5 cursor-not-allowed opacity-50"
                          title="Available for buyers">
-                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
-                        </svg>
+                        <x-ui.icon name="save" size="sm" />
                         <span class="text-sm">Wishlist</span>
                     </div>
                     @endif
@@ -599,9 +544,7 @@
                        style="color: rgb(var(--color-text-base));"
                        onmouseover="this.style.backgroundColor='rgb(var(--color-surface-muted))'"
                        onmouseout="this.style.backgroundColor=''">
-                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z"/>
-                        </svg>
+                        <x-ui.icon name="order" size="sm" />
                         <span class="text-sm">Order History</span>
                     </a>
 
@@ -612,10 +555,7 @@
                        style="color: rgb(var(--color-text-base));"
                        onmouseover="this.style.backgroundColor='rgb(var(--color-surface-muted))'"
                        onmouseout="this.style.backgroundColor=''">
-                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
-                        </svg>
+                        <x-ui.icon name="location" size="sm" />
                         <span class="text-sm">Saved Addresses</span>
                     </a>
                     @endif
@@ -627,9 +567,7 @@
                        style="color: rgb(var(--color-text-base));"
                        onmouseover="this.style.backgroundColor='rgb(var(--color-surface-muted))'"
                        onmouseout="this.style.backgroundColor=''">
-                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0"/>
-                        </svg>
+                        <x-ui.icon name="account" size="sm" />
                         <span class="text-sm">My Profile</span>
                     </a>
                 </nav>
@@ -641,13 +579,13 @@
             <div class="px-5 py-4 mt-auto">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit"
+                    <x-ui.button variant="tertiary" type="submit"
                             class="w-full rounded-xl py-2.5 text-sm font-semibold text-white transition-colors"
                             style="background-color: rgb(var(--color-accent));"
                             onmouseover="this.style.backgroundColor='rgb(var(--color-accent-hover))'"
                             onmouseout="this.style.backgroundColor='rgb(var(--color-accent))'">
                         Sign Out
-                    </button>
+                    </x-ui.button>
                 </form>
             </div>
 
@@ -656,18 +594,13 @@
             <div class="flex flex-1 flex-col items-center justify-center px-5 py-10 text-center">
                 <div class="flex h-16 w-16 items-center justify-center rounded-full mb-4"
                      style="background-color: rgb(var(--color-surface-muted));">
-                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"
-                         style="color: rgb(var(--color-text-muted));">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0"/>
-                    </svg>
+                    <x-ui.icon name="account" size="lg" class="text-text-muted" />
                 </div>
                 <p class="font-semibold mb-1" style="color: rgb(var(--color-text-base));">You're not signed in</p>
                 <p class="text-sm mb-6" style="color: rgb(var(--color-text-muted));">Sign in to view your account and orders.</p>
-                <a href="{{ route('login') }}" @click="closeDrawer()"
-                   class="btn-accent w-full mb-3">Sign In</a>
-                <a href="{{ route('register') }}" @click="closeDrawer()"
-                   class="text-sm font-medium hover:underline"
-                   style="color: rgb(var(--color-accent));">Create account</a>
+                <x-ui.button variant="primary" size="lg" :href="route('login')" @click="closeDrawer()"
+                   class="w-full mb-3">Sign In</x-ui.button>
+                <x-ui.button variant="tertiary" :href="route('register')" @click="closeDrawer()" class="text-accent">Create account</x-ui.button>
             </div>
         @endauth
 
@@ -676,7 +609,7 @@
     @if ($canUseCart)
         @include('layouts.partials.mobile-navigation')
     @endif
-    @include('chat.partials.dock')
+    @include('chat.partials.dock', ['hasBuyerActionBar' => $__env->hasSection('buyer-action-bar')])
 
 </body>
 </html>

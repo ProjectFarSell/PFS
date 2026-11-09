@@ -6,9 +6,12 @@
             <p class="text-sm mt-1">Pickup area: {{ ucwords($deliveryRequest->pickup_city) }}</p>
             <p class="text-sm mt-1">Offer expires at {{ \Illuminate\Support\Carbon::parse($deliveryRequest->offer_expires_at)->format('g:i:s A T') }}.</p>
             <p class="text-xs text-text-muted mt-1">Offered to you automatically. You have two minutes from the offer to accept; otherwise another rider will be tried. Accept to see pickup contact, recipient details, and any COD amount.</p>
-            <form method="post" action="{{ route('fulfillments.update', $deliveryRequest) }}" class="mt-3">
-                @csrf <button name="action" value="claim" class="btn-accent">Accept delivery request</button>
-                <button name="action" value="decline" class="btn-outline">Decline offer</button>
+            <form method="post" action="{{ route('fulfillments.update', $deliveryRequest) }}" class="mt-3 max-md:sticky max-md:bottom-0 max-md:z-10">
+                @csrf
+                <x-bottom-actions class="flex-wrap gap-4">
+                    <x-ui.button variant="primary" size="lg" type="submit" name="action" value="claim" class="flex-1 md:flex-none">Accept delivery request</x-ui.button>
+                    <x-ui.button variant="tertiary" type="submit" name="action" value="decline">Decline offer</x-ui.button>
+                </x-bottom-actions>
             </form>
         </article>
     @empty

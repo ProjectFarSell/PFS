@@ -4,7 +4,7 @@
     <a href="{{ route('replacements.index') }}" class="ml-3 text-accent underline text-sm">My replacement requests</a>
     @foreach($order->items as $item)
         @if($item->replacementRequest)
-            <p class="text-sm">Replacement for {{ $item->name }}: {{ ucfirst($item->replacementRequest->status) }}. <a href="{{ route('replacements.index') }}" class="text-accent underline">View request</a></p>
+            <p class="text-sm">Replacement for {{ $item->name }}: {{ ucfirst($item->replacementRequest->status) }}. <x-ui.button variant="link" :href="route('replacements.index')" class="text-accent underline">View request</x-ui.button></p>
         @elseif($order->payment_method->value === 'cod' && $order->fulfillments->firstWhere('id', $item->fulfillment_id)?->status->value === 'returned')
             <p><a href="{{ route('replacements.create', $item) }}" class="text-accent underline text-sm">Request another variant: {{ $item->name }}</a></p>
         @endif
@@ -19,7 +19,7 @@
                     <label class="block text-sm">Reason<select name="reason" required class="ml-2 rounded-lg border border-surface-border bg-surface p-2"><option value="damaged">Damaged</option><option value="incorrect">Incorrect item</option><option value="missing">Missing item</option><option value="other">Other</option></select></label>
                     <label class="block text-sm">Describe the problem<textarea name="details" required minlength="10" maxlength="2000" class="mt-1 block w-full rounded-lg border border-surface-border bg-surface p-2"></textarea></label>
                     <label class="block text-sm">Evidence photo (optional JPG/PNG/WebP, up to 4 MB)<input type="file" name="evidence" accept="image/jpeg,image/png,image/webp" class="mt-1 block w-full text-sm"></label>
-                    <button class="btn-outline">Submit request</button>
+                    <x-ui.button variant="secondary" type="submit">Submit request</x-ui.button>
                 </form>
             </details>
         @endif

@@ -21,11 +21,11 @@
     <section aria-labelledby="interests-heading">
         <div class="discovery-heading">
             <div><p class="section-eyebrow">A good place to start</p><h2 id="interests-heading" class="section-title">What are you into?</h2></div>
-            <a href="{{ route('catalog.index') }}" class="discovery-link">Browse all <span aria-hidden="true">→</span></a>
+            <x-ui.button variant="link" :href="route('catalog.index')" class="discovery-link">Browse all <x-ui.icon name="next" size="sm" /></x-ui.button>
         </div>
         <nav class="scroll-x pt-1" aria-label="Explore interests">
             @foreach ($interests as [$label, $query])
-                <a href="{{ route('catalog.index', ['q' => $query]) }}" class="interest-pill">{{ $label }} <span aria-hidden="true" class="text-accent">→</span></a>
+                <x-ui.button variant="link" :href="route('catalog.index', ['q' => $query])" class="interest-pill">{{ $label }} <x-ui.icon name="next" size="sm" class="text-accent" /></x-ui.button>
             @endforeach
         </nav>
         @if ($categories->isNotEmpty())
@@ -33,7 +33,7 @@
                 <summary class="cursor-pointer w-fit py-2 hover:text-accent">Browse marketplace categories</summary>
                 <nav class="flex flex-wrap gap-2 pt-2" aria-label="Marketplace categories">
                     @foreach ($categories as $category)
-                        <a href="{{ route('catalog.index', ['category' => $category->id]) }}" class="interest-pill text-xs">{{ $category->name }} <span class="text-text-muted tabular-nums">{{ $category->products_count }}</span></a>
+                        <x-ui.button variant="link" size="sm" :href="route('catalog.index', ['category' => $category->id])" class="interest-pill text-xs">{{ $category->name }} <span class="text-text-muted tabular-nums">{{ $category->products_count }}</span></x-ui.button>
                     @endforeach
                 </nav>
             </details>
@@ -67,7 +67,7 @@
                         <p class="section-eyebrow">{{ $collection['label'] }}</p>
                         <h3 class="mt-2 text-xl font-semibold tracking-tight">{{ $collection['title'] }}</h3>
                         <p class="mt-2 text-sm text-text-muted leading-relaxed">{{ $collection['copy'] }}</p>
-                        <span class="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-accent">Explore collection <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span></span>
+                        <span class="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-accent">Explore collection <x-ui.icon name="next" size="sm" class="transition-transform group-hover:translate-x-1" /></span>
                     </div>
                 </a>
             @endforeach
@@ -88,7 +88,7 @@
         @else
             <div class="fs-card p-6 sm:p-8 flex flex-wrap items-center justify-between gap-4">
                 <div><h3 class="font-semibold">Help the next great find stand out.</h3><p class="mt-1 text-sm text-text-muted">Save items you love. Community favorites will appear here.</p></div>
-                <a href="{{ route('catalog.index') }}" class="btn-outline">Discover products</a>
+                <x-ui.button variant="secondary" :href="route('catalog.index')">Discover products</x-ui.button>
             </div>
         @endif
     </section>
@@ -96,7 +96,7 @@
     <section aria-labelledby="latest-heading" class="deferred-section">
         <div class="discovery-heading">
             <div><p class="section-eyebrow">Fresh on FarSell</p><h2 id="latest-heading" class="section-title">New finds</h2><p class="mt-1 text-sm text-text-muted">The latest listings from local shops.</p></div>
-            <a href="{{ route('catalog.index', ['sort' => 'newest']) }}" class="discovery-link">View all <span aria-hidden="true">→</span></a>
+            <x-ui.button variant="link" :href="route('catalog.index', ['sort' => 'newest'])" class="discovery-link">View all <x-ui.icon name="next" size="sm" /></x-ui.button>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
             @forelse ($products as $product)
@@ -105,12 +105,12 @@
                 <div class="col-span-full fs-card p-8 text-center">
                     <h3 class="font-semibold">No products are available yet.</h3>
                     <p class="mt-2 text-sm text-text-muted">Check back soon for new listings, or explore our shop directory.</p>
-                    <a href="{{ route('shops.index') }}" class="btn-outline mt-5">Explore shops</a>
+                    <x-ui.button variant="secondary" :href="route('shops.index')" class="mt-5">Explore shops</x-ui.button>
                 </div>
             @endforelse
         </div>
         @if ($products->isNotEmpty())
-            <div class="mt-7 text-center"><a href="{{ route('catalog.index', ['sort' => 'newest']) }}" class="btn-outline">Keep exploring <span aria-hidden="true">→</span></a></div>
+            <div class="mt-7 text-center"><x-ui.button variant="secondary" :href="route('catalog.index', ['sort' => 'newest'])">Keep exploring <x-ui.icon name="next" size="sm" /></x-ui.button></div>
         @endif
     </section>
 </div>

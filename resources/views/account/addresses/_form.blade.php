@@ -35,7 +35,7 @@
     </label>
 
     <p data-location-status role="status" aria-live="polite" class="text-sm text-text-muted"></p>
-    <button type="button" data-location-retry hidden class="text-sm text-accent underline hover:text-accent">Retry loading locations</button>
+    <x-ui.button variant="tertiary" type="button" data-location-retry hidden class="text-sm text-accent underline hover:text-accent">Retry loading locations</x-ui.button>
     <noscript><p class="text-sm text-red-600">Enable JavaScript to select your delivery location.</p></noscript>
 
     <input name="postal_code" placeholder="Postal code" value="{{ old('postal_code', $address->postal_code ?? '') }}" class="w-full rounded-lg border-surface-border text-sm focus:border-accent focus:ring-accent">
@@ -48,7 +48,7 @@
             @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
         </ul>
     @endif
-    <button data-address-save disabled class="disabled:opacity-50 w-full rounded-full bg-violet-600 hover:bg-violet-700 text-white text-sm py-2.5">{{ $isEditing ? 'Update address' : 'Save address' }}</button>
+    <x-ui.button variant="primary" size="lg" type="submit" data-address-save disabled class="w-full">{{ $isEditing ? 'Update address' : 'Save address' }}</x-ui.button>
 </form>
 
 @push('scripts')

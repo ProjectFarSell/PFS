@@ -3,21 +3,42 @@
 @section('title', 'Seller Dashboard · FarSell')
 
 @section('content')
-    <div class="mb-4 flex flex-wrap gap-3">@if($shop)<a href="{{ route('seller.sales') }}" class="btn-outline">Sales summary</a><a href="{{ route('settlements.index') }}" class="btn-outline">Commissions & settlements</a>@endif<a href="{{ route('returns.index') }}" class="btn-outline">Returns & refunds</a><a href="{{ route('replacements.index') }}" class="btn-outline">Replacement requests</a></div>
     <section class="fs-card-raised p-5 sm:p-7">
         <p class="text-xs font-semibold uppercase tracking-widest text-accent">Seller Dashboard</p>
-        <h1 class="mt-2 text-2xl font-semibold">{{ $shop?->name ?? 'Your seller workspace' }}</h1>
+        <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
+            <h1 class="text-2xl font-semibold">{{ $shop?->name ?? 'Your seller workspace' }}</h1>
+            <div class="flex flex-wrap items-center gap-2">
+                @if ($shop?->is_active)
+                    <x-ui.button variant="primary" size="lg" :href="route('seller.products.create')" icon="add">Add product</x-ui.button>
+                    <x-ui.button variant="secondary" :href="route('fulfillments.index')">Manage shop orders</x-ui.button>
+                @elseif ($shop)
+                    <x-ui.button variant="primary" size="lg" :href="route('fulfillments.index')">Manage shop orders</x-ui.button>
+                @else
+                    <x-ui.button variant="primary" size="lg" :href="route('seller.apply')">Apply to open a shop</x-ui.button>
+                @endif
+                <x-action-menu class="ml-auto" context="shop actions">
+                    <p class="px-4 text-xs font-semibold text-text-muted">After-sales</p>
+                    <a href="{{ route('returns.index') }}" class="dropdown-item">Returns & refunds</a>
+                    <a href="{{ route('replacements.index') }}" class="dropdown-item">Replacement requests</a>
+                    @if ($shop)
+                        <p class="border-t border-surface-border px-4 pt-2 text-xs font-semibold text-text-muted">Finance</p>
+                        <a href="{{ route('seller.sales') }}" class="dropdown-item">Sales summary</a>
+                        <a href="{{ route('settlements.index') }}" class="dropdown-item">Commissions & settlements</a>
+                    @endif
+                    @if ($shop?->is_active)
+                        <p class="border-t border-surface-border px-4 pt-2 text-xs font-semibold text-text-muted">Storefront</p>
+                        <a href="{{ route('shops.show', $shop) }}" class="dropdown-item">View storefront</a>
+                    @endif
+                </x-action-menu>
+            </div>
+        </div>
         <p class="mt-2 text-sm text-text-muted">Manage listings, confirm incoming orders, and prepare shipments for pickup.</p>
-        <a href="{{ route('fulfillments.index') }}" class="btn-accent mt-4">Manage shop orders</a>
         @if($shop)
             <div class="mt-4 flex flex-wrap items-center gap-3">
-                <span class="badge {{ $shop->is_active ? 'badge-success' : 'badge-neutral' }}">{{ $shop->is_active ? 'Shop active' : 'Shop inactive' }}</span>
-                @if($shop->is_active)
-                    <a href="{{ route('shops.show', $shop) }}" class="text-sm text-accent underline">View storefront</a>
-                    @if(auth()->user()->role === \App\Enums\UserRole::Seller)<a href="{{ route('seller.products.create') }}" class="btn-accent">Add product</a>@endif
-                @else
+                <x-ui.status-pill :status="$shop->is_active ? 'active' : 'inactive'">{{ $shop->is_active ? 'Shop active' : 'Shop inactive' }}</x-ui.status-pill>
+                @unless($shop->is_active)
                     <p class="text-sm text-text-muted">Your shop is not visible in the public directory.</p>
-                @endif
+                @endunless
             </div>
         @endif
     </section>
@@ -26,8 +47,10 @@
         <section class="fs-card mt-5 p-6">
             <h2 class="font-semibold">No shop linked to your account</h2>
             <p class="mt-2 text-sm text-text-muted">Submit your shop details for admin approval before listing products.</p>
-            @if(auth()->user()->role === \App\Enums\UserRole::Seller)<a href="{{ route('seller.apply') }}" class="btn-accent mt-4">Apply to open a shop</a>@endif
-            <a href="{{ route('account.profile') }}" class="btn-outline mt-4">Back to profile</a>
+            <div class="mt-4 flex flex-wrap gap-2">
+                <x-ui.button variant="secondary" :href="route('account.profile')">Back to profile</x-ui.button>
+                <x-ui.button variant="link" :href="route('fulfillments.index')">Manage shop orders</x-ui.button>
+            </div>
         </section>
     @else
         <dl class="my-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -41,7 +64,7 @@
 
         <section aria-labelledby="seller-products" class="fs-card overflow-hidden" data-live-inventory data-stock-url="{{ route('seller.inventory.stock') }}" data-stock-labels="true">
             <div class="border-b border-surface-border p-4">
-                <h2 id="seller-products" class="font-semibold">Your inventory</h2>
+                <h2 id="seller-products" class="scroll-mt-32 font-semibold">Your inventory</h2>
                 <p class="mt-1 text-xs text-text-muted">Newest listings first. Low stock means 5 or fewer units. Variant quantities are the sum of active options.</p>
                 <p data-stock-refresh-status class="mt-1 text-xs text-text-muted">Stock refreshes automatically while this page is visible.</p>
             </div>
@@ -54,25 +77,25 @@
                             <th scope="col" class="px-4 py-3">Listing</th>
                             <th scope="col" class="px-4 py-3 text-right">Price</th>
                             <th scope="col" class="px-4 py-3 text-right">Stock</th>
-                            @if($shop->is_active && auth()->user()->role === \App\Enums\UserRole::Seller)<th scope="col" class="px-4 py-3">Manage</th>@endif
+                            @if($shop->is_active && auth()->user()->role === \App\Enums\UserRole::Seller)<th scope="col" class="px-4 py-3 text-right">Manage</th>@endif
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-surface-border">
                         @forelse($products as $product)
-                            <tr data-inventory-product="{{ $product->id }}">
+                            <tr class="relative" data-inventory-product="{{ $product->id }}">
                                 <th scope="row" class="px-4 py-3 font-medium break-words">
                                     @if($shop->is_active && $product->is_active)
-                                        <a href="{{ route('products.show', $product) }}" class="text-accent underline">{{ $product->name }}</a>
+                                        <x-ui.button variant="link" :href="route('products.show', $product)" class="relative z-10">{{ $product->name }}</x-ui.button>
                                     @else
                                         {{ $product->name }}
                                     @endif
                                 </th>
-                                <td class="px-4 py-3"><span data-inventory-listing class="badge {{ $product->is_active ? 'badge-success' : 'badge-neutral' }}">{{ $product->is_active ? 'Active' : 'Inactive' }}</span></td>
+                                <td class="px-4 py-3"><x-ui.status-pill data-inventory-listing :status="$product->is_active ? 'active' : 'inactive'" /></td>
                                 <td class="px-4 py-3 text-right whitespace-nowrap">₱{{ number_format((float) $product->price, 2) }}</td>
                                 <td data-inventory-stock class="px-4 py-3 text-right whitespace-nowrap {{ $product->availableStock() <= 5 ? 'text-error font-semibold' : '' }}">
                                     {{ $product->availableStock() }}{{ $product->availableStock() === 0 ? ' · Out of stock' : ($product->availableStock() <= 5 ? ' · Low stock' : '') }}
                                 </td>
-                                @if($shop->is_active && auth()->user()->role === \App\Enums\UserRole::Seller)<td class="px-4 py-3"><a href="{{ route('seller.products.edit', $product) }}" class="text-accent underline" aria-label="Edit {{ $product->name }}">Edit listing</a></td>@endif
+                                @if($shop->is_active && auth()->user()->role === \App\Enums\UserRole::Seller)<td class="px-4 py-3 text-right"><x-ui.button variant="link" :href="route('seller.products.edit', $product)" class="after:absolute after:inset-0 after:content-['']" aria-label="Edit {{ $product->name }}" icon="edit">Edit listing</x-ui.button></td>@endif
                             </tr>
                         @empty
                             <tr><td colspan="{{ $shop->is_active && auth()->user()->role === \App\Enums\UserRole::Seller ? 5 : 4 }}" class="px-4 py-8 text-center text-text-muted">No products in your shop yet.</td></tr>
@@ -112,7 +135,7 @@
                                     @endif
                                 </th>
                                 <td class="px-4 py-3 break-words">{{ $item->name }}</td>
-                                <td class="px-4 py-3"><span class="badge badge-neutral">{{ $item->order?->status->label() ?? 'Unavailable' }}</span></td>
+                                <td class="px-4 py-3"><x-ui.status-pill :status="$item->order?->status->value ?? 'unavailable'">{{ $item->order?->status->label() ?? 'Unavailable' }}</x-ui.status-pill></td>
                                 <td class="px-4 py-3 text-right">{{ $item->qty }}</td>
                                 <td class="px-4 py-3 text-right whitespace-nowrap">₱{{ number_format((float) $item->line_total, 2) }}</td>
                             </tr>

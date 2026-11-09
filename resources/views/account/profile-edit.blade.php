@@ -5,7 +5,7 @@
 @section('content')
     <a href="{{ route('security.index') }}" class="mb-4 inline-block text-sm text-accent underline">Account security & signed-in devices</a>
     <div class="mx-auto max-w-2xl space-y-5">
-        <a href="{{ route('account.profile') }}" class="text-sm text-accent underline">Back to My Profile</a>
+        <x-ui.button variant="link" :href="route('account.profile')" class="text-sm text-accent underline">Back to My Profile</x-ui.button>
         <h1 class="text-xl font-semibold">Edit profile &amp; security</h1>
 
         <section class="fs-card p-5" aria-labelledby="privacy-settings">
@@ -26,7 +26,7 @@
                     <label for="deletion-request-confirm" class="block text-sm">Type DELETE to request admin review</label>
                     <input id="deletion-request-confirm" name="confirmation" required pattern="DELETE" autocomplete="off" class="fs-input" placeholder="DELETE">
                     @error('confirmation', 'privacy')<p role="alert" class="text-sm text-error">{{ $message }}</p>@enderror
-                    <button class="btn-outline">Request account deletion review</button>
+                    <x-ui.button variant="secondary" type="submit">Request account deletion review</x-ui.button>
                 </form>
             @endif
         </section>
@@ -55,7 +55,7 @@
                     <input id="profile-current-password" name="current_password" type="password" autocomplete="current-password" required class="mt-1 w-full rounded-lg">
                 </label>
                 <p class="text-xs text-text-muted">Your current password is required to save changes. Roles and rider approvals cannot be edited here.</p>
-                <button class="btn-accent">Save profile</button>
+                <x-ui.button variant="primary" size="lg" type="submit">Save profile</x-ui.button>
             </form>
         </section>
 
@@ -71,7 +71,7 @@
                 @else
                 <p class="mt-1 text-sm text-text-muted">Choose email or phone verification when you are ready.</p>
                 @endif
-                <a href="/account/verify" class="btn-outline mt-4 inline-flex">Verify account</a>
+                <x-ui.button variant="secondary" href="/account/verify" class="mt-4 inline-flex">Verify account</x-ui.button>
             </section>
         @endunless
 
@@ -96,7 +96,7 @@
                     <input id="password-confirm" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" required class="mt-1 w-full rounded-lg">
                 </label>
                 <p class="text-xs text-text-muted">Use at least 8 characters and a different password from your current one.</p>
-                <button class="btn-accent">Change password</button>
+                <x-ui.button variant="primary" size="lg" type="submit">Change password</x-ui.button>
             </form>
         </section>
 
@@ -114,13 +114,14 @@
                 <form method="post" action="{{ route('account.profile.destroy') }}" class="mt-4 space-y-4">
                     @csrf
                     @method('DELETE')
-                    <label class="block text-sm" for="delete-password">Current password
+                    <x-destructive-confirmation name="Permanently delete my account" description="Permanently remove your account and saved addresses and sign out.">
+                    <label class="mt-4 block text-sm" for="delete-password">Current password
                         <input id="delete-password" name="current_password" type="password" autocomplete="current-password" required class="mt-1 w-full rounded-lg">
                     </label>
-                    <label class="block text-sm" for="delete-confirm">Type DELETE to confirm
+                    <label class="mt-3 block text-sm" for="delete-confirm">Type DELETE to confirm
                         <input id="delete-confirm" name="confirmation" type="text" autocomplete="off" pattern="DELETE" required class="mt-1 w-full rounded-lg">
                     </label>
-                    <button class="rounded-lg bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800">Permanently delete my account</button>
+                    </x-destructive-confirmation>
                 </form>
             @endif
         </section>

@@ -7,9 +7,9 @@
         <h1 class="text-2xl font-semibold">Buyer reviews</h1>
         <p class="mt-2 text-sm text-text-muted">Review verified purchase feedback, attachments, and service ratings.</p>
         <nav class="mt-4 flex flex-wrap gap-2" aria-label="Review sections">
-            <a href="{{ route('admin.reviews.index') }}" @class(['btn-accent' => $type === 'products', 'btn-outline' => $type !== 'products']) @if($type === 'products') aria-current="page" @endif>Product reviews</a>
-            <a href="{{ route('admin.reviews.index', ['type' => 'service']) }}" @class(['btn-accent' => $type === 'service', 'btn-outline' => $type !== 'service']) @if($type === 'service') aria-current="page" @endif>Seller & delivery ratings</a>
-            <a href="{{ route('admin.rider-records.index', ['section' => 'feedback']) }}" class="btn-outline">Rider feedback</a>
+            <x-ui.button :href="route('admin.reviews.index')" :variant="$type === 'products' ? 'primary' : 'secondary'" :aria-current="$type === 'products' ? 'page' : null">Product reviews</x-ui.button>
+            <x-ui.button :href="route('admin.reviews.index', ['type' => 'service'])" :variant="$type === 'service' ? 'primary' : 'secondary'" :aria-current="$type === 'service' ? 'page' : null">Seller &amp; delivery ratings</x-ui.button>
+            <x-ui.button variant="secondary" :href="route('admin.rider-records.index', ['section' => 'feedback'])">Rider feedback</x-ui.button>
         </nav>
     </section>
 
@@ -33,19 +33,20 @@
     @else
         <div class="mt-5 overflow-x-auto rounded-xl border border-surface-border bg-surface">
             <table class="w-full min-w-[46rem] text-left text-sm">
-                <thead><tr class="border-b border-surface-border text-text-muted"><th class="p-3">Buyer</th><th class="p-3">Order / shop</th><th class="p-3">Seller service</th><th class="p-3">Delivery speed</th><th class="p-3">Rider service</th><th class="p-3">Submitted</th></tr></thead>
+                <thead><tr class="border-b border-surface-border text-text-muted"><th class="p-3">Buyer</th><th class="p-3">Order / shop</th><th class="p-3">Seller service</th><th class="p-3">Delivery speed</th><th class="p-3">Rider service</th><th class="p-3">Submitted</th><th class="p-3 text-right">Action</th></tr></thead>
                 <tbody>
                     @forelse($records as $feedback)
-                        <tr class="border-b border-surface-border last:border-0">
+                        <tr class="relative border-b border-surface-border last:border-0">
                             <td class="p-3">{{ $feedback->buyer?->name ?? 'Unavailable buyer' }}</td>
-                            <td class="p-3">@if($feedback->fulfillment?->order)<a href="{{ route('orders.show', $feedback->fulfillment->order_id) }}" class="text-accent underline">{{ $feedback->fulfillment->order->number }}</a>@endif<p class="mt-1 text-text-muted">{{ $feedback->fulfillment?->shop_name }}</p></td>
+                            <td class="p-3">@if($feedback->fulfillment?->order)<p>{{ $feedback->fulfillment->order->number }}</p>@endif<p class="mt-1 text-text-muted">{{ $feedback->fulfillment?->shop_name }}</p></td>
                             <td class="p-3">{{ $feedback->seller_service_rating }} / 5</td>
                             <td class="p-3">{{ $feedback->delivery_speed_rating }} / 5</td>
                             <td class="p-3">{{ $feedback->fulfillment?->riderRating ? $feedback->fulfillment->riderRating->rating.' / 5' : 'Not rated' }}</td>
                             <td class="p-3">{{ $feedback->created_at->format('M j, Y g:i A') }}</td>
+                            <td class="p-3 text-right">@if($feedback->fulfillment?->order)<x-ui.button variant="link" :href="route('orders.show', $feedback->fulfillment->order_id)" class="whitespace-nowrap after:absolute after:inset-0 after:content-['']" aria-label="View order {{ $feedback->fulfillment->order->number }}">View order</x-ui.button>@endif</td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="p-6 text-center text-text-muted">No service feedback yet.</td></tr>
+                        <tr><td colspan="7" class="p-6 text-center text-text-muted">No service feedback yet.</td></tr>
                     @endforelse
                 </tbody>
             </table>

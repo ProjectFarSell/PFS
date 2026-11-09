@@ -1,39 +1,38 @@
 @extends('layouts.app')
 
 @section('title', 'Cart · FarSell')
+@if ($lines->isNotEmpty())
+    @section('buyer-action-bar', 'true')
+@endif
 
 @section('content')
 @if ($lines->isEmpty())
     {{-- ── Illustrated empty state (no h1 when empty, per design) ──────── --}}
     <div class="flex flex-col items-center justify-center py-20 text-center">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="mb-6"
-             style="width:96px; height:96px; color:rgb(var(--color-text-muted));"
-             fill="none" viewBox="0 0 96 96"
-             stroke="currentColor" stroke-width="1.5"
-             aria-hidden="true">
-            <circle cx="34" cy="80" r="6"/>
-            <circle cx="72" cy="80" r="6"/>
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M6 8h12l10 48h44l8-32H26"/>
-        </svg>
+        <span class="mb-6 grid size-24 place-items-center rounded-full bg-surface-muted text-text-muted"><x-ui.icon name="cart" size="lg" /></span>
         <p class="text-xl font-semibold" style="color:rgb(var(--color-text-base));">
             Your cart is empty
         </p>
         <p class="text-sm mt-2" style="color:rgb(var(--color-text-muted));">
             Looks like you haven't added anything yet.
         </p>
-        <a href="{{ route('catalog.index') }}" class="btn-accent mt-6">
+        <x-ui.button variant="primary" size="lg" :href="route('catalog.index')" class="mt-6">
             Browse products
-        </a>
+        </x-ui.button>
     </div>
 
 @else
-    <h1 class="text-lg font-semibold mb-3" style="color:rgb(var(--color-text-base));">Cart</h1>
+    <div class="mb-3 flex items-center justify-between gap-3">
+        <h1 class="text-lg font-semibold">Cart</h1>
+        <x-bottom-actions buyer>
+            <p class="mr-auto text-sm font-semibold">Subtotal <span class="text-accent">₱{{ number_format($subtotal, 2) }}</span></p>
+            <x-ui.button variant="primary" size="lg" :href="route('checkout.create')">Checkout</x-ui.button>
+        </x-bottom-actions>
+    </div>
 
     <ul class="space-y-3">
         @foreach ($lines as $line)
-        <li class="fs-card p-3 flex gap-3">
+        <li class="fs-card flex flex-wrap gap-3 p-3">
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium truncate" style="color:rgb(var(--color-text-base));">
                     {{ $line->product->name }}
@@ -49,34 +48,24 @@
                 </p>
             </div>
             <form method="post" action="{{ route('cart.update', $line->product) }}"
-                  class="flex flex-col items-end gap-1 shrink-0" x-data="quantityStepper({{ $line->qty }}, {{ min(99, $line->variant?->stock ?? $line->product->stock) }}, 0)">
+                  class="ml-auto flex shrink-0 flex-col items-end gap-2" x-data="quantityStepper({{ $line->qty }}, {{ min(99, $line->variant?->stock ?? $line->product->stock) }}, 0)">
                 @csrf
                 @method('patch')
                 @if($line->variant)<input type="hidden" name="variant_id" value="{{ $line->variant->id }}">@endif
-                <div class="inline-flex h-9 overflow-hidden rounded-md border border-surface-border" role="group" aria-label="Quantity">
-                    <button type="button" @click="decrease()" x-bind:disabled="qty <= 0" class="w-9 border-r border-surface-border text-text-muted hover:bg-surface-muted disabled:opacity-40" aria-label="Decrease quantity">−</button>
-                    <input type="number" name="qty" x-model.number="qty" min="0" x-bind:max="max"
-                           class="h-full w-14 border-0 bg-transparent p-0 text-center text-sm focus:ring-0">
-                    <button type="button" @click="increase()" x-bind:disabled="qty >= max" class="w-9 border-l border-surface-border text-text-muted hover:bg-surface-muted disabled:opacity-40" aria-label="Increase quantity">+</button>
+                <div class="inline-flex items-center gap-2" role="group" aria-label="Quantity">
+                    <x-ui.icon-button variant="secondary" label="Decrease quantity" icon="subtract" type="button" @click="decrease()" x-bind:disabled="qty <= 0" class="disabled:opacity-40"></x-ui.icon-button>
+                    <input type="number" name="qty" aria-label="Quantity" x-model.number="qty" min="0" x-bind:max="max"
+                           class="fs-input min-h-target w-14 p-0 text-center text-sm md:min-h-target-desktop">
+                    <x-ui.icon-button variant="secondary" label="Increase quantity" icon="add" type="button" @click="increase()" x-bind:disabled="qty >= max" class="disabled:opacity-40"></x-ui.icon-button>
                 </div>
-                <button type="submit"
-                        class="text-xs font-medium transition-colors hover:underline"
-                        style="color:rgb(var(--color-text-muted));">
+                <x-ui.button variant="tertiary" type="submit"
+                       >
                     Update
-                </button>
+                </x-ui.button>
             </form>
         </li>
         @endforeach
     </ul>
 
-    <div class="mt-5 fs-card p-4 flex items-center justify-between gap-4">
-        <p class="font-semibold" style="color:rgb(var(--color-text-base));">
-            Subtotal
-            <span style="color:rgb(var(--color-accent));">₱{{ number_format($subtotal, 2) }}</span>
-        </p>
-        <a href="{{ route('checkout.create') }}" class="btn-accent">
-            Checkout
-        </a>
-    </div>
 @endif
 @endsection

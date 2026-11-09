@@ -1,6 +1,4 @@
-import Alpine from 'alpinejs';
-
-Alpine.data('productReviewForm', (initialText = '', limits = {}) => ({
+export default (initialText = '', limits = {}) => ({
     text: initialText ?? '',
     limits,
     attachments: [],
@@ -64,4 +62,4 @@ Alpine.data('productReviewForm', (initialText = '', limits = {}) => ({
     destroy() {
         this.attachments.forEach((entry) => URL.revokeObjectURL(entry.url));
     },
-}));
+});

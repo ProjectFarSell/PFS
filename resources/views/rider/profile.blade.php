@@ -3,7 +3,7 @@
 @section('title', 'Rider profile · FarSell')
 
 @section('content')
-    <a href="{{ route('rider.dashboard') }}" class="inline-block mb-3 text-sm text-accent underline">← Rider Dashboard</a>
+    <a href="{{ route('rider.dashboard') }}" class="inline-block mb-3 text-sm text-accent underline"><x-ui.icon name="previous" size="sm" class="inline-block align-text-bottom" /> Rider Dashboard</a>
     <div class="max-w-lg mx-auto rounded-2xl bg-surface border border-surface-border p-5">
         <p class="text-xs uppercase tracking-wide text-accent font-semibold">Courier card</p>
         <h1 class="text-xl font-semibold mt-1">{{ auth()->user()->name }}</h1>

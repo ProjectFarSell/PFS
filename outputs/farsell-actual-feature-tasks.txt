@@ -1,0 +1,1422 @@
+FARSELL - ACTUAL FEATURES AND REMAINING WORK
+
+Based on the current code and project records checked on November 5, 2026.
+Done means the feature has an implementation in this checkout. It does not mean it has been deployed or freshly tested in this review.
+Assignees are suggested accountable owners based on Karl/backend, Jopher/frontend, and Kyle/QA and deployment. They are not verified authorship credits.
+No actual completion dates or approved future deadlines were supplied, so none are invented here.
+The final section contains class-required additions, not features already in the app or an approved product commitment.
+
+IMPLEMENTED FEATURES - DONE
+===========================
+
+D01 - Buyer registration and login
+
+What needs doing?
+Buyer registration and login
+
+Details
+Let buyers create an account, sign in, and sign out. Keep their cart after login and require sign-in before checkout.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D02 - Google sign-in
+
+What needs doing?
+Google sign-in
+
+Details
+Let users sign in with Google after the consent step. Link the verified Google identity to the right account when the provider is configured.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D03 - Email and phone verification
+
+What needs doing?
+Email and phone verification
+
+Details
+Add the verification screens and checks for the supported email and phone options. Keep provider delivery checks separate from the finished application flow.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D04 - Homepage and shop directory
+
+What needs doing?
+Homepage and shop directory
+
+Details
+Show marketplace products as soon as visitors open the site. Let them browse active shops without creating an account.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D05 - Product search and filters
+
+What needs doing?
+Product search and filters
+
+Details
+Let buyers search products and shops, filter by category, price, shop, and city, and change the sorting order.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D06 - Product details and variant selection
+
+What needs doing?
+Product details and variant selection
+
+Details
+Show product details, images, available options, and stock. Let buyers choose a variant before adding the item to their cart.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D07 - Shopping cart and Buy Now
+
+What needs doing?
+Shopping cart and Buy Now
+
+Details
+Let buyers add items, update quantities, remove items, or go through Buy Now. Check available stock and keep the displayed totals up to date.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D08 - Saved products
+
+What needs doing?
+Saved products
+
+Details
+Let signed-in buyers save products for later and remove them from their saved list. Keep each buyer's list private.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D09 - Saved delivery addresses
+
+What needs doing?
+Saved delivery addresses
+
+Details
+Let buyers manage their addresses using the region, province, city, and barangay selections. Keep address changes limited to the account owner.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D10 - Checkout and stock reservation
+
+What needs doing?
+Checkout and stock reservation
+
+Details
+Use the buyer's saved address and current prices to create an order. Reserve the selected product or variant stock together with the order and keep the cart if checkout fails.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D11 - Buyer order history and tracking
+
+What needs doing?
+Buyer order history and tracking
+
+Details
+Show buyers their past orders and shipment updates. Let them open an order to check its current status and delivery details.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D12 - Invoices and packing slips
+
+What needs doing?
+Invoices and packing slips
+
+Details
+Let authorized users print order documents with the saved purchase details. Reflect cancelled and rejected items in the amounts due.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D13 - Buyer order cancellation
+
+What needs doing?
+Buyer order cancellation
+
+Details
+Let buyers cancel before a shipment reaches rider assignment. Save the reason and restore reserved stock only once.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D14 - Buyer notification inbox
+
+What needs doing?
+Buyer notification inbox
+
+Details
+Show order, shipment, and return updates in the buyer's inbox. Display unread counts and allow buyers to mark their own updates as read.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D15 - Buyer and seller messaging
+
+What needs doing?
+Buyer and seller messaging
+
+Details
+Let buyers start a conversation from a product and exchange messages with its seller. Keep messages visible only to the people in that conversation.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D16 - Product and delivery feedback
+
+What needs doing?
+Product and delivery feedback
+
+Details
+Let eligible buyers leave product feedback and rate their delivery experience. Check who purchased the item and validate any uploaded media.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D17 - Return and refund requests
+
+What needs doing?
+Return and refund requests
+
+Details
+Let buyers request a return for eligible delivered items and attach private evidence. Let the seller respond and the admin review the request.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D18 - Reimbursement records
+
+What needs doing?
+Reimbursement records
+
+Details
+Let admins record an approved COD reimbursement after payment happens outside FarSell. Save the reference and prevent the same reimbursement from being recorded twice.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D19 - Seller applications and approval
+
+What needs doing?
+Seller applications and approval
+
+Details
+Let buyers apply to open a shop. Give admins a way to review, approve, or reject the application and create the shop after approval.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D20 - Seller dashboard
+
+What needs doing?
+Seller dashboard
+
+Details
+Show sellers their shop's inventory, stock information, and order items. Keep other sellers' records out of the dashboard.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D21 - Seller product listings
+
+What needs doing?
+Seller product listings
+
+Details
+Let sellers add and edit their own products, upload a product photo, and publish or hide a listing. Block changes to another shop's products.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D22 - Product variants and inventory
+
+What needs doing?
+Product variants and inventory
+
+Details
+Let sellers manage product options, SKUs, and stock. Use the selected variant during purchase and reject stale updates that could overwrite newer stock changes.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D23 - Shop details and storefront
+
+What needs doing?
+Shop details and storefront
+
+Details
+Let sellers update supported shop details through the existing seller application/profile flow. Show the approved shop's public details and active listings.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D24 - Seller order preparation
+
+What needs doing?
+Seller order preparation
+
+Details
+Let sellers accept, reject, and prepare their own shipments. Require pickup details before marking an order ready and restore only the rejecting shop's stock.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D25 - Seller sales reports
+
+What needs doing?
+Seller sales reports
+
+Details
+Show completed COD merchandise sales, recorded reimbursements, and best-selling products. Let sellers filter dates and download their own shop's results.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D26 - Rider applications and approval
+
+What needs doing?
+Rider applications and approval
+
+Details
+Let users submit rider applications and private documents. Give admins approval and rejection controls without granting rider access before approval.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D27 - Rider dashboard and availability
+
+What needs doing?
+Rider dashboard and availability
+
+Details
+Show approved riders their delivery workspace and let them switch availability on or off. Keep applicants and unapproved accounts out of delivery actions.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D28 - Delivery offers and automatic dispatch
+
+What needs doing?
+Delivery offers and automatic dispatch
+
+Details
+Offer ready shipments to eligible available riders in the matching city. Retry declined or expired offers and prevent duplicate claims.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D29 - Barangay rider assignments
+
+What needs doing?
+Barangay rider assignments
+
+Details
+Let admins assign approved riders to delivery barangays. Use the designated barangay rider when the shipment qualifies.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D30 - Admin delivery assignment
+
+What needs doing?
+Admin delivery assignment
+
+Details
+Give admins a fallback way to assign an eligible rider and monitor shipment events. Keep seller and rider actions limited to their own shipments.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D31 - Pickup and delivery confirmation
+
+What needs doing?
+Pickup and delivery confirmation
+
+Details
+Let the assigned rider record pickup and confirm delivery with the required PIN, proof, and COD confirmation. Let the buyer confirm receipt afterward.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D32 - Rider delivery history and earnings
+
+What needs doing?
+Rider delivery history and earnings
+
+Details
+Show riders their own delivery history and recorded earnings. Keep the earnings display separate from actual payout transfers.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D33 - Admin dashboard and order monitoring
+
+What needs doing?
+Admin dashboard and order monitoring
+
+Details
+Show buyer, product, and order counts, pending applications, low-stock products, and recent orders. Let admins filter the order list by status.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D34 - Admin buyer and partner records
+
+What needs doing?
+Admin buyer and partner records
+
+Details
+Show admins buyer records, seller applications, and rider records. Include the existing status filters so they can find records that need attention.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D35 - Category management
+
+What needs doing?
+Category management
+
+Details
+Let admins create, update, and delete categories where the existing rules allow it. Validate changes before saving.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D36 - Admin inventory and review viewing
+
+What needs doing?
+Admin inventory and review viewing
+
+Details
+Let admins inspect active products, stock, product reviews, and service feedback. Keep this as record viewing rather than claiming review removal or product editing exists.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D37 - Profile editing and password changes
+
+What needs doing?
+Profile editing and password changes
+
+Details
+Let users update their own details and password after confirming their identity. Protect role fields and revoke old sessions after a password change.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D38 - Privacy consent and deletion requests
+
+What needs doing?
+Privacy consent and deletion requests
+
+Details
+Record privacy consent and let users request account-deletion review. Let admins respond without treating the response as automatic account deletion.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D39 - Admin MFA and device security
+
+What needs doing?
+Admin MFA and device security
+
+Details
+Require extra verification for protected admin actions. Let users inspect their sessions and sign out other devices.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D40 - Account suspension and audit history
+
+What needs doing?
+Account suspension and audit history
+
+Details
+Let admins suspend or restore supported accounts while preserving business records. Record important changes without storing passwords, PINs, or other secrets in the audit trail.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D41 - Light and dark themes
+
+What needs doing?
+Light and dark themes
+
+Details
+Keep the marketplace screens usable in both themes and on smaller screens. Remember the user's selected theme.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D42 - Public catalogue API
+
+What needs doing?
+Public catalogue API
+
+Details
+Provide the existing versioned health and catalogue endpoints. Validate filters and hide products from inactive shops.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D43 - Checkout pause and regional beta controls
+
+What needs doing?
+Checkout pause and regional beta controls
+
+Details
+Allow new checkout to be paused and restrict beta orders to configured pickup and delivery cities. Reject checkout when beta cities are required but not configured.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D44 - Operations health and release checks
+
+What needs doing?
+Operations health and release checks
+
+Details
+Provide the admin Operations page, readiness checks, and technical release checks. Check background-process health without treating a passing technical check as launch approval.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D45 - Local encrypted backup and recovery tools
+
+What needs doing?
+Local encrypted backup and recovery tools
+
+Details
+Provide encrypted SQLite backup checks and isolated restore rehearsals. Keep hosted MySQL and cloud-file recovery as separate work.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+D46 - Admin notification monitor
+
+What needs doing?
+Admin notification monitor
+
+Details
+Show admins email notification delivery records and let them retry eligible failed notifications. Keep actual provider delivery verification separate.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+Completed; date not recorded
+
+Status
+Done
+
+------------------------------------------------------------
+
+DOCUMENTED REMAINING RELEASE WORK
+=================================
+
+R01 - Choose the beta cities and participants
+
+What needs doing?
+Choose the beta cities and participants
+
+Details
+Agree on the pilot cities, test users, and dates. Configure the approved geography before opening the regional beta.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R02 - Run the hosted buyer and seller walkthrough
+
+What needs doing?
+Run the hosted buyer and seller walkthrough
+
+Details
+On the hosted test site, try signup, verification, checkout, invoices, messaging, and seller order handling. Record problems and retest the fixes.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R03 - Run the hosted rider walkthrough
+
+What needs doing?
+Run the hosted rider walkthrough
+
+Details
+Try availability, delivery offers, barangay assignment, pickup, delivery proof, and buyer receipt on the hosted setup. Check wrong-user and expired-offer cases too.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R04 - Review the final screens on phones and computers
+
+What needs doing?
+Review the final screens on phones and computers
+
+Details
+Check both themes, product options, checkout, chat, and role dashboards at different screen sizes. Fix layout issues found during the walkthrough.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R05 - Verify hosted Google and contact verification
+
+What needs doing?
+Verify hosted Google and contact verification
+
+Details
+Check the actual Google callback and configured email or phone verification provider on the hosted site. Confirm valid verification succeeds and expired or invalid attempts fail.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R06 - Check real email notification delivery
+
+What needs doing?
+Check real email notification delivery
+
+Details
+Use the configured hosting email provider to test order notifications and failed-delivery retries. Record whether messages arrive and whether retries behave correctly.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R07 - Test MySQL concurrency and hosted performance
+
+What needs doing?
+Test MySQL concurrency and hosted performance
+
+Details
+Run simultaneous purchases and rider claims against an isolated hosted test database. Record stock results, assignment results, response times, and errors.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R08 - Configure hosting and background workers
+
+What needs doing?
+Configure hosting and background workers
+
+Details
+Choose the hosting database, storage, and backup providers. Set up the application, queue worker, scheduler, and production environment without copying demo accounts or local secrets.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R09 - Coordinate the team's Cloudflare setup
+
+What needs doing?
+Coordinate the team's Cloudflare setup
+
+Details
+Track the team's domain and Cloudflare setup and collect the configuration checks. Confirm the agreed proxy and host settings before launch.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R10 - Verify trusted HTTPS and private pages
+
+What needs doing?
+Verify trusted HTTPS and private pages
+
+Details
+Check the real certificate, secure cookies, redirects, and private-page caching on the hosted site. Record any failed checks before the release review.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R11 - Rehearse hosted database and file recovery
+
+What needs doing?
+Rehearse hosted database and file recovery
+
+Details
+Restore the selected database and uploaded files into an isolated target. Check private evidence access and confirm the required encryption keys can be recovered.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R12 - Test hosted alerts and background-process health
+
+What needs doing?
+Test hosted alerts and background-process health
+
+Details
+Check that worker or scheduler problems appear in readiness and monitoring. Confirm someone receives the agreed alert when intervention is needed.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R13 - Run the regional beta and record feedback
+
+What needs doing?
+Run the regional beta and record feedback
+
+Details
+Invite the agreed pilot users, observe the main buyer, seller, and rider flows, and record actual feedback. Assign each confirmed issue to an owner.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R14 - Complete the release and rollback review
+
+What needs doing?
+Complete the release and rollback review
+
+Details
+Identify the exact release build and check production security, payment limits, and rollback steps. Keep production demo payments disabled and resolve blocking findings before approval.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R15 - Confirm launch approval and support coverage
+
+What needs doing?
+Confirm launch approval and support coverage
+
+Details
+Collect the backend, UI, and QA approvals. Agree on who handles incidents and record the launch decision before opening production traffic.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+R16 - Observe the release and record follow-up work
+
+What needs doing?
+Observe the release and record follow-up work
+
+Details
+Track checkout failures, rider update errors, queue delays, and response times during the agreed observation period. Record incidents and assign follow-up tasks.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do
+
+------------------------------------------------------------
+
+FUTURE FEATURES FROM THE CLASS REQUIREMENTS
+===========================================
+
+F01 - Add a separate Logistics role
+
+What needs doing?
+Add a separate Logistics role
+
+Details
+Create a restricted delivery-operations role using the existing assignment and monitoring features. Keep account administration and global security controls with the admin.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F02 - Build the Logistics workspace
+
+What needs doing?
+Build the Logistics workspace
+
+Details
+Create a dedicated delivery queue and assignment screen for Logistics staff after the role is added. Show the information needed for dispatch without full admin access.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F03 - Add delivery performance reports
+
+What needs doing?
+Add delivery performance reports
+
+Details
+Prepare date-filtered delivery totals for the Logistics workspace. Define completed, pending, and delayed counts and keep unnecessary personal information out of exports.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F04 - Add mobile token authentication
+
+What needs doing?
+Add mobile token authentication
+
+Details
+Extend the current public catalogue API with buyer and rider login and logout. Add token revocation and enforce the existing role and account-status rules.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F05 - Add buyer cart and address API endpoints
+
+What needs doing?
+Add buyer cart and address API endpoints
+
+Details
+Expose the existing cart and saved-address rules through authenticated mobile endpoints. Check stock and keep addresses limited to their owner.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F06 - Add mobile checkout and order API endpoints
+
+What needs doing?
+Add mobile checkout and order API endpoints
+
+Details
+Reuse the checkout and shipment rules for mobile purchases and tracking. Protect order ownership and prevent repeated requests from creating duplicate orders.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F07 - Add rider delivery API endpoints
+
+What needs doing?
+Add rider delivery API endpoints
+
+Details
+Expose availability, eligible offers, pickup, and proof submission for the mobile app. Keep assignment and private-data checks consistent with the website.
+
+Who is doing it?
+Karl Benedict Boongaling
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F08 - Create the Flutter app and login screens
+
+What needs doing?
+Create the Flutter app and login screens
+
+Details
+Set up Flutter navigation and the API connection, then build buyer and rider sign-in. Store tokens securely and handle expired sessions.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F09 - Build Flutter product browsing and cart
+
+What needs doing?
+Build Flutter product browsing and cart
+
+Details
+Use the catalogue and cart APIs for product browsing, search, product options, and quantity changes. Include loading, empty, and retry states.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F10 - Build Flutter checkout and order tracking
+
+What needs doing?
+Build Flutter checkout and order tracking
+
+Details
+Let buyers choose an address, review charges, place an order, and track shipments. Handle connection failures without submitting the same order twice.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F11 - Build Flutter rider delivery screens
+
+What needs doing?
+Build Flutter rider delivery screens
+
+Details
+Let riders change availability, accept eligible offers, view assigned details, and submit pickup and delivery updates. Show clear errors for expired offers and invalid proof.
+
+Who is doing it?
+Mark Jopher Domanico
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------
+
+F12 - Test the Flutter buyer and rider flows
+
+What needs doing?
+Test the Flutter buyer and rider flows
+
+Details
+Use the target devices to complete a test purchase and delivery. Check poor connections, expired sessions, wrong-user access, and repeated requests.
+
+Who is doing it?
+Frances Kyle Mary Villamor
+
+Deadline
+To be scheduled
+
+Status
+To Do - proposed scope
+
+------------------------------------------------------------

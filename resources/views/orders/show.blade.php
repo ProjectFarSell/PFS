@@ -4,7 +4,7 @@
 
 @section('content')
     @if(auth()->user()->role === \App\Enums\UserRole::Buyer)
-        <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-accent hover:text-accent">&larr; My Orders</a>
+        <a href="{{ route('orders.index') }}" class="inline-block mb-3 text-sm text-accent hover:text-accent"><x-ui.icon name="previous" size="sm" class="inline-block align-text-bottom" /> My Orders</a>
     @endif
     <h1 class="text-lg font-semibold">Order {{ $order->number }}</h1>
     @if($order->replacementSource)<p class="mt-2 text-sm">Replacement order linked to {{ $order->replacementSource->item->order->number }}. Prices and delivery charges were reviewed at checkout.</p>@endif
@@ -12,20 +12,18 @@
     @if($order->cancelled_at)
         <p class="my-3 text-sm">Cancelled {{ $order->cancelled_at->format('M j, Y g:i A') }}: {{ $order->cancellation_reason }}</p>
     @elseif(auth()->user()->role === \App\Enums\UserRole::Buyer && $order->canBuyerCancel())
-        <details class="my-4 rounded-xl border border-surface-border p-4 print:hidden">
-            <summary class="cursor-pointer font-semibold">Cancel order</summary>
-            <p class="my-2 text-sm">Cancel all remaining shipments before a rider is assigned. Reserved stock will be restored.</p>
-            <form method="post" action="{{ route('orders.cancel', $order) }}" class="space-y-3">@csrf
-                <label class="block text-sm">Reason<textarea name="reason" required minlength="5" maxlength="1000" class="mt-1 block w-full rounded-lg border border-surface-border bg-surface p-3">{{ old('reason') }}</textarea></label>
-                <button class="btn-outline" type="submit">Confirm cancellation</button>
-            </form>
-        </details>
+        <form method="post" action="{{ route('orders.cancel', $order) }}" class="my-4 print:hidden">
+            @csrf
+            <x-destructive-confirmation name="Cancel order" confirm-label="Confirm cancellation" description="Cancel all remaining shipments before a rider is assigned. Reserved stock will be restored.">
+                <label class="mt-4 block text-sm">Reason<textarea name="reason" required minlength="5" maxlength="1000" class="mt-1 block w-full rounded-lg border border-surface-border bg-surface p-3">{{ old('reason') }}</textarea></label>
+            </x-destructive-confirmation>
+        </form>
     @endif
     <p class="text-sm text-text-muted mt-1">{{ $order->status->label() }} · {{ $order->payment_method === \App\Enums\PaymentMethod::Cod ? 'Cash on delivery' : 'Demo prepaid payment' }}</p>
     @if(auth()->user()->role === \App\Enums\UserRole::Buyer)
         <div class="mt-3 flex flex-wrap gap-2 print:hidden">
-            <a href="{{ route('orders.print', ['order' => $order, 'document' => 'invoice']) }}" target="_blank" rel="noopener" class="btn-outline">Print invoice</a>
-            <a href="{{ route('orders.print', ['order' => $order, 'document' => 'packing-slip']) }}" target="_blank" rel="noopener" class="btn-outline">Print packing slip</a>
+            <x-ui.button variant="secondary" :href="route('orders.print', ['order' => $order, 'document' => 'invoice'])" target="_blank" rel="noopener">Print invoice</x-ui.button>
+            <x-ui.button variant="secondary" :href="route('orders.print', ['order' => $order, 'document' => 'packing-slip'])" target="_blank" rel="noopener">Print packing slip</x-ui.button>
         </div>
     @endif
     @if($order->fulfillments->isNotEmpty())

@@ -3,7 +3,7 @@
 @section('title', 'Delivery history · FarSell')
 
 @section('content')
-    <a href="{{ route('rider.dashboard') }}" class="text-sm text-accent underline">Back to dashboard</a>
+    <x-ui.button variant="link" :href="route('rider.dashboard')" class="text-sm text-accent underline">Back to dashboard</x-ui.button>
     <section class="fs-card-raised mt-4 p-5">
         <h1 class="text-2xl font-semibold">Delivery history</h1>
         <p class="mt-2 text-sm text-text-muted">Your assigned shipments and their status timestamps.</p>
@@ -13,7 +13,7 @@
             <article class="fs-card p-5">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <h2 class="font-semibold">{{ $delivery->order?->number ?? 'Order unavailable' }} · Shipment #{{ $delivery->id }}</h2>
-                    <span class="badge badge-neutral">{{ $delivery->status->label() }}</span>
+                    <x-ui.status-pill :status="$delivery->status->value">{{ $delivery->status->label() }}</x-ui.status-pill>
                 </div>
                 <p class="mt-1 text-sm text-text-muted">{{ $delivery->shop_name }}</p>
                 <ol class="mt-4 space-y-3" aria-label="Shipment status history">

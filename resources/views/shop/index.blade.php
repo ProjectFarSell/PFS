@@ -47,7 +47,7 @@
             </h2>
             @if ($shop->city)
             <p class="text-xs mt-0.5" style="color:rgb(var(--color-text-muted));">
-                📍 {{ $shop->city }}
+                <x-ui.icon name="location" size="sm" class="inline-block align-text-bottom" /> {{ $shop->city }}
             </p>
             @endif
             @if ($shop->tagline)
@@ -58,11 +58,11 @@
             <p class="text-xs mt-2" style="color:rgb(var(--color-text-muted));">
                 {{ $shop->products_count }} {{ Str::plural('product', $shop->products_count) }}
             </p>
-            <a href="{{ route('shops.show', $shop) }}"
-               class="btn-accent mt-4 self-start"
+            <x-ui.button variant="primary" size="lg" :href="route('shops.show', $shop)"
+               class="mt-4 self-start"
                aria-label="Visit {{ $shop->name }}">
                 Visit Store
-            </a>
+            </x-ui.button>
         </div>
     </article>
 

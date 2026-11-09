@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'FarSell Portal')</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <x-primary-font />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{ asset('js/theme.js') }}"></script>
 </head>
@@ -29,7 +27,7 @@
                 <span>FarSell <span class="hidden sm:inline">{{ ucfirst($portalRole->value) }}</span></span>
             </a>
 
-            <nav class="portal-navigation order-last flex w-full gap-1 overflow-x-auto text-sm xl:order-none xl:ml-auto xl:w-auto" aria-label="Portal navigation">
+            <nav class="portal-navigation order-last flex w-full gap-2 overflow-x-auto text-sm xl:order-none xl:ml-auto xl:w-auto" aria-label="Portal navigation">
                 @if($portalRole === \App\Enums\UserRole::Admin)
                     <a href="{{ route('admin.dashboard') }}" class="portal-nav-link" @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif>Dashboard</a>
                     <a href="{{ route('admin.logistics.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.logistics.*')) aria-current="page" @endif>Logistics</a>
@@ -62,11 +60,11 @@
 
             </nav>
             <div class="ml-auto flex shrink-0 items-center gap-2 xl:ml-1">
-                <a href="{{ route('account.profile') }}" class="portal-nav-link" aria-label="My Account"><svg class="h-5 w-5 sm:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span class="hidden sm:inline">My Account</span></a>
+                <a href="{{ route('account.profile') }}" class="portal-nav-link" aria-label="My account" title="My account"><x-ui.icon name="account" class="sm:hidden" /><span class="hidden sm:inline">My account</span></a>
                 <x-theme-toggle />
                 <form method="post" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="btn-outline min-h-11 px-3 py-2">Sign out</button>
+                    <x-ui.button variant="secondary" type="submit" class="min-h-11">Sign out</x-ui.button>
                 </form>
             </div>
         </div>

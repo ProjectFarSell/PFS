@@ -14,7 +14,7 @@
             <label class="block text-sm">Contact attempted<select name="contact_method" required class="mt-1 block w-full rounded-lg"><option value="phone">Phone call</option><option value="chat">Chat</option><option value="doorstep">At delivery address</option></select></label>
             <label class="block text-sm">What happened / contact attempts<textarea name="exception_note" minlength="10" maxlength="1000" required class="mt-1 block w-full rounded-lg"></textarea></label>
             <p class="text-xs">Do not use this if you collected payment. Contact admin instead. Do not include the buyer's PIN in this note.</p>
-            <button class="btn-outline">Record failed attempt</button>
+            <x-ui.button variant="secondary" type="submit">Record failed attempt</x-ui.button>
         </form>
     </details>
 @elseif($isAdmin && $part->status->value === 'delivery_failed')
@@ -24,14 +24,14 @@
         @if($part->usesExternalCourier())<label class="block text-sm"><input type="checkbox" name="courier_verified" value="1" required> I confirmed these retry arrangements with the courier</label>@endif
         <label class="block text-sm">Retry date/time ({{ config('app.timezone') }})<input type="datetime-local" name="retry_at" required class="mt-1 block w-full rounded-lg"></label>
         <label class="block text-sm">Buyer arrangement / instructions<textarea name="exception_note" required minlength="10" maxlength="1000" class="mt-1 block w-full rounded-lg"></textarea></label>
-        <button class="btn-accent">{{ $part->usesExternalCourier() ? 'Record agreed courier retry' : 'Schedule retry with current rider' }}</button>
+        <x-ui.button variant="primary" size="lg" type="submit">{{ $part->usesExternalCourier() ? 'Record agreed courier retry' : 'Schedule retry with current rider' }}</x-ui.button>
     </form>
     @endif
     <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4 space-y-3 border-t border-surface-border pt-3">@csrf
         <input type="hidden" name="action" value="return_to_seller">
         @if($part->usesExternalCourier())<label class="block text-sm"><input type="checkbox" name="courier_verified" value="1" required> I confirmed return arrangements with the courier</label>@endif
         <label class="block text-sm">Return instructions<textarea name="exception_note" required minlength="10" maxlength="1000" class="mt-1 block w-full rounded-lg"></textarea></label>
-        <button class="btn-outline">Arrange return to seller</button>
+        <x-ui.button variant="secondary" type="submit">Arrange return to seller</x-ui.button>
     </form>
 @elseif($isSeller && $part->status->value === 'returning')
     <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4 space-y-3">@csrf
@@ -40,7 +40,7 @@
         <label class="block text-sm">Inspection result<select name="return_disposition" required class="mt-1 block w-full rounded-lg"><option value="quarantine">Keep out of sellable stock / inspect or damaged</option><option value="restock">All items sellable — restore reserved quantities</option></select></label>
         <label class="block text-sm">Condition and handover note<textarea name="exception_note" required minlength="10" maxlength="1000" class="mt-1 block w-full rounded-lg"></textarea></label>
         <p class="text-xs">Stock is restored only when you choose sellable. No automatic rider earnings or failed-delivery charges are posted.</p>
-        <button class="btn-accent">Confirm returned shipment</button>
+        <x-ui.button variant="primary" size="lg" type="submit">Confirm returned shipment</x-ui.button>
     </form>
 @elseif($part->status->value === 'returning')
     <p class="mt-4 text-sm font-semibold">Bring these items back to the pickup shop. The seller must confirm physical receipt. Do not collect COD.</p>

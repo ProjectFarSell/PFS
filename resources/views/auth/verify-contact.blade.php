@@ -17,7 +17,7 @@
                 @csrf
                 <div><label for="verification_channel" class="fs-label">Verify my Account with</label><select id="verification_channel" name="channel" x-model="channel" class="fs-input"><option value="email">Email</option><option value="phone">Phone number</option></select></div>
                 <div x-show="channel === 'phone'" x-cloak><label for="verification_phone" class="fs-label">Phone number</label><input id="verification_phone" type="tel" name="phone" autocomplete="tel" maxlength="24" :required="channel === 'phone'" placeholder="09123456789" class="fs-input"></div>
-                <button class="btn-accent min-h-11 w-full">Continue</button>
+                <x-ui.button variant="primary" size="lg" type="submit" class="min-h-11 w-full">Continue</x-ui.button>
             </form>
         @else
             @php($verifiedAt = $channel === 'email' ? $user->email_verified_at : $user->phone_verified_at)
@@ -37,12 +37,12 @@
                         <p class="mt-3 text-sm text-error">Firebase Phone Auth has not been configured yet. Ask an administrator to add the Firebase settings.</p>
                     @else
                         <div class="mt-4 space-y-3" id="firebase-phone-verification" data-config='@json($firebase)' data-verify-url="{{ route('contact-verification.phone.firebase') }}">
-                            <button type="button" id="firebase-send-code" class="btn-outline min-h-10 px-4 text-sm">Send SMS code</button>
+                            <x-ui.button variant="secondary" type="button" id="firebase-send-code">Send SMS code</x-ui.button>
                             <div id="firebase-recaptcha"></div>
                             <div id="firebase-code-entry" class="hidden flex gap-3">
                                 <label class="sr-only" for="firebase_phone_code">Phone verification code</label>
                                 <input id="firebase_phone_code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit code" class="fs-input max-w-44">
-                                <button type="button" id="firebase-verify-code" class="btn-accent min-h-10 px-4 text-sm">Verify</button>
+                                <x-ui.button variant="primary" size="lg" type="button" id="firebase-verify-code">Verify</x-ui.button>
                             </div>
                             <p id="firebase-phone-message" class="hidden text-sm" role="status"></p>
                         </div>
@@ -50,20 +50,20 @@
                 @else
                     <form method="post" action="{{ route('contact-verification.send', $channel) }}" class="mt-3">
                         @csrf
-                        <button class="btn-outline min-h-10 px-4 text-sm">Send code</button>
+                        <x-ui.button variant="secondary" type="submit">Send code</x-ui.button>
                     </form>
                     <form method="post" action="{{ route('contact-verification.verify', $channel) }}" class="mt-3 flex gap-3">
                         @csrf
                         <label class="sr-only" for="{{ $channel }}_code">{{ ucfirst($channel) }} verification code</label>
                         <input id="{{ $channel }}_code" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required placeholder="6-digit code" class="fs-input max-w-44">
-                        <button class="btn-accent min-h-10 px-4 text-sm">Verify</button>
+                        <x-ui.button variant="primary" size="lg" type="submit">Verify</x-ui.button>
                     </form>
                 @endif
             @endunless
             </section>
         @endif
 
-        <a href="{{ route('home') }}" class="mt-6 inline-flex min-h-10 items-center text-sm font-semibold text-accent hover:underline">Continue to FarSell</a>
+        <x-ui.button variant="link" :href="route('home')" class="mt-6">Continue to FarSell</x-ui.button>
     </div>
 @endsection
 

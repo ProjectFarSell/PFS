@@ -61,7 +61,7 @@ class BuyerProfileTest extends TestCase
 
         foreach (['orders.index', 'account.addresses.index'] as $route) {
             $response = $this->get(route($route))->assertOk()
-                ->assertSee('← My Profile')->assertSee(route('account.profile'), false);
+                ->assertSee('My Profile')->assertSee(route('account.profile'), false);
 
             preg_match('/<nav\b[^>]*aria-label="Mobile navigation"[^>]*>(.*?)<\/nav>/s', $response->getContent(), $matches);
             $this->assertNotEmpty($matches);

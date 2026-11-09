@@ -5,7 +5,7 @@
 <div class="mt-5 space-y-4">
     @foreach($order->fulfillments as $part)
         <section class="fs-card p-5">
-            <div class="flex flex-wrap justify-between gap-3"><h2 class="font-semibold">{{ $part->shop_name }} · Shipment #{{ $part->id }}</h2><span class="badge badge-neutral">{{ $part->deliveryLabel() }}</span></div>
+            <div class="flex flex-wrap justify-between gap-3"><h2 class="font-semibold">{{ $part->shop_name }} · Shipment #{{ $part->id }}</h2><x-ui.status-pill :status="$part->status->value">{{ $part->deliveryLabel() }}</x-ui.status-pill></div>
             @include('fulfillments.courier')
             <ul class="mt-3 text-sm space-y-2">@foreach($part->items as $item)<li class="flex justify-between gap-3"><span>{{ $item->name }}@if($item->variant_options) ({{ collect($item->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $item->qty }}<span class="mt-0.5 block text-xs text-text-muted">SKU: {{ $item->product_sku ?? 'Unavailable' }}</span></span><span>₱{{ number_format((float) $item->line_total, 2) }}</span></li>@endforeach</ul>
             <p class="mt-3 text-sm">Shipment total: ₱{{ number_format($part->amount(), 2) }} (delivery allocation ₱{{ number_format((float) $part->shipping_fee, 2) }})</p>
@@ -24,7 +24,7 @@
             @if($part->delivery_recipient_name)<p class="mt-2 text-sm">Received by: {{ $part->delivery_recipient_name }}</p>@endif
             @if($part->delivery_note)<p class="mt-2 text-sm">Delivery note: {{ $part->delivery_note }}</p>@endif
             @if($part->delivery_photo_path && (auth()->id() === $order->user_id || auth()->user()?->role === \App\Enums\UserRole::Admin))
-                <p class="mt-2 text-sm"><a class="text-accent underline" href="{{ route('fulfillments.proof-photo', $part) }}">View proof photo</a></p>
+                <p class="mt-2 text-sm"><x-ui.button variant="link" class="text-accent underline" :href="route('fulfillments.proof-photo', $part)">View proof photo</x-ui.button></p>
             @endif
             <ol class="mt-5 text-sm" aria-label="Shipment history">
                 @foreach($part->events as $event)
@@ -49,11 +49,11 @@
                 @endforeach
             </ol>
             @if($part->status === \App\Enums\FulfillmentStatus::Delivered && auth()->id() === $order->user_id)
-                <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4">@csrf <p class="mb-3 text-sm">Confirm only after receiving this shop's items.</p><button name="action" value="complete" class="btn-accent">Confirm received / Complete shipment</button></form>
+                <form method="post" action="{{ route('fulfillments.update', $part) }}" class="mt-4">@csrf <p class="mb-3 text-sm">Confirm only after receiving this shop's items.</p><x-ui.button variant="primary" size="lg" type="submit" name="action" value="complete">Confirm received / Complete shipment</x-ui.button></form>
             @endif
             @if($part->status === \App\Enums\FulfillmentStatus::Completed && auth()->id() === $order->user_id)
                 @php($reviewed = $part->feedback && $part->items->every(fn ($item) => $item->review) && (!$part->rider_id || $part->riderRating))
-                <a href="{{ route('orders.feedback.create', $part) }}" class="btn-accent mt-4 inline-flex">{{ $reviewed ? 'View your feedback' : 'Rate products & delivery' }}</a>
+                <x-ui.button variant="primary" size="lg" :href="route('orders.feedback.create', $part)" class="mt-4 inline-flex">{{ $reviewed ? 'View your feedback' : 'Rate products & delivery' }}</x-ui.button>
             @endif
         </section>
     @endforeach

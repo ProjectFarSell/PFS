@@ -13,7 +13,7 @@
         @if ($profile)
         <p class="mt-2 text-sm">
             Current status:
-            <span class="badge badge-accent ml-1">{{ ucfirst($profile->status->value) }}</span>
+            <x-ui.status-pill :status="$profile->status->value" class="ml-1" />
         </p>
         @endif
     </div>
@@ -64,9 +64,7 @@
                              : 'border-color:rgb(var(--color-surface-border)); color:rgb(var(--color-text-muted));'">
                         <template x-if="step > {{ $n }}">
                             {{-- Checkmark --}}
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
-                            </svg>
+                            <x-ui.icon name="confirm" size="sm" />
                         </template>
                         <template x-if="step <= {{ $n }}">
                             <span>{{ $n }}</span>
@@ -222,21 +220,16 @@
                         </template>
                         <template x-if="filename">
                             <div class="flex items-center justify-center gap-2">
-                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24"
-                                     stroke="currentColor" stroke-width="2"
-                                     style="color:rgb(var(--color-accent));">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
-                                </svg>
+                                <x-ui.icon name="image" size="sm" />
                                 <span class="text-sm font-medium truncate max-w-[180px]"
                                       x-text="filename"
                                       style="color:rgb(var(--color-text-base));"></span>
-                                <button type="button"
+                                <x-ui.button variant="tertiary" size="sm" type="button"
                                         @click.stop="filename = null; $refs.{{ $doc['ref'] }}.value = ''"
                                         class="text-xs font-medium hover:underline"
                                         style="color:rgb(var(--color-error));">
                                     Remove
-                                </button>
+                                </x-ui.button>
                             </div>
                         </template>
                         <input x-ref="{{ $doc['ref'] }}"
@@ -251,21 +244,20 @@
 
             {{-- ── Navigation buttons ─────────────────────────────────────── --}}
             <div class="flex items-center justify-between pt-2 gap-3">
-                <button type="button" @click="prevStep()"
+                <x-ui.button variant="secondary" type="button" @click="prevStep()"
                         x-show="step > 1"
-                        class="btn-outline"
-                        style="display:none;">
-                    ← Back
-                </button>
+
+                        style="display:none;"><x-ui.icon name="previous" size="sm" class="inline-block align-text-bottom" /> Back
+                </x-ui.button>
                 <div x-show="step < 3" class="ml-auto">
-                    <button type="button" @click="nextStep()" class="btn-accent">
-                        Next →
-                    </button>
+                    <x-ui.button variant="primary" size="lg" type="button" @click="nextStep()">
+                        Next <x-ui.icon name="next" size="sm" />
+                    </x-ui.button>
                 </div>
                 <div x-show="step === 3" style="display:none;" class="ml-auto">
-                    <button type="submit" class="btn-accent">
+                    <x-ui.button variant="primary" size="lg" type="submit">
                         {{ $profile ? 'Save application updates' : 'Submit application' }}
-                    </button>
+                    </x-ui.button>
                 </div>
             </div>
 

@@ -2,7 +2,7 @@
     <div class="flex items-center gap-3 border-b border-surface-border p-3">
         <label class="relative min-w-0 flex-1">
             <span class="sr-only">Search conversations</span>
-            <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
+            <x-ui.icon name="search" size="sm" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
             <input type="search" x-model="search" placeholder="Search name" class="fs-input w-full py-2 pl-9 text-sm">
         </label>
         <span class="shrink-0 text-sm text-text-muted">All</span>

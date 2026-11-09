@@ -1,12 +1,18 @@
 @extends('layouts.app')
 
 @section('title', 'Checkout · FarSell')
+@section('buyer-action-bar', 'true')
 
 @section('content')
-    <h1 class="text-lg font-semibold mb-3">Checkout</h1>
+    <div class="mb-3 flex items-center justify-between gap-3">
+        <h1 class="text-lg font-semibold">Checkout</h1>
+        <x-bottom-actions buyer>
+            <x-ui.button variant="primary" size="lg" type="submit" form="checkout-form" class="w-full md:w-auto">Place order</x-ui.button>
+        </x-bottom-actions>
+    </div>
     @if(session()->has(\App\Services\Orders\ReplacementService::SESSION_KEY))<p class="mb-4 rounded-xl border border-accent p-3 text-sm">Replacement order: review the current variant, item price and delivery charge below. Placing this order creates a new COD purchase linked to your returned order. No previous payment is being credited.</p>@endif
     <div class="grid md:grid-cols-2 gap-6">
-        <form method="post" action="{{ route('checkout.store') }}" class="space-y-4 rounded-2xl bg-surface border border-surface-border p-4">
+        <form id="checkout-form" method="post" action="{{ route('checkout.store') }}" class="space-y-4 rounded-2xl bg-surface border border-surface-border p-4">
             @csrf
             <fieldset>
                 <legend class="text-sm font-medium mb-2">Delivery address</legend>
@@ -24,7 +30,7 @@
                         </label>
                     @endforeach
                 </div>
-                <a href="{{ route('account.addresses.create') }}" class="inline-block mt-2 text-xs text-accent hover:text-accent font-medium">Add another address</a>
+                <x-ui.button variant="link" :href="route('account.addresses.create')" class="mt-2">Add another address</x-ui.button>
             </fieldset>
 
             <label class="block text-sm">Payment
@@ -43,7 +49,6 @@
                 </ul>
             @endif
 
-            <button class="w-full rounded-full bg-violet-600 hover:bg-violet-700 text-white text-sm py-2.5 font-medium transition-colors">Place order</button>
         </form>
 
         <div>

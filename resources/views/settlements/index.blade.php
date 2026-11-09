@@ -2,12 +2,12 @@
 @section('title', 'Commissions & settlements - FarSell')
 @section('content')
 <div class="mx-auto max-w-5xl space-y-4">
-    <a href="{{ route($isAdmin ? 'admin.dashboard' : 'seller.dashboard') }}" class="text-sm text-accent underline">Back to dashboard</a>
+    <x-ui.button variant="link" :href="route($isAdmin ? 'admin.dashboard' : 'seller.dashboard')" class="text-sm text-accent underline">Back to dashboard</x-ui.button>
     <h1 class="text-2xl font-bold">Commissions & settlements</h1>
     <p class="text-sm text-text-muted">Accounting records for new COD shipments completed by the buyer. These figures do not transfer money or confirm a seller payout. Fees are fixed at checkout; older orders keep their original rider earnings rules.</p>
     <p class="text-sm text-text-muted">COD handling and operating costs are recorded once per order on its first completed shipment. Rider pay is per completed shipment. Negative contribution is shown as a loss, never hidden.</p>
     @if($errors->any())<p role="alert" class="text-error">{{ $errors->first() }}</p>@endif
-    <form method="get" class="flex flex-wrap gap-3"><label class="text-sm">From<input type="date" name="from" value="{{ request('from') }}" class="ml-2 rounded-lg"></label><label class="text-sm">To<input type="date" name="to" value="{{ request('to') }}" class="ml-2 rounded-lg"></label><button class="btn-outline">Filter</button></form>
+    <form method="get" class="flex flex-wrap gap-3"><label class="text-sm">From<input type="date" name="from" value="{{ request('from') }}" class="ml-2 rounded-lg"></label><label class="text-sm">To<input type="date" name="to" value="{{ request('to') }}" class="ml-2 rounded-lg"></label><x-ui.button variant="secondary" type="submit">Filter</x-ui.button></form>
     @forelse($rows as $row)
     @php
         $refund = $row->adjustments->sum('refund_cents');

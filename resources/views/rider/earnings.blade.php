@@ -3,7 +3,7 @@
 @section('title', 'Rider earnings · FarSell')
 
 @section('content')
-    <a href="{{ route('rider.dashboard') }}" class="text-sm text-accent underline">Back to dashboard</a>
+    <x-ui.button variant="link" :href="route('rider.dashboard')" class="text-sm text-accent underline">Back to dashboard</x-ui.button>
     <section class="fs-card-raised mt-4 p-5">
         <h1 class="text-2xl font-semibold">Earnings ledger</h1>
         <p class="mt-2 text-sm text-text-muted">Each new shipment credits its agreed rider pay after the buyer confirms receipt. Older shipments keep their original allocated delivery fee. Failed attempts and returns do not credit earnings. These records do not confirm a cash payout.</p>

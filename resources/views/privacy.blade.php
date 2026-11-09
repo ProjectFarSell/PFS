@@ -23,7 +23,7 @@
         @if(auth()->user()->privacy_notice_version === \App\Support\PrivacyNotice::VERSION)
             <p class="mt-2 text-sm">Your acceptance of this version was recorded on {{ auth()->user()->privacy_accepted_at?->format('Y-m-d H:i') }}.</p>
         @else
-            <form method="post" action="{{ route('account.privacy.consent') }}" class="mt-3 space-y-3">@csrf<label class="flex gap-2 text-sm"><input type="checkbox" name="privacy_consent" value="1" required class="mt-1">I have read this privacy notice and agree to the collection and use of my data for my FarSell account and requested services.</label><button class="btn-accent">Record my acceptance</button></form>
+            <form method="post" action="{{ route('account.privacy.consent') }}" class="mt-3 space-y-3">@csrf<label class="flex gap-2 text-sm"><input type="checkbox" name="privacy_consent" value="1" required class="mt-1">I have read this privacy notice and agree to the collection and use of my data for my FarSell account and requested services.</label><x-ui.button variant="primary" size="lg" type="submit">Record my acceptance</x-ui.button></form>
         @endif
         </section>
     @endauth

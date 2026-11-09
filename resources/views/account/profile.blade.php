@@ -45,22 +45,37 @@
     {{-- ══════════════════════════════════════════════════════
          MOBILE: horizontal pill-tab bar (visible below md)
          ══════════════════════════════════════════════════════ --}}
-    <div class="flex gap-2 overflow-x-auto pb-2 md:hidden w-full"
-         style="scrollbar-width:none; -ms-overflow-style:none;">
-        @foreach (array_merge($accountItems, $purchaseItems) as $item)
+    <div class="flex w-full flex-wrap items-center gap-2 pb-2 md:hidden">
+        @foreach ($accountItems as $item)
             @if ($item['key'] !== null && ($item['active'] ?? true) !== false)
-            <button @click="activeTab = '{{ $item['key'] }}'"
-                    :class="activeTab === '{{ $item['key'] }}'
-                        ? 'text-white'
+            <x-ui.button variant="tertiary" type="button" @click="activeTab = '{{ $item['key'] }}'"
+                    ::class="activeTab === '{{ $item['key'] }}'
+                        ? 'text-accent-text'
                         : 'border text-text-muted'"
-                    :style="activeTab === '{{ $item['key'] }}'
+                    ::style="activeTab === '{{ $item['key'] }}'
                         ? 'background-color:rgb(var(--color-accent)); border-color:transparent;'
                         : 'border-color:rgb(var(--color-surface-border));'"
-                    class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors">
+                    ::aria-pressed="activeTab === '{{ $item['key'] }}'"
+                    class="shrink-0 rounded-full px-3 py-1.5 text-sm font-medium transition-colors">
                 {{ $item['label'] }}
-            </button>
+            </x-ui.button>
             @endif
         @endforeach
+        @if ($isBuyerProfile)
+            <x-action-menu label="Orders" context="filters" class="ml-auto">
+                <p class="px-4 text-xs font-semibold text-text-muted">Order status</p>
+                @foreach ($purchaseItems as $item)
+                    @if ($item['key'] !== null)
+                        <x-ui.button variant="tertiary" type="button" class="dropdown-item text-left justify-start"
+                                ::aria-pressed="activeTab === {{ \Illuminate\Support\Js::from($item['key']) }}"
+                                ::class="{ 'bg-surface-muted font-semibold': activeTab === {{ \Illuminate\Support\Js::from($item['key']) }} }"
+                                @click="activeTab = {{ \Illuminate\Support\Js::from($item['key']) }}; open = false; $nextTick(() => $refs.trigger.focus())">
+                            {{ $item['label'] }}
+                        </x-ui.button>
+                    @endif
+                @endforeach
+            </x-action-menu>
+        @endif
     </div>
 
     {{-- ══════════════════════════════════════════════════════
@@ -74,24 +89,24 @@
 
         @foreach ($accountItems as $item)
             @if ($item['active'])
-            <button @click="activeTab = '{{ $item['key'] }}'"
-                    :class="activeTab === '{{ $item['key'] }}'
+            <x-ui.button variant="tertiary" type="button" @click="activeTab = '{{ $item['key'] }}'"
+                    ::class="activeTab === '{{ $item['key'] }}'
                         ? 'font-semibold'
                         : 'hover:text-accent'"
-                    :style="activeTab === '{{ $item['key'] }}'
+                    ::style="activeTab === '{{ $item['key'] }}'
                         ? 'background-color:rgb(var(--color-accent-subtle)); color:rgb(var(--color-accent));'
                         : 'color:rgb(var(--color-text-muted));'"
                     class="text-left rounded-xl px-3 py-2.5 text-sm w-full transition-colors">
                 {{ $item['label'] }}
-            </button>
+            </x-ui.button>
             @else
-            <button disabled
+            <x-ui.button variant="tertiary" type="submit" disabled
                     class="text-left rounded-xl px-3 py-2.5 text-sm w-full opacity-40 cursor-not-allowed"
                     style="color:rgb(var(--color-text-muted));">
                 {{ $item['label'] }}
                 <span class="ml-1 text-[10px] rounded-full px-1.5 py-0.5"
                       style="background-color:rgb(var(--color-surface-muted)); color:rgb(var(--color-text-muted));">Soon</span>
-            </button>
+            </x-ui.button>
             @endif
         @endforeach
 
@@ -102,24 +117,24 @@
 
         @foreach ($purchaseItems as $item)
             @if ($item['key'] !== null)
-            <button @click="activeTab = '{{ $item['key'] }}'"
-                    :class="activeTab === '{{ $item['key'] }}'
+            <x-ui.button variant="tertiary" type="button" @click="activeTab = '{{ $item['key'] }}'"
+                    ::class="activeTab === '{{ $item['key'] }}'
                         ? 'font-semibold'
                         : 'hover:text-accent'"
-                    :style="activeTab === '{{ $item['key'] }}'
+                    ::style="activeTab === '{{ $item['key'] }}'
                         ? 'background-color:rgb(var(--color-accent-subtle)); color:rgb(var(--color-accent));'
                         : 'color:rgb(var(--color-text-muted));'"
                     class="text-left rounded-xl px-3 py-2.5 text-sm w-full transition-colors">
                 {{ $item['label'] }}
-            </button>
+            </x-ui.button>
             @else
-            <button disabled
+            <x-ui.button variant="tertiary" type="submit" disabled
                     class="text-left rounded-xl px-3 py-2.5 text-sm w-full opacity-40 cursor-not-allowed"
                     style="color:rgb(var(--color-text-muted));">
                 {{ $item['label'] }}
                 <span class="ml-1 text-[10px] rounded-full px-1.5 py-0.5"
                       style="background-color:rgb(var(--color-surface-muted)); color:rgb(var(--color-text-muted));">Soon</span>
-            </button>
+            </x-ui.button>
             @endif
         @endforeach
         @endif
@@ -183,9 +198,9 @@
                         </dd>
                     </div>
                 </dl>
-                <a href="{{ route('account.profile.edit') }}" class="btn-accent mt-5 inline-flex">
+                <x-ui.button variant="primary" size="lg" :href="route('account.profile.edit')" class="mt-5 inline-flex">
                     Edit profile &amp; security
-                </a>
+                </x-ui.button>
             </div>
 
             {{-- Buyer: Become a Seller card --}}
@@ -281,7 +296,7 @@
                 <a href="{{ route('account.addresses.index') }}"
                    class="mt-3 block text-sm text-center font-medium"
                    style="color:rgb(var(--color-accent));">
-                    Manage all addresses →
+                    Manage all addresses <x-ui.icon name="next" size="sm" class="inline-block align-text-bottom" />
                 </a>
                 @endif
             </div>
@@ -322,7 +337,7 @@
             <a href="{{ route('orders.index') }}"
                class="block text-center text-sm font-medium py-2"
                style="color:rgb(var(--color-accent));">
-                View all orders →
+                View all orders <x-ui.icon name="next" size="sm" class="inline-block align-text-bottom" />
             </a>
         </div>
         @endforeach
