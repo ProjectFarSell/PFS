@@ -1,0 +1,4 @@
+# Minimal portable configuration for generating test-only RSA keys.
+[req]
+distinguished_name = dn
+[dn]

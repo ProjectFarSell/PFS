@@ -1,5 +1,32 @@
 # Account protection and security controls
 
+## Role-based sign-in checks
+
+### Sign-in methods
+
+Every fresh password login or Google sign-in now requires the account's second step:
+
+| Role | Required second step |
+| --- | --- |
+| Buyer / Rider | Fresh email code or Firebase SMS to the phone already saved on the account |
+| Seller / Admin | Authenticator app (TOTP), with single-use recovery codes as a fallback |
+
+Contact verification performed earlier is not a sign-in challenge. Email login codes use their own purpose-specific table, are hashed, expire after ten minutes, allow five attempts, and work once for the requesting account/session/contact. Resends require a minute, replace the old code and are rate limited. Codes never appear in the page, JSON, or audit events. The normal mail sandbox can capture them locally; real inbox delivery requires SMTP or another configured mail provider. This synchronous sign-in message does not require the order notification worker.
+
+After passing, the user returns to the originally requested page, including checkout. Protected requests stay blocked until the second step is complete. Sign-out, a new password/Google login, a fresh remembered-login session, contact changes, role changes or session revocation invalidate the relevant check. Role changes select the new role's method. Existing active buyer/rider sessions without a challenge marker must also complete OTP. Existing admin authenticator enrollments remain usable; sessions may need to verify again.
+
+The sign-in page never accepts an arbitrary replacement phone/email. New accounts without a saved phone use email first; users can then save and verify a phone through their profile. If neither saved destination is accessible, use independently verified support recovery rather than substituting another number on the challenge page. No public bypass or contact-replacement recovery endpoint is added here.
+
+Phone sign-in requires Firebase Phone Auth/reCAPTCHA, configured authorized domains and the existing Firebase public project settings. The backend verifies the signed project's ID token, a matching account phone, `phone` sign-in provider, and an authentication time at or after this challenge was requested. A refreshed token from an older Firebase session is rejected. Used phone proofs cannot be consumed again. SDK authentication is kept in memory and signed out after verification. Automated tests sign RSA fixtures; real SMS still depends on the project's Firebase configuration/quota and should be tested with its configured test phone numbers first. See [Firebase token verification](https://firebase.google.com/docs/auth/admin/verify-id-tokens).
+
+Default settings in both environment examples are `ADMIN_MFA_REQUIRED=true`, `SELLER_MFA_REQUIRED=true`, and `LOGIN_OTP_REQUIRED=true`. Keep all three enabled for deployment. Local `.env` credentials are not changed by this implementation. Apply `php artisan migrate`, rebuild the frontend, and clear configuration cache before checking the flow.
+
+Sellers follow the authenticator enrollment and recovery-code process below, too. A seller's password or Google account confirms enrollment identity; after enrollment, password/Google confirmation alone cannot replace the authenticator challenge. This follows the password-then-second-factor shape described in [GitHub's sign-in documentation](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/accessing-github-using-two-factor-authentication); GitHub passkeys, security keys, trusted-device and mobile approval features are not implemented.
+
+The operator recovery command also supports sellers through `php artisan ops:reset-mfa seller@example.com`. Independently verify ownership first; type the exact requested confirmation. It clears the authenticator, revokes all sessions and remembered logins, and requires enrollment again. The original `ops:reset-admin-mfa` command remains an alias-compatible entry point. Production/staging still require `--confirm-production`.
+
+Expired sign-in challenge records are pruned daily after a one-day grace period by the scheduler. Dedicated coverage is in `tests/Feature/RoleSignInSecurityTest.php`; business-flow tests disable the interactive gates explicitly so they can test their own authorization and transactions.
+
 ## Install and first admin sign-in
 
 After pulling, run `composer install`, `php artisan migrate`, and `npm run build` (or use Vite). Restart long-running workers. Preserve APP_KEY: it encrypts both delivery PINs and authenticator secrets. The new security migration is additive and retains accounts/orders.

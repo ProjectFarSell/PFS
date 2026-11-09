@@ -7,6 +7,7 @@ use App\Http\Controllers\Account\PrivacyController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\SavedItemController;
 use App\Http\Controllers\Account\SecurityController;
+use App\Http\Controllers\Account\SignInOtpController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -104,6 +105,10 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 
 Route::middleware('auth')->prefix('account/security')->name('security.')->group(function () {
+    Route::get('/sign-in-code', [SignInOtpController::class, 'show'])->name('otp.show');
+    Route::post('/sign-in-code/send', [SignInOtpController::class, 'send'])->middleware('throttle:3,1')->name('otp.send');
+    Route::post('/sign-in-code/verify', [SignInOtpController::class, 'verify'])->middleware('throttle:10,1')->name('otp.verify');
+    Route::post('/sign-in-code/phone', [SignInOtpController::class, 'phone'])->middleware('throttle:10,1')->name('otp.phone');
     Route::get('/', [SecurityController::class, 'index'])->name('index');
     Route::post('/confirm', [SecurityController::class, 'confirm'])->middleware('throttle:5,1')->name('confirm');
     Route::post('/google', [GoogleAuthController::class, 'reauthenticate'])->middleware('throttle:5,1')->name('google');

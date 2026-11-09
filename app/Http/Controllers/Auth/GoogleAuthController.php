@@ -122,15 +122,15 @@ class GoogleAuthController extends Controller
         GuestSession::forget();
 
         if (CheckoutIntent::active() && $user->role === UserRole::Buyer) {
-            return redirect()->intended(route('checkout.create'));
+            return app(AccountSecurity::class)->afterPrimarySignIn($request, redirect()->intended(route('checkout.create')));
         }
 
-        return redirect()->intended(match ($user->role) {
+        return app(AccountSecurity::class)->afterPrimarySignIn($request, redirect()->intended(match ($user->role) {
             UserRole::Admin => route('admin.dashboard'),
             UserRole::Rider => route('rider.dashboard'),
             UserRole::Seller => route('seller.dashboard'),
             default => route('home'),
-        });
+        }));
     }
 
     public function reauthenticate(Request $request): RedirectResponse

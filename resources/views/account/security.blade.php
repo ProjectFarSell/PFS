@@ -6,8 +6,8 @@
     @if($errors->any())<div role="alert" class="rounded-xl border border-error p-4">{{ $errors->first() }}</div>@endif
     <section class="fs-card p-5 space-y-3">
         <h2 class="font-semibold">Confirm your identity</h2>
-        @if($user->role === \App\Enums\UserRole::Admin && $user->mfa_confirmed_at)
-            <p class="text-sm">Enter a current authenticator code or an unused recovery code. Each code can only be used once. @unless($mfaVerified)Complete this check to access the admin pages.@endunless</p>
+        @if($user->usesAuthenticator() && $user->mfa_confirmed_at)
+            <p class="text-sm">Enter a current authenticator code or an unused recovery code. Each code can only be used once. @unless($mfaVerified)Complete this check to access your account pages.@endunless</p>
             <form method="post" action="{{ route('security.confirm') }}" class="space-y-3">@csrf<label class="block text-sm">Authenticator or recovery code<input name="code" autocomplete="one-time-code" required maxlength="80" class="mt-1 block w-full rounded-lg border border-surface-border bg-surface p-3"></label><button class="btn-accent">Verify code</button></form>
         @else
             <p class="text-sm">Confirm before changing security settings. Confirmation lasts five minutes.</p>
@@ -16,12 +16,12 @@
         @endif
         @if($confirmed)<p class="text-sm text-accent">Identity recently confirmed. Return to your previous page to submit your action.</p>@endif
     </section>
-    @if($user->role === \App\Enums\UserRole::Admin)
+    @if($user->usesAuthenticator())
     <section class="fs-card p-5 space-y-3">
-        <h2 class="font-semibold">Admin two-factor authentication</h2>
+        <h2 class="font-semibold">Authenticator two-factor authentication</h2>
         @if(!$user->mfa_confirmed_at)
             @if($setupUpdated)<p role="status" class="rounded-lg border border-accent p-3 text-sm">Authenticator setup has been updated. Start setup again and add the new FarSell QR code to your app. Your earlier unconfirmed entry will not match.</p>@endif
-            <p class="text-sm">Admin access requires an authenticator app. First confirm your password or linked Google account, then start setup.</p>
+            <p class="text-sm">Seller and admin access requires an authenticator app. First confirm your password or linked Google account, then start setup.</p>
             @if(!$secret)<form method="post" action="{{ route('security.mfa.setup') }}">@csrf<button class="btn-outline">Set up authenticator</button></form>
             @else
                 <p class="text-sm">In Authy, Google Authenticator or another authenticator, choose Add account and scan this QR code. Use the new FarSell entry for <strong>{{ $user->email }}</strong>.</p>
@@ -46,6 +46,6 @@
         <ul class="space-y-3 text-sm">@foreach($sessions as $session)<li class="rounded-lg border border-surface-border p-3"><p class="break-words">{{ \Illuminate\Support\Str::limit($session->user_agent ?: 'Unknown browser', 180) }}</p><p class="text-xs text-text-muted">Last active {{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans() }} @if($session->id === request()->session()->getId()) · This device @endif</p></li>@endforeach</ul>
         <form method="post" action="{{ route('security.sessions.revoke') }}">@csrf<button class="btn-outline">Sign out other devices</button></form>
     </section>
-    @if($user->role !== \App\Enums\UserRole::Admin || $mfaVerified)<a href="{{ route('account.profile') }}" class="inline-block text-sm text-accent underline">Back to my account</a>@endif
+    @if(!$user->usesAuthenticator() || $mfaVerified)<a href="{{ route('account.profile') }}" class="inline-block text-sm text-accent underline">Back to my account</a>@endif
 </div>
 @endsection

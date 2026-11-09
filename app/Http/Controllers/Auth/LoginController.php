@@ -59,7 +59,7 @@ class LoginController extends Controller
             default => 'home',
         };
 
-        return redirect()->intended(route($destination));
+        return app(AccountSecurity::class)->afterPrimarySignIn($request, redirect()->intended(route($destination)));
     }
 
     public function destroy(Request $request): RedirectResponse
