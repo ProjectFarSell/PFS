@@ -4,6 +4,7 @@
 
 @section('content')
     <a href="{{ route('returns.index') }}" class="mb-4 inline-block text-sm text-accent underline">My returns & refunds</a>
+    <a href="{{ route('replacements.index') }}" class="mb-4 ml-3 inline-block text-sm text-accent underline">My replacement requests</a>
     <a href="{{ route('account.profile') }}" class="inline-block text-sm text-accent hover:text-accent mb-3">← My Profile</a>
     <h1 class="text-lg font-semibold mb-1">My Orders</h1>
     <p class="text-sm text-text-muted mb-4">View your purchases and their current status.</p>

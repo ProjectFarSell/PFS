@@ -4,12 +4,14 @@ namespace App\Support;
 
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Services\Orders\ReplacementService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
 
 class Cart
 {
     public const SESSION_KEY = 'farsell.cart';
+
     public const BUY_NOW_KEY = 'farsell.buy_now';
 
     /**
@@ -56,11 +58,13 @@ class Cart
 
     public static function startBuyNow(int $productId, int $qty = 1, ?int $variantId = null): void
     {
+        Session::forget(ReplacementService::SESSION_KEY);
         Session::put(self::BUY_NOW_KEY, [self::lineKey($productId, $variantId) => max(1, $qty)]);
     }
 
     public static function clearBuyNow(): void
     {
+        Session::forget(ReplacementService::SESSION_KEY);
         Session::forget(self::BUY_NOW_KEY);
     }
 

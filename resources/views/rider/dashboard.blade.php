@@ -94,6 +94,8 @@
                         <option value="">All active</option>
                         <option value="assigned" @selected($selectedStatus === 'assigned')>Assigned</option>
                         <option value="in_transit" @selected($selectedStatus === 'in_transit')>In transit</option>
+                        <option value="delivery_failed" @selected($selectedStatus === 'delivery_failed')>Failed attempt</option>
+                        <option value="returning" @selected($selectedStatus === 'returning')>Returning to seller</option>
                     </select>
                     <button class="btn-accent">Filter</button>
                     @if($selectedStatus)

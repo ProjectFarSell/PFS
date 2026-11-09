@@ -13,6 +13,8 @@ enum OrderStatus: string
     case InTransit = 'in_transit';
     case Delivered = 'delivered';
     case Cancelled = 'cancelled';
+    case DeliveryIssue = 'delivery_issue';
+    case Returned = 'returned';
 
     public function label(): string
     {
@@ -26,6 +28,8 @@ enum OrderStatus: string
             self::InTransit => 'Out for delivery',
             self::Delivered => 'Delivered',
             self::Cancelled => 'Cancelled',
+            self::DeliveryIssue => 'Delivery issue — review needed',
+            self::Returned => 'Returned to seller',
         };
     }
 
@@ -40,7 +44,7 @@ enum OrderStatus: string
             self::InTransit => [self::Delivered],
             self::Confirmed => [self::Packed, self::Cancelled],
             self::Delivered => [self::Completed],
-            self::Completed, self::Cancelled => [],
+            self::Completed, self::Cancelled, self::DeliveryIssue, self::Returned => [],
         };
     }
 

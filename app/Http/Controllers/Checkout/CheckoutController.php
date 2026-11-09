@@ -11,6 +11,7 @@ use App\Services\Invoices\InvoiceGeneratorApi;
 use App\Services\Notifications\OrderNotificationService;
 use App\Services\Orders\CheckoutAvailability;
 use App\Services\Orders\FulfillmentService;
+use App\Services\Orders\ReplacementService;
 use App\Services\Orders\StockReservationService;
 use App\Support\Cart;
 use Illuminate\Http\RedirectResponse;
@@ -92,6 +93,12 @@ class CheckoutController extends Controller
         $lines = Cart::forCheckout();
 
         $order = DB::transaction(function () use ($lines, $address, $paymentMethod, $initialStatus): Order {
+            $replacement = session()->has(ReplacementService::SESSION_KEY)
+                ? app(ReplacementService::class)->forCheckout((int) session(ReplacementService::SESSION_KEY), auth()->user(), $lines)
+                : null;
+            if ($replacement && $paymentMethod !== PaymentMethod::Cod) {
+                throw ValidationException::withMessages(['payment_method' => 'Replacement orders use cash on delivery.']);
+            }
             $lockedLines = $this->stock->lockAndPrepare($lines);
             app(CheckoutAvailability::class)->ensureServiceable($address, $lockedLines);
             $subtotal = (float) $lockedLines->sum('line_total');
@@ -128,6 +135,9 @@ class CheckoutController extends Controller
             $this->stock->reserve($lockedLines);
             app(FulfillmentService::class)->createForOrder($order);
             app(OrderNotificationService::class)->orderPlaced($order);
+            if ($replacement) {
+                $replacement->forceFill(['status' => 'ordered', 'new_order_id' => $order->id])->save();
+            }
 
             return $order;
         });
@@ -140,7 +150,7 @@ class CheckoutController extends Controller
     public function show(Order $order): View
     {
         $this->authorize('view', $order);
-        $order->load(['items.returnRequest', 'fulfillments.items.review', 'fulfillments.events', 'fulfillments.rider.user', 'fulfillments.riderRating', 'fulfillments.feedback']);
+        $order->load(['replacementSource.item.order', 'items.returnRequest', 'items.replacementRequest', 'fulfillments.items.review', 'fulfillments.courierBooking', 'fulfillments.attempts', 'fulfillments.events', 'fulfillments.rider.user', 'fulfillments.riderRating', 'fulfillments.feedback']);
 
         return view('orders.show', compact('order'));
     }

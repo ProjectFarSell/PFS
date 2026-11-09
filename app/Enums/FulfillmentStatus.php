@@ -13,6 +13,9 @@ enum FulfillmentStatus: string
     case Completed = 'completed';
     case Rejected = 'rejected';
     case Cancelled = 'cancelled';
+    case DeliveryFailed = 'delivery_failed';
+    case Returning = 'returning';
+    case Returned = 'returned';
 
     public function label(): string
     {
@@ -26,6 +29,9 @@ enum FulfillmentStatus: string
             self::Completed => 'Completed',
             self::Rejected => 'Rejected by seller',
             self::Cancelled => 'Cancelled by buyer',
+            self::DeliveryFailed => 'Delivery attempt failed — awaiting review',
+            self::Returning => 'Returning to seller',
+            self::Returned => 'Returned to seller',
         };
     }
 }

@@ -118,6 +118,11 @@ class User extends Authenticatable
         return $this->role === UserRole::Seller;
     }
 
+    public function usesAuthenticator(): bool
+    {
+        return in_array($this->role, [UserRole::Seller, UserRole::Admin], true);
+    }
+
     public function isRider(): bool
     {
         return $this->role === UserRole::Rider;

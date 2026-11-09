@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DeliveryMethod;
 use App\Enums\FulfillmentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,10 @@ class Fulfillment extends Model
             'cod_collected_at' => 'datetime',
             'stock_released_at' => 'datetime',
             'delivery_pin' => 'encrypted',
+            'retry_at' => 'datetime',
+            'returned_at' => 'datetime',
+            'fee_policy' => 'array',
+            'delivery_method' => DeliveryMethod::class,
         ];
     }
 
@@ -71,6 +76,32 @@ class Fulfillment extends Model
 
     public function amount(): float
     {
-        return in_array($this->status, [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled], true) ? 0 : (float) $this->subtotal + (float) $this->shipping_fee;
+        return in_array($this->status, [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled, FulfillmentStatus::Returned], true) ? 0 : (float) $this->subtotal + (float) $this->shipping_fee;
+    }
+
+    public function attempts(): HasMany
+    {
+        return $this->hasMany(DeliveryAttempt::class)->orderBy('number');
+    }
+
+    public function settlement(): HasOne
+    {
+        return $this->hasOne(ShipmentSettlement::class);
+    }
+
+    public function courierBooking(): HasOne
+    {
+        return $this->hasOne(CourierBooking::class);
+    }
+
+    public function usesExternalCourier(): bool
+    {
+        return ($this->delivery_method ?? DeliveryMethod::Internal) !== DeliveryMethod::Internal;
+    }
+
+    public function deliveryLabel(): string
+    {
+        return $this->usesExternalCourier() && $this->status === FulfillmentStatus::Assigned
+            ? 'External courier booked' : $this->status->label();
     }
 }

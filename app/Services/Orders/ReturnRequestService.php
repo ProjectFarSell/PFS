@@ -81,6 +81,9 @@ class ReturnRequestService
             }
             $case->status = $action;
             $case->save();
+            if ($action === 'refunded') {
+                app(SettlementService::class)->refund($case);
+            }
             $event = $case->events()->create(['actor_id' => $actor->id, 'status' => $action, 'note' => $data['note']]);
             app(BuyerInbox::class)->record($order, 'return-event:'.$event->id, 'Return/refund update', $case->item->name.': '.$case->label().'.');
         }, 3);

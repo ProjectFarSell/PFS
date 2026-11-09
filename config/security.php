@@ -2,6 +2,8 @@
 
 return [
     'admin_mfa_required' => (bool) env('ADMIN_MFA_REQUIRED', true),
+    'seller_mfa_required' => (bool) env('SELLER_MFA_REQUIRED', true),
+    'login_otp_required' => (bool) env('LOGIN_OTP_REQUIRED', true),
     'sensitive_confirmation_required' => true,
     'confirmation_seconds' => 300,
     // Set these to the addresses of the actual load balancer when hosting is chosen.

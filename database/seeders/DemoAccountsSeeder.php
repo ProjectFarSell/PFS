@@ -30,5 +30,9 @@ class DemoAccountsSeeder extends Seeder
                 ]
             );
         }
+
+        if (app()->environment(['local', 'testing'])) {
+            $this->call(DemoRiderProfileSeeder::class);
+        }
     }
 }

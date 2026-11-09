@@ -20,7 +20,7 @@ class DeliveryRequestService
         DB::transaction(function () use ($part) {
             Order::query()->whereKey($part->order_id)->lockForUpdate()->firstOrFail();
             $part = Fulfillment::query()->lockForUpdate()->findOrFail($part->id);
-            if ($part->status->value !== 'ready' || $part->rider_id || ! $part->pickup_city) {
+            if ($part->usesExternalCourier() || $part->status->value !== 'ready' || $part->rider_id || ! $part->pickup_city) {
                 return;
             }
             // Barangay-covered shipments are reserved for their designated rider.
@@ -44,7 +44,7 @@ class DeliveryRequestService
                 ->whereNotIn('id', $tried)->whereHas('user', fn ($q) => $q->where('role', 'rider'))->get()
                 ->filter(fn ($rider) => self::city($rider->city) === $part->pickup_city)
                 ->sortBy(fn ($rider) => [
-                    Fulfillment::where('rider_id', $rider->id)->whereIn('status', ['assigned', 'in_transit'])->count()
+                    Fulfillment::where('rider_id', $rider->id)->whereIn('status', ['assigned', 'in_transit', 'delivery_failed', 'returning'])->count()
                     + $rider->deliveries()->whereDoesntHave('fulfillments')->whereIn('status', ['assigned', 'in_transit'])->count()
                     + DB::table('rider_delivery_requests')->where('rider_id', $rider->id)
                         ->whereNull('declined_at')->where('expires_at', '>', now())
@@ -66,7 +66,7 @@ class DeliveryRequestService
 
     public function notifyAvailableRider(RiderProfile $rider): void
     {
-        Fulfillment::query()->where('status', 'ready')->whereNull('rider_id')
+        Fulfillment::query()->where('delivery_method', 'internal')->where('status', 'ready')->whereNull('rider_id')
             ->where('pickup_city', self::city($rider->city))->chunkById(100, function ($parts) {
                 foreach ($parts as $part) {
                     $this->notifyRiders($part);
@@ -76,7 +76,7 @@ class DeliveryRequestService
 
     public function dispatchPending(): void
     {
-        Fulfillment::query()->where('status', 'ready')->whereNull('rider_id')->whereNotNull('pickup_city')
+        Fulfillment::query()->where('delivery_method', 'internal')->where('status', 'ready')->whereNull('rider_id')->whereNotNull('pickup_city')
             ->chunkById(100, function ($parts) {
                 foreach ($parts as $part) {
                     $this->notifyRiders($part);
@@ -89,7 +89,7 @@ class DeliveryRequestService
         return Fulfillment::query()->select(['id', 'shop_name', 'pickup_city', 'created_at'])
             ->addSelect(['offer_expires_at' => DB::table('rider_delivery_requests')->select('expires_at')
                 ->whereColumn('fulfillment_id', 'fulfillments.id')->where('rider_id', $rider->id)->limit(1)])
-            ->where('status', 'ready')->whereNull('rider_id')
+            ->where('status', 'ready')->where('delivery_method', 'internal')->whereNull('rider_id')
             ->where('pickup_city', self::city($rider->city))
             ->whereExists(fn ($q) => $q->selectRaw('1')->from('rider_delivery_requests')
                 ->whereColumn('fulfillment_id', 'fulfillments.id')->where('rider_id', $rider->id)

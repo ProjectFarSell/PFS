@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\Security\AccountSecurity;
 use App\Support\CheckoutIntent;
 use App\Support\GuestSession;
 use App\Support\PrivacyNotice;
@@ -50,10 +51,10 @@ class RegisterController extends Controller
 
         event(new Registered($user));
         Auth::login($user);
-        $request->session()->regenerate();
+        app(AccountSecurity::class)->start($request, $user);
         GuestSession::forget();
 
         // Keep the browser on its current local hostname so the new session cookie remains available.
-        return redirect()->away('/account/verify');
+        return app(AccountSecurity::class)->afterPrimarySignIn($request, redirect()->away('/account/verify'));
     }
 }

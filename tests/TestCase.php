@@ -11,6 +11,6 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
         // Existing business-flow tests isolate authorization from interactive challenges.
         // Dedicated account-security tests explicitly turn these gates back on.
-        config(['security.admin_mfa_required' => false, 'security.sensitive_confirmation_required' => false]);
+        config(['security.admin_mfa_required' => false, 'security.seller_mfa_required' => false, 'security.login_otp_required' => false, 'security.sensitive_confirmation_required' => false]);
     }
 }

@@ -4,6 +4,7 @@
 
 @section('content')
     <h1 class="text-lg font-semibold mb-3">Checkout</h1>
+    @if(session()->has(\App\Services\Orders\ReplacementService::SESSION_KEY))<p class="mb-4 rounded-xl border border-accent p-3 text-sm">Replacement order: review the current variant, item price and delivery charge below. Placing this order creates a new COD purchase linked to your returned order. No previous payment is being credited.</p>@endif
     <div class="grid md:grid-cols-2 gap-6">
         <form method="post" action="{{ route('checkout.store') }}" class="space-y-4 rounded-2xl bg-surface border border-surface-border p-4">
             @csrf

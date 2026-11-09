@@ -9,6 +9,7 @@ use App\Models\FulfillmentEvent;
 use App\Models\NotificationDelivery;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\Orders\SettlementService;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -46,7 +47,7 @@ class OrderNotificationService
     {
         $event->loadMissing('fulfillment.order');
         $shipment = $event->fulfillment;
-        app(BuyerInbox::class)->record($shipment->order, 'event:'.$event->id, 'Shipment: '.FulfillmentStatus::from($event->status)->label(), $shipment->shop_name.' — '.FulfillmentStatus::from($event->status)->label().'.');
+        app(BuyerInbox::class)->record($shipment->order, 'event:'.$event->id, 'Shipment: '.$shipment->deliveryLabel(), $shipment->shop_name.' — '.$shipment->deliveryLabel().'.');
         if (! config('notifications.enabled')) {
             return;
         }
@@ -57,22 +58,27 @@ class OrderNotificationService
         $base = [
             'order_number' => $order->number,
             'shop_name' => $part->shop_name,
-            'status_label' => $status->label(),
+            'status_label' => $part->deliveryLabel(),
             'occurred_at' => $event->created_at->toIso8601String(),
         ];
 
         $this->record('event:'.$event->id.':buyer', 'shipment_update', $order->buyer, $order, $part, $event, [
             ...$base,
-            'title' => 'Shipment update: '.$status->label(),
+            'title' => 'Shipment update: '.$part->deliveryLabel(),
             'message' => match ($status) {
                 FulfillmentStatus::Accepted => 'The seller has accepted your order and is preparing the items.',
-                FulfillmentStatus::Ready => 'Your items are ready for rider pickup.',
-                FulfillmentStatus::Assigned => 'A rider has been assigned to this shipment.',
-                FulfillmentStatus::InTransit => 'Your rider has collected this shipment and is on the way.',
+                FulfillmentStatus::Ready => 'Your items are ready for pickup.',
+                FulfillmentStatus::Assigned => $part->usesExternalCourier() ? 'An external courier booking has been recorded. Open your order for its reference.' : 'A rider has been assigned to this shipment.',
+                FulfillmentStatus::InTransit => $part->retry_at?->isFuture()
+                    ? 'Admin scheduled another delivery attempt. Open your order for the planned date and time.'
+                    : 'Your delivery provider has collected this shipment and is on the way.',
                 FulfillmentStatus::Delivered => 'Your shipment was marked delivered. Confirm receipt after checking your items.',
                 FulfillmentStatus::Completed => 'You confirmed receipt. You can now review your products and delivery.',
                 FulfillmentStatus::Rejected => 'The seller could not fulfill this shipment. Open your order for the updated total and details.',
                 FulfillmentStatus::Cancelled => 'You cancelled this shipment before rider assignment.',
+                FulfillmentStatus::DeliveryFailed => 'A delivery attempt failed. Admin will review retry or return arrangements. No delivery completion was recorded.',
+                FulfillmentStatus::Returning => 'This uncollected COD shipment is being returned to the seller.',
+                FulfillmentStatus::Returned => 'The seller confirmed receipt of the returned shipment. No COD payment is due for these items.',
                 default => 'Your shipment has been updated.',
             },
             'detail' => $status === FulfillmentStatus::Rejected ? $part->rejection_reason : null,
@@ -90,25 +96,40 @@ class OrderNotificationService
             ]);
         }
 
-        if (in_array($status, [FulfillmentStatus::Delivered, FulfillmentStatus::Completed, FulfillmentStatus::Cancelled], true)) {
+        if ($status === FulfillmentStatus::Returning || ($status === FulfillmentStatus::InTransit && $part->retry_at)) {
+            $this->record('event:'.$event->id.':rider-exception', 'rider_exception_update', $part->rider?->user, $order, $part, $event, [
+                ...$base,
+                'title' => 'Delivery instructions updated',
+                'message' => $status === FulfillmentStatus::Returning
+                    ? 'Admin arranged return to seller. Open this shipment for the return instructions; do not collect COD.'
+                    : 'Admin scheduled another delivery attempt. Open this shipment for the date and instructions.',
+                'action_path' => route('fulfillments.index', [], false),
+                'action_label' => 'Open delivery instructions',
+            ]);
+        }
+
+        if (in_array($status, [FulfillmentStatus::Delivered, FulfillmentStatus::Completed, FulfillmentStatus::Cancelled, FulfillmentStatus::DeliveryFailed, FulfillmentStatus::Returning, FulfillmentStatus::Returned], true)) {
             $this->record('event:'.$event->id.':seller', 'seller_shipment_update', $part->shop?->owner, $order, $part, $event, [
                 ...$base,
                 'title' => 'Shop shipment: '.$status->label(),
                 'message' => match ($status) {
                     FulfillmentStatus::Completed => 'The buyer confirmed receipt of your shipment.',
                     FulfillmentStatus::Cancelled => 'The buyer cancelled this shipment before rider assignment. Do not prepare or hand it over.',
-                    default => 'The rider marked your shipment delivered.',
+                    FulfillmentStatus::DeliveryFailed => 'A delivery attempt failed. Review the shipment history.',
+                    FulfillmentStatus::Returning => 'Admin arranged return to your shop. Confirm receipt and inspect condition before restocking.',
+                    FulfillmentStatus::Returned => 'Your confirmation of the returned goods has been recorded.',
+                    default => 'Your shipment was marked delivered.',
                 },
                 'action_path' => route('fulfillments.index', [], false),
                 'action_label' => 'Open shop orders',
             ]);
         }
 
-        if ($status === FulfillmentStatus::Completed && $part->rider_id !== null) {
+        if ($status === FulfillmentStatus::Completed && $part->rider_id !== null && $part->riderEarning()->exists()) {
             $this->record('event:'.$event->id.':rider-completion', 'rider_completion', $part->rider?->user, $order, $part, $event, [
                 ...$base,
                 'title' => 'Delivery completed',
-                'message' => 'The buyer confirmed receipt. PHP '.number_format((float) $part->shipping_fee, 2).' has been recorded in your earnings ledger.',
+                'message' => 'The buyer confirmed receipt. PHP '.number_format(app(SettlementService::class)->riderPay($part), 2).' has been recorded in your earnings ledger.',
                 'action_path' => route('rider.earnings.index', [], false),
                 'action_label' => 'View earnings',
             ]);

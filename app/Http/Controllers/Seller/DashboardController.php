@@ -28,7 +28,7 @@ class DashboardController extends Controller
             'orderItems' => (clone $itemsQuery)->count(),
         ];
 
-        $products = $shop->products()->latest()->orderByDesc('id')
+        $products = $shop->products()->withAvailableStock()->latest()->orderByDesc('id')
             ->paginate(10, ['*'], 'products_page')->withQueryString();
 
         // Deliberately load only order metadata, never buyer/contact/address or whole-order totals.

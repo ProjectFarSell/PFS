@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 class Order extends Model
@@ -57,18 +58,19 @@ class Order extends Model
             return false;
         }
 
-        return ! $this->fulfillments()->where(function ($q) {
-            $q->whereNotIn('status', ['pending', 'accepted', 'ready', 'rejected'])->orWhereNotNull('rider_id');
-        })->exists();
+        return ! $this->fulfillments()->whereHas('courierBooking', fn ($q) => $q->whereIn('status', ['submitting', 'unknown', 'booked']))->exists()
+            && ! $this->fulfillments()->where(function ($q) {
+                $q->whereNotIn('status', ['pending', 'accepted', 'ready', 'rejected'])->orWhereNotNull('rider_id');
+            })->exists();
     }
 
     public function billableItems(): Collection
     {
         $this->loadMissing(['items', 'fulfillments']);
-        if ($this->status === OrderStatus::Cancelled) {
+        if (in_array($this->status, [OrderStatus::Cancelled, OrderStatus::Returned], true)) {
             return collect();
         }
-        $excluded = $this->fulfillments->whereIn('status', [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled])->pluck('id');
+        $excluded = $this->fulfillments->whereIn('status', [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled, FulfillmentStatus::Returned])->pluck('id');
 
         return $this->items->reject(fn ($item) => $excluded->contains($item->fulfillment_id));
     }
@@ -76,14 +78,14 @@ class Order extends Model
     public function billableShipping(): float
     {
         $this->loadMissing('fulfillments');
-        if ($this->status === OrderStatus::Cancelled) {
+        if (in_array($this->status, [OrderStatus::Cancelled, OrderStatus::Returned], true)) {
             return 0;
         }
         if ($this->fulfillments->isEmpty()) {
             return (float) $this->shipping_fee;
         }
 
-        return (float) $this->fulfillments->reject(fn ($part) => in_array($part->status->value, ['rejected', 'cancelled'], true))->sum('shipping_fee');
+        return (float) $this->fulfillments->reject(fn ($part) => in_array($part->status->value, ['rejected', 'cancelled', 'returned'], true))->sum('shipping_fee');
     }
 
     public function rider(): BelongsTo
@@ -104,5 +106,10 @@ class Order extends Model
     public function fulfillments(): HasMany
     {
         return $this->hasMany(Fulfillment::class);
+    }
+
+    public function replacementSource(): HasOne
+    {
+        return $this->hasOne(ReplacementRequest::class, 'new_order_id');
     }
 }

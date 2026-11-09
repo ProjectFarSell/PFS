@@ -7,6 +7,7 @@ use App\Http\Controllers\Account\PrivacyController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\SavedItemController;
 use App\Http\Controllers\Account\SecurityController;
+use App\Http\Controllers\Account\SignInOtpController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -23,6 +24,8 @@ use App\Http\Controllers\Auth\ContactVerificationController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\GuestSessionController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Catalog\ProductController;
@@ -31,8 +34,11 @@ use App\Http\Controllers\Chat\ConversationController;
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\FulfillmentController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InventoryRefreshController;
+use App\Http\Controllers\LogisticsController;
 use App\Http\Controllers\OrderFeedbackController;
 use App\Http\Controllers\ProductReviewMediaController;
+use App\Http\Controllers\ReplacementController;
 use App\Http\Controllers\ReturnRequestController;
 use App\Http\Controllers\Rider\DashboardController as RiderDashboardController;
 use App\Http\Controllers\Rider\DeliveryRequestController;
@@ -44,6 +50,7 @@ use App\Http\Controllers\Seller\ApplicationController as SellerApplication;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
 use App\Http\Controllers\Seller\ProductController as SellerProducts;
 use App\Http\Controllers\Seller\SalesController;
+use App\Http\Controllers\SettlementController;
 use App\Http\Middleware\EnsureBuyerOrGuest;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\RedirectPrivateRolesFromStorefront;
@@ -70,6 +77,7 @@ Route::middleware(RedirectPrivateRolesFromStorefront::class)->group(function () 
     // ── Public catalog ────────────────────────────────────────────────────────────
     Route::get('/search', [ProductController::class, 'index'])->name('catalog.index');
     Route::get('/p/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('/p/{product}/availability', [InventoryRefreshController::class, 'product'])->middleware('throttle:60,1')->name('products.availability');
     Route::get('/shops', [ShopController::class, 'index'])->name('shops.index');
     Route::get('/shop/{shop}', [ShopController::class, 'show'])->name('shops.show');
 });
@@ -89,6 +97,10 @@ Route::middleware('guest')->group(function () {
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
     Route::post('/auth/google/start', [GoogleAuthController::class, 'start'])->middleware('throttle:10,1')->name('auth.google.start');
     Route::get('/login', [LoginController::class, 'create'])->name('login');
+    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->middleware('throttle:5,1')->name('password.email');
+    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('/reset-password', [NewPasswordController::class, 'store'])->middleware('throttle:10,1')->name('password.store');
     Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:login');
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
     Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:signup');
@@ -99,6 +111,10 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 
 Route::middleware('auth')->prefix('account/security')->name('security.')->group(function () {
+    Route::get('/sign-in-code', [SignInOtpController::class, 'show'])->name('otp.show');
+    Route::post('/sign-in-code/send', [SignInOtpController::class, 'send'])->middleware('throttle:3,1')->name('otp.send');
+    Route::post('/sign-in-code/verify', [SignInOtpController::class, 'verify'])->middleware('throttle:10,1')->name('otp.verify');
+    Route::post('/sign-in-code/phone', [SignInOtpController::class, 'phone'])->middleware('throttle:10,1')->name('otp.phone');
     Route::get('/', [SecurityController::class, 'index'])->name('index');
     Route::post('/confirm', [SecurityController::class, 'confirm'])->middleware('throttle:5,1')->name('confirm');
     Route::post('/google', [GoogleAuthController::class, 'reauthenticate'])->middleware('throttle:5,1')->name('google');
@@ -203,6 +219,22 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/se
 
 // ── Authenticated-only routes ─────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+    Route::middleware(EnsureUserHasRole::class.':admin')->prefix('admin/logistics')->name('admin.logistics.')->group(function () {
+        Route::get('/', [LogisticsController::class, 'index'])->name('index');
+        Route::post('/{fulfillment}', [LogisticsController::class, 'update'])->middleware('throttle:15,1')->name('update');
+    });
+    Route::get('/seller/inventory/stock', [InventoryRefreshController::class, 'seller'])->middleware([EnsureUserHasRole::class.':seller', 'throttle:60,1'])->name('seller.inventory.stock');
+    Route::get('/admin/products/stock', [InventoryRefreshController::class, 'admin'])->middleware([EnsureUserHasRole::class.':admin', 'throttle:60,1'])->name('admin.products.stock');
+    Route::middleware(EnsureUserHasRole::class.':buyer,seller,admin')->group(function () {
+        Route::get('/replacements', [ReplacementController::class, 'index'])->name('replacements.index');
+        Route::post('/replacements/{replacement}/review', [ReplacementController::class, 'review'])->middleware([EnsureUserHasRole::class.':seller,admin', 'throttle:20,1'])->name('replacements.review');
+    });
+    Route::middleware(EnsureUserHasRole::class.':buyer')->group(function () {
+        Route::get('/order-items/{item}/replacement', [ReplacementController::class, 'create'])->name('replacements.create');
+        Route::post('/order-items/{item}/replacement', [ReplacementController::class, 'store'])->middleware('throttle:10,1')->name('replacements.store');
+        Route::post('/replacements/{replacement}/checkout', [ReplacementController::class, 'checkout'])->middleware('throttle:10,1')->name('replacements.checkout');
+    });
+    Route::get('/settlements', SettlementController::class)->middleware(EnsureUserHasRole::class.':seller,admin')->name('settlements.index');
     Route::middleware(EnsureUserHasRole::class.':buyer,seller,admin')->group(function () {
         Route::get('/returns', [ReturnRequestController::class, 'index'])->name('returns.index');
         Route::get('/returns/{returnRequest}/evidence', [ReturnRequestController::class, 'evidence'])->name('returns.evidence');

@@ -95,7 +95,7 @@ class SendOrderNotification implements ShouldQueue
 
         $part = $delivery->fulfillment;
         if ($delivery->type === 'order_confirmation') {
-            if ($delivery->order->status === OrderStatus::Cancelled) {
+            if (in_array($delivery->order->status, [OrderStatus::Cancelled, OrderStatus::Returned], true)) {
                 return 'The order was cancelled before its confirmation email was sent.';
             }
 
@@ -109,13 +109,17 @@ class SendOrderNotification implements ShouldQueue
             return $part->shop?->user_id === $delivery->recipient_user_id && $part->status === FulfillmentStatus::Pending
                 ? null : 'This shipment has already been processed or its shop owner changed.';
         }
-        if (in_array($delivery->type, ['rider_assignment', 'rider_completion'], true)) {
+        if (in_array($delivery->type, ['rider_assignment', 'rider_completion', 'rider_exception_update'], true)) {
             if ($part->rider?->user_id !== $delivery->recipient_user_id || $part->rider?->user?->role !== UserRole::Rider) {
                 return 'The rider assignment is no longer valid.';
             }
             if ($delivery->type === 'rider_assignment') {
                 return $part->rider->isApproved() && in_array($part->status, [FulfillmentStatus::Assigned, FulfillmentStatus::InTransit], true)
                     ? null : 'This delivery assignment is no longer active.';
+            }
+            if ($delivery->type === 'rider_exception_update') {
+                return $part->rider->isApproved() && $delivery->fulfillment_event_id === $part->events()->reorder()->latest('id')->value('id')
+                    ? null : 'A newer instruction or invalid rider account superseded this message.';
             }
 
             return $part->status === FulfillmentStatus::Completed ? null : 'This shipment is no longer completed.';

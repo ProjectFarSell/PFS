@@ -8,12 +8,17 @@ use App\Contracts\OrderNotificationSender;
 use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\Conversation;
+use App\Models\CourierBooking;
+use App\Models\DeliveryAttempt;
 use App\Models\Message;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\ReplacementRequest;
 use App\Models\ReturnRequest;
 use App\Models\RiderProfile;
 use App\Models\SellerApplication;
+use App\Models\SettlementAdjustment;
+use App\Models\ShipmentSettlement;
 use App\Models\Shop;
 use App\Models\User;
 use App\Observers\SecurityAuditObserver;
@@ -21,6 +26,7 @@ use App\Services\Checkout\FlatRateDeliveryFeeService;
 use App\Services\Delivery\CityBasedDeliveryEtaService;
 use App\Services\Notifications\MailOrderNotificationSender;
 use App\Support\Cart;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\DevCommands;
 use Illuminate\Http\Request;
@@ -43,7 +49,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        foreach ([Category::class, Product::class, ProductVariant::class, SellerApplication::class, RiderProfile::class, Shop::class, ReturnRequest::class, User::class] as $model) {
+        // Recovery links use the configured application origin, never an untrusted request Host.
+        ResetPassword::createUrlUsing(fn ($user, $token) => rtrim(config('app.url'), '/').route('password.reset', [
+            'token' => $token, 'email' => $user->getEmailForPasswordReset(),
+        ], false));
+        foreach ([Category::class, Product::class, ProductVariant::class, SellerApplication::class, RiderProfile::class, Shop::class, ReturnRequest::class, User::class, DeliveryAttempt::class, ReplacementRequest::class, ShipmentSettlement::class, SettlementAdjustment::class, CourierBooking::class] as $model) {
             $model::observe(SecurityAuditObserver::class);
         }
         RateLimiter::for('login', fn (Request $request) => [

@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\OperationalHeartbeat;
+use App\Models\SignInChallenge;
 use App\Services\Notifications\OrderNotificationService;
 use App\Services\Operations\DatabaseRecovery;
 use App\Services\Operations\OperationalStatus;
@@ -35,6 +36,8 @@ Artisan::command('notifications:dispatch {--limit=100}', function () {
 })->purpose('Queue pending order notifications after an enqueueing failure');
 
 Schedule::command('notifications:dispatch')->everyMinute()->withoutOverlapping();
+
+Schedule::call(fn () => SignInChallenge::where('expires_at', '<', now()->subDay())->delete())->daily()->name('prune-sign-in-challenges')->withoutOverlapping();
 
 Artisan::command('ops:heartbeat', function () {
     Cache::put('ops.scheduler.last_seen', now()->timestamp, 600);

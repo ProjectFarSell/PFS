@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\UserRole;
 use App\Services\Security\AccountSecurity;
 use Closure;
 use Illuminate\Http\Request;
@@ -31,16 +30,24 @@ class EnforceAccountSecurity
         if ($request->routeIs('security.*', 'logout', 'auth.google.callback')) {
             return $next($request);
         }
-        if ($user->role === UserRole::Admin && config('security.admin_mfa_required')) {
-            $security = app(AccountSecurity::class);
+        $security = app(AccountSecurity::class);
+        if ($security->requiresAuthenticator($user)) {
             if (! $user->mfa_confirmed_at || ! hash_equals($security->mfaFingerprint($user), (string) $request->session()->get('security.mfa', ''))) {
                 if ($request->expectsJson() || ! $request->isMethod('GET')) {
-                    return response()->json(['message' => 'Complete admin two-factor authentication.', 'url' => route('security.index')], 423);
+                    return response()->json(['message' => 'Complete authenticator verification.', 'url' => route('security.index')], 423);
                 }
                 $request->session()->put('security.intended', $request->getRequestUri());
 
                 return to_route('security.index');
             }
+        }
+        if ($security->requiresOtp($user) && ! $security->otpVerified($request)) {
+            if ($request->expectsJson() || ! $request->isMethod('GET')) {
+                return response()->json(['message' => 'Complete your email or phone sign-in code.', 'url' => route('security.otp.show')], 423);
+            }
+            $request->session()->put('security.intended', $request->getRequestUri());
+
+            return to_route('security.otp.show');
         }
 
         return $next($request);

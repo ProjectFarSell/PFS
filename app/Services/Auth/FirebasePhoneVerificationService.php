@@ -12,6 +12,22 @@ class FirebasePhoneVerificationService
 
     public function verify(string $idToken): string
     {
+        return $this->claims($idToken)['phone_number'];
+    }
+
+    public function verifyForSignIn(string $idToken, int $authenticatedAfter): array
+    {
+        $claims = $this->claims($idToken);
+        if (! is_int($claims['auth_time'] ?? null) || $claims['auth_time'] < $authenticatedAfter || $claims['auth_time'] > now()->timestamp + 60
+            || ($claims['firebase']['sign_in_provider'] ?? null) !== 'phone' || ! is_string($claims['sub'] ?? null) || $claims['sub'] === '') {
+            throw ValidationException::withMessages(['code' => 'Request a new SMS code for this sign-in. An earlier phone session cannot be reused.']);
+        }
+
+        return ['phone' => $claims['phone_number'], 'hash' => hash('sha256', $claims['iss'].'|'.$claims['sub'].'|'.$claims['auth_time'])];
+    }
+
+    private function claims(string $idToken): array
+    {
         $projectId = (string) config('services.firebase.project_id');
         if ($projectId === '') {
             throw ValidationException::withMessages(['token' => 'Firebase Phone Auth is not configured yet.']);
@@ -24,7 +40,7 @@ class FirebasePhoneVerificationService
             throw ValidationException::withMessages(['token' => 'Firebase could not verify this phone confirmation. Please try again.']);
         }
 
-        $now = time();
+        $now = now()->timestamp;
         if (($claims['aud'] ?? null) !== $projectId
             || ($claims['iss'] ?? null) !== 'https://securetoken.google.com/'.$projectId
             || ! is_numeric($claims['exp'] ?? null) || (int) $claims['exp'] < $now - 60
@@ -33,13 +49,13 @@ class FirebasePhoneVerificationService
             throw ValidationException::withMessages(['token' => 'Firebase returned an invalid phone confirmation. Please try again.']);
         }
 
-        return $claims['phone_number'];
+        return $claims;
     }
 
     private function certificates(): array
     {
         return Cache::remember('firebase-auth-certificates', now()->addHour(), function (): array {
-            $certificates = Http::acceptJson()->get(self::CERTIFICATES_URL)->throw()->json();
+            $certificates = Http::connectTimeout(4)->timeout(10)->acceptJson()->get(self::CERTIFICATES_URL)->throw()->json();
 
             return is_array($certificates) ? $certificates : [];
         });

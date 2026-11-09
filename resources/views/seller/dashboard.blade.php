@@ -3,7 +3,7 @@
 @section('title', 'Seller Dashboard · FarSell')
 
 @section('content')
-    <div class="mb-4 flex flex-wrap gap-3">@if($shop)<a href="{{ route('seller.sales') }}" class="btn-outline">Sales summary</a>@endif<a href="{{ route('returns.index') }}" class="btn-outline">Returns & refunds</a></div>
+    <div class="mb-4 flex flex-wrap gap-3">@if($shop)<a href="{{ route('seller.sales') }}" class="btn-outline">Sales summary</a><a href="{{ route('settlements.index') }}" class="btn-outline">Commissions & settlements</a>@endif<a href="{{ route('returns.index') }}" class="btn-outline">Returns & refunds</a><a href="{{ route('replacements.index') }}" class="btn-outline">Replacement requests</a></div>
     <section class="fs-card-raised p-5 sm:p-7">
         <p class="text-xs font-semibold uppercase tracking-widest text-accent">Seller Dashboard</p>
         <h1 class="mt-2 text-2xl font-semibold">{{ $shop?->name ?? 'Your seller workspace' }}</h1>
@@ -34,15 +34,16 @@
             @foreach(['products' => 'Your products', 'active' => 'Active products', 'lowStock' => 'Low-stock active products', 'orderItems' => 'Linked order items'] as $key => $label)
                 <div class="fs-card p-4">
                     <dt class="text-xs text-text-muted">{{ $label }}</dt>
-                    <dd class="mt-2 text-2xl font-semibold">{{ number_format($stats[$key]) }}</dd>
+                    <dd data-seller-inventory-stat="{{ $key }}" class="mt-2 text-2xl font-semibold">{{ number_format($stats[$key]) }}</dd>
                 </div>
             @endforeach
         </dl>
 
-        <section aria-labelledby="seller-products" class="fs-card overflow-hidden">
+        <section aria-labelledby="seller-products" class="fs-card overflow-hidden" data-live-inventory data-stock-url="{{ route('seller.inventory.stock') }}" data-stock-labels="true">
             <div class="border-b border-surface-border p-4">
                 <h2 id="seller-products" class="font-semibold">Your inventory</h2>
-                <p class="mt-1 text-xs text-text-muted">Newest listings first. Low stock means 5 or fewer units. Quantities are product-level, not per variant.</p>
+                <p class="mt-1 text-xs text-text-muted">Newest listings first. Low stock means 5 or fewer units. Variant quantities are the sum of active options.</p>
+                <p data-stock-refresh-status class="mt-1 text-xs text-text-muted">Stock refreshes automatically while this page is visible.</p>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
@@ -58,7 +59,7 @@
                     </thead>
                     <tbody class="divide-y divide-surface-border">
                         @forelse($products as $product)
-                            <tr>
+                            <tr data-inventory-product="{{ $product->id }}">
                                 <th scope="row" class="px-4 py-3 font-medium break-words">
                                     @if($shop->is_active && $product->is_active)
                                         <a href="{{ route('products.show', $product) }}" class="text-accent underline">{{ $product->name }}</a>
@@ -66,10 +67,10 @@
                                         {{ $product->name }}
                                     @endif
                                 </th>
-                                <td class="px-4 py-3"><span class="badge {{ $product->is_active ? 'badge-success' : 'badge-neutral' }}">{{ $product->is_active ? 'Active' : 'Inactive' }}</span></td>
+                                <td class="px-4 py-3"><span data-inventory-listing class="badge {{ $product->is_active ? 'badge-success' : 'badge-neutral' }}">{{ $product->is_active ? 'Active' : 'Inactive' }}</span></td>
                                 <td class="px-4 py-3 text-right whitespace-nowrap">₱{{ number_format((float) $product->price, 2) }}</td>
-                                <td class="px-4 py-3 text-right whitespace-nowrap {{ $product->stock <= 5 ? 'text-error font-semibold' : '' }}">
-                                    {{ $product->stock }}{{ $product->stock === 0 ? ' · Out of stock' : ($product->stock <= 5 ? ' · Low stock' : '') }}
+                                <td data-inventory-stock class="px-4 py-3 text-right whitespace-nowrap {{ $product->availableStock() <= 5 ? 'text-error font-semibold' : '' }}">
+                                    {{ $product->availableStock() }}{{ $product->availableStock() === 0 ? ' · Out of stock' : ($product->availableStock() <= 5 ? ' · Low stock' : '') }}
                                 </td>
                                 @if($shop->is_active && auth()->user()->role === \App\Enums\UserRole::Seller)<td class="px-4 py-3"><a href="{{ route('seller.products.edit', $product) }}" class="text-accent underline" aria-label="Edit {{ $product->name }}">Edit listing</a></td>@endif
                             </tr>

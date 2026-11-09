@@ -33,6 +33,7 @@
     @php($documentItems = $order->billableItems())
     <h1>{{ $document === 'invoice' ? 'Invoice' : 'Packing slip' }}</h1>
     @if($order->status === \App\Enums\OrderStatus::Cancelled)<p><strong>Cancelled — no payment due. Do not ship.</strong></p>@endif
+    @if($order->status === \App\Enums\OrderStatus::Returned)<p><strong>Returned to seller — no payment due. Do not ship.</strong></p>@endif
     <p class="muted">FarSell · Order {{ $order->number }} · {{ $order->created_at->format('M j, Y') }}</p>
     <p><strong>Ship to</strong><br>{{ $order->guest_name }}<br>{{ $order->ship_to }}</p>
 
