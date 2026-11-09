@@ -45,7 +45,7 @@ class ReleaseReadiness
             $files = $migrator->getMigrationFiles(database_path('migrations'));
             $ran = $migrator->getRepository()->getRan();
             $add('migrations_current', count(array_diff(array_keys($files), $ran)) === 0, 'Back up first, then apply pending migrations.');
-            $add('no_demo_accounts', ! DB::table('users')->where('email', 'like', '%.test')->exists(), 'Use a clean production database and provision real accounts; do not delete historical orders to clear this check.');
+            $add('no_demo_accounts', ! DB::table('users')->where('is_demo_account', true)->orWhere('email', 'like', '%.test')->exists(), 'Use a clean production database and provision real accounts; do not delete historical orders to clear this check.');
             $add('no_demo_payments', ! DB::table('orders')->where('payment_method', 'gateway_stub')->exists(), 'Keep demo orders separate from production.');
             $status = app(OperationalStatus::class)->inspect();
             $add('runtime_health', $status['healthy'], 'Check database, scheduler, notification worker, failed jobs, and stale notifications with ops:status.');

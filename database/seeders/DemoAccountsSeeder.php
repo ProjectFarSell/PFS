@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Support\DemoAccount;
 use App\Support\DevelopmentData;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +22,7 @@ class DemoAccountsSeeder extends Seeder
             ['email' => 'rider@farsell.test', 'name' => 'Demo Rider', 'role' => UserRole::Rider],
         ] as $account) {
             // Preserve existing credentials and profile changes on subsequent runs.
-            User::query()->firstOrCreate(
+            $user = User::query()->firstOrCreate(
                 ['email' => $account['email']],
                 [
                     'name' => $account['name'],
@@ -29,6 +30,7 @@ class DemoAccountsSeeder extends Seeder
                     'password' => Hash::make('password'),
                 ]
             );
+            DemoAccount::mark($user);
         }
 
         if (app()->environment(['local', 'testing'])) {
