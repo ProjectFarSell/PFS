@@ -27,6 +27,20 @@ class GoogleAuthController extends Controller
 
     public function start(Request $request): RedirectResponse
     {
+        // Loopback aliases use different browser cookies. Start OAuth on the
+        // configured callback origin so its state returns to the same session.
+        $callback = parse_url((string) config('services.google.redirect'));
+        $loopback = ['localhost', '127.0.0.1'];
+        if (app()->environment('local', 'testing') &&
+            in_array($request->getHost(), $loopback, true) &&
+            in_array($callback['host'] ?? null, $loopback, true) &&
+            in_array($callback['scheme'] ?? null, ['http', 'https'], true)) {
+            $origin = $callback['scheme'].'://'.$callback['host'].(isset($callback['port']) ? ':'.$callback['port'] : '');
+            if ($request->getSchemeAndHttpHost() !== $origin) {
+                return redirect()->away($origin.route('auth.google.redirect', [], false));
+            }
+        }
+
         $request->session()->forget('google_reauth');
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google sign-in is not configured.');
         $state = Str::random(40);

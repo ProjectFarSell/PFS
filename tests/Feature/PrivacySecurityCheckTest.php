@@ -116,7 +116,7 @@ class PrivacySecurityCheckTest extends TestCase
 
     public function test_google_button_redirects_directly_and_callback_records_the_inline_privacy_notice(): void
     {
-        config(['services.google.client_id' => 'dummy-client', 'services.google.client_secret' => 'dummy-secret', 'services.google.redirect' => 'http://localhost/auth/google/callback']);
+        config(['services.google.client_id' => 'dummy-client', 'services.google.client_secret' => 'dummy-secret', 'services.google.redirect' => route('auth.google.callback')]);
         Http::preventStrayRequests();
         $this->get(route('login'))->assertOk()->assertSee('By continuing with Google')->assertSee(route('privacy'), false);
         $this->get(route('auth.google.redirect'))->assertRedirectContains('https://accounts.google.com/o/oauth2/v2/auth?');
@@ -142,5 +142,29 @@ class PrivacySecurityCheckTest extends TestCase
         $this->get(route('auth.google.callback', ['state' => 'wrong-state', 'code' => 'dummy-code']))->assertStatus(419);
         Http::assertNothingSent();
         $this->assertGuest();
+    }
+
+    public function test_local_google_sign_in_moves_to_callback_origin_before_creating_state(): void
+    {
+        config(['services.google.client_id' => 'dummy-client', 'services.google.client_secret' => 'dummy-secret',
+            'services.google.redirect' => 'http://localhost:8000/auth/google/callback']);
+        Http::preventStrayRequests();
+        $this->get('http://127.0.0.1:8000/auth/google/redirect')
+            ->assertRedirect('http://localhost:8000/auth/google/redirect');
+        $this->assertNull(session('google_oauth_state'));
+        $this->get('http://localhost:8000/auth/google/redirect')
+            ->assertRedirectContains('https://accounts.google.com/');
+        $this->assertNotEmpty(session('google_oauth_state'));
+        Http::assertNothingSent();
+    }
+
+    public function test_local_google_origin_fix_also_supports_an_ip_callback(): void
+    {
+        config(['services.google.client_id' => 'dummy-client', 'services.google.client_secret' => 'dummy-secret',
+            'services.google.redirect' => 'http://127.0.0.1:8000/auth/google/callback']);
+        $this->get('http://localhost:8000/auth/google/redirect')
+            ->assertRedirect('http://127.0.0.1:8000/auth/google/redirect');
+        $this->get('http://127.0.0.1:8000/auth/google/redirect')
+            ->assertRedirectContains('https://accounts.google.com/');
     }
 }
