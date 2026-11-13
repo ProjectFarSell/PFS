@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
-use App\Models\AccountDeletionRequest;
-use App\Models\User;
+use App\Services\Orders\DeletionRequest;
 use App\Support\PrivacyNotice;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PrivacyController extends Controller
 {
@@ -27,14 +25,7 @@ class PrivacyController extends Controller
     {
         $request->validateWithBag('privacy', ['confirmation' => ['required', 'in:DELETE']]);
 
-        DB::transaction(function () use ($request): void {
-            // Serialize requests for this account, including the first submission.
-            User::whereKey($request->user()->id)->lockForUpdate()->firstOrFail();
-            $deletion = AccountDeletionRequest::firstOrCreate(['user_id' => $request->user()->id]);
-            if ($deletion->status !== 'pending') {
-                $deletion->update(['status' => 'pending', 'response' => null, 'reviewed_by' => null, 'reviewed_at' => null]);
-            }
-        });
+        app(DeletionRequest::class)->submit($request->user());
 
         return to_route('account.profile.edit')->with('status', 'Account deletion request submitted for admin review. Your account has not been deleted yet.');
     }

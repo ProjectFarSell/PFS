@@ -1,0 +1,24 @@
+; Example only. Adjust paths, runtime user, PHP binary and logs for the chosen host.
+; Queue retry_after must exceed the worker timeout (60s); default database value is 90s.
+[program:farsell-mobile]
+command=php /var/www/html/artisan mobile:work
+directory=/var/www/html
+user=www-data
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+stopwaitsecs=75
+redirect_stderr=true
+stdout_logfile=/var/www/html/storage/logs/mobile-worker.log
+
+[program:farsell-reverb]
+command=php /var/www/html/artisan reverb:start --host=127.0.0.1 --port=8080
+directory=/var/www/html
+user=www-data
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+stdout_logfile=/var/www/html/storage/logs/reverb.log

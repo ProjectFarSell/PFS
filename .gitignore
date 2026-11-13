@@ -32,3 +32,6 @@ Thumbs.db
 .agents
 CONTEXT_HANDOVER.md
 AGENTS.md
+
+# Server-side provider credentials (never commit service-account JSON)
+/.secrets/

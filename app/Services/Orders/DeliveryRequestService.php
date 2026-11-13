@@ -6,7 +6,9 @@ use App\Models\Fulfillment;
 use App\Models\Order;
 use App\Models\RiderBarangayAssignment;
 use App\Models\RiderProfile;
+use App\Services\Mobile\MobileEvents;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DeliveryRequestService
 {
@@ -56,8 +58,9 @@ class DeliveryRequestService
                 if ($rider && $rider->isApproved() && $rider->is_available && $rider->user?->role->value === 'rider' && self::city($rider->city) === $part->pickup_city) {
                     DB::table('rider_delivery_requests')->updateOrInsert(
                         ['fulfillment_id' => $part->id, 'rider_id' => $rider->id],
-                        ['offered_at' => now(), 'expires_at' => now()->addMinutes(2), 'declined_at' => null, 'created_at' => now(), 'updated_at' => now()]
+                        ['public_id' => (string) Str::uuid(), 'offered_at' => now(), 'expires_at' => now()->addMinutes(2), 'declined_at' => null, 'created_at' => now(), 'updated_at' => now()]
                     );
+                    app(MobileEvents::class)->offered($part, $rider);
                     break;
                 }
             }

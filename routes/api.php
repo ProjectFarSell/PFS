@@ -11,4 +11,5 @@ Route::prefix('v1')->group(function (): void {
     ]);
 
     Route::get('/catalog', [CatalogController::class, 'index'])->middleware('throttle:catalog-api');
+    require __DIR__.'/mobile.php';
 });

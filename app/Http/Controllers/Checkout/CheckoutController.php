@@ -8,9 +8,8 @@ use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\Invoices\InvoiceGeneratorApi;
-use App\Services\Notifications\OrderNotificationService;
 use App\Services\Orders\CheckoutAvailability;
-use App\Services\Orders\FulfillmentService;
+use App\Services\Orders\PlaceOrder;
 use App\Services\Orders\ReplacementService;
 use App\Services\Orders\StockReservationService;
 use App\Support\Cart;
@@ -19,7 +18,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -92,55 +90,13 @@ class CheckoutController extends Controller
             : OrderStatus::Paid;
         $lines = Cart::forCheckout();
 
-        $order = DB::transaction(function () use ($lines, $address, $paymentMethod, $initialStatus): Order {
+        $order = DB::transaction(function () use ($request, $address, $lines, $paymentMethod) {
             $replacement = session()->has(ReplacementService::SESSION_KEY)
                 ? app(ReplacementService::class)->forCheckout((int) session(ReplacementService::SESSION_KEY), auth()->user(), $lines)
                 : null;
-            if ($replacement && $paymentMethod !== PaymentMethod::Cod) {
-                throw ValidationException::withMessages(['payment_method' => 'Replacement orders use cash on delivery.']);
-            }
-            $lockedLines = $this->stock->lockAndPrepare($lines);
-            app(CheckoutAvailability::class)->ensureServiceable($address, $lockedLines);
-            $subtotal = (float) $lockedLines->sum('line_total');
-            $shipping = $this->deliveryFees->calculate($address, $lockedLines);
 
-            $order = Order::query()->create([
-                'user_id' => auth()->id(),
-                'address_id' => $address->id,
-                'number' => 'FS'.now()->format('ymd').Str::upper(Str::random(6)),
-                'status' => $initialStatus,
-                'payment_method' => $paymentMethod,
-                'guest_email' => auth()->user()->email,
-                'guest_name' => auth()->user()->name,
-                'ship_to' => $address->formatted().($address->phone ? ' · '.$address->phone : ''),
-                'subtotal' => $subtotal,
-                'shipping_fee' => $shipping,
-                'total' => $subtotal + $shipping,
-                'stock_reserved_at' => now(),
-            ]);
-
-            foreach ($lockedLines as $line) {
-                $order->items()->create([
-                    'product_id' => $line->product->id,
-                    'product_variant_id' => $line->variant?->id,
-                    'name' => $line->product->name,
-                    'product_sku' => $line->variant?->sku ?? $line->product->sku,
-                    'variant_options' => $line->variant_options,
-                    'qty' => $line->qty,
-                    'unit_price' => $line->unit_price,
-                    'line_total' => $line->line_total,
-                ]);
-            }
-
-            $this->stock->reserve($lockedLines);
-            app(FulfillmentService::class)->createForOrder($order);
-            app(OrderNotificationService::class)->orderPlaced($order);
-            if ($replacement) {
-                $replacement->forceFill(['status' => 'ordered', 'new_order_id' => $order->id])->save();
-            }
-
-            return $order;
-        });
+            return app(PlaceOrder::class)->handle($request->user(), $address, $lines, $paymentMethod, $replacement);
+        }, 3);
 
         Cart::clearCheckout();
 

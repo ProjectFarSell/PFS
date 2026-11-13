@@ -18,6 +18,11 @@ class SignInOtp
 {
     public function context(Request $request): string
     {
+        // A trusted API controller supplies a durable server-side ticket context.
+        // This attribute cannot be supplied through JSON, headers or query parameters.
+        if ($context = $request->attributes->get('mobile.otp_context')) {
+            return $context;
+        }
         if (! $request->session()->has('security.otp_context')) {
             $request->session()->put('security.otp_context', Str::random(64));
         }
@@ -35,7 +40,7 @@ class SignInOtp
         $context = $this->context($request);
         DB::transaction(function () use ($request, $context, $channel) {
             $user = User::lockForUpdate()->findOrFail($request->user()->id);
-            abort_unless(! DemoAccount::exempt($user) && ! $user->usesAuthenticator() && ! $user->suspended_at, 403);
+            abort_unless((! DemoAccount::exempt($user) || $request->attributes->get('mobile.contact_verification')) && ! $user->usesAuthenticator() && ! $user->suspended_at, 403);
             if (! in_array($channel, ['email', 'phone'], true) || blank($user->{$channel})) {
                 $this->invalid('Use an email address or phone number already saved on your account.');
             }
@@ -93,7 +98,7 @@ class SignInOtp
 
         return DB::transaction(function () use ($request, $context, $channel, $check) {
             $user = User::lockForUpdate()->findOrFail($request->user()->id);
-            abort_unless(! DemoAccount::exempt($user) && ! $user->usesAuthenticator() && ! $user->suspended_at, 403);
+            abort_unless((! DemoAccount::exempt($user) || $request->attributes->get('mobile.contact_verification')) && ! $user->usesAuthenticator() && ! $user->suspended_at, 403);
             $challenge = SignInChallenge::where('user_id', $user->id)->where('context_hash', $context)->lockForUpdate()->first();
             if (! $challenge || $challenge->channel !== $channel || $challenge->consumed_at || $challenge->expires_at->lte(now()) || $challenge->attempts >= 5
                 || ! hash_equals(app(AccountSecurity::class)->otpFingerprint($user), $challenge->identity_hash)) {

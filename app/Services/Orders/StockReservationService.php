@@ -20,11 +20,16 @@ class StockReservationService
      */
     public function lockAndPrepare(Collection $lines): Collection
     {
-        return $lines->map(function (object $line): object {
-            $product = Product::query()->lockForUpdate()->find($line->product->id);
-            $variant = $line->variant ? ProductVariant::query()->lockForUpdate()->find($line->variant->id) : null;
+        // Lock consistently, but keep line order and shipping-remainder allocation.
+        $products = Product::whereIn('id', $lines->map(fn ($line) => $line->product->id))->orderBy('id')->lockForUpdate()->with('shop')->get()->keyBy('id');
+        $variants = ProductVariant::whereIn('id', $lines->map(fn ($line) => $line->variant?->id)->filter())->orderBy('id')->lockForUpdate()->get()->keyBy('id');
+
+        return $lines->map(function (object $line) use ($products, $variants): object {
+            $product = $products->get($line->product->id);
+            $variant = $line->variant ? $variants->get($line->variant->id) : null;
 
             if (! $product || ! $product->is_active || ! $product->shop?->is_active
+                || ($line->variant && ! $variant)
                 || ($variant && ! $product->has_variants)
                 || ($product->has_variants && (! $variant || ! $variant->is_active || $variant->product_id !== $product->id || $variant->stock < $line->qty))
                 || (! $product->has_variants && $product->stock < $line->qty)) {

@@ -36,6 +36,7 @@ use App\Http\Controllers\FulfillmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventoryRefreshController;
 use App\Http\Controllers\LogisticsController;
+use App\Http\Controllers\MobileReleaseController;
 use App\Http\Controllers\OrderFeedbackController;
 use App\Http\Controllers\ProductReviewMediaController;
 use App\Http\Controllers\ReplacementController;
@@ -61,6 +62,9 @@ use Illuminate\Support\Facades\Route;
 // Browsing is public by default. Keep both route names/URLs compatible
 // with existing links; neither requires a guest-session entry step.
 Route::view('/privacy', 'privacy')->name('privacy');
+Route::view('/support', 'mobile-support')->name('mobile.support');
+Route::get('/.well-known/assetlinks.json', [MobileReleaseController::class, 'android'])->name('mobile.links.android');
+Route::get('/.well-known/apple-app-site-association', [MobileReleaseController::class, 'ios'])->name('mobile.links.ios');
 if (app()->environment('local')) {
     Route::get('/styleguide', function () {
         abort_unless(app()->environment('local'), 404);
@@ -101,7 +105,7 @@ Route::middleware(EnsureBuyerOrGuest::class)->group(function () {
 
 // ── Guest-only auth routes ────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
-    Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
+    Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->middleware('throttle:10,1')->name('auth.google.redirect');
     Route::post('/auth/google/start', [GoogleAuthController::class, 'start'])->middleware('throttle:10,1')->name('auth.google.start');
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');

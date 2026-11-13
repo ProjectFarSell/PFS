@@ -28,6 +28,9 @@ class ResponseSecurity
         $response->headers->set('Content-Security-Policy', "base-uri 'self'; object-src 'none'; frame-ancestors 'self'");
         // Blade pages include sessions/CSRF tokens and may contain account-specific state.
         $response->headers->set('Cache-Control', 'private, no-store');
+        if ($request->routeIs('mobile.links.*') && $response->isSuccessful()) {
+            $response->headers->set('Cache-Control', 'public, max-age=3600');
+        }
         if (app()->environment('production') && $request->isSecure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age='.max(0, (int) config('security.hsts_seconds')));
         }

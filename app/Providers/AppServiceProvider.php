@@ -21,9 +21,11 @@ use App\Models\SettlementAdjustment;
 use App\Models\ShipmentSettlement;
 use App\Models\Shop;
 use App\Models\User;
+use App\Observers\MobileIdentityObserver;
 use App\Observers\SecurityAuditObserver;
 use App\Services\Checkout\FlatRateDeliveryFeeService;
 use App\Services\Delivery\CityBasedDeliveryEtaService;
+use App\Services\Mobile\PublicIds;
 use App\Services\Notifications\MailOrderNotificationSender;
 use App\Support\Cart;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -49,6 +51,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        foreach (PublicIds::MODELS as $mobileModel) {
+            $mobileModel::observe(MobileIdentityObserver::class);
+        }
         // Recovery links use the configured application origin, never an untrusted request Host.
         ResetPassword::createUrlUsing(fn ($user, $token) => rtrim(config('app.url'), '/').route('password.reset', [
             'token' => $token, 'email' => $user->getEmailForPasswordReset(),
@@ -62,8 +67,13 @@ class AppServiceProvider extends ServiceProvider
         ]);
         RateLimiter::for('signup', fn (Request $request) => Limit::perMinute(5)->by('signup:'.$request->ip()));
         RateLimiter::for('catalog-api', fn (Request $request) => Limit::perMinute(120)->by('catalog:'.$request->ip()));
+        RateLimiter::for('mobile-api', fn (Request $request) => Limit::perMinute(120)->by('mobile-api:'.$request->ip()));
+        RateLimiter::for('mobile-login', fn (Request $request) => [Limit::perMinute(5)->by('mobile-login:'.hash('sha256', mb_strtolower((string) $request->input('email')).'|'.$request->ip())), Limit::perMinute(30)->by('mobile-login-ip:'.$request->ip())]);
+        RateLimiter::for('mobile-challenge', fn (Request $request) => [Limit::perMinute(10)->by('mobile-challenge:'.hash('sha256', (string) $request->input('challenge_token')).'|'.$request->ip()), Limit::perMinute(30)->by('mobile-challenge-ip:'.$request->ip())]);
+        RateLimiter::for('mobile-sensitive', fn (Request $request) => Limit::perMinute(5)->by('mobile-sensitive:'.($request->user()?->id ?? $request->ip())));
         if ($this->app->runningInConsole() && $this->app->environment('local')) {
             DevCommands::artisan('notifications:work', 'notifications');
+            DevCommands::artisan('mobile:work', 'mobile');
             DevCommands::artisan('schedule:work', 'scheduler');
         }
 

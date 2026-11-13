@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\NotificationDelivery;
+use App\Services\Mobile\MobileMessaging;
 use App\Services\Notifications\OrderNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,9 @@ class NotificationController extends Controller
             ->latest('id')->paginate(20)->withQueryString();
         $counts = NotificationDelivery::query()->selectRaw('status, COUNT(*) AS aggregate')->groupBy('status')->pluck('aggregate', 'status');
 
-        return view('admin.notifications.index', compact('deliveries', 'counts'));
+        $mobileHealth = app(MobileMessaging::class)->health();
+
+        return view('admin.notifications.index', compact('deliveries', 'counts', 'mobileHealth'));
     }
 
     public function retry(NotificationDelivery $delivery, OrderNotificationService $notifications): RedirectResponse

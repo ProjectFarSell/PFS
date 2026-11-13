@@ -45,7 +45,10 @@ jobs:
       - run: npm run build
       - run: node tools/check-assets.mjs
       - run: node --test tests/Frontend/*.test.cjs
-      - run: php artisan test --compact
+      - name: Validate mobile OpenAPI schema and route coverage
+        run: php tools/check-mobile-contract.php
+      - name: Backend regression and mobile response-contract tests
+        run: php artisan test --compact
       - run: php artisan ops:rehearse
       - run: php artisan view:cache
       - run: php artisan route:cache
