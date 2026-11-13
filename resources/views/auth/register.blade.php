@@ -45,6 +45,8 @@
             <x-ui.button variant="primary" size="lg" type="submit" class="w-full">{{ $checkoutIntent ? 'Create account and continue' : 'Create account' }}</x-ui.button>
         </form>
 
+        @include('auth.partials.google-access')
+
         <p class="text-sm text-center text-text-muted mt-4">
             Already have an account?
             <a class="text-accent hover:text-accent-hover font-medium" href="{{ route('login') }}">Log in</a>

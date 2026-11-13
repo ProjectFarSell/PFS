@@ -114,15 +114,16 @@ class PrivacySecurityCheckTest extends TestCase
         $this->assertSame(PrivacyNotice::VERSION, $user->fresh()->privacy_notice_version);
     }
 
-    public function test_google_requires_consent_before_contacting_google_and_callback_records_it(): void
+    public function test_google_button_redirects_directly_and_callback_records_the_inline_privacy_notice(): void
     {
         config(['services.google.client_id' => 'dummy-client', 'services.google.client_secret' => 'dummy-secret', 'services.google.redirect' => 'http://localhost/auth/google/callback']);
         Http::preventStrayRequests();
-        $this->get(route('auth.google.redirect'))->assertOk()->assertSee('privacy_consent');
-        $this->post(route('auth.google.start'), [])->assertSessionHasErrors('privacy_consent');
+        $this->get(route('login'))->assertOk()->assertSee('By continuing with Google')->assertSee(route('privacy'), false);
+        $this->get(route('auth.google.redirect'))->assertRedirectContains('https://accounts.google.com/o/oauth2/v2/auth?');
         Http::assertNothingSent();
-        $this->post(route('auth.google.start'), ['privacy_consent' => '1'])->assertRedirectContains('https://accounts.google.com/');
         $state = session('google_oauth_state');
+        $this->assertNotEmpty($state);
+        $this->assertSame(PrivacyNotice::VERSION, session('google_privacy_consent'));
         Http::fake([
             'oauth2.googleapis.com/token' => Http::response(['access_token' => 'dummy-token']),
             'openidconnect.googleapis.com/v1/userinfo' => Http::response(['sub' => 'dummy-google-id', 'email' => 'google@example.test', 'name' => 'Dummy Google Buyer', 'email_verified' => true]),
@@ -131,5 +132,15 @@ class PrivacySecurityCheckTest extends TestCase
         $user = User::where('email', 'google@example.test')->sole();
         $this->assertSame(PrivacyNotice::VERSION, $user->privacy_notice_version);
         $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_direct_google_sign_in_still_rejects_an_invalid_oauth_state(): void
+    {
+        config(['services.google.client_id' => 'dummy-client', 'services.google.client_secret' => 'dummy-secret']);
+        Http::preventStrayRequests();
+        $this->get(route('auth.google.redirect'))->assertRedirectContains('https://accounts.google.com/');
+        $this->get(route('auth.google.callback', ['state' => 'wrong-state', 'code' => 'dummy-code']))->assertStatus(419);
+        Http::assertNothingSent();
+        $this->assertGuest();
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Services\Auth\GoogleAccounts;
 use App\Services\Security\AccountSecurity;
 use App\Services\Security\AuditTrail;
 use App\Support\CheckoutIntent;
@@ -16,20 +16,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\View\View;
 use Throwable;
 
 class GoogleAuthController extends Controller
 {
-    public function redirect(Request $request): View
+    public function redirect(Request $request): RedirectResponse
     {
-        return view('auth.google-consent');
+        return $this->start($request);
     }
 
     public function start(Request $request): RedirectResponse
     {
         $request->session()->forget('google_reauth');
-        $request->validate(['privacy_consent' => ['required', 'accepted']]);
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google sign-in is not configured.');
         $state = Str::random(40);
         $request->session()->put('google_oauth_state', $state);
@@ -94,24 +92,7 @@ class GoogleAuthController extends Controller
         }
         abort_if($request->user() !== null, 409, 'Sign out before switching accounts.');
 
-        $user = User::query()->where('google_id', $profile['sub'])->first();
-        if (! $user) {
-            $normalizedEmail = mb_strtolower($profile['email']);
-            $user = User::query()->whereRaw('LOWER(email) = ?', [$normalizedEmail])->first();
-            if ($user) {
-                // Link only after Google has verified ownership of the matching email.
-                $user->forceFill(['google_id' => $profile['sub'], 'email_verified_at' => $user->email_verified_at ?? now()])->save();
-            } else {
-                $user = User::query()->create([
-                    'name' => mb_substr($profile['name'], 0, 120),
-                    'email' => mb_strtolower($profile['email']),
-                    'password' => Str::random(64),
-                    'google_id' => $profile['sub'],
-                    'email_verified_at' => now(),
-                    'role' => UserRole::Buyer,
-                ]);
-            }
-        }
+        $user = app(GoogleAccounts::class)->resolve($profile);
 
         if ($user->suspended_at) {
             return to_route('login')->withErrors(['google' => 'This account is suspended. Contact an administrator.']);

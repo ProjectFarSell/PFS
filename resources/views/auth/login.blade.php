@@ -34,6 +34,8 @@
             <x-ui.button variant="primary" size="lg" type="submit" class="w-full">{{ $checkoutIntent ? 'Log in to checkout' : 'Log in' }}</x-ui.button>
         </form>
 
+        @include('auth.partials.google-access')
+
         @if($checkoutIntent)
             <x-ui.button variant="secondary" :href="route('register')" class="mt-3 w-full">Create an account</x-ui.button>
             <x-ui.button variant="link" :href="route('cart.index')" class="block mt-4 text-center text-sm text-text-muted underline">Back to cart</x-ui.button>
