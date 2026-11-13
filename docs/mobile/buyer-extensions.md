@@ -18,7 +18,7 @@ API extension: `../api/openapi.yaml`, revision `1.0.0-dev.2`. Additions preserve
 
 ## Mobile configuration
 
-Use a local, ignored `farsell_mobile/mobile-config.local.json` with **public client settings only**, then run:
+Use a local, ignored `mobile-config.local.json` in the [FarSell-Mobile repository](https://github.com/KarlBRB/FarSell-Mobile) root with **public client settings only**, then run from that repository:
 
 ```powershell
 flutter run --dart-define-from-file=mobile-config.local.json

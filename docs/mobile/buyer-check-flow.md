@@ -1,6 +1,6 @@
 ﻿# Buyer app integration check flow
 
-Use the main Flutter project (`farsell_mobile`), not a Rider app. Start Laravel, then rebuild Flutter after native package installation.
+Use the [standalone Flutter buyer app](https://github.com/KarlBRB/FarSell-Mobile), not a Rider app. Clone it alongside PFS. Start Laravel from PFS, then run Flutter commands from the FarSell-Mobile repository root and rebuild after native package installation.
 
 1. Browse as guest: search, load more, choose size/color, observe SKU/stock and add to the device cart.
 2. Profile > Sign in / create account: use a Buyer identity. Real accounts complete the email OTP from SMTP. Phone is offered only when both server and client Firebase settings support it. A Seller/Admin/Rider identity must be rejected by the Buyer app login.
@@ -21,6 +21,6 @@ No new Rider app screens were built. Backend regression results are recorded sep
 - Flutter suite: 21 tests passed, including email OTP sign-in and a phone-layout COD checkout through the order-details screen with mocked API responses.
 - Android debug APK: built and installed on emulator-5554.
 - Live local smoke check: started the local Laravel server on port 8000, confirmed the new product API returned 200, and the emulator loaded 20 products without a connection error. Buyer account navigation was checked without creating an order or signing in as a real user.
-- Real SMTP inbox, Firebase SMS and full physical-device acceptance were not tested by the automated mocks. Refer to the configuration requirements in ../../farsell_mobile/README.md.
+- Real SMTP inbox, Firebase SMS and full physical-device acceptance were not tested by the automated mocks. Refer to the configuration requirements in the [mobile README](https://github.com/KarlBRB/FarSell-Mobile#readme).
 
 Latest Buyer extensions add Google authentication support, shared chat/history, reviews and media, cancellation, returns/refunds, notification inbox, FCM receiving, private Reverb updates and HTTPS app-link/signing configuration. The new guide is buyer-extensions.md. Current automated checks: 420 backend tests and 28 Flutter tests passed, analyzer clean and Android debug APK built. Provider/device acceptance and hosting remain separate.

@@ -15,7 +15,7 @@ Updated November 13, 2026 after implementation authorized by the user. The basel
 | Production payments | PASS: production rejects the staging stub even with its flag enabled. COD is the only supported production mobile method. |
 | FCM and private channels | PASS mocked-provider audience, binding, expiry, deduplication, dead-token and channel authorization tests. Live background delivery and WSS acceptance remain UNVERIFIED. |
 | Release support | PASS automated fixture/reset guards, association-file configuration, support page and default proof-retention checks. Missing app identifiers return 503 rather than fabricated association data. |
-| Build/tooling | PASS Laravel view/route compilation, Pint, website build, asset budgets and all 19 frontend tests. Composer locked-dependency audit found no security advisories. The buyer Flutter integration is tracked separately in ../../farsell_mobile/README.md and ../mobile/buyer-check-flow.md; the Rider app is deferred. |
+| Build/tooling | PASS Laravel view/route compilation, Pint, website build, asset budgets and all 19 frontend tests. Composer locked-dependency audit found no security advisories. The buyer Flutter integration is tracked separately in the [mobile repository](https://github.com/KarlBRB/FarSell-Mobile#readme) and ../mobile/buyer-check-flow.md; the Rider app is deferred. |
 | Local migration | PASS encrypted database-only backup restored and verified before additive migration. Counts preserved: 10 users, 27 products, 13 orders. All existing products received public UUIDs. No fixtures inserted into the normal database. |
 | Local HTTP smoke check | PASS catalogue/products 200, unauthenticated session 401, support 200, unconfigured Android association 503. |
 
