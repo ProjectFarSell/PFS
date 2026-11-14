@@ -21,6 +21,7 @@
 /public/hot
 /public/storage
 /storage/*.key
+/storage/app/blackbox-run/
 /storage/pail
 /vendor
 _ide_helper.php
