@@ -16,6 +16,15 @@ class GuestStorefrontTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_storefront_pages_do_not_show_coming_soon_controls(): void
+    {
+        foreach (['home', 'catalog.index', 'cart.index'] as $route) {
+            $this->get(route($route))->assertOk()
+                ->assertDontSee('coming soon')
+                ->assertDontSee('FarSell Guaranteed');
+        }
+    }
+
     public function test_first_visit_opens_storefront_with_public_products_and_auth_links_without_guest_setup(): void
     {
         $product = Product::factory()->create(['name' => 'Public storefront listing']);
@@ -43,7 +52,9 @@ class GuestStorefrontTest extends TestCase
         $this->get('/')->assertOk();
         $this->get(route('catalog.index'))->assertOk()->assertSee($product->name);
         $this->get(route('shops.index'))->assertOk()->assertSee($product->shop->name);
-        $this->get(route('products.show', $product))->assertOk();
+        $this->get(route('products.show', $product))->assertOk()
+            ->assertSee('Sign in to chat with seller')
+            ->assertSee('href="'.route('login').'"', false);
         $this->post(route('cart.store'), ['product_id' => $product->id, 'qty' => 2])->assertRedirect();
         $this->get(route('cart.index'))->assertOk()->assertSee($product->name);
         $this->assertSame([$product->id => 2], session(Cart::SESSION_KEY));

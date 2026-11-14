@@ -9,6 +9,8 @@ use App\Models\RiderProfile;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class RiderDeliveryRequestTest extends TestCase
@@ -77,6 +79,8 @@ class RiderDeliveryRequestTest extends TestCase
         $this->assertDatabaseHas('rider_delivery_requests', ['rider_id' => $rider->id, 'fulfillment_id' => $part->id]);
         $response = $this->actingAs($rider->user)->getJson(route('rider.delivery-requests'))->assertOk()->assertJsonPath('count', 1);
         $this->assertStringContainsString('Accept delivery request', $response->json('html'));
+        $expiry = DB::table('rider_delivery_requests')->where('fulfillment_id', $part->id)->value('expires_at');
+        $this->assertStringContainsString('data-offer-expires="'.Carbon::parse($expiry)->toIso8601String().'"', $response->json('html'));
         $this->assertStringNotContainsString('SECRET', $response->json('html'));
         foreach ([$offline, $otherCity] as $profile) {
             $this->actingAs($profile->user)->getJson(route('rider.delivery-requests'))->assertJsonPath('count', 0);

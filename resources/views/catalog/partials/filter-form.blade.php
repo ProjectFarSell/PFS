@@ -109,14 +109,6 @@
                    style="accent-color:rgb(var(--color-accent));">
         </label>
 
-        {{-- FarSell Guaranteed: coming soon, remains disabled --}}
-        <label class="flex items-center justify-between py-1 opacity-50 cursor-not-allowed select-none"
-               title="Coming soon">
-            <span class="text-sm" style="color:rgb(var(--color-text-muted));">FarSell Guaranteed</span>
-            <input type="checkbox" disabled
-                   class="rounded"
-                   style="accent-color:rgb(var(--color-accent));">
-        </label>
     </div>
 
     <x-ui.button variant="primary" size="lg" type="submit" class="w-full">Apply filters</x-ui.button>

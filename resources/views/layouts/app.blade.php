@@ -379,8 +379,6 @@
                             <li><a href="{{ $riderApplicationUrl }}" class="hover:text-white transition-colors">{{ $riderApplicationLabel }}</a></li>
                         @endif
                             <li><a href="{{ auth()->check() ? (auth()->user()->role === \App\Enums\UserRole::Seller ? route('seller.dashboard') : route('account.profile')) : route('register', ['intent' => 'seller']) }}" class="hover:text-white transition-colors">Sell on FarSell</a></li>
-                        <li><span class="text-xs">Buyer Protection (coming soon)</span></li>
-                        <li><span class="text-xs">Help Center (coming soon)</span></li>
                     </ul>
                 </div>
 
@@ -388,10 +386,7 @@
                 <div>
                     <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-3">About</h3>
                     <ul class="space-y-2 text-sm">
-                        <li><span class="text-xs">About FarSell (coming soon)</span></li>
                         <li><a href="{{ route('privacy') }}" class="text-xs hover:text-white">Privacy notice</a></li>
-                        <li><span class="text-xs">Terms of Service (coming soon)</span></li>
-                        <li><span class="text-xs">Contact Us (coming soon)</span></li>
                     </ul>
                 </div>
             </div>
