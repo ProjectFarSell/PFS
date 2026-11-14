@@ -1,0 +1,4407 @@
+openapi: 3.0.3
+info:
+  title: FarSell Mobile API
+  version: 1.0.0-draft
+  description: >-
+    Proposed contract for review. The routes under this contract are not implemented unless explicitly
+    identified as existing. New mobile monetary amounts use integer PHP centavos and UTC ISO 8601 timestamps.
+    The database stores product, order, fulfillment and rider earnings values as decimal pesos, while
+    settlement fields use integer centavos. Convert decimal values exactly at the API boundary without binary
+    floating-point rounding. The existing /catalog response remains backward compatible.
+
+
+    Sanctum personal access tokens have a fixed 30-day expiry and buyer:* or rider:* ability. A new login and
+    applicable web security challenges are required after expiry; no refresh token is issued. Revoke on
+    logout, password reset, security changes, account suspension or administrative revocation. A rider must be
+    approved and own the assignment; buyers may access only their own records. Seller and admin APIs are out
+    of scope.
+
+
+    All new JSON responses use a data envelope. Errors use code, message and errors. Pagination is cursor
+    based for new list endpoints. Authentication and verification routes use a proposed 5 requests/minute per
+    IP and account where available; reads 60/minute per token or IP; mutations 30/minute per token; sensitive
+    sends and upload mutations 5/minute per token. Return 429 with Retry-After. Tune limits during
+    implementation without weakening web security. Idempotency keys are scoped to authenticated user,
+    operation and payload. Same key and same payload replays the original status and result; a different
+    payload returns 409. Persist atomically with the business transaction and retain at least 24 hours.
+
+
+    Production checkout supports COD. gateway_stub may be enabled in staging only and never charges money.
+    Confirmed delivery does not confirm COD remittance. Web password and verification policies are
+    authoritative. Mobile location batching is included at the latest request, subject to explicit approval
+    because the approved v1 scope excludes live location and background GPS. Review privacy, retention and
+    intended consumers before enabling it.
+servers:
+  - url: /api/v1
+    description: Relative to build-specific API origin
+tags:
+  - name: Auth
+  - name: Catalog
+  - name: Buyer
+  - name: Rider
+  - name: Push
+  - name: Existing
+paths:
+  /auth/register:
+    post:
+      operationId: register
+      tags:
+        - Auth
+      summary: register
+      description: Registers a buyer with consent. Applies the same account security challenges as the web; 202
+        indicates a required challenge.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TokenSession"
+                required:
+                  - data
+        "202":
+          description: Further sign-in challenge required
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AuthChallenge"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/login:
+    post:
+      operationId: login
+      tags:
+        - Auth
+      summary: login
+      description: Reject accounts whose role is not the requested app role. Never issue a token before all required
+        challenges succeed.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TokenSession"
+                required:
+                  - data
+        "202":
+          description: Additional challenge required
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AuthChallenge"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/login-challenges/{challenge_id}/code:
+    post:
+      operationId: sendLoginCode
+      tags:
+        - Auth
+      summary: sendLoginCode
+      description: ""
+      security: []
+      parameters:
+        - name: challenge_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChallengeRequest"
+      responses:
+        "202":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CodeSent"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/login-challenges/{challenge_id}/verify:
+    post:
+      operationId: verifyLoginChallenge
+      tags:
+        - Auth
+      summary: verifyLoginChallenge
+      description: ""
+      security: []
+      parameters:
+        - name: challenge_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChallengeVerify"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TokenSession"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/logout:
+    post:
+      operationId: logout
+      tags:
+        - Auth
+      summary: logout
+      description: Revoke the current token and unbind its device token.
+      security:
+        - sanctum: []
+      responses:
+        "204":
+          description: Successful response
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/me:
+    get:
+      operationId: me
+      tags:
+        - Auth
+      summary: me
+      description: ""
+      security:
+        - sanctum: []
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Account"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/password/forgot:
+    post:
+      operationId: requestPasswordReset
+      tags:
+        - Auth
+      summary: requestPasswordReset
+      description: Return the same response regardless of account existence. Send a web reset link using the current
+        web workflow.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailRequest"
+      responses:
+        "202":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Message"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/password/reset:
+    post:
+      operationId: resetPassword
+      tags:
+        - Auth
+      summary: resetPassword
+      description: Use the web password broker and policy. Revoke sessions and mobile tokens. Require normal sign-in
+        and challenges afterwards.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordReset"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Message"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/contact-verification:
+    post:
+      operationId: chooseVerificationChannel
+      tags:
+        - Auth
+      summary: chooseVerificationChannel
+      description: Phone requires phone number and continues with Firebase. Email sends a code.
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactChoice"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ContactResult"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/contact-verification/email/send:
+    post:
+      operationId: sendContactEmailCode
+      tags:
+        - Auth
+      summary: sendContactEmailCode
+      description: ""
+      security:
+        - sanctum: []
+      responses:
+        "202":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CodeSent"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/contact-verification/email/verify:
+    post:
+      operationId: verifyContactEmail
+      tags:
+        - Auth
+      summary: verifyContactEmail
+      description: ""
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactCode"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ContactResult"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /auth/contact-verification/phone/firebase:
+    post:
+      operationId: verifyContactPhone
+      tags:
+        - Auth
+      summary: verifyContactPhone
+      description: Validate the Firebase ID token server-side and match the selected phone.
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FirebasePhone"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ContactResult"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /account/deletion-requests:
+    post:
+      operationId: requestAccountDeletion
+      tags:
+        - Buyer
+      summary: requestAccountDeletion
+      description: Requires buyer:* ability and matching account role. The reauthentication mechanism and deletion
+        lifecycle require backend review.
+      security:
+        - sanctum: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeletionRequest"
+      responses:
+        "202":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/DeletionResult"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /products:
+    get:
+      operationId: listProducts
+      tags:
+        - Catalog
+      summary: listProducts
+      description: Public visible in-stock products. Price maximum must be at least minimum.
+      security: []
+      parameters:
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 120
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: shop_id
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: city_id
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: price_min_cents
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            description: Integer centavos in PHP.
+        - name: price_max_cents
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            description: Integer centavos in PHP.
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - newest
+              - price_asc
+              - price_desc
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      next_cursor:
+                        type: string
+                        nullable: true
+                    required:
+                      - next_cursor
+                required:
+                  - data
+                  - meta
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /products/{product_id}:
+    get:
+      operationId: getProduct
+      tags:
+        - Catalog
+      summary: getProduct
+      description: ""
+      security: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Product"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /categories:
+    get:
+      operationId: listCategories
+      tags:
+        - Catalog
+      summary: listCategories
+      description: ""
+      security: []
+      parameters:
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Category"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      next_cursor:
+                        type: string
+                        nullable: true
+                    required:
+                      - next_cursor
+                required:
+                  - data
+                  - meta
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /products/{product_id}/reviews:
+    get:
+      operationId: listProductReviews
+      tags:
+        - Catalog
+      summary: listProductReviews
+      description: ""
+      security: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Review"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      next_cursor:
+                        type: string
+                        nullable: true
+                    required:
+                      - next_cursor
+                required:
+                  - data
+                  - meta
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /cart:
+    get:
+      operationId: getCart
+      tags:
+        - Buyer
+      summary: getCart
+      description: "Requires buyer:* ability and matching account role. "
+      security:
+        - sanctum: []
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Cart"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /cart/lines:
+    post:
+      operationId: addCartLine
+      tags:
+        - Buyer
+      summary: addCartLine
+      description: "Requires buyer:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartLineInput"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Cart"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /cart/lines/{line_id}:
+    put:
+      operationId: setCartLine
+      tags:
+        - Buyer
+      summary: setCartLine
+      description: Requires buyer:* ability and matching account role. A quantity of zero removes the line.
+      security:
+        - sanctum: []
+      parameters:
+        - name: line_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Quantity"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Cart"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /cart/merge:
+    post:
+      operationId: mergeGuestCart
+      tags:
+        - Buyer
+      summary: mergeGuestCart
+      description: Requires buyer:* ability and matching account role. Merge local guest lines once. Return rejected
+        lines for review.
+      security:
+        - sanctum: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MergeCart"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/MergeResult"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /addresses:
+    get:
+      operationId: listAddresses
+      tags:
+        - Buyer
+      summary: listAddresses
+      description: "Requires buyer:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Address"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      next_cursor:
+                        type: string
+                        nullable: true
+                    required:
+                      - next_cursor
+                required:
+                  - data
+                  - meta
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+    post:
+      operationId: createAddress
+      tags:
+        - Buyer
+      summary: createAddress
+      description: "Requires buyer:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressInput"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Address"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /addresses/{address_id}:
+    put:
+      operationId: updateAddress
+      tags:
+        - Buyer
+      summary: updateAddress
+      description: "Requires buyer:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: address_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressInput"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Address"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+    delete:
+      operationId: deleteAddress
+      tags:
+        - Buyer
+      summary: deleteAddress
+      description: "Requires buyer:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: address_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      responses:
+        "204":
+          description: Successful response
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /address-locations:
+    get:
+      operationId: listAddressLocations
+      tags:
+        - Buyer
+      summary: listAddressLocations
+      description: Requires buyer:* ability and matching account role. parent_id is required for levels below region.
+      security:
+        - sanctum: []
+      parameters:
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: level
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - region
+              - province
+              - city_municipality
+              - barangay
+        - name: parent_id
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Opaque identifier.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AddressLocation"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      next_cursor:
+                        type: string
+                        nullable: true
+                    required:
+                      - next_cursor
+                required:
+                  - data
+                  - meta
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /checkout/quotes:
+    post:
+      operationId: quoteCheckout
+      tags:
+        - Buyer
+      summary: quoteCheckout
+      description: "Requires buyer:* ability and matching account role. "
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Quote"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /orders:
+    post:
+      operationId: placeOrder
+      tags:
+        - Buyer
+      summary: placeOrder
+      description: Requires buyer:* ability and matching account role. Creates one order for the quote and initiates
+        its selected COD or staging stub payment. A changed or expired quote returns 409. The stub has no real
+        charge.
+      security:
+        - sanctum: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaceOrder"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/OrderResponse"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+    get:
+      operationId: listOrders
+      tags:
+        - Buyer
+      summary: listOrders
+      description: "Requires buyer:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/OrderSummary"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      next_cursor:
+                        type: string
+                        nullable: true
+                    required:
+                      - next_cursor
+                required:
+                  - data
+                  - meta
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /orders/{order_id}:
+    get:
+      operationId: getOrder
+      tags:
+        - Buyer
+      summary: getOrder
+      description: "Requires buyer:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Order"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /orders/{order_id}/cancel:
+    post:
+      operationId: cancelOrder
+      tags:
+        - Buyer
+      summary: cancelOrder
+      description: Requires buyer:* ability and matching account role. Cancel only when permitted by existing order
+        rules; release reserved stock atomically.
+      security:
+        - sanctum: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Order"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /orders/{order_id}/tracking:
+    get:
+      operationId: getOrderTracking
+      tags:
+        - Buyer
+      summary: getOrderTracking
+      description: "Requires buyer:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Order"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /orders/{order_id}/shipments/{shipment_id}/receipt:
+    post:
+      operationId: confirmReceipt
+      tags:
+        - Buyer
+      summary: confirmReceipt
+      description: Requires buyer:* ability and matching account role. Complete an eligible delivered shipment once
+        and apply existing earnings rules.
+      security:
+        - sanctum: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: shipment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ReceiptResponse"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /orders/{order_id}/shipments/{shipment_id}/proof-photo:
+    get:
+      operationId: getProofPhoto
+      tags:
+        - Buyer
+      summary: getProofPhoto
+      description: Requires buyer:* ability and matching account role. Private no-store response. May also return
+        image/png or image/webp.
+      security:
+        - sanctum: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: shipment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              example: private, no-store
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /orders/{order_id}/shipments/{shipment_id}/feedback:
+    post:
+      operationId: submitShipmentFeedback
+      tags:
+        - Buyer
+      summary: submitShipmentFeedback
+      description: Requires buyer:* ability and matching account role. Only the owner can submit feedback after
+        completion. Web requires shipment and rider ratings where applicable. Review media is excluded from
+        this operation.
+      security:
+        - sanctum: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: shipment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackRequest"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/FeedbackResult"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/status:
+    get:
+      operationId: getRiderStatus
+      tags:
+        - Rider
+      summary: getRiderStatus
+      description: "Requires rider:* ability and matching account role. "
+      security:
+        - sanctum: []
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RiderStatus"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/availability:
+    put:
+      operationId: setAvailability
+      tags:
+        - Rider
+      summary: setAvailability
+      description: Requires rider:* ability and matching account role. Going unavailable pauses new offers but
+        leaves accepted assignments active.
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Availability"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RiderStatus"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/offers:
+    get:
+      operationId: listRiderOffers
+      tags:
+        - Rider
+      summary: listRiderOffers
+      description: Requires rider:* ability and matching account role. Only eligible active offers. No recipient
+        details before assignment. Expiry is server authoritative.
+      security:
+        - sanctum: []
+      parameters:
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Offer"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      next_cursor:
+                        type: string
+                        nullable: true
+                    required:
+                      - next_cursor
+                required:
+                  - data
+                  - meta
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/offers/{offer_id}/decision:
+    post:
+      operationId: respondToOffer
+      tags:
+        - Rider
+      summary: respondToOffer
+      description: Requires rider:* ability and matching account role. Accept assigns atomically. Expired or already
+        claimed offers return 409.
+      security:
+        - sanctum: []
+      parameters:
+        - name: offer_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfferDecision"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/OfferResult"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/shipments:
+    get:
+      operationId: listRiderShipments
+      tags:
+        - Rider
+      summary: listRiderShipments
+      description: "Requires rider:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RiderShipmentSummary"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      next_cursor:
+                        type: string
+                        nullable: true
+                    required:
+                      - next_cursor
+                required:
+                  - data
+                  - meta
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/shipments/{shipment_id}:
+    get:
+      operationId: getRiderShipment
+      tags:
+        - Rider
+      summary: getRiderShipment
+      description: "Requires rider:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: shipment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RiderShipment"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/shipments/{shipment_id}/pickup:
+    post:
+      operationId: recordPickup
+      tags:
+        - Rider
+      summary: recordPickup
+      description: Requires rider:* ability and matching account role. Only assigned shipments can transition to
+        in_transit, displayed as picked up.
+      security:
+        - sanctum: []
+      parameters:
+        - name: shipment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RiderShipment"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/shipments/{shipment_id}/delivery:
+    post:
+      operationId: recordDelivery
+      tags:
+        - Rider
+      summary: recordDelivery
+      description: Requires rider:* ability and matching account role. Only an in_transit shipment can be delivered.
+        Validate six-digit buyer PIN, recipient, handover note, and COD acknowledgment when COD is due. Proof
+        photo is optional and stored privately. Repeating a delivery cannot double-credit. A buyer must
+        confirm receipt before earnings are credited.
+      security:
+        - sanctum: []
+      parameters:
+        - name: shipment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/DeliveryRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/DeliveryResult"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/shipments/{shipment_id}/failed-attempts:
+    post:
+      operationId: reportDeliveryFailure
+      tags:
+        - Rider
+      summary: reportDeliveryFailure
+      description: Requires rider:* ability and matching account role. Only eligible in_transit shipments may record
+        failed attempts. If cash was collected, contact dispatch instead. Server enforces retry rules.
+      security:
+        - sanctum: []
+      parameters:
+        - name: shipment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FailedAttempt"
+      responses:
+        "201":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/FailedResult"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/earnings:
+    get:
+      operationId: getRiderEarnings
+      tags:
+        - Rider
+      summary: getRiderEarnings
+      description: "Requires rider:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  currency:
+                    type: string
+                    enum:
+                      - PHP
+                  total_earned_cents:
+                    type: integer
+                    minimum: 0
+                    description: Integer centavos in PHP.
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Earning"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      next_cursor:
+                        type: string
+                        nullable: true
+                    required:
+                      - next_cursor
+                required:
+                  - currency
+                  - total_earned_cents
+                  - data
+                  - meta
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/history:
+    get:
+      operationId: getRiderHistory
+      tags:
+        - Rider
+      summary: getRiderHistory
+      description: "Requires rider:* ability and matching account role. "
+      security:
+        - sanctum: []
+      parameters:
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RiderShipment"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      next_cursor:
+                        type: string
+                        nullable: true
+                    required:
+                      - next_cursor
+                required:
+                  - data
+                  - meta
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /rider/location-batches:
+    post:
+      operationId: submitRiderLocations
+      tags:
+        - Rider
+      summary: submitRiderLocations
+      description: Requires rider:* ability and matching account role. Review required. The latest task asks for
+        batched location updates, while the agreed v1 scope excludes live location and background GPS. This
+        proposed endpoint must not be enabled until that conflict, authorization, retention, consumers, and
+        consent are approved.
+      security:
+        - sanctum: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationBatch"
+      responses:
+        "202":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/LocationResult"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /devices/{installation_id}:
+    put:
+      operationId: registerDevice
+      tags:
+        - Push
+      summary: registerDevice
+      description: Upsert FCM token for this user and device; app must match token ability. Rebind on token rotation
+        and account change.
+      security:
+        - sanctum: []
+      parameters:
+        - name: installation_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Device"
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+    delete:
+      operationId: removeDevice
+      tags:
+        - Push
+      summary: removeDevice
+      description: Remove the caller-owned device registration.
+      security:
+        - sanctum: []
+      parameters:
+        - name: installation_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Opaque identifier.
+      responses:
+        "204":
+          description: Successful response
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /catalog:
+    get:
+      operationId: existingCatalog
+      tags:
+        - Existing
+      summary: existingCatalog
+      description: Existing endpoint, decimal peso amounts and Laravel page pagination. Existing error and response
+        formats remain unchanged. Additional Laravel pagination fields may be returned. Existing errors may
+        use Laravel validation format rather than the new Error schema.
+      security: []
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 120
+        - name: category_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: shop_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: city_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: price_min
+          in: query
+          required: false
+          schema:
+            type: number
+            minimum: 0
+        - name: price_max
+          in: query
+          required: false
+          schema:
+            type: number
+            minimum: 0
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - newest
+              - price_asc
+              - price_desc
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        slug:
+                          type: string
+                        description:
+                          type: string
+                          nullable: true
+                        price:
+                          type: number
+                        compare_at_price:
+                          type: number
+                          nullable: true
+                        stock:
+                          type: integer
+                        image_url:
+                          type: string
+                          nullable: true
+                        shop:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            name:
+                              type: string
+                            slug:
+                              type: string
+                          required:
+                            - name
+                            - slug
+                        category:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            name:
+                              type: string
+                            slug:
+                              type: string
+                          required:
+                            - name
+                            - slug
+                      required:
+                        - id
+                        - name
+                        - slug
+                        - description
+                        - price
+                        - compare_at_price
+                        - stock
+                        - image_url
+                        - shop
+                        - category
+                  current_page:
+                    type: integer
+                  last_page:
+                    type: integer
+                  per_page:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - current_page
+                  - last_page
+                  - per_page
+                  - total
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+  /health:
+    get:
+      operationId: existingHealth
+      tags:
+        - Existing
+      summary: existingHealth
+      description: Existing health response without a data envelope.
+      security: []
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  name:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                      - ok
+                  api_version:
+                    type: string
+                    enum:
+                      - v1
+                required:
+                  - name
+                  - status
+                  - api_version
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+        "422":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/Error"
+components:
+  securitySchemes:
+    sanctum:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum personal access token
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      required:
+        - code
+        - message
+        - errors
+    Message:
+      type: object
+      additionalProperties: false
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    Account:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum:
+            - buyer
+            - rider
+        email_verified:
+          type: boolean
+        phone_verified:
+          type: boolean
+        verification_channel:
+          type: string
+          enum:
+            - email
+            - phone
+          nullable: true
+        deletion_request_status:
+          type: string
+          nullable: true
+      required:
+        - id
+        - name
+        - email
+        - role
+        - email_verified
+        - phone_verified
+    TokenSession:
+      type: object
+      additionalProperties: false
+      properties:
+        token:
+          type: string
+        token_type:
+          type: string
+          enum:
+            - Bearer
+        expires_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+        account:
+          $ref: "#/components/schemas/Account"
+      required:
+        - token
+        - token_type
+        - expires_at
+        - account
+    AuthChallenge:
+      type: object
+      additionalProperties: false
+      properties:
+        challenge_id:
+          type: string
+          description: Opaque identifier.
+        methods:
+          type: array
+          items:
+            type: string
+            enum:
+              - email_otp
+              - phone_otp
+              - totp
+        expires_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - challenge_id
+        - methods
+        - expires_at
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 180
+        password:
+          type: string
+          format: password
+          maxLength: 1024
+        app:
+          type: string
+          enum:
+            - buyer
+            - rider
+        device_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+        - email
+        - password
+        - app
+        - device_name
+    RegisterRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 180
+        password:
+          type: string
+          format: password
+          maxLength: 1024
+        password_confirmation:
+          type: string
+          format: password
+          maxLength: 1024
+        privacy_consent:
+          type: boolean
+          enum:
+            - true
+        privacy_notice_version:
+          type: string
+        device_name:
+          type: string
+          maxLength: 255
+      required:
+        - name
+        - email
+        - password
+        - password_confirmation
+        - privacy_consent
+        - privacy_notice_version
+        - device_name
+    ChallengeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        method:
+          type: string
+          enum:
+            - email_otp
+            - phone_otp
+      required:
+        - method
+    ChallengeVerify:
+      type: object
+      additionalProperties: false
+      properties:
+        method:
+          type: string
+          enum:
+            - email_otp
+            - phone_otp
+            - totp
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+      required:
+        - method
+        - code
+    CodeSent:
+      type: object
+      additionalProperties: false
+      properties:
+        masked_destination:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+        resend_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - masked_destination
+        - expires_at
+        - resend_at
+    EmailRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 180
+      required:
+        - email
+    PasswordReset:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 180
+        token:
+          type: string
+          maxLength: 255
+        password:
+          type: string
+          format: password
+          maxLength: 1024
+        password_confirmation:
+          type: string
+          format: password
+          maxLength: 1024
+      required:
+        - email
+        - token
+        - password
+        - password_confirmation
+    ContactChoice:
+      type: object
+      additionalProperties: false
+      properties:
+        channel:
+          type: string
+          enum:
+            - email
+            - phone
+        phone:
+          type: string
+          maxLength: 24
+          description: Required when channel is phone.
+      required:
+        - channel
+    ContactCode:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          pattern: ^[0-9]{6}$
+      required:
+        - code
+    FirebasePhone:
+      type: object
+      additionalProperties: false
+      properties:
+        id_token:
+          type: string
+          maxLength: 10000
+      required:
+        - id_token
+    ContactResult:
+      type: object
+      additionalProperties: false
+      properties:
+        account:
+          $ref: "#/components/schemas/Account"
+      required:
+        - account
+    DeletionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        confirmed:
+          type: boolean
+          enum:
+            - true
+        reauth_token:
+          type: string
+      required:
+        - confirmed
+    DeletionResult:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        status:
+          type: string
+          enum:
+            - pending
+        submitted_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - id
+        - status
+        - submitted_at
+    DeviceRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        platform:
+          type: string
+          enum:
+            - ios
+            - android
+        app:
+          type: string
+          enum:
+            - buyer
+            - rider
+        provider:
+          type: string
+          enum:
+            - fcm
+        push_token:
+          type: string
+          minLength: 1
+        enabled_events:
+          type: array
+          items:
+            type: string
+            enum:
+              - order_placed
+              - shipment_status_changed
+              - offer_received
+              - shipment_assigned
+      required:
+        - platform
+        - app
+        - provider
+        - push_token
+        - enabled_events
+    Device:
+      type: object
+      additionalProperties: false
+      properties:
+        installation_id:
+          type: string
+          description: Opaque identifier.
+        enabled_events:
+          type: array
+          items:
+            type: string
+        updated_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - installation_id
+        - enabled_events
+        - updated_at
+    Category:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+        - id
+        - name
+        - slug
+    Shop:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+        - id
+        - name
+    Variant:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        sku:
+          type: string
+          nullable: true
+        options:
+          type: object
+          additionalProperties:
+            type: string
+        price_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        stock:
+          type: integer
+          minimum: 0
+      required:
+        - id
+        - options
+        - price_cents
+        - stock
+    Product:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+          nullable: true
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        shop:
+          $ref: "#/components/schemas/Shop"
+        category:
+          $ref: "#/components/schemas/Category"
+        price_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        compare_at_price_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+          nullable: true
+        stock:
+          type: integer
+          minimum: 0
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Variant"
+      required:
+        - id
+        - name
+        - slug
+        - description
+        - images
+        - shop
+        - category
+        - price_cents
+        - stock
+        - variants
+    CartLineInput:
+      type: object
+      additionalProperties: false
+      properties:
+        product_id:
+          type: string
+          description: Opaque identifier.
+        variant_id:
+          type: string
+          description: Opaque identifier.
+          nullable: true
+        quantity:
+          type: integer
+          minimum: 1
+      required:
+        - product_id
+        - quantity
+    CartLine:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        product_id:
+          type: string
+          description: Opaque identifier.
+        variant_id:
+          type: string
+          description: Opaque identifier.
+          nullable: true
+        name:
+          type: string
+        sku:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+          minimum: 1
+        available_quantity:
+          type: integer
+          minimum: 0
+        unit_price_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        line_total_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+      required:
+        - id
+        - product_id
+        - name
+        - quantity
+        - available_quantity
+        - unit_price_cents
+        - line_total_cents
+    Cart:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartLine"
+        subtotal_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+      required:
+        - version
+        - lines
+        - subtotal_cents
+    MergeCart:
+      type: object
+      additionalProperties: false
+      properties:
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartLineInput"
+          maxItems: 100
+      required:
+        - lines
+    RejectedLine:
+      type: object
+      additionalProperties: false
+      properties:
+        product_id:
+          type: string
+          description: Opaque identifier.
+        variant_id:
+          type: string
+          description: Opaque identifier.
+          nullable: true
+        quantity:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+      required:
+        - product_id
+        - quantity
+        - reason
+    MergeResult:
+      type: object
+      additionalProperties: false
+      properties:
+        cart:
+          $ref: "#/components/schemas/Cart"
+        rejected_lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/RejectedLine"
+      required:
+        - cart
+        - rejected_lines
+    Quantity:
+      type: object
+      additionalProperties: false
+      properties:
+        quantity:
+          type: integer
+          minimum: 0
+      required:
+        - quantity
+    AddressInput:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+          maxLength: 255
+          nullable: true
+        line1:
+          type: string
+          maxLength: 255
+        region_id:
+          type: string
+          description: Opaque identifier.
+        province_id:
+          type: string
+          description: Opaque identifier.
+        city_municipality_id:
+          type: string
+          description: Opaque identifier.
+        barangay_id:
+          type: string
+          description: Opaque identifier.
+        postal_code:
+          type: string
+          maxLength: 20
+          nullable: true
+        phone:
+          type: string
+          maxLength: 24
+          nullable: true
+        is_default:
+          type: boolean
+      required:
+        - line1
+        - region_id
+        - province_id
+        - city_municipality_id
+        - barangay_id
+        - is_default
+    Address:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        label:
+          type: string
+          maxLength: 255
+          nullable: true
+        line1:
+          type: string
+          maxLength: 255
+        region_id:
+          type: string
+          description: Opaque identifier.
+        province_id:
+          type: string
+          description: Opaque identifier.
+        city_municipality_id:
+          type: string
+          description: Opaque identifier.
+        barangay_id:
+          type: string
+          description: Opaque identifier.
+        postal_code:
+          type: string
+          maxLength: 20
+          nullable: true
+        phone:
+          type: string
+          maxLength: 24
+          nullable: true
+        is_default:
+          type: boolean
+        formatted:
+          type: string
+      required:
+        - id
+        - line1
+        - region_id
+        - province_id
+        - city_municipality_id
+        - barangay_id
+        - is_default
+        - formatted
+    AddressLocation:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        name:
+          type: string
+      required:
+        - id
+        - name
+    QuoteRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        address_id:
+          type: string
+          description: Opaque identifier.
+        cart_version:
+          type: string
+      required:
+        - address_id
+        - cart_version
+    QuoteShipment:
+      type: object
+      additionalProperties: false
+      properties:
+        shop_id:
+          type: string
+          description: Opaque identifier.
+        shop_name:
+          type: string
+        shipping_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        total_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+      required:
+        - shop_id
+        - shop_name
+        - shipping_cents
+        - total_cents
+    Quote:
+      type: object
+      additionalProperties: false
+      properties:
+        quote_id:
+          type: string
+          description: Opaque identifier.
+        expires_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+        subtotal_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        shipping_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        total_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        shipments:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuoteShipment"
+        payment_methods:
+          type: array
+          items:
+            type: string
+            enum:
+              - cod
+              - gateway_stub
+      required:
+        - quote_id
+        - expires_at
+        - subtotal_cents
+        - shipping_cents
+        - total_cents
+        - shipments
+        - payment_methods
+    PlaceOrder:
+      type: object
+      additionalProperties: false
+      properties:
+        quote_id:
+          type: string
+          description: Opaque identifier.
+        payment_method:
+          type: string
+          enum:
+            - cod
+            - gateway_stub
+      required:
+        - quote_id
+        - payment_method
+    Item:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        sku:
+          type: string
+          nullable: true
+        variant_options:
+          type: object
+          additionalProperties:
+            type: string
+        quantity:
+          type: integer
+          minimum: 1
+        line_total_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+          nullable: true
+      required:
+        - name
+        - variant_options
+        - quantity
+    Event:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+        note:
+          type: string
+          nullable: true
+      required:
+        - status
+        - occurred_at
+    Courier:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        reference:
+          type: string
+          nullable: true
+        tracking_url:
+          type: string
+          format: uri
+          nullable: true
+      required:
+        - name
+    Proof:
+      type: object
+      additionalProperties: false
+      properties:
+        recipient_name:
+          type: string
+        note:
+          type: string
+        photo_available:
+          type: boolean
+      required:
+        - recipient_name
+        - note
+        - photo_available
+    BuyerShipment:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        shop_name:
+          type: string
+        status:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Item"
+        shipping_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        amount_due_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        rider_name:
+          type: string
+          nullable: true
+        retry_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+          nullable: true
+        returned_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+          nullable: true
+        rejection_reason:
+          type: string
+          nullable: true
+        cod_collected_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+          nullable: true
+        delivery_pin:
+          type: string
+          pattern: ^[0-9]{6}$
+          description: Only returned to the owning buyer for an in-transit internal shipment.
+        can_confirm_receipt:
+          type: boolean
+        courier:
+          $ref: "#/components/schemas/Courier"
+        proof:
+          $ref: "#/components/schemas/Proof"
+      required:
+        - id
+        - shop_name
+        - status
+        - items
+        - shipping_cents
+        - amount_due_cents
+        - events
+        - can_confirm_receipt
+    OrderSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        number:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+        status:
+          type: string
+        payment_method:
+          type: string
+          enum:
+            - cod
+            - gateway_stub
+        total_due_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+      required:
+        - id
+        - number
+        - created_at
+        - status
+        - payment_method
+        - total_due_cents
+    Order:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        number:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+        status:
+          type: string
+        payment_method:
+          type: string
+          enum:
+            - cod
+            - gateway_stub
+        total_due_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        shipments:
+          type: array
+          items:
+            $ref: "#/components/schemas/BuyerShipment"
+      required:
+        - id
+        - number
+        - created_at
+        - status
+        - payment_method
+        - total_due_cents
+        - shipments
+    OrderResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        order:
+          $ref: "#/components/schemas/OrderSummary"
+      required:
+        - order
+    ReceiptResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        order:
+          $ref: "#/components/schemas/OrderSummary"
+        shipment:
+          $ref: "#/components/schemas/BuyerShipment"
+      required:
+        - order
+        - shipment
+    CancelRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 1000
+      required:
+        - reason
+    Review:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        product_id:
+          type: string
+          description: Opaque identifier.
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        feedback:
+          type: string
+          maxLength: 2000
+          nullable: true
+        is_anonymous:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - id
+        - product_id
+        - rating
+        - is_anonymous
+        - created_at
+    ItemFeedback:
+      type: object
+      additionalProperties: false
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        feedback:
+          type: string
+          maxLength: 2000
+        is_anonymous:
+          type: boolean
+      required:
+        - rating
+    FeedbackRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reviews:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/ItemFeedback"
+          description: Object keyed by shipment order item ID. Supply a rating for each item not already reviewed.
+        seller_service_rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        delivery_speed_rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        rider_rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        rider_feedback:
+          type: string
+          maxLength: 1000
+        rider_tags:
+          type: array
+          items:
+            type: string
+          maxItems: 9
+          uniqueItems: true
+      required:
+        - reviews
+    FeedbackResult:
+      type: object
+      additionalProperties: false
+      properties:
+        shipment_id:
+          type: string
+          description: Opaque identifier.
+        submitted_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - shipment_id
+        - submitted_at
+    RiderStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        approval_status:
+          type: string
+          enum:
+            - pending
+            - approved
+            - rejected
+            - suspended
+        is_available:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - approval_status
+        - is_available
+        - updated_at
+    Availability:
+      type: object
+      additionalProperties: false
+      properties:
+        is_available:
+          type: boolean
+      required:
+        - is_available
+    Offer:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        shipment_id:
+          type: string
+          description: Opaque identifier.
+        shop_name:
+          type: string
+        pickup_area:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - id
+        - shipment_id
+        - shop_name
+        - pickup_area
+        - expires_at
+    OfferDecision:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+            - accept
+            - decline
+      required:
+        - decision
+    OfferResult:
+      type: object
+      additionalProperties: false
+      properties:
+        offer_id:
+          type: string
+          description: Opaque identifier.
+        decision:
+          type: string
+          enum:
+            - accept
+            - decline
+        decided_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+        shipment_id:
+          type: string
+          description: Opaque identifier.
+      required:
+        - offer_id
+        - decision
+        - decided_at
+    Stop:
+      type: object
+      additionalProperties: false
+      properties:
+        address:
+          type: string
+          nullable: true
+        contact_name:
+          type: string
+          nullable: true
+        contact_phone:
+          type: string
+          nullable: true
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+          nullable: true
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+          nullable: true
+    RiderShipmentSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        order_number:
+          type: string
+        shop_name:
+          type: string
+        status:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - id
+        - order_number
+        - shop_name
+        - status
+        - updated_at
+    RiderShipment:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: Opaque identifier.
+        order_number:
+          type: string
+        shop_name:
+          type: string
+        status:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Item"
+        pickup:
+          $ref: "#/components/schemas/Stop"
+        dropoff:
+          $ref: "#/components/schemas/Stop"
+        payment_method:
+          type: string
+          enum:
+            - cod
+            - gateway_stub
+        cod_due_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        cod_collected_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+          nullable: true
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        allowed_actions:
+          type: array
+          items:
+            type: string
+        retry_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+          nullable: true
+        instructions:
+          type: string
+          nullable: true
+        dispatch_contact:
+          type: string
+          nullable: true
+      required:
+        - id
+        - order_number
+        - shop_name
+        - status
+        - updated_at
+        - items
+        - pickup
+        - dropoff
+        - payment_method
+        - cod_due_cents
+        - events
+        - allowed_actions
+    DeliveryRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        delivery_recipient_name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        delivery_pin:
+          type: string
+          pattern: ^[0-9]{6}$
+        delivery_note:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        cod_collected:
+          type: boolean
+        delivery_photo:
+          type: string
+          format: binary
+          description: Optional JPEG, PNG, or WebP, maximum 4 MiB. Server validates actual file content.
+      required:
+        - delivery_recipient_name
+        - delivery_pin
+        - delivery_note
+    DeliveryResult:
+      type: object
+      additionalProperties: false
+      properties:
+        shipment:
+          $ref: "#/components/schemas/RiderShipment"
+        proof:
+          type: object
+          additionalProperties: false
+          properties:
+            recorded_at:
+              type: string
+              format: date-time
+              pattern: Z$
+              description: UTC timestamp in ISO 8601 format.
+            photo_available:
+              type: boolean
+          required:
+            - recorded_at
+            - photo_available
+      required:
+        - shipment
+        - proof
+    FailedAttempt:
+      type: object
+      additionalProperties: false
+      properties:
+        failure_reason:
+          type: string
+          enum:
+            - unreachable
+            - refused
+            - buyer_wrong_variant
+            - seller_wrong_item
+            - address_issue
+            - other
+        contact_method:
+          type: string
+          enum:
+            - phone
+            - chat
+            - doorstep
+        exception_note:
+          type: string
+          minLength: 10
+          maxLength: 1000
+      required:
+        - failure_reason
+        - contact_method
+        - exception_note
+    FailedResult:
+      type: object
+      additionalProperties: false
+      properties:
+        shipment:
+          $ref: "#/components/schemas/RiderShipment"
+        attempt_id:
+          type: string
+          description: Opaque identifier.
+        recorded_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - shipment
+        - attempt_id
+        - recorded_at
+    Earning:
+      type: object
+      additionalProperties: false
+      properties:
+        shipment_id:
+          type: string
+          description: Opaque identifier.
+        order_number:
+          type: string
+          nullable: true
+        amount_cents:
+          type: integer
+          minimum: 0
+          description: Integer centavos in PHP.
+        earned_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - shipment_id
+        - amount_cents
+        - earned_at
+    LocationPoint:
+      type: object
+      additionalProperties: false
+      properties:
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        recorded_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+        accuracy_m:
+          type: number
+          minimum: 0
+      required:
+        - latitude
+        - longitude
+        - recorded_at
+    LocationBatch:
+      type: object
+      additionalProperties: false
+      properties:
+        locations:
+          type: array
+          items:
+            $ref: "#/components/schemas/LocationPoint"
+          minItems: 1
+          maxItems: 100
+      required:
+        - locations
+    LocationResult:
+      type: object
+      additionalProperties: false
+      properties:
+        accepted_count:
+          type: integer
+          minimum: 0
+        received_at:
+          type: string
+          format: date-time
+          pattern: Z$
+          description: UTC timestamp in ISO 8601 format.
+      required:
+        - accepted_count
+        - received_at
+  responses:
+    Error:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    RateLimited:
+      description: Rate limit exceeded
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Seconds before retry.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
