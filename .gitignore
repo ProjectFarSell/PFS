@@ -32,3 +32,10 @@ Thumbs.db
 .agents
 CONTEXT_HANDOVER.md
 AGENTS.md
+
+# Server-side provider credentials (never commit service-account JSON)
+/.secrets/
+
+# Flutter buyer app is maintained in KarlBRB/FarSell-Mobile.
+# Ignore any old local checkout still held open by Flutter or an editor.
+/farsell_mobile/

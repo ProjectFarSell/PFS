@@ -8,6 +8,7 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\Product;
 use App\Models\User;
+use App\Services\Chat\ChatMessages;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -101,7 +102,7 @@ class ConversationController extends Controller
     {
         $this->authorizeConversation($request, $conversation);
         $data = $request->validate(['body' => ['required', 'string', 'max:4000']]);
-        $message = $conversation->messages()->create(['sender_id' => $request->user()->id, 'body' => trim($data['body'])]);
+        $message = app(ChatMessages::class)->send($conversation, $request->user(), $data['body']);
 
         if ($request->expectsJson()) {
             return response()->json([

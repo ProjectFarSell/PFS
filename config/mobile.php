@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'token_hours' => 24,
+    'google_client_id' => env('MOBILE_GOOGLE_CLIENT_ID', env('GOOGLE_CLIENT_ID')),
+    'quote_minutes' => 5,
+    'receipt_days' => 7,
+    'staging_payments' => (bool) env('MOBILE_STAGING_PAYMENTS', false),
+    'events_enabled' => (bool) env('MOBILE_EVENTS_ENABLED', true),
+    'push_enabled' => (bool) env('MOBILE_PUSH_ENABLED', false),
+    'realtime_enabled' => (bool) env('MOBILE_REALTIME_ENABLED', false),
+    'queue' => env('MOBILE_QUEUE', 'mobile'),
+    'connection' => env('MOBILE_QUEUE_CONNECTION', env('QUEUE_CONNECTION', 'database')),
+    'fcm_project' => env('MOBILE_FCM_PROJECT_ID'),
+    'fcm_credentials' => env('MOBILE_FCM_CREDENTIALS'),
+    // No retention policy is invented: proof retention remains disabled until agreed.
+    'proof_retention_days' => (int) env('MOBILE_PROOF_RETENTION_DAYS', 0),
+    'android_package' => env('MOBILE_ANDROID_PACKAGE'),
+    'android_fingerprints' => array_values(array_filter(explode(',', (string) env('MOBILE_ANDROID_SHA256', '')))),
+    'ios_app_ids' => array_values(array_filter(explode(',', (string) env('MOBILE_IOS_APP_IDS', '')))),
+    'support_email' => env('MOBILE_SUPPORT_EMAIL'),
+    'alert_email' => env('MOBILE_ALERT_EMAIL'),
+    'staging_fixtures' => (bool) env('MOBILE_STAGING_FIXTURES', false),
+    'fixture_password' => env('MOBILE_FIXTURE_PASSWORD') ?: 'password',
+];

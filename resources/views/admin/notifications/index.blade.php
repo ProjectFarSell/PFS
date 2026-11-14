@@ -3,6 +3,11 @@
 @section('title', 'Notification deliveries · FarSell')
 
 @section('content')
+    <section class="fs-card-raised mb-5 p-5">
+        <h2 class="text-lg font-semibold">Mobile delivery monitor</h2>
+        <p class="mt-2 text-sm text-text-muted">Push: {{ $mobileHealth['push_enabled'] ? 'enabled' : 'not enabled' }} · Real-time: {{ $mobileHealth['realtime_enabled'] ? 'enabled' : 'not enabled' }} · Pending events: {{ $mobileHealth['pending'] }} · Failed: {{ $mobileHealth['failed'] }}</p>
+        <p class="mt-2 text-xs text-text-muted">Oldest pending: {{ $mobileHealth['oldest_pending_at'] ?? 'none' }}. Worker heartbeat: {{ $mobileHealth['worker_last_seen'] ? \Illuminate\Support\Carbon::createFromTimestamp($mobileHealth['worker_last_seen'])->diffForHumans() : 'not observed' }}. Provider acceptance does not guarantee device delivery. Reload to refresh.</p>
+    </section>
     <section class="fs-card-raised p-5">
         <h1 class="text-2xl font-semibold">Notification deliveries</h1>
         <p class="mt-2 text-sm text-text-muted">Track order and delivery messages, automatic retries, and failures.</p>

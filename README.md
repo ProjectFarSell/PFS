@@ -2,6 +2,8 @@
 
 A Laravel-powered marketplace for surplus goods, built for fast checkout and multi-role operation (buyers, sellers, riders, and admins).
 
+The Flutter buyer app is maintained separately in [KarlBRB/FarSell-Mobile](https://github.com/KarlBRB/FarSell-Mobile). Clone it alongside this repository. This repository continues to provide the website, database migrations, and mobile API; run Laravel here when testing the app locally. The Rider app remains a separate future project.
+
 Courier logistics supports internal riders plus manually verified Lalamove bookings. Optional Lalamove sandbox support, setup, accounting and remaining provider requirements are documented in [docs/logistics.md](docs/logistics.md).
 
 ---

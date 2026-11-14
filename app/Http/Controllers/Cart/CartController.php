@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Cart;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Services\Orders\PurchaseLine;
 use App\Support\Cart;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -87,18 +88,7 @@ class CartController extends Controller
             'qty' => ['nullable', 'integer', 'min:1', 'max:99'],
             'variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
         ]);
-        $product = Product::query()->visible()->findOrFail($data['product_id']);
-        $variant = isset($data['variant_id'])
-            ? ProductVariant::query()->where('product_id', $product->id)->where('is_active', true)->findOrFail($data['variant_id'])
-            : null;
 
-        if ($variant && ! $product->has_variants) {
-            throw ValidationException::withMessages(['variant_id' => 'This product no longer uses options. Reload the product page.']);
-        }
-        if ($product->has_variants && ! $variant) {
-            throw ValidationException::withMessages(['variant_id' => 'Choose an available option before continuing.']);
-        }
-
-        return [$data, $product, $variant, (int) ($variant?->stock ?? $product->stock)];
+        return [$data, ...app(PurchaseLine::class)->resolve((int) $data['product_id'], isset($data['variant_id']) ? (int) $data['variant_id'] : null)];
     }
 }

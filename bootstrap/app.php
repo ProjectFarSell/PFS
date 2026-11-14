@@ -5,6 +5,7 @@ use App\Http\Middleware\EnforceAccountSecurity;
 use App\Http\Middleware\RequestTelemetry;
 use App\Http\Middleware\RequireRecentAuthentication;
 use App\Http\Middleware\ResponseSecurity;
+use App\Services\Mobile\ApiErrors;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -27,6 +28,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(ResponseSecurity::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(fn (Throwable $exception, Request $request) => ApiErrors::render($exception, $request));
+        $exceptions->report(fn (Throwable $exception) => ApiErrors::report($exception));
         $exceptions->dontFlash(['code', 'delivery_pin', 'mfa_secret', 'recovery_code']);
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),

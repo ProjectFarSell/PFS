@@ -9,6 +9,7 @@ use App\Models\FulfillmentEvent;
 use App\Models\NotificationDelivery;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\Mobile\MobileEvents;
 use App\Services\Orders\SettlementService;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,7 @@ class OrderNotificationService
 {
     public function orderPlaced(Order $order): void
     {
+        app(MobileEvents::class)->orderPlaced($order);
         app(BuyerInbox::class)->record($order, 'order:'.$order->id.':placed', 'Order placed', 'Your order '.$order->number.' is awaiting seller confirmation.');
         if (! config('notifications.enabled')) {
             return;
@@ -45,6 +47,7 @@ class OrderNotificationService
 
     public function shipmentChanged(FulfillmentEvent $event): void
     {
+        app(MobileEvents::class)->shipmentChanged($event);
         $event->loadMissing('fulfillment.order');
         $shipment = $event->fulfillment;
         app(BuyerInbox::class)->record($shipment->order, 'event:'.$event->id, 'Shipment: '.$shipment->deliveryLabel(), $shipment->shop_name.' — '.$shipment->deliveryLabel().'.');
