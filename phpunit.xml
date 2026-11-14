@@ -33,6 +33,11 @@
         <env name="MOBILE_FCM_CREDENTIALS" value="" force="true"/>
         <env name="MOBILE_FCM_PROJECT_ID" value="" force="true"/>
         <env name="MOBILE_FIREBASE_PROJECT_ID" value="" force="true"/>
+        <env name="MOBILE_RIDER_FIREBASE_PROJECT_ID" value="" force="true"/>
+        <env name="MOBILE_RIDER_FCM_PROJECT_ID" value="" force="true"/>
+        <env name="MOBILE_RIDER_FCM_CREDENTIALS" value="" force="true"/>
+        <env name="MOBILE_RIDER_ANDROID_PACKAGE" value="" force="true"/>
+        <env name="MOBILE_RIDER_ANDROID_SHA256" value="" force="true"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>

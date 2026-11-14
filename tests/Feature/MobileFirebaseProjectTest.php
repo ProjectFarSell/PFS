@@ -58,4 +58,31 @@ class MobileFirebaseProjectTest extends TestCase
             'id_token' => $this->phoneToken('mobile-project')])->assertOk()->assertJsonPath('data.user.phone_verified', true);
         $this->assertDatabaseCount('personal_access_tokens', 1);
     }
+
+    public function test_rider_phone_otp_uses_the_rider_project_from_the_ticket_role(): void
+    {
+        config(['security.login_otp_required' => true, 'mobile.firebase_project_id' => 'buyer-project',
+            'mobile.rider_firebase_project_id' => 'rider-project', 'services.firebase.project_id' => 'web-project']);
+        $user = User::factory()->create(['role' => 'rider', 'phone' => '09171234567', 'password' => 'Password!12345']);
+        $ticket = $this->postJson('/api/v1/auth/login', ['app' => 'rider', 'email' => $user->email, 'password' => 'Password!12345'])
+            ->assertStatus(202)->assertJsonPath('data.methods.1', 'phone')->json('data.challenge_token');
+        $this->postJson('/api/v1/auth/challenges/send', ['challenge_token' => $ticket, 'channel' => 'phone'])->assertOk();
+        $this->postJson('/api/v1/auth/challenges/verify', ['challenge_token' => $ticket, 'channel' => 'phone',
+            'id_token' => $this->phoneToken('buyer-project'), 'app' => 'buyer', 'project_id' => 'buyer-project'])->assertUnprocessable();
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+        $this->postJson('/api/v1/auth/challenges/verify', ['challenge_token' => $ticket, 'channel' => 'phone',
+            'id_token' => $this->phoneToken('rider-project')])->assertOk()->assertJsonPath('data.user.role', 'rider');
+    }
+
+    public function test_buyer_phone_otp_cannot_use_a_valid_token_from_the_rider_project(): void
+    {
+        config(['security.login_otp_required' => true, 'mobile.firebase_project_id' => 'buyer-project',
+            'mobile.rider_firebase_project_id' => 'rider-project']);
+        $user = User::factory()->create(['phone' => '09171234567', 'password' => 'Password!12345']);
+        $ticket = $this->postJson('/api/v1/auth/login', ['app' => 'buyer', 'email' => $user->email, 'password' => 'Password!12345'])->assertStatus(202)->json('data.challenge_token');
+        $this->postJson('/api/v1/auth/challenges/send', ['challenge_token' => $ticket, 'channel' => 'phone'])->assertOk();
+        $this->postJson('/api/v1/auth/challenges/verify', ['challenge_token' => $ticket, 'channel' => 'phone',
+            'id_token' => $this->phoneToken('rider-project'), 'app' => 'rider'])->assertUnprocessable();
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
 }

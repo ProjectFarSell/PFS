@@ -6,6 +6,7 @@ use App\Mail\SignInCodeMail;
 use App\Models\SignInChallenge;
 use App\Models\User;
 use App\Services\Auth\FirebasePhoneVerificationService;
+use App\Services\Mobile\FirebaseProjects;
 use App\Support\DemoAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +45,7 @@ class SignInOtp
             if (! in_array($channel, ['email', 'phone'], true) || blank($user->{$channel})) {
                 $this->invalid('Use an email address or phone number already saved on your account.');
             }
-            if ($channel === 'phone' && ! $this->phoneConfigured($request->attributes->has('mobile.otp_context'))) {
+            if ($channel === 'phone' && ! $this->phoneConfigured($request->attributes->has('mobile.otp_context'), $user->role->value)) {
                 $this->invalid('Phone codes are not configured. Use email or contact support.');
             }
             if (SignInChallenge::where('user_id', $user->id)->where('sent_at', '>', now()->subMinute())->exists()) {
@@ -75,7 +76,7 @@ class SignInOtp
             return null;
         }
         try {
-            $project = $request->attributes->has('mobile.otp_context') ? config('mobile.firebase_project_id') : null;
+            $project = $request->attributes->has('mobile.otp_context') ? FirebaseProjects::phone($request->user()->role->value) : null;
             $proof = app(FirebasePhoneVerificationService::class)->verifyForSignIn($token, $challenge->sent_at->timestamp, $project ?: null);
         } catch (\Throwable) {
             // Invalid/failed provider verification must not bypass the attempt limit.
@@ -129,9 +130,9 @@ class SignInOtp
         return $digits === '' ? '' : '+'.$digits;
     }
 
-    public function phoneConfigured(bool $mobile = false): bool
+    public function phoneConfigured(bool $mobile = false, string $app = 'buyer'): bool
     {
-        if ($mobile && filled(config('mobile.firebase_project_id'))) {
+        if ($mobile && filled(FirebaseProjects::phone($app))) {
             return true;
         }
 
