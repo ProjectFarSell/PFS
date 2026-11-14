@@ -1,6 +1,6 @@
 # Flutter backend handoff
 
-Backend implementation authorized November 13, 2026; contract version `1.0.0-dev.2`.
+Backend implementation authorized November 13, 2026; contract version `1.0.0-dev.3`. The additive [buyer profile editor](../mobile/buyer-profile.md) brings the documented API to 64 operations.
 
 Read [the OpenAPI contract](openapi.yaml), [scope](../mobile/mvp-scope.md), [decisions](decisions.md), [event contract](realtime.md) and [backend runbook](../mobile/backend-runbook.md).
 

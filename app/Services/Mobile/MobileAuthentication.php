@@ -67,6 +67,9 @@ class MobileAuthentication
     {
         $user->loadMissing('riderProfile');
 
-        return ['id' => PublicIds::id($user), 'name' => $user->name, 'email' => $user->email, 'phone' => $user->phone, 'role' => $user->role->value, 'email_verified' => $user->email_verified_at !== null, 'phone_verified' => $user->phone_verified_at !== null, 'privacy_notice_version' => $user->privacy_notice_version, 'rider_approval' => $user->isRider() ? ($user->riderProfile?->status->value ?? 'missing') : null, 'token_expires_at' => $expires->utc()->format('Y-m-d\TH:i:s\Z')];
+        return ['id' => PublicIds::id($user), 'name' => $user->name, 'email' => $user->email, 'phone' => $user->phone, 'role' => $user->role->value, 'email_verified' => $user->email_verified_at !== null, 'phone_verified' => $user->phone_verified_at !== null, 'privacy_notice_version' => $user->privacy_notice_version, 'rider_approval' => $user->isRider() ? ($user->riderProfile?->status->value ?? 'missing') : null, 'token_expires_at' => $expires->utc()->format('Y-m-d\TH:i:s\Z'),
+            'bio' => $user->bio, 'gender' => $user->gender, 'birthday' => $user->birthday?->format('Y-m-d'),
+            'has_avatar' => (bool) $user->avatar_path, 'avatar_version' => $user->avatar_path ? substr(hash('sha256', $user->avatar_path), 0, 16) : null,
+            'google_linked' => filled($user->google_id)];
     }
 }

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: 'FarSell Buyer and Rider Mobile API'
-  version: 1.0.0-dev.2
+  version: 1.0.0-dev.3
   description: 'FarSell Buyer/Rider mobile API. Implementation authorized by the user on 2026-11-13. New operations reuse web business services. Existing /health and /catalog retain their compatibility formats. New operations use UUID public IDs, integer centavos and UTC timestamps. Provider deployment/device verification is tracked separately in backend-runbook.md. Additive Buyer extension includes Google authentication, chat, feedback, cancellation, returns and inbox; main app only. External provider/release acceptance remains pending.'
 servers:
   -
@@ -684,7 +684,7 @@ paths:
       security:
         -
           bearerAuth: {}
-      description: 'Issue 5-minute ticket bound to current token, user and security version. Does not issue new access token. Password attempts throttled. Google-only account recovery/recent-identity method needs product approval; no insecure bypass.'
+      description: 'Issue 5-minute ticket bound to current token, user and security version. Does not issue new access token. Password attempts throttled. Linked Google accounts can confirm with a signed ID token issued in the last five minutes, checked against the same Google subject; never email matching alone.'
       x-implementation-status: implemented
       x-review-status: 'implemented; automated verification in progress'
       x-required-ability: 'buyer:* OR rider:*'
@@ -4499,6 +4499,220 @@ paths:
           schema:
             type: string
             format: uuid
+  /buyer/profile:
+    get:
+      operationId: buyerProfile
+      summary: 'Read own buyer profile'
+      tags:
+        - Identity
+      security:
+        -
+          bearerAuth: {}
+      responses:
+        200:
+          description: 'Current buyer profile'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Session'
+                required:
+                  - data
+                additionalProperties: false
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+        422:
+          $ref: '#/components/responses/Validation'
+        429:
+          $ref: '#/components/responses/Throttled'
+        503:
+          $ref: '#/components/responses/Unavailable'
+        500:
+          $ref: '#/components/responses/InternalError'
+    patch:
+      operationId: updateBuyerProfile
+      summary: 'Update own buyer details'
+      tags:
+        - Identity
+      security:
+        -
+          bearerAuth: {}
+      responses:
+        200:
+          description: 'Current buyer profile'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Session'
+                required:
+                  - data
+                additionalProperties: false
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+        422:
+          $ref: '#/components/responses/Validation'
+        429:
+          $ref: '#/components/responses/Throttled'
+        503:
+          $ref: '#/components/responses/Unavailable'
+        500:
+          $ref: '#/components/responses/InternalError'
+      description: 'Optional profile fields. Email or phone changes require a fresh, single-use reauthentication ticket bound to the same user/access token. Changed contacts lose verification; other sessions become stale. Website Google/Firebase credentials are unchanged.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                bio:
+                  type: string
+                  nullable: true
+                  maxLength: 280
+                gender:
+                  type: string
+                  nullable: true
+                  enum:
+                    - male
+                    - female
+                    - non_binary
+                    - prefer_not_to_say
+                birthday:
+                  type: string
+                  format: date
+                  nullable: true
+                email:
+                  type: string
+                  format: email
+                  maxLength: 180
+                phone:
+                  type: string
+                  nullable: true
+                  maxLength: 30
+                reauth_token:
+                  type: string
+                  maxLength: 512
+  /buyer/profile/avatar:
+    get:
+      operationId: buyerAvatar
+      summary: 'Read own avatar image'
+      tags:
+        - Identity
+      security:
+        -
+          bearerAuth: {}
+      responses:
+        200:
+          description: 'Authenticated avatar bytes; private, no-store.'
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+        422:
+          $ref: '#/components/responses/Validation'
+        429:
+          $ref: '#/components/responses/Throttled'
+        503:
+          $ref: '#/components/responses/Unavailable'
+        500:
+          $ref: '#/components/responses/InternalError'
+    post:
+      operationId: uploadBuyerAvatar
+      summary: 'Replace own avatar image'
+      tags:
+        - Identity
+      security:
+        -
+          bearerAuth: {}
+      responses:
+        200:
+          description: 'Current buyer profile'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Session'
+                required:
+                  - data
+                additionalProperties: false
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+        422:
+          $ref: '#/components/responses/Validation'
+        429:
+          $ref: '#/components/responses/Throttled'
+        503:
+          $ref: '#/components/responses/Unavailable'
+        500:
+          $ref: '#/components/responses/InternalError'
+      parameters:
+        -
+          in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - avatar
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: 'JPEG, PNG or WebP, at most 2 MB.'
 components:
   securitySchemes:
     bearerAuth:
@@ -4579,6 +4793,25 @@ components:
     Session:
       type: object
       properties:
+        bio:
+          type: string
+          nullable: true
+          maxLength: 280
+        gender:
+          type: string
+          nullable: true
+          enum: [male, female, non_binary, prefer_not_to_say]
+        birthday:
+          type: string
+          format: date
+          nullable: true
+        has_avatar:
+          type: boolean
+        avatar_version:
+          type: string
+          nullable: true
+        google_linked:
+          type: boolean
         id:
           $ref: '#/components/schemas/OpaqueId'
         name:
@@ -4886,9 +5119,13 @@ components:
           type: string
           format: password
           maxLength: 1024
+        id_token:
+          type: string
+          maxLength: 16384
       additionalProperties: false
-      required:
-        - password
+      oneOf:
+        - required: [password]
+        - required: [id_token]
     DeletionInput:
       type: object
       properties:

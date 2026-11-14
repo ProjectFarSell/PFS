@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 
 class GoogleIdentity
 {
-    public function verify(string $token): array
+    public function verify(string $token, int $maxAgeSeconds = 3600): array
     {
         $audience = config('mobile.google_client_id') ?: config('services.google.client_id');
         if (! is_string($audience) || $audience === '') {
@@ -39,7 +39,7 @@ class GoogleIdentity
             }
             $now = now()->timestamp;
             if (($claims['aud'] ?? null) !== $audience || ! in_array($claims['iss'] ?? null, ['accounts.google.com', 'https://accounts.google.com'], true)
-                || ! is_int($claims['exp'] ?? null) || $claims['exp'] <= $now || ! is_int($claims['iat'] ?? null) || $claims['iat'] > $now + 60 || $claims['iat'] < $now - 3600
+                || ! is_int($claims['exp'] ?? null) || $claims['exp'] <= $now || ! is_int($claims['iat'] ?? null) || $claims['iat'] > $now + 60 || $claims['iat'] < $now - $maxAgeSeconds
                 || ! is_string($claims['sub'] ?? null) || strlen($claims['sub']) < 1 || strlen($claims['sub']) > 255
                 || ($claims['email_verified'] ?? null) !== true || ! filter_var($claims['email'] ?? '', FILTER_VALIDATE_EMAIL)) {
                 throw new \RuntimeException;

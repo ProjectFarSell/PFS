@@ -8,6 +8,7 @@ use App\Http\Requests\Api\MobileRequest;
 use App\Models\MobileTicket;
 use App\Models\User;
 use App\Services\Mobile\ApiFailure;
+use App\Services\Mobile\GoogleIdentity;
 use App\Services\Mobile\MobileAuthentication;
 use App\Services\Mobile\MobileMailSafety;
 use App\Services\Mobile\Reply;
@@ -111,7 +112,12 @@ class AuthController extends Controller
     public function reauthenticate(MobileRequest $request, MobileAuthentication $auth)
     {
         $data = $request->validated();
-        if (! Hash::check($data['password'], $request->user()->password)) {
+        if (isset($data['id_token'])) {
+            $identity = app(GoogleIdentity::class)->verify($data['id_token'], 300);
+            if (! $request->user()->google_id || ! hash_equals($request->user()->google_id, $identity['sub'])) {
+                throw ValidationException::withMessages(['id_token' => 'Confirm with the Google account linked to this FarSell account.']);
+            }
+        } elseif (! Hash::check($data['password'], $request->user()->password)) {
             throw ValidationException::withMessages(['password' => 'The password did not match.']);
         }
         [$ticket, $secret] = $auth->ticket($request->user(), $request->user()->role->value, 'reauth', $request->user()->currentAccessToken()->id);

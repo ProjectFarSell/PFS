@@ -4,7 +4,7 @@ Implementation authorized November 13, 2026. The contract is `docs/api/openapi.y
 
 ## What exists
 
-All 60 documented operations resolve to routes (57 route definitions, with four location-directory operations sharing one constrained route). Buyer/Rider authentication, cart, address, checkout, order, proof and Rider endpoints are implemented. FCM sending, Reverb private-channel authorization, an outbox, maintenance, QA fixtures and release association-file handlers are implemented. Live hosting/provider/device acceptance is not established merely by this code.
+All 64 documented operations resolve to routes (61 route definitions, with four location-directory operations sharing one constrained route). Buyer/Rider authentication, cart, address, checkout, order, proof, buyer profile editing and Rider endpoints are implemented. FCM sending, Reverb private-channel authorization, an outbox, maintenance, QA fixtures and release association-file handlers are implemented. Live hosting/provider/device acceptance is not established merely by this code.
 
 Legacy `/api/v1/catalog` remains numeric-ID/peso/page based. New `/api/v1/products` uses opaque UUID IDs, centavos and cursors. Do not mix their identifiers or monetary units. The main Flutter buyer app now uses the new reads and authenticated buyer APIs. Guest selections remain device-local until an explicit account-cart merge. See the [standalone buyer app README](https://github.com/KarlBRB/FarSell-Mobile#readme) and buyer-check-flow.md. No Rider app screens were implemented.
 

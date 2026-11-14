@@ -35,6 +35,10 @@ class User extends Authenticatable
         'mfa_recovery_codes',
         'mfa_last_step',
         'suspension_reason',
+        'bio',
+        'gender',
+        'birthday',
+        'avatar_path',
     ];
 
     protected function casts(): array
@@ -42,6 +46,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
+            'birthday' => 'date',
             'privacy_accepted_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
