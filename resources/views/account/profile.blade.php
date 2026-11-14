@@ -35,7 +35,7 @@
         ['key' => 'assigned_in_transit', 'label' => 'To Receive'],
         ['key' => 'delivered',           'label' => 'Completed'],
         ['key' => 'cancelled',           'label' => 'Cancelled'],
-        ['key' => null,                  'label' => 'Return/Refund'],
+        ['key' => null,                  'label' => 'Return/Refund', 'href' => route('returns.index')],
         ['key' => 'review',              'label' => 'To Review'],
     ] : [];
 @endphp
@@ -65,7 +65,11 @@
             <x-action-menu label="Orders" context="filters" class="ml-auto">
                 <p class="px-4 text-xs font-semibold text-text-muted">Order status</p>
                 @foreach ($purchaseItems as $item)
-                    @if ($item['key'] !== null)
+                    @if (isset($item['href']))
+                        <x-ui.button variant="tertiary" :href="$item['href']" class="dropdown-item text-left justify-start">
+                            {{ $item['label'] }}
+                        </x-ui.button>
+                    @elseif ($item['key'] !== null)
                         <x-ui.button variant="tertiary" type="button" class="dropdown-item text-left justify-start"
                                 ::aria-pressed="activeTab === {{ \Illuminate\Support\Js::from($item['key']) }}"
                                 ::class="{ 'bg-surface-muted font-semibold': activeTab === {{ \Illuminate\Support\Js::from($item['key']) }} }"
@@ -116,7 +120,12 @@
            style="color:rgb(var(--color-text-muted));">My Orders</p>
 
         @foreach ($purchaseItems as $item)
-            @if ($item['key'] !== null)
+            @if (isset($item['href']))
+            <x-ui.button variant="tertiary" :href="$item['href']"
+                    class="text-left rounded-xl px-3 py-2.5 text-sm w-full transition-colors hover:text-accent">
+                {{ $item['label'] }}
+            </x-ui.button>
+            @elseif ($item['key'] !== null)
             <x-ui.button variant="tertiary" type="button" @click="activeTab = '{{ $item['key'] }}'"
                     ::class="activeTab === '{{ $item['key'] }}'
                         ? 'font-semibold'

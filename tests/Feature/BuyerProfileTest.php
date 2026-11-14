@@ -28,6 +28,7 @@ class BuyerProfileTest extends TestCase
             ->assertSee($buyer->email)->assertSee($buyer->phone)
             ->assertDontSee($other->name)->assertDontSee($other->email)
             ->assertSee('My Orders')->assertSee(route('orders.index'), false)
+            ->assertSee('Return/Refund')->assertSee(route('returns.index'), false)
             ->assertSee('My Addresses')->assertSee(route('account.addresses.index'), false)
             ->assertDontSee($buyer->password, false);
     }
