@@ -3,6 +3,7 @@
 return [
     'token_hours' => 24,
     'google_client_id' => env('MOBILE_GOOGLE_CLIENT_ID', env('GOOGLE_CLIENT_ID')),
+    'firebase_project_id' => env('MOBILE_FIREBASE_PROJECT_ID'),
     'quote_minutes' => 5,
     'receipt_days' => 7,
     'staging_payments' => (bool) env('MOBILE_STAGING_PAYMENTS', false),

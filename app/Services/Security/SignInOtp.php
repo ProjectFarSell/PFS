@@ -44,7 +44,7 @@ class SignInOtp
             if (! in_array($channel, ['email', 'phone'], true) || blank($user->{$channel})) {
                 $this->invalid('Use an email address or phone number already saved on your account.');
             }
-            if ($channel === 'phone' && ! $this->phoneConfigured()) {
+            if ($channel === 'phone' && ! $this->phoneConfigured($request->attributes->has('mobile.otp_context'))) {
                 $this->invalid('Phone codes are not configured. Use email or contact support.');
             }
             if (SignInChallenge::where('user_id', $user->id)->where('sent_at', '>', now()->subMinute())->exists()) {
@@ -75,7 +75,8 @@ class SignInOtp
             return null;
         }
         try {
-            $proof = app(FirebasePhoneVerificationService::class)->verifyForSignIn($token, $challenge->sent_at->timestamp);
+            $project = $request->attributes->has('mobile.otp_context') ? config('mobile.firebase_project_id') : null;
+            $proof = app(FirebasePhoneVerificationService::class)->verifyForSignIn($token, $challenge->sent_at->timestamp, $project ?: null);
         } catch (\Throwable) {
             // Invalid/failed provider verification must not bypass the attempt limit.
             return $this->consume($request, 'phone', fn () => false);
@@ -128,8 +129,12 @@ class SignInOtp
         return $digits === '' ? '' : '+'.$digits;
     }
 
-    public function phoneConfigured(): bool
+    public function phoneConfigured(bool $mobile = false): bool
     {
+        if ($mobile && filled(config('mobile.firebase_project_id'))) {
+            return true;
+        }
+
         return collect(['api_key', 'auth_domain', 'project_id', 'app_id'])->every(fn ($key) => filled(config('services.firebase.'.$key)));
     }
 

@@ -15,9 +15,9 @@ class FirebasePhoneVerificationService
         return $this->claims($idToken)['phone_number'];
     }
 
-    public function verifyForSignIn(string $idToken, int $authenticatedAfter): array
+    public function verifyForSignIn(string $idToken, int $authenticatedAfter, ?string $projectId = null): array
     {
-        $claims = $this->claims($idToken);
+        $claims = $this->claims($idToken, $projectId);
         if (! is_int($claims['auth_time'] ?? null) || $claims['auth_time'] < $authenticatedAfter || $claims['auth_time'] > now()->timestamp + 60
             || ($claims['firebase']['sign_in_provider'] ?? null) !== 'phone' || ! is_string($claims['sub'] ?? null) || $claims['sub'] === '') {
             throw ValidationException::withMessages(['code' => 'Request a new SMS code for this sign-in. An earlier phone session cannot be reused.']);
@@ -26,9 +26,10 @@ class FirebasePhoneVerificationService
         return ['phone' => $claims['phone_number'], 'hash' => hash('sha256', $claims['iss'].'|'.$claims['sub'].'|'.$claims['auth_time'])];
     }
 
-    private function claims(string $idToken): array
+    private function claims(string $idToken, ?string $projectId = null): array
     {
-        $projectId = (string) config('services.firebase.project_id');
+        // Overrides come only from trusted server configuration, never token claims.
+        $projectId ??= (string) config('services.firebase.project_id');
         if ($projectId === '') {
             throw ValidationException::withMessages(['token' => 'Firebase Phone Auth is not configured yet.']);
         }

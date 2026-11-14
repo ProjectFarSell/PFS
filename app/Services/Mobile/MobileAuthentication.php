@@ -60,7 +60,7 @@ class MobileAuthentication
     {
         [$ticket, $secret] = $this->ticket($user, $app);
 
-        return ['challenge_token' => $secret, 'expires_at' => $ticket->expires_at->utc()->format('Y-m-d\TH:i:s\Z'), 'methods' => array_values(array_filter(['email', filled($user->phone) && app(SignInOtp::class)->phoneConfigured() ? 'phone' : null])), 'email_hint' => mb_substr($user->email, 0, 1).'***@'.Str::after($user->email, '@'), 'phone_hint' => $user->phone ? '***'.mb_substr($user->phone, -4) : null, 'requires_send' => true];
+        return ['challenge_token' => $secret, 'expires_at' => $ticket->expires_at->utc()->format('Y-m-d\TH:i:s\Z'), 'methods' => array_values(array_filter(['email', filled($user->phone) && app(SignInOtp::class)->phoneConfigured(true) ? 'phone' : null])), 'email_hint' => mb_substr($user->email, 0, 1).'***@'.Str::after($user->email, '@'), 'phone_hint' => $user->phone ? '***'.mb_substr($user->phone, -4) : null, 'requires_send' => true];
     }
 
     public function session(User $user, $expires): array
