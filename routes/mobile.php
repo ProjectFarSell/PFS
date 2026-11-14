@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BuyerFeaturesController;
+use App\Http\Controllers\Api\V1\BuyerProfileController;
 use App\Http\Controllers\Api\V1\CartController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\ProductController;
@@ -35,6 +36,10 @@ Route::name('api.mobile.')->middleware('throttle:mobile-api')->group(function ()
         Route::delete('devices/{installation_id}', [AccountController::class, 'removeDevice'])->name('devices.delete');
         Route::post('broadcasting/auth', [RealtimeController::class, 'channel'])->name('broadcast');
         Route::prefix('buyer')->middleware(MobileAccess::class.':buyer')->group(function () {
+            Route::get('profile', [BuyerProfileController::class, 'show'])->name('profile');
+            Route::patch('profile', [BuyerProfileController::class, 'update'])->middleware('throttle:mobile-sensitive')->name('profile.update');
+            Route::get('profile/avatar', [BuyerProfileController::class, 'avatar'])->name('profile.avatar');
+            Route::post('profile/avatar', [BuyerProfileController::class, 'uploadAvatar'])->middleware('throttle:mobile-sensitive')->name('profile.avatar.store');
             Route::get('conversations', [BuyerFeaturesController::class, 'conversations'])->name('conversations');
             Route::post('products/{product_id}/conversation', [BuyerFeaturesController::class, 'start'])->middleware('throttle:10,1')->name('conversations.start');
             Route::get('conversations/{conversation_id}/messages', [BuyerFeaturesController::class, 'messages'])->name('conversations.messages');

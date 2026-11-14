@@ -2,6 +2,8 @@
 
 The main project remains the buyer app. No Rider app screens were built.
 
+Profile updates: tapping the Profile avatar opens the grouped Edit Profile page with optional bio/gender/birthday, photo upload and guarded contact edits. See [buyer-profile.md](buyer-profile.md). The API contract now includes 64 operations.
+
 Implemented code now includes native Google sign-in, shared website/app chat history, public product reviews, product/service/rider feedback with optional photos/video, buyer cancellation, return/refund request tracking and private evidence, notification inbox, optional FCM receiving/device registration, optional Reverb private-user subscriptions, and restricted HTTPS product/order app links.
 
 API extension: `../api/openapi.yaml`, revision `1.0.0-dev.2`. Additions preserve existing operations and reuse shared website services. New records use UUID aliases; the numeric website keys remain internal. Cancelling or requesting returns does not create a separate mobile policy. Refunds remain reviewed and recorded by admin; no automatic money movement was added.
@@ -41,7 +43,11 @@ Example contents (placeholders only):
 
 Omit settings for providers you are not enabling yet. Native Google requires an Android OAuth client registered for the package/signing SHA-1 and a Web OAuth client ID as serverClientId. Laravel verifies that audience using MOBILE_GOOGLE_CLIENT_ID, falling back to GOOGLE_CLIENT_ID; it never trusts an email supplied by Flutter. Existing email/phone OTP still follows primary Google sign-in for real buyers.
 
-Firebase phone and FCM must refer to the backend's project. Android Firebase resources are derived from the same public Dart build defines so native initialization also works for background delivery. The service-account private key belongs only on Laravel through MOBILE_FCM_CREDENTIALS. Never place it, SMTP credentials, a Google client secret, Reverb secret or `.env` in the app.
+The Android package is `com.farsell.buyer`. Register its debug/release signing fingerprints in Firebase. Android Firebase resources are derived from the same public Dart build defines so native initialization also works for background delivery.
+
+For a separate mobile Firebase project, set Laravel `MOBILE_FIREBASE_PROJECT_ID` to the Android project's ID. Mobile phone OTP checks that exact token audience/issuer; website verification continues using `FIREBASE_PROJECT_ID`. Without the mobile override, mobile verification uses the website project for compatibility. Set `MOBILE_FCM_PROJECT_ID` to the Android project as well. The FCM service-account private key belongs only on Laravel through `MOBILE_FCM_CREDENTIALS`.
+
+For Google sign-in, enable Google in Firebase Authentication, register the Android SHA-1, and use the Web OAuth client from that same project for both Flutter `GOOGLE_SERVER_CLIENT_ID` and Laravel `MOBILE_GOOGLE_CLIENT_ID`. This does not replace the website's Google client ID or secret. Never place a service-account key, SMTP credentials, Google client secret, Reverb secret or `.env` in the app.
 
 Laravel push/realtime flags remain off unless the team configures and enables them. Run `php artisan mobile:work`, the scheduler and `php artisan reverb:start` as described in backend-runbook.md. Native socket auth uses the bearer token and private-user UUID channel. Set REVERB_ALLOWED_ORIGINS to the API origin host actually sent by the app (include 10.0.2.2 for emulator tests). Public app key alone does not authorize a channel. Reconnect refetches data; duplicate events are ignored. Chat also refreshes while foregrounded to support local testing without Reverb.
 

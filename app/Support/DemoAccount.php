@@ -11,6 +11,11 @@ class DemoAccount
         'buyer@farsell.test' => 'buyer',
         'seller@farsell.test' => 'seller',
         'rider@farsell.test' => 'rider',
+        'mobile-admin@farsell.test' => 'admin',
+        'mobile-buyer@farsell.test' => 'buyer',
+        'mobile-seller@farsell.test' => 'seller',
+        'mobile-rider@farsell.test' => 'rider',
+        'mobile-pending-rider@farsell.test' => 'rider',
     ];
 
     public static function mark(User $user): void

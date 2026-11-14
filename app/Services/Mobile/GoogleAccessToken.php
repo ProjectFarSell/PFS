@@ -8,10 +8,9 @@ use RuntimeException;
 
 class GoogleAccessToken
 {
-    public function get(): string
+    public function get(string $app = 'buyer'): string
     {
-        $path = (string) config('mobile.fcm_credentials');
-        $project = (string) config('mobile.fcm_project');
+        [$project, $path] = FirebaseProjects::push($app);
 
         return Cache::remember('mobile-fcm-oauth:'.hash('sha256', $path.'|'.$project), 3300, function () use ($path, $project) {
             if (! $path || ! is_readable($path)) {

@@ -1,6 +1,6 @@
 # Mobile API operation map
 
-The 45 base operations and 15 additional Buyer operations are implemented as of November 13, 2026. The table below preserves the original B1 estimates and service-extraction plan as a historical reference. Current routes and response shapes are in `openapi.yaml`; implementation evidence and external acceptance gates are in `audit-report.md`.
+The 45 base operations, 15 additional Buyer operations, and four Buyer profile operations are implemented. The table below preserves the original B1 estimates and service-extraction plan as a historical reference. Current routes and response shapes are in `openapi.yaml`; implementation evidence and external acceptance gates are in `audit-report.md`. The profile additions are documented in [buyer-profile.md](../mobile/buyer-profile.md).
 
 | Group | Operation | Effort | Risk | Reuse / extraction |
 |---|---|---|---|---|

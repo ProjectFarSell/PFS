@@ -4,9 +4,9 @@ Implementation authorized November 13, 2026. The contract is `docs/api/openapi.y
 
 ## What exists
 
-All 60 documented operations resolve to routes (57 route definitions, with four location-directory operations sharing one constrained route). Buyer/Rider authentication, cart, address, checkout, order, proof and Rider endpoints are implemented. FCM sending, Reverb private-channel authorization, an outbox, maintenance, QA fixtures and release association-file handlers are implemented. Live hosting/provider/device acceptance is not established merely by this code.
+All 64 documented operations resolve to routes (61 route definitions, with four location-directory operations sharing one constrained route). Buyer/Rider authentication, cart, address, checkout, order, proof, buyer profile editing and Rider endpoints are implemented. FCM sending, Reverb private-channel authorization, an outbox, maintenance, QA fixtures and release association-file handlers are implemented. Live hosting/provider/device acceptance is not established merely by this code.
 
-Legacy `/api/v1/catalog` remains numeric-ID/peso/page based. New `/api/v1/products` uses opaque UUID IDs, centavos and cursors. Do not mix their identifiers or monetary units. The main Flutter buyer app now uses the new reads and authenticated buyer APIs. Guest selections remain device-local until an explicit account-cart merge. See the [standalone buyer app README](https://github.com/KarlBRB/FarSell-Mobile#readme) and buyer-check-flow.md. No Rider app screens were implemented.
+Legacy `/api/v1/catalog` remains numeric-ID/peso/page based. New `/api/v1/products` uses opaque UUID IDs, centavos and cursors. Do not mix their identifiers or monetary units. The main Flutter buyer app uses the new reads and authenticated buyer APIs. Guest selections remain device-local until an explicit account-cart merge. See the [Buyer app README](https://github.com/KarlBRB/FarSell-Mobile#readme), buyer-check-flow.md and [Rider check flow](rider-check-flow.md). The separate Android Rider app lives in KarlBRB/FarSell-Mobile-Rider.
 
 ## Install/update locally
 
@@ -79,7 +79,7 @@ Explicit command only (not part of the normal seeder):
 php artisan mobile:fixtures
 ```
 
-Creates guarded synthetic `mobile-buyer`, `mobile-rider`, `mobile-pending-rider`, `mobile-seller` and `mobile-admin` accounts at `@farsell.test`, a clearly named QA shop/category/geography and orders in all12 shipment statuses. Local default password is `password`; these extra QA identities still follow normal OTP policy and are not added to the four reserved demo exceptions. Use a private test inbox.
+Creates guarded synthetic `mobile-buyer`, `mobile-rider`, `mobile-pending-rider`, `mobile-seller` and `mobile-admin` accounts at `@farsell.test`, a clearly named QA shop/category/geography and orders in all12 shipment statuses. Local default password is `password`. These explicitly marked matching demo identities skip login OTP/authenticator challenges in local/testing, as do the four standard demo accounts. Pending Rider approval still blocks deliveries. Staging/production retain normal second-factor policy; use a private test inbox there.
 
 Rerunning preserves existing fixture accounts/orders and refuses a collision with an unmarked normal account. Production is always refused. Staging additionally requires MOBILE_STAGING_FIXTURES=true and a private MOBILE_FIXTURE_PASSWORD of at least12characters. Never copy QA accounts into production.
 

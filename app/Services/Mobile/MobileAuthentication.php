@@ -60,13 +60,16 @@ class MobileAuthentication
     {
         [$ticket, $secret] = $this->ticket($user, $app);
 
-        return ['challenge_token' => $secret, 'expires_at' => $ticket->expires_at->utc()->format('Y-m-d\TH:i:s\Z'), 'methods' => array_values(array_filter(['email', filled($user->phone) && app(SignInOtp::class)->phoneConfigured() ? 'phone' : null])), 'email_hint' => mb_substr($user->email, 0, 1).'***@'.Str::after($user->email, '@'), 'phone_hint' => $user->phone ? '***'.mb_substr($user->phone, -4) : null, 'requires_send' => true];
+        return ['challenge_token' => $secret, 'expires_at' => $ticket->expires_at->utc()->format('Y-m-d\TH:i:s\Z'), 'methods' => array_values(array_filter(['email', filled($user->phone) && app(SignInOtp::class)->phoneConfigured(true, $app) ? 'phone' : null])), 'email_hint' => mb_substr($user->email, 0, 1).'***@'.Str::after($user->email, '@'), 'phone_hint' => $user->phone ? '***'.mb_substr($user->phone, -4) : null, 'requires_send' => true];
     }
 
     public function session(User $user, $expires): array
     {
         $user->loadMissing('riderProfile');
 
-        return ['id' => PublicIds::id($user), 'name' => $user->name, 'email' => $user->email, 'phone' => $user->phone, 'role' => $user->role->value, 'email_verified' => $user->email_verified_at !== null, 'phone_verified' => $user->phone_verified_at !== null, 'privacy_notice_version' => $user->privacy_notice_version, 'rider_approval' => $user->isRider() ? ($user->riderProfile?->status->value ?? 'missing') : null, 'token_expires_at' => $expires->utc()->format('Y-m-d\TH:i:s\Z')];
+        return ['id' => PublicIds::id($user), 'name' => $user->name, 'email' => $user->email, 'phone' => $user->phone, 'role' => $user->role->value, 'email_verified' => $user->email_verified_at !== null, 'phone_verified' => $user->phone_verified_at !== null, 'privacy_notice_version' => $user->privacy_notice_version, 'rider_approval' => $user->isRider() ? ($user->riderProfile?->status->value ?? 'missing') : null, 'token_expires_at' => $expires->utc()->format('Y-m-d\TH:i:s\Z'),
+            'bio' => $user->bio, 'gender' => $user->gender, 'birthday' => $user->birthday?->format('Y-m-d'),
+            'has_avatar' => (bool) $user->avatar_path, 'avatar_version' => $user->avatar_path ? substr(hash('sha256', $user->avatar_path), 0, 16) : null,
+            'google_linked' => filled($user->google_id)];
     }
 }
