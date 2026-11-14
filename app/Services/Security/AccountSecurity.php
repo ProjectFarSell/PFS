@@ -77,6 +77,12 @@ class AccountSecurity
     public function afterPrimarySignIn(Request $request, RedirectResponse $destination)
     {
         $user = $request->user();
+        if (DemoAccount::exempt($user) && in_array(parse_url($destination->getTargetUrl(), PHP_URL_PATH), [
+            route('security.index', [], false), route('security.otp.show', [], false),
+        ], true)) {
+            // A remembered verification URL must not reintroduce a demo MFA step.
+            return $this->returnAfterChallenge($request);
+        }
         $route = $this->requiresAuthenticator($user) ? 'security.index' : ($this->requiresOtp($user) ? 'security.otp.show' : null);
         if (! $route) {
             return $destination;

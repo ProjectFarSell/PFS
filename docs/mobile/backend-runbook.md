@@ -79,7 +79,7 @@ Explicit command only (not part of the normal seeder):
 php artisan mobile:fixtures
 ```
 
-Creates guarded synthetic `mobile-buyer`, `mobile-rider`, `mobile-pending-rider`, `mobile-seller` and `mobile-admin` accounts at `@farsell.test`, a clearly named QA shop/category/geography and orders in all12 shipment statuses. Local default password is `password`; these extra QA identities still follow normal OTP policy and are not added to the four reserved demo exceptions. Use a private test inbox.
+Creates guarded synthetic `mobile-buyer`, `mobile-rider`, `mobile-pending-rider`, `mobile-seller` and `mobile-admin` accounts at `@farsell.test`, a clearly named QA shop/category/geography and orders in all12 shipment statuses. Local default password is `password`. These explicitly marked matching demo identities skip login OTP/authenticator challenges in local/testing, as do the four standard demo accounts. Pending Rider approval still blocks deliveries. Staging/production retain normal second-factor policy; use a private test inbox there.
 
 Rerunning preserves existing fixture accounts/orders and refuses a collision with an unmarked normal account. Production is always refused. Staging additionally requires MOBILE_STAGING_FIXTURES=true and a private MOBILE_FIXTURE_PASSWORD of at least12characters. Never copy QA accounts into production.
 

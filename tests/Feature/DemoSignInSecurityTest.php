@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Services\Mobile\MobileFixtures;
 use App\Services\Security\AccountSecurity;
 use App\Services\Security\AdminTwoFactor;
 use App\Support\DemoAccount;
@@ -52,6 +53,43 @@ class DemoSignInSecurityTest extends TestCase
         }
         $reservedButNotSeeded = User::factory()->create(['email' => 'buyer@farsell.test']);
         $this->assertTrue(app(AccountSecurity::class)->requiresOtp($reservedButNotSeeded));
+    }
+
+    public function test_seeded_mobile_demo_accounts_skip_web_and_api_second_factor_but_pending_riders_remain_blocked(): void
+    {
+        app(MobileFixtures::class)->seed();
+        foreach (['admin' => 'admin.dashboard', 'buyer' => 'home', 'seller' => 'seller.dashboard', 'rider' => 'rider.dashboard', 'pending-rider' => 'rider.dashboard'] as $name => $destination) {
+            $user = User::where('email', 'mobile-'.$name.'@farsell.test')->sole();
+            $this->post('/login', ['email' => $user->email, 'password' => 'password'])->assertRedirect(route($destination));
+            $this->post(route('logout'));
+            if (in_array($user->role->value, ['buyer', 'rider'], true)) {
+                $token = $this->postJson('/api/v1/auth/login', ['app' => $user->role->value, 'email' => $user->email, 'password' => 'password'])
+                    ->assertOk()->assertJsonMissingPath('data.challenge_token')->json('data.access_token');
+                if ($name === 'pending-rider') {
+                    $this->withToken($token)->getJson('/api/v1/rider/shipments')->assertForbidden();
+                }
+            }
+        }
+        $this->assertDatabaseCount('sign_in_challenges', 0);
+        foreach (['staging', 'production'] as $environment) {
+            $this->app->detectEnvironment(fn () => $environment);
+            foreach (User::where('email', 'like', 'mobile-%@farsell.test')->get() as $demo) {
+                $this->assertFalse(DemoAccount::exempt($demo));
+                $this->assertTrue($demo->usesAuthenticator()
+                    ? app(AccountSecurity::class)->requiresAuthenticator($demo)
+                    : app(AccountSecurity::class)->requiresOtp($demo));
+            }
+        }
+    }
+
+    public function test_demo_login_discards_a_remembered_second_factor_destination(): void
+    {
+        $this->seed(DemoAccountsSeeder::class);
+        foreach (['security.index', 'security.otp.show'] as $route) {
+            $this->withSession(['url.intended' => route($route)])
+                ->post('/login', ['email' => 'buyer@farsell.test', 'password' => 'password'])->assertRedirect(route('home'));
+            $this->post(route('logout'));
+        }
     }
 
     public function test_demo_marker_alone_or_wrong_role_or_changed_email_cannot_grant_an_exemption(): void
