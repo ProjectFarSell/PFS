@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', ($product->exists ? 'Edit listing' : 'Add product').' · FarSell')
+@section('title', ($product->exists ? 'Edit listing' : 'Add product').' | FarSell')
 @section('content')
     @php
         $initialVariants = collect(old('variants', $product->variants->map(fn($variant) => [

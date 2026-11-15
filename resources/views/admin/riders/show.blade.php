@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Review rider application · FarSell')
+@section('title', 'Review rider application | FarSell')
 
 @section('content')
     <x-ui.button variant="link" :href="route('admin.riders.index')" class="text-sm text-accent underline">Back to rider applications</x-ui.button>

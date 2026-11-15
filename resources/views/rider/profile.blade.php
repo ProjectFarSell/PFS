@@ -1,6 +1,6 @@
 @extends(auth()->user()->role === \App\Enums\UserRole::Rider ? 'layouts.portal' : 'layouts.app')
 
-@section('title', 'Rider profile · FarSell')
+@section('title', 'Rider profile | FarSell')
 
 @section('content')
     <a href="{{ route('rider.dashboard') }}" class="inline-block mb-3 text-sm text-accent underline"><x-ui.icon name="previous" size="sm" class="inline-block align-text-bottom" /> Rider Dashboard</a>

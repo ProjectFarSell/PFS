@@ -1,6 +1,6 @@
 @extends($isBuyerProfile ? 'layouts.app' : 'layouts.portal')
 
-@section('title', ($isBuyerProfile ? 'My Account' : ucfirst($user->role->value).' Profile').' · FarSell')
+@section('title', ($isBuyerProfile ? 'My Account' : ucfirst($user->role->value).' Profile').' | FarSell')
 
 @section('content')
 @php

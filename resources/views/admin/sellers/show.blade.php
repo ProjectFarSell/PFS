@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Review seller application · FarSell')
+@section('title', 'Review seller application | FarSell')
 @section('content')
     <x-ui.button variant="link" :href="route('admin.sellers.index')" class="text-sm text-accent underline">Back to seller applications</x-ui.button>
     <section class="fs-card mx-auto mt-4 max-w-2xl p-5">

@@ -32,8 +32,7 @@
             >
                 @foreach ($slides as $slide)
                     <article
-                        class="relative flex min-h-[340px] w-full shrink-0 flex-col justify-center p-6 sm:p-10 lg:min-h-[400px] lg:p-12"
-                        style="background: linear-gradient(120deg, rgb(var(--color-accent) / 0.15), rgb(var(--color-surface-muted)));"
+                        class="discovery-hero relative flex min-h-[360px] w-full shrink-0 flex-col justify-center overflow-hidden p-6 sm:p-10 lg:min-h-[410px] lg:p-14"
                         role="group"
                         aria-roledescription="slide"
                         aria-label="{{ $loop->iteration }} of {{ count($slides) }}: {{ $slide['title'] }}"
@@ -42,16 +41,26 @@
                         @if (! $loop->first) inert @endif
                         :inert="!isActive({{ $loop->index }})"
                     >
-                        <div class="pointer-events-none absolute right-8 top-1/2 hidden h-60 w-80 -translate-y-1/2 text-accent/60 xl:block" aria-hidden="true"><x-discovery-art :kind="$slide['art'] ?? 'cards'" /></div>
+                        <div class="pointer-events-none absolute right-4 top-4 opacity-70 sm:hidden" aria-hidden="true"><x-brand-mark class="size-14" /></div>
+                        <div class="discovery-hero-art pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 sm:grid" aria-hidden="true">
+                            <div class="discovery-hero-art-inner">
+                                @if (($slide['art'] ?? '') === 'mascot')
+                                    <x-brand-mark class="h-full w-full" />
+                                @else
+                                    <x-discovery-art :kind="$slide['art'] ?? 'cards'" />
+                                @endif
+                            </div>
+                            <span class="discovery-hero-tag">{{ $slide['tag'] ?? 'A good find awaits' }}</span>
+                        </div>
                         @if (! empty($slide['eyebrow']))
-                            <p class="relative mb-3 text-xs font-semibold uppercase tracking-widest">{{ $slide['eyebrow'] }}</p>
+                            <p class="relative mb-4 flex max-w-[75%] items-center gap-2 text-xs font-semibold uppercase tracking-widest text-accent"><span class="h-2 w-2 shrink-0 rounded-full bg-accent"></span>{{ $slide['eyebrow'] }}</p>
                         @endif
                         @if ($loop->first)
-                            <h1 class="relative max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{{ $slide['title'] }}</h1>
+                            <h1 class="relative max-w-xl text-4xl font-bold leading-[1.08] tracking-tight sm:max-w-[55%] sm:text-5xl lg:text-6xl">{{ $slide['title'] }}</h1>
                         @else
-                            <h2 class="relative max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{{ $slide['title'] }}</h2>
+                            <h2 class="relative max-w-xl text-4xl font-bold leading-[1.08] tracking-tight sm:max-w-[55%] sm:text-5xl lg:text-6xl">{{ $slide['title'] }}</h2>
                         @endif
-                        <p class="mt-4 max-w-xl text-base sm:text-lg" style="color: rgb(var(--color-text-muted));">{{ $slide['subtitle'] }}</p>
+                        <p class="relative mt-4 max-w-xl text-base leading-relaxed text-text-muted sm:max-w-[52%]">{{ $slide['subtitle'] }}</p>
                         <div class="mt-6">
                             <a
                                 href="{{ $slide['cta_href'] }}"

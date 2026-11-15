@@ -1,11 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Cart · FarSell')
+@section('title', 'Cart | FarSell')
 @if ($lines->isNotEmpty())
     @section('buyer-action-bar', 'true')
 @endif
 
 @section('content')
+@if ($errors->any())
+    <div role="alert" class="alert-error mb-4"><ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+@endif
 @if ($lines->isEmpty())
     {{-- ── Illustrated empty state (no h1 when empty, per design) ──────── --}}
     <div class="flex flex-col items-center justify-center py-20 text-center">
@@ -30,15 +33,16 @@
         </x-bottom-actions>
     </div>
 
-    <ul class="space-y-3">
-        @foreach ($lines as $line)
+    <div class="space-y-4">
+    @foreach ($groups as $group)
+    <section class="fs-card min-w-0 p-3" aria-label="{{ $group->shop->name }}">
+        <h2 class="break-words font-semibold">{{ $group->shop->name }}</h2>
+        <ul class="mt-3 space-y-3">
+        @foreach ($group->lines as $line)
         <li class="fs-card flex flex-wrap gap-3 p-3">
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium truncate" style="color:rgb(var(--color-text-base));">
                     {{ $line->product->name }}
-                </p>
-                <p class="text-xs mt-0.5" style="color:rgb(var(--color-text-muted));">
-                    {{ $line->product->shop->name }}
                 </p>
                 <p class="text-xs mt-0.5 text-text-muted">SKU: {{ $line->variant?->sku ?? $line->product->sku ?? 'Unavailable' }}</p>
                 @if($line->stale_variant)<p class="mt-1 text-xs text-error">This product's options changed. Remove it and choose an available option again.</p>@endif
@@ -48,7 +52,7 @@
                 </p>
             </div>
             <form method="post" action="{{ route('cart.update', $line->product) }}"
-                  class="ml-auto flex shrink-0 flex-col items-end gap-2" x-data="quantityStepper({{ $line->qty }}, {{ min(99, $line->variant?->stock ?? $line->product->stock) }}, 0)">
+                  class="ml-auto flex shrink-0 flex-col items-end gap-2" x-data="{ ...quantityStepper({{ $line->qty }}, {{ min(99, $line->variant?->stock ?? $line->product->stock) }}, 0), submitting: false }" @submit="submitting = true">
                 @csrf
                 @method('patch')
                 @if($line->variant)<input type="hidden" name="variant_id" value="{{ $line->variant->id }}">@endif
@@ -58,14 +62,18 @@
                            class="fs-input min-h-target w-14 p-0 text-center text-sm md:min-h-target-desktop">
                     <x-ui.icon-button variant="secondary" label="Increase quantity" icon="add" type="button" @click="increase()" x-bind:disabled="qty >= max" class="disabled:opacity-40"></x-ui.icon-button>
                 </div>
-                <x-ui.button variant="tertiary" type="submit"
+                <x-ui.button variant="tertiary" type="submit" x-bind:disabled="submitting"
                        >
-                    Update
+                    <span x-text="submitting ? 'Updating…' : 'Update'">Update</span>
                 </x-ui.button>
             </form>
         </li>
         @endforeach
-    </ul>
+        </ul>
+        <p class="mt-3 text-right text-sm font-semibold">Shop subtotal: ₱{{ number_format($group->subtotal, 2) }}</p>
+    </section>
+    @endforeach
+    </div>
 
 @endif
 @endsection

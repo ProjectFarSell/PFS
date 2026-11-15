@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Rider application · FarSell')
+@section('title', 'Rider application | FarSell')
 
 @section('content')
 <div class="max-w-lg mx-auto">

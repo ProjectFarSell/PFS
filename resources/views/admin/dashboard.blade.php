@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Admin Dashboard · FarSell')
+@section('title', 'Admin Dashboard | FarSell')
 
 @section('content')
     <section class="flex flex-wrap items-end justify-between gap-5 pb-6">
@@ -11,8 +11,7 @@
         </div>
         <div class="flex flex-wrap items-center gap-2">
             <x-ui.button variant="primary" size="lg" :href="route('fulfillments.index', ['status' => 'ready'])">Dispatch shipments</x-ui.button>
-            <x-ui.button variant="secondary" :href="route('admin.logistics.index')">Logistics</x-ui.button>
-            <x-action-menu class="ml-auto" context="administration actions">
+            <x-action-menu label="Other actions" context="administration" class="ml-auto sm:ml-0">
                 <p class="px-4 text-xs font-semibold text-text-muted">Delivery exceptions</p>
                 <a href="{{ route('fulfillments.index', ['status' => 'delivery_failed']) }}" class="dropdown-item">Failed deliveries</a>
                 <a href="{{ route('fulfillments.index', ['status' => 'returning']) }}" class="dropdown-item">Returns to seller</a>
@@ -48,11 +47,11 @@
     </div>
 
     <dl class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div class="fs-card p-4">
+        <div class="fs-card p-5">
             <dt class="text-xs text-text-muted">Orders placed · last 30 days</dt>
             <dd class="mt-2 text-2xl font-semibold">{{ number_format($ordersLast30Days) }}</dd>
         </div>
-        <div class="fs-card p-4">
+        <div class="fs-card p-5">
             <dt class="text-xs text-text-muted">Completed COD sales · last 30 days</dt>
             <dd class="mt-2 text-2xl font-semibold">₱{{ number_format((float) $salesLast30Days, 2) }}</dd>
             <dd class="mt-1 text-xs text-text-muted">Merchandise total before reimbursements.</dd>
@@ -60,16 +59,16 @@
     </dl>
 
     <div class="my-7 grid gap-4 md:grid-cols-2">
-    <section class="admin-action">
+    <section class="admin-action relative">
         <div class="flex items-center justify-between gap-3"><h2 class="font-semibold">Seller applications</h2><span class="badge badge-accent tabular-nums">{{ $pendingSellers }} pending</span></div>
         <p class="text-sm text-text-muted">Review applicants before opening their shops and enabling listings.</p>
-        <x-ui.button variant="secondary" :href="route('admin.sellers.index')" class="mt-auto self-start">Review seller applications <x-ui.icon name="next" size="sm" /></x-ui.button>
+        <x-ui.button variant="link" :href="route('admin.sellers.index')" class="mt-auto self-start after:absolute after:inset-0 after:content-['']">Review seller applications <x-ui.icon name="next" size="sm" /></x-ui.button>
     </section>
 
-    <section class="admin-action">
+    <section class="admin-action relative">
         <div class="flex items-center justify-between gap-3"><h2 class="font-semibold">Rider applications</h2><span class="badge badge-accent tabular-nums">{{ $stats['pendingRiders'] }} pending</span></div>
         <p class="text-sm text-text-muted">Check delivery partners’ details before granting rider access.</p>
-        <x-ui.button variant="secondary" :href="route('admin.riders.index')" class="mt-auto self-start">Review rider applications <x-ui.icon name="next" size="sm" /></x-ui.button>
+        <x-ui.button variant="link" :href="route('admin.riders.index')" class="mt-auto self-start after:absolute after:inset-0 after:content-['']">Review rider applications <x-ui.icon name="next" size="sm" /></x-ui.button>
     </section>
     </div>
 

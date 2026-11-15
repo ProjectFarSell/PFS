@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Privacy notice · FarSell')
+@section('title', 'Privacy notice | FarSell')
 @section('content')
 <div class="mx-auto max-w-3xl space-y-6 px-4 py-10">
     <div class="flex items-center justify-between"><a href="{{ auth()->check() ? route('account.profile.edit') : route('register') }}" class="text-accent underline">{{ auth()->check() ? 'Back to profile settings' : 'Back to create account' }}</a><x-theme-toggle /></div>

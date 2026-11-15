@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Reset password - FarSell')
+@section('title', 'Reset password | FarSell')
 @section('content')
 <div class="mx-auto max-w-lg px-4 py-12">
     <x-ui.button variant="link" :href="route('login')" class="inline-flex min-h-11 items-center text-sm text-accent underline">Back to login</x-ui.button>

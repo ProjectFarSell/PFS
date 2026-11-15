@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Services\Orders\PurchaseLine;
 use App\Support\Cart;
+use App\Support\CartDisplay;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -17,9 +18,11 @@ class CartController extends Controller
     public function index(): View
     {
         Cart::clearBuyNow();
+        $lines = Cart::hydrated();
 
         return view('cart.index', [
-            'lines' => Cart::hydrated(),
+            'lines' => $lines,
+            'groups' => app(CartDisplay::class)->groups($lines),
             'subtotal' => Cart::subtotal(),
         ]);
     }

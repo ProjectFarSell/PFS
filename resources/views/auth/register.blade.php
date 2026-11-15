@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Create account · FarSell')
+@section('title', 'Create account | FarSell')
 
 @section('content')
     <div class="max-w-sm mx-auto fs-card p-5">

@@ -1,9 +1,9 @@
 @extends('layouts.portal')
 
-@section('title', 'Rider Dashboard · FarSell')
+@section('title', 'Rider Dashboard | FarSell')
 
 @section('content')
-    <section class="fs-card-raised p-5 sm:p-7">
+    <section class="pb-6 pt-2">
         <p class="text-xs font-semibold uppercase tracking-widest text-accent">Rider Dashboard</p>
         <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
             <h1 class="text-2xl font-semibold">Your delivery workspace</h1>
@@ -41,8 +41,13 @@
             @endif
         </section>
     @else
+        <section aria-label="Delivery metrics" class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            @foreach($stats as $label => $count)
+                <x-dashboard.kpi-card :data="['label' => $label, 'value' => number_format($count)]" :comparison="false" />
+            @endforeach
+        </section>
         @if(auth()->user()->role === \App\Enums\UserRole::Rider)
-            <section id="delivery-requests" class="fs-card p-5 mt-5 scroll-mt-32">
+            <section id="delivery-requests" class="fs-card p-5 mb-5 scroll-mt-32">
                 <h2 class="font-semibold">Delivery requests</h2>
                 <p class="text-sm text-text-muted mt-2">Requests match your registered city: {{ $profile->city }}. Going unavailable does not cancel accepted deliveries.</p>
                 <form method="post" action="{{ route('rider.availability') }}" class="my-4">
@@ -56,12 +61,6 @@
                 <noscript><p>Enable JavaScript to receive live delivery requests.</p></noscript>
             </section>
         @endif
-        <section aria-label="Delivery metrics" class="my-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            @foreach($stats as $label => $count)
-                <x-dashboard.kpi-card :data="['label' => $label, 'value' => number_format($count)]" :comparison="false" />
-            @endforeach
-        </section>
-
         <section class="fs-card mb-5 p-5" aria-labelledby="rider-feedback-heading">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>

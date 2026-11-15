@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Seller application · FarSell')
+@section('title', 'Seller application | FarSell')
 @section('content')
     <div class="mx-auto max-w-2xl fs-card p-5 sm:p-7">
         <x-ui.button variant="link" :href="route('account.profile')" class="text-sm text-accent underline">Back to My Profile</x-ui.button>

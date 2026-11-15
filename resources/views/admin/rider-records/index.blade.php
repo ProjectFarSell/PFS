@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Rider records · FarSell')
+@section('title', 'Rider records | FarSell')
 
 @section('content')
     <x-ui.button variant="link" :href="route('admin.dashboard')" class="text-sm text-accent underline">Back to dashboard</x-ui.button>

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Finish signing in - FarSell')
+@section('title', 'Finish signing in | FarSell')
 @section('content')
 <div class="fs-card mx-auto max-w-lg space-y-5 p-6">
     <p class="section-eyebrow">Sign-in verification</p>

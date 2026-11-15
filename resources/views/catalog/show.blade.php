@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->name.' · FarSell')
+@section('title', $product->name.' | FarSell')
 
 @if(auth()->user()?->role !== \App\Enums\UserRole::Seller)
     @section('buyer-action-bar', 'true')

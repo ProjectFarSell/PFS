@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Search · FarSell')
+@section('title', 'Search | FarSell')
 
 @section('content')
 @php $productCount = $products->total(); @endphp

@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Security audit trail - FarSell')
+@section('title', 'Security audit trail | FarSell')
 @section('content')
 <div class="space-y-5"><h1 class="text-2xl font-bold">Security audit trail</h1><p class="text-sm text-text-muted">Selected account, catalog, stock, application and refund changes. Audit records cannot be edited or deleted through the website. Actor IDs refer to the account that performed the action.</p>
 <form method="get" class="flex flex-wrap gap-3"><label class="text-sm">Action<input name="action" value="{{ request('action') }}" maxlength="80" class="mt-1 block rounded-lg border border-surface-border bg-surface p-2"></label><label class="text-sm">Actor ID<input type="number" name="actor_id" min="1" value="{{ request('actor_id') }}" class="mt-1 block rounded-lg border border-surface-border bg-surface p-2"></label><x-ui.button variant="secondary" type="submit">Filter</x-ui.button></form>

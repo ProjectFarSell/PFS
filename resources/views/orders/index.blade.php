@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'My Orders · FarSell')
+@section('title', 'My Orders | FarSell')
 
 @section('content')
     <a href="{{ route('account.profile') }}" class="inline-block text-sm text-accent hover:text-accent mb-3"><x-ui.icon name="previous" size="sm" class="inline-block align-text-bottom" /> My Profile</a>

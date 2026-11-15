@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', (match ($section) { 'suspended' => 'Suspended accounts', 'restore' => 'Restore accounts', default => 'Active accounts' }).' - Account protection')
+@section('title', (match ($section) { 'suspended' => 'Suspended accounts', 'restore' => 'Restore accounts', default => 'Active accounts' }).' | FarSell')
 @section('content')
 <div class="space-y-5">
     <h1 class="text-2xl font-bold">Account protection</h1>

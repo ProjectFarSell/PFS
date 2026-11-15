@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Sales summary - FarSell')
+@section('title', 'Sales summary | FarSell')
 @section('content')
 <div class="space-y-6">
     <div><x-ui.button variant="link" :href="route('seller.dashboard')" class="text-sm text-accent underline">Back to dashboard</x-ui.button><h1 class="mt-2 text-2xl font-bold">{{ $shop->name }} — Sales summary</h1></div>

@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Your next great find starts here · FarSell')
+@section('title', 'Sign in or register | FarSell')
 
 @section('content')
 @php
@@ -11,7 +11,7 @@
 <div class="auth-page" x-data="{ tab: '{{ $defaultTab }}', loginLoading: false, registerLoading: false }" @pageshow.window="loginLoading = false; registerLoading = false">
     <div class="auth-shell">
         <aside class="auth-story" aria-labelledby="auth-story-heading">
-            <a href="{{ route('welcome') }}" class="inline-flex w-fit items-center gap-3 text-xl font-bold"><span class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/30 bg-white/10">F</span> FarSell</a>
+            <a href="{{ route('welcome') }}" class="inline-flex w-fit items-center gap-3 text-xl font-bold"><x-brand-mark :on-dark="true" /> FarSell</a>
             <div class="relative z-10 py-10">
                 <p class="text-xs font-semibold uppercase tracking-[.2em] text-white/70">Good finds. Great possibilities.</p>
                 <h1 id="auth-story-heading" class="mt-5 text-4xl font-bold leading-[1.08] tracking-tight xl:text-5xl">A little more<br>you. A lot more<br><span class="auth-outline-text">to discover.</span></h1>
@@ -31,7 +31,7 @@
                 <x-theme-toggle />
             </div>
             <div class="auth-form-content">
-                <a href="{{ route('welcome') }}" class="mb-6 inline-flex items-center gap-2 font-bold text-accent lg:hidden"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-accent-text">F</span> FarSell</a>
+                <a href="{{ route('welcome') }}" class="mb-6 inline-flex items-center gap-2 font-bold text-accent lg:hidden"><x-brand-mark /> FarSell</a>
                 <div class="auth-tabs" role="tablist" aria-label="Account access">
                     <a id="login-tab" x-ref="loginTab" href="{{ route('login') }}" role="tab" aria-controls="login-panel" :aria-selected="tab === 'login'" :tabindex="tab === 'login' ? 0 : -1" @click.prevent="tab = 'login'" @keydown.right.prevent="tab = 'register'; $refs.registerTab.focus()" :data-active="tab === 'login' ? 'true' : 'false'" data-active="{{ $defaultTab === 'login' ? 'true' : 'false' }}">Log in</a>
                     <a id="register-tab" x-ref="registerTab" href="{{ route('register') }}" role="tab" aria-controls="register-panel" :aria-selected="tab === 'register'" :tabindex="tab === 'register' ? 0 : -1" @click.prevent="tab = 'register'" @keydown.left.prevent="tab = 'login'; $refs.loginTab.focus()" :data-active="tab === 'register' ? 'true' : 'false'" data-active="{{ $defaultTab === 'register' ? 'true' : 'false' }}">Create account</a>

@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Chat · FarSell')
+@section('title', 'Chat | FarSell')
 @section('content')
 <div class="mx-auto max-w-6xl" x-data="chatThread({{ (int) $conversation->id }}, {{ (int) auth()->id() }}, @js(route('chat.messages', $conversation)), {{ (int) ($messages->last()?->id ?? 0) }})" x-init="start()" x-on:beforeunload.window="stop()">
     <section class="fs-card overflow-hidden">

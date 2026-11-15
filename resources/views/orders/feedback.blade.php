@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Rate your products · FarSell')
+@section('title', 'Rate your products | FarSell')
 
 @section('content')
     <div class="mx-auto max-w-3xl">

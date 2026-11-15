@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Request replacement - FarSell')
+@section('title', 'Request replacement | FarSell')
 @section('content')
 <div class="mx-auto max-w-2xl space-y-4">
     <x-ui.button variant="link" class="text-accent underline" :href="route('orders.show', $item->order)">Back to original order</x-ui.button>

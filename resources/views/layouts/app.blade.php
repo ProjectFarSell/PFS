@@ -46,21 +46,18 @@
          Desktop: logo | category dropdowns | search | icons | toggle
          Mobile:  logo | search | hamburger
          ══════════════════════════════════════════════════════════════ --}}
-    <header class="sticky top-0 z-40 border-b transition-colors duration-200"
-            style="background-color: rgb(var(--color-surface)); border-color: rgb(var(--color-surface-border) / 0.5);"
+    <header class="storefront-header sticky top-0 z-40 border-b transition-colors duration-200"
             x-data="{ mobileOpen: false }" @keydown.escape.window="mobileOpen = false">
 
         {{-- ── Main nav bar ─────────────────────────────────────────── --}}
         <div class="mx-auto max-w-7xl px-4">
-            <div class="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3 py-2">
+            <div class="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3 py-2.5">
 
                 {{-- Logo --}}
-                <a href="{{ route('home') }}"
-                   class="shrink-0 flex items-center gap-2 text-xl font-bold"
-                   style="color: rgb(var(--color-accent));">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-black"
-                          style="background-color: rgb(var(--color-accent)); color: rgb(var(--color-accent-text));">F</span>
-                    <span class="hidden sm:inline">FarSell</span>
+                <a href="{{ route('home') }}" aria-label="FarSell home"
+                   class="storefront-brand shrink-0 flex items-center justify-center" title="FarSell home">
+                    <x-brand-mark class="size-11" />
+                    <span class="sr-only">FarSell</span>
                 </a>
 
                 {{-- ── Desktop: category dropdown nav ────────────────── --}}
@@ -123,7 +120,7 @@
                                placeholder="Search items, shops, brands, surplus lots..."
                                aria-label="Search products"
                                @focus="focused = true" @focusout="if (!$el.parentElement.parentElement.contains($event.relatedTarget)) focused = false"
-                               class="fs-input min-h-11 pl-10 pr-11 rounded-full">
+                               class="storefront-search fs-input min-h-11 pl-10 pr-11 rounded-full">
                         <x-ui.icon-button variant="tertiary" label="Clear search" icon="close" type="button" x-show="query.length > 0" @click="query = ''; $refs.searchInput.focus()" class="absolute right-0 top-0 theme-toggle" style="display:none;"></x-ui.icon-button>
                     </form>
                     <div x-show="focused && !query.trim() && recent.length" class="search-recents" style="display:none;" @focusout="if (!$el.parentElement.contains($event.relatedTarget)) focused = false">
@@ -136,11 +133,9 @@
                 <div class="ml-auto flex shrink-0 items-center gap-2">
                     @guest
                         {{-- Guest pill --}}
-                        <div class="hidden sm:flex items-center gap-1 rounded-full border min-h-11 px-3 py-1.5 text-sm transition-colors"
-                             style="border-color: rgb(var(--color-surface-border) / 0.7); background-color: rgb(var(--color-surface));">
-                            <x-ui.button variant="tertiary" :href="route('login')" class="text-accent">Sign in</x-ui.button>
-                            <span class="mx-1" style="color: rgb(var(--color-surface-border));">|</span>
-                            <x-ui.button variant="tertiary" :href="route('register')" class="text-accent">Register</x-ui.button>
+                        <div class="hidden sm:flex items-center gap-1">
+                            <x-ui.button variant="tertiary" :href="route('login')" class="!rounded-full !text-text-base">Sign in</x-ui.button>
+                            <x-ui.button variant="primary" :href="route('register')" class="!rounded-full">Register</x-ui.button>
                         </div>
                     @endguest
                     @auth

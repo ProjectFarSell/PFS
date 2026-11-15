@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Notifications - FarSell')
+@section('title', 'Notifications | FarSell')
 @section('content')
 <div class="mx-auto max-w-3xl space-y-5">
     <div class="flex flex-wrap items-center justify-between gap-3">

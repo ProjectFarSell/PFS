@@ -1,9 +1,33 @@
 @extends('layouts.portal')
 
-@section('title', 'Seller Dashboard · FarSell')
+@section('title', 'Seller Dashboard | FarSell')
 
 @section('content')
-    <section class="fs-card-raised p-5 sm:p-7">
+    @if(!$shop)
+        <section class="fs-card-raised p-5 sm:p-7">
+            @if(!array_key_exists('application', get_defined_vars()))
+                <h1 class="text-2xl font-semibold">Shop application</h1>
+                <p class="mt-2 text-sm text-text-muted">View your application details to check its status.</p>
+                <x-ui.button variant="secondary" :href="route('seller.apply')" class="mt-4">View application</x-ui.button>
+            @elseif($application === null)
+                <h1 class="text-2xl font-semibold">Open your shop</h1>
+                <p class="mt-2 text-sm text-text-muted">An administrator reviews your shop details before approval.</p>
+                <div class="mt-4 flex flex-wrap gap-3"><x-ui.button variant="primary" size="lg" :href="route('seller.apply')">Apply to open a shop</x-ui.button><x-ui.button variant="secondary" :href="route('account.profile')">Back to profile</x-ui.button></div>
+            @elseif($application->status === 'pending')
+                <h1 class="text-2xl font-semibold">Application under review</h1>
+                @if($application->submitted_at)<p class="mt-2 text-sm text-text-muted">Submitted {{ $application->submitted_at->format('M j, Y') }}</p>@endif
+                <h2 class="mt-4 font-semibold">What happens next</h2><p class="mt-2 text-sm text-text-muted">An administrator will review your application and you will be notified.</p>
+                <x-ui.button variant="secondary" :href="route('seller.apply')" class="mt-4">View submitted details</x-ui.button>
+            @elseif($application->status === 'rejected')
+                <h1 class="text-2xl font-semibold">Application not approved</h1>
+                @if($application->decision_note ?? $application->review_note ?? null)<p class="mt-2 break-words text-sm text-text-muted">{{ $application->decision_note ?? $application->review_note }}</p>@endif
+                <x-ui.button variant="primary" size="lg" :href="route('seller.apply')" class="mt-4">Reapply</x-ui.button>
+            @else
+                <h1 class="text-2xl font-semibold">Shop application</h1><p class="mt-2 text-sm text-text-muted">Your shop setup is being reviewed.</p>
+            @endif
+        </section>
+    @else
+    <section class="pb-6 pt-2">
         <p class="text-xs font-semibold uppercase tracking-widest text-accent">Seller Dashboard</p>
         <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
             <h1 class="text-2xl font-semibold">{{ $shop?->name ?? 'Your seller workspace' }}</h1>
@@ -43,17 +67,8 @@
         @endif
     </section>
 
-    @if(!$shop)
-        <section class="fs-card mt-5 p-6">
-            <h2 class="font-semibold">No shop linked to your account</h2>
-            <p class="mt-2 text-sm text-text-muted">Submit your shop details for admin approval before listing products.</p>
-            <div class="mt-4 flex flex-wrap gap-2">
-                <x-ui.button variant="secondary" :href="route('account.profile')">Back to profile</x-ui.button>
-                <x-ui.button variant="link" :href="route('fulfillments.index')">Manage shop orders</x-ui.button>
-            </div>
-        </section>
-    @else
-        <dl class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+    @if($shop)
+        <dl class="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div class="fs-card p-4">
                 <dt class="text-xs text-text-muted">Total completed COD sales</dt>
                 <dd class="mt-2 text-2xl font-semibold">₱{{ number_format((float) $totalSales, 2) }}</dd>
@@ -64,7 +79,7 @@
                 <dd class="mt-2 text-2xl font-semibold">{{ number_format($pendingOrders) }}</dd>
             </div>
         </dl>
-        <dl class="my-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <dl class="my-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
             @foreach(['products' => 'Your products', 'active' => 'Active products', 'lowStock' => 'Low-stock active products', 'orderItems' => 'Linked order items'] as $key => $label)
                 <div class="fs-card p-4">
                     <dt class="text-xs text-text-muted">{{ $label }}</dt>
@@ -160,5 +175,6 @@
                 <div class="border-t border-surface-border p-4">{{ $items->links() }}</div>
             @endif
         </section>
+    @endif
     @endif
 @endsection

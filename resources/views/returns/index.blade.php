@@ -1,5 +1,5 @@
 @extends(auth()->user()->role === \App\Enums\UserRole::Buyer ? 'layouts.app' : 'layouts.portal')
-@section('title', 'Returns & refunds - FarSell')
+@section('title', 'Returns & refunds | FarSell')
 @section('content')
 <div class="mx-auto max-w-4xl space-y-5">
     <h1 class="text-2xl font-bold">Returns & refunds</h1>

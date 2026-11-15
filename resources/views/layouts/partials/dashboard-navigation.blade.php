@@ -1,5 +1,6 @@
 @php
     $admin = $portalRole === \App\Enums\UserRole::Admin;
+    $hasApprovedShop = $hasApprovedShop ?? ($portalRole === \App\Enums\UserRole::Seller && auth()->user()->shop !== null);
     $dashboardRoute = $admin ? 'admin.dashboard' : 'seller.dashboard';
     $navigation = $admin ? [
         ['Dashboard', 'home', 'admin.dashboard', request()->routeIs('admin.dashboard')],
@@ -14,6 +15,9 @@
         ['Chat', 'chat', 'chat.index', request()->routeIs('chat.*')],
         ['Storefront', 'browse', 'home', false],
     ];
+    if (! $admin && ! $hasApprovedShop) {
+        $navigation = array_slice($navigation, 0, 1);
+    }
     $overflow = $admin ? [
         ['Barangay assignments', 'location', 'admin.riders.barangays.index', request()->routeIs('admin.riders.barangays.*')],
         ['Rider records', 'account', 'admin.rider-records.index', request()->routeIs('admin.rider-records.*')],
@@ -30,7 +34,7 @@
     @resize.window="if (sheetOpen && window.matchMedia('(min-width: 1024px)').matches) $refs.sheet.close()">
     <div class="mx-auto flex min-h-14 max-w-screen-2xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <a href="{{ route($dashboardRoute) }}" class="inline-flex min-h-target shrink-0 items-center gap-2 rounded-ui font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 lg:min-h-target-desktop">
-            <span aria-hidden="true" class="grid size-7 place-items-center rounded-lg bg-dashboard-light-accent text-sm text-white dark:bg-dashboard-dark-accent dark:text-dashboard-dark-page">F</span>
+            <x-brand-mark />
             <span>FarSell <span class="text-xs font-medium text-dashboard-light-muted dark:text-dashboard-dark-muted">{{ ucfirst($portalRole->value) }}</span></span>
         </a>
 
@@ -57,6 +61,7 @@
         </nav>
 
         <div class="hidden shrink-0 items-center gap-1 lg:flex">
+            @if ($admin || $hasApprovedShop)
             <x-ui.icon-button icon="help" label="Help" tooltip="Help center unavailable" disabled class="lg:min-h-target-desktop lg:min-w-target-desktop" />
             <x-ui.icon-button icon="settings" label="Settings" :href="route('account.profile.edit')"
                 :aria-current="request()->routeIs('account.profile.edit') ? 'page' : null" class="lg:min-h-target-desktop lg:min-w-target-desktop" />
@@ -64,6 +69,7 @@
                 :tooltip="$admin ? null : 'Seller notifications unavailable'" :disabled="!$admin"
                 :aria-current="$notificationsActive ? 'page' : null"
                 class="lg:min-h-target-desktop lg:min-w-target-desktop {{ $notificationsActive ? 'bg-dashboard-light-active dark:bg-dashboard-dark-active' : '' }}" />
+            @endif
             <x-ui.icon-button icon="account" label="Profile" :href="route('account.profile')" class="lg:min-h-target-desktop lg:min-w-target-desktop" />
         </div>
 
@@ -86,6 +92,7 @@
             @endforeach
         </nav>
         <div class="mt-3 grid gap-2 border-t border-dashboard-light-border pt-3 dark:border-dashboard-dark-border">
+            @if ($admin || $hasApprovedShop)
             <x-ui.button variant="tertiary" icon="help" class="w-full !justify-start" disabled>Help unavailable</x-ui.button>
             <x-dashboard.nav-link :href="route('account.profile.edit')" label="Settings" icon="settings"
                 :active="request()->routeIs('account.profile.edit')" class="w-full !justify-start" />
@@ -94,6 +101,7 @@
                     :active="$notificationsActive" class="w-full !justify-start" />
             @else
                 <x-ui.button variant="tertiary" icon="notification" class="w-full !justify-start" disabled>Notifications unavailable</x-ui.button>
+            @endif
             @endif
             <x-dashboard.nav-link :href="route('account.profile')" label="Profile" icon="account" class="w-full !justify-start" />
             @include('layouts.partials.dashboard-account-actions')

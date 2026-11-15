@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Active products · FarSell')
+@section('title', 'Active products | FarSell')
 
 @section('content')
     <x-ui.button variant="link" :href="route('admin.dashboard')" class="text-sm text-accent underline">Back to Admin Dashboard</x-ui.button>
@@ -11,11 +11,11 @@
             <p data-stock-refresh-status class="mt-1 text-xs text-text-muted">Stock refreshes automatically while this page is visible.</p>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-                <thead class="bg-surface-muted text-xs text-text-muted"><tr><th class="px-4 py-3">Product</th><th class="px-4 py-3">Shop / category</th><th class="px-4 py-3">Variants / SKU</th><th class="px-4 py-3 text-right">Available stock</th></tr></thead>
+            <table class="w-full min-w-[640px] text-left text-sm">
+                <thead class="bg-surface-muted text-xs font-semibold text-text-base"><tr><th class="px-4 py-3">Product</th><th class="px-4 py-3">Shop / category</th><th class="px-4 py-3">Variants / SKU</th><th class="px-4 py-3 text-right">Available stock</th></tr></thead>
                 <tbody class="divide-y divide-surface-border/40">
                     @forelse($products as $product)
-                        <tr data-inventory-product="{{ $product->id }}">
+                        <tr class="transition-colors hover:bg-surface-muted/50" data-inventory-product="{{ $product->id }}">
                             <th class="px-4 py-4 font-medium">{{ $product->name }}<span class="mt-1 block text-xs font-normal text-text-muted">Product ID {{ $product->id }}</span></th>
                             <td class="px-4 py-4">{{ $product->shop?->name ?? 'Unavailable shop' }}<span class="mt-1 block text-xs text-text-muted">{{ $product->category?->name ?? 'No category' }}</span></td>
                             <td class="px-4 py-4">
@@ -37,6 +37,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="border-t border-surface-border p-4">{{ $products->links() }}</div>
+        @if($products->hasPages())<div class="border-t border-surface-border p-4">{{ $products->links() }}</div>@endif
     </section>
 @endsection

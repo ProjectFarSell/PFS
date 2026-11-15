@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $document === 'invoice' ? 'Invoice' : 'Packing slip' }} {{ $order->number }} · FarSell</title>
+    <title>{{ $document === 'invoice' ? 'Invoice' : 'Packing slip' }} {{ $order->number }} | FarSell</title>
     <style>
         body { color: #222; font: 14px/1.5 Arial, sans-serif; margin: 2rem auto; max-width: 850px; padding: 0 1rem; }
         h1 { margin-bottom: .25rem; }

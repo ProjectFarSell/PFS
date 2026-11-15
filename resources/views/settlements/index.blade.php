@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Commissions & settlements - FarSell')
+@section('title', 'Commissions & settlements | FarSell')
 @section('content')
 <div class="mx-auto max-w-5xl space-y-4">
     <x-ui.button variant="link" :href="route($isAdmin ? 'admin.dashboard' : 'seller.dashboard')" class="text-sm text-accent underline">Back to dashboard</x-ui.button>

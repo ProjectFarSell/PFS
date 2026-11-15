@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Logistics - FarSell')
+@section('title', 'Logistics | FarSell')
 @section('content')
 <div class="space-y-5">
     <h1 class="text-2xl font-bold">Logistics</h1>

@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Discover your next find · FarSell')
+@section('title', 'Marketplace | FarSell')
 
 @section('content')
 @php
     $slides = [
-        ['eyebrow' => 'Good finds. Closer to home.', 'title' => 'Curated Surplus. Unbeatable Everyday Prices.', 'subtitle' => 'Explore local shops, discover something unexpected, and sign in when you are ready to order.', 'cta_text' => 'Browse products', 'cta_href' => route('catalog.index')],
-        ['eyebrow' => 'Make room for your next obsession', 'title' => 'Small upgrades. Big personality.', 'subtitle' => 'From custom keyboards to collectible figures, find the pieces that make a space yours.', 'cta_text' => 'Explore gadgets', 'cta_href' => route('catalog.index', ['q' => 'keyboard'])],
-        ['eyebrow' => 'Meet your next favorite shop', 'title' => 'Find local. Shop with confidence.', 'subtitle' => 'Explore shop profiles and product details before deciding what comes home with you.', 'cta_text' => 'Explore shops', 'cta_href' => route('shops.index')],
+        ['eyebrow' => 'Good finds. Closer to home.', 'title' => 'A little surprise in every find.', 'subtitle' => 'Explore local shops, discover something unexpected, and find your next favorite for less.', 'cta_text' => 'Browse products', 'cta_href' => route('catalog.index'), 'art' => 'mascot', 'tag' => 'Made for curious shoppers'],
+        ['eyebrow' => 'Make room for your next obsession', 'title' => 'Small upgrades. Big personality.', 'subtitle' => 'From custom keyboards to collectible figures, find the pieces that make a space yours.', 'cta_text' => 'Explore gadgets', 'cta_href' => route('catalog.index', ['q' => 'keyboard']), 'art' => 'keyboard', 'tag' => 'For your happy place'],
+        ['eyebrow' => 'Meet your next favorite shop', 'title' => 'Good finds have good neighbors.', 'subtitle' => 'Explore local shops and get to know the people behind your next great find.', 'cta_text' => 'Explore shops', 'cta_href' => route('shops.index'), 'art' => 'cards', 'tag' => 'Discover local'],
     ];
     $interests = [['Trading Cards', 'trading card'], ['Figures & Models', 'figure'], ['Custom Keyboards', 'keyboard'], ['Gaming & Audio', 'gaming'], ['Anime Merch', 'anime'], ['Desk Accessories', 'desk']];
     $collections = [

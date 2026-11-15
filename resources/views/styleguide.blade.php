@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'UI styleguide · FarSell')
+@section('title', 'UI styleguide | FarSell')
 
 @section('content')
 <div class="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">

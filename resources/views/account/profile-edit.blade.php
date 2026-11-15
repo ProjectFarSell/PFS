@@ -1,6 +1,6 @@
 @extends($user->role === \App\Enums\UserRole::Buyer ? 'layouts.app' : 'layouts.portal')
 
-@section('title', 'Edit profile · FarSell')
+@section('title', 'Edit profile | FarSell')
 
 @section('content')
     <x-ui.button variant="secondary" :href="route('security.index')" class="mb-4">Account security &amp; signed-in devices</x-ui.button>

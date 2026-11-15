@@ -1,6 +1,6 @@
 @extends(auth()->user()->role === \App\Enums\UserRole::Admin ? 'layouts.portal' : 'layouts.app')
 
-@section('title', 'Order '.$order->number)
+@section('title', 'Order '.$order->number.' | FarSell')
 
 @section('content')
     @if(auth()->user()->role === \App\Enums\UserRole::Buyer)

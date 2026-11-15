@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Saved Items · FarSell')
+@section('title', 'Saved Items | FarSell')
 
 @section('content')
     <h1 class="text-xl font-semibold mb-4">Saved Items</h1>

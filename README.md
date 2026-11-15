@@ -194,7 +194,7 @@ DB_PASSWORD=your_password
 
 ## Test Accounts
 
-All seeded accounts use the password `password`.
+The local demo accounts use the password `password`. Existing accounts keep their current password when the seeder is rerun.
 
 The four reserved demo accounts below are marked `is_demo_account` by the trusted seeders (and the additive migration for existing local demo records). In **local/testing only**, they sign in with their password and skip email/phone OTP and authenticator setup. Regular registered/provisioned accounts still use buyer/rider OTP or seller/admin authenticators. This exemption never applies in staging/production, and it does not apply to arbitrary `.test` emails or a demo flag submitted through signup/profile forms.
 
@@ -228,12 +228,12 @@ To also create the demo seller's shop, sample products, and buyer address, run `
 
 The synthetic demo rider starts unavailable. Turn on availability in the rider dashboard when you want eligible Quezon City delivery offers. If an existing demo profile is pending, rejected or suspended, review it through the normal admin workflow; reseeding does not approve it. A suspended account or an account with a different role is preserved and skipped. The profile seeder refuses production/staging use; automatic demo profile creation runs only in local/testing.
 
-| Role | Email | Name | Notes |
-|---|---|---|---|
-| Admin | `admin@farsell.test` | FarSell Admin | Marketplace dashboard, seller/rider application reviews, and authorized order details |
-| Buyer | `buyer@farsell.test` | Guest Buyer | Default shopping account, has a saved address |
-| Seller | `seller@farsell.test` | Demo Seller | Owns "Metro Surplus Co." shop with 24 catalog products plus up to three variant demos |
-| Rider | `rider@farsell.test` | Demo Rider | Local/testing seed creates a missing approved synthetic Quezon City profile; availability starts off; no fabricated documents |
+| Role | Email | Password | Name | Notes |
+|---|---|---|---|---|
+| Admin | `admin@farsell.test` | `password` | FarSell Admin | Marketplace dashboard, seller/rider application reviews, and authorized order details |
+| Buyer | `buyer@farsell.test` | `password` | Guest Buyer | Default shopping account, has a saved address |
+| Seller | `seller@farsell.test` | `password` | Demo Seller | Owns "Metro Surplus Co." shop with 24 catalog products plus up to three variant demos |
+| Rider | `rider@farsell.test` | `password` | Demo Rider | Local/testing seed creates a missing approved synthetic Quezon City profile; availability starts off; no fabricated documents |
 
 > `db:seed` uses existing-record checks, but `migrate:fresh` **drops every table**. Never use it for a normal update or a database containing records you need. Back up data before any deliberate reset.
 

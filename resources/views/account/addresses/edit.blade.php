@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit address · FarSell')
+@section('title', 'Edit address | FarSell')
 
 @section('content')
     <div class="max-w-lg mx-auto rounded-2xl bg-surface border border-surface-border p-5">

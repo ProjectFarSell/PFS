@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $shop->name.' · FarSell')
+@section('title', $shop->name.' | FarSell')
 
 @section('content')
     <a href="{{ route('shops.index') }}" class="inline-block mb-3 text-sm text-accent hover:underline"><x-ui.icon name="previous" size="sm" class="inline-block align-text-bottom" /> All shops</a>

@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Order fulfillment · FarSell')
+@section('title', 'Order fulfillment | FarSell')
 @section('content')
     @php
         $isSeller = $role === \App\Enums\UserRole::Seller;

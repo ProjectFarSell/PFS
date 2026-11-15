@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Account deletion requests · FarSell')
+@section('title', 'Account deletion requests | FarSell')
 @section('content')
 <x-ui.button variant="link" :href="route('admin.dashboard')" class="text-accent underline">Back to admin dashboard</x-ui.button>
 <h1 class="mt-5 text-2xl font-bold">Account deletion requests</h1>

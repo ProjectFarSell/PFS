@@ -1,5 +1,5 @@
 @extends('layouts.portal')
-@section('title', 'Chat · FarSell')
+@section('title', 'Chat | FarSell')
 @section('content')
 <div class="mx-auto max-w-6xl">
     <section class="fs-card overflow-hidden">

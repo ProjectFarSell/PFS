@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Notification deliveries · FarSell')
+@section('title', 'Notification deliveries | FarSell')
 
 @section('content')
     <section class="fs-card-raised mb-5 p-5">

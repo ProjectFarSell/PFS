@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Mobile support · FarSell')
+@section('title', 'Mobile support | FarSell')
 @section('content')
 <section class="mx-auto max-w-2xl rounded-2xl border border-surface-border bg-surface p-6">
     <h1 class="text-2xl font-semibold">FarSell mobile support</h1>

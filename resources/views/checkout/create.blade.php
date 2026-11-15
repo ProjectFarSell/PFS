@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Checkout · FarSell')
+@section('title', 'Checkout | FarSell')
 @section('buyer-action-bar', 'true')
 
 @section('content')
