@@ -6,6 +6,7 @@ use App\Enums\FulfillmentStatus;
 use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\OrderItem;
+use App\Support\Money;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -35,6 +36,7 @@ class DashboardController extends Controller
         $pendingOrders = $shop->fulfillments()
             ->whereNotIn('status', [FulfillmentStatus::Completed->value, FulfillmentStatus::Rejected->value, FulfillmentStatus::Cancelled->value, FulfillmentStatus::Returned->value])
             ->distinct()->count('order_id');
+        $totalSalesCents = Money::cents((string) $totalSales);
 
         $products = $shop->products()->withAvailableStock()->latest()->orderByDesc('id')
             ->paginate(10, ['*'], 'products_page')->withQueryString();
@@ -44,6 +46,6 @@ class DashboardController extends Controller
             ->with('order:id,number,status,created_at')
             ->orderByDesc('id')->paginate(10, ['*'], 'items_page')->withQueryString();
 
-        return view('seller.dashboard', compact('shop', 'stats', 'products', 'items', 'totalSales', 'pendingOrders'));
+        return view('seller.dashboard', compact('shop', 'stats', 'products', 'items', 'totalSales', 'totalSalesCents', 'pendingOrders'));
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Shop;
+use App\Services\Products\ProductGallery;
 use App\Services\Security\SafeImage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -55,7 +56,7 @@ class ProductController extends Controller
             $request->session()->forget('_old_input');
         }
 
-        $product->load('variants');
+        $product->load(['variants', 'images' => fn ($query) => $query->orderBy('sort_order')->orderBy('id')]);
 
         return view('seller.product-form', ['product' => $product, 'categories' => Category::orderBy('sort_order')->get()]);
     }
@@ -126,13 +127,15 @@ class ProductController extends Controller
                 if (! hash_equals($product->editVersion(), $request->string('version')->toString())) {
                     throw ValidationException::withMessages(['version' => 'This listing or its stock changed. Reload the editor before saving; your changes were not applied.']);
                 }
+                if ($product->admin_hidden_at && ($data['is_active'] ?? false)) {
+                    throw ValidationException::withMessages(['is_active' => 'An administrator has hidden this listing. Request restoration before publishing it.']);
+                }
                 if ($request->hasFile('image')) {
                     $path = app(SafeImage::class)->store($request->file('image'), 'products', 'r2');
                     if (! $path) {
                         throw ValidationException::withMessages(['image' => 'Image could not be saved. Please try again.']);
                     }
-                    $oldPath = $product->image_path;
-                    $product->image_path = $path;
+                    app(ProductGallery::class)->replacePrimaryLocked($product, $path);
                 }
                 // Preserve slug, shop ownership, order snapshots and reserved stock.
                 $product->fill($data)->save();
@@ -143,10 +146,6 @@ class ProductController extends Controller
                     if (blank($product->sku)) {
                         $product->forceFill(['sku' => $this->generatedProductSku($product)])->save();
                     }
-                }
-                // Delete old R2 image after successful save
-                if (isset($oldPath) && $oldPath) {
-                    Storage::disk('r2')->delete($oldPath);
                 }
             });
         } catch (\Throwable $e) {

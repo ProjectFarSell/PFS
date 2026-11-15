@@ -190,6 +190,14 @@ DB_PASSWORD=your_password
 
 3. Apply pending migrations: `php artisan migrate` (or `php artisan migrate --env=local` for the standalone environment). Seed reference geography with `php artisan db:seed --class=PsgcGeographySeeder --env=local` if needed. Changing database connections does not transfer existing data.
 
+For an existing SQLite installation, back up and verify the source first. Transfer into a **new, empty** MySQL database with matching IDs, password hashes, encrypted values and the same `APP_KEY`; verify business records and foreign keys before switching the environment file. Preserve the original SQLite file. Start sessions, login challenges and background queues fresh so old jobs are not replayed. SQLite may contain legacy text encodings or prices with more decimal places than MySQL permits; review and record any normalization instead of silently ignoring import errors. Never use `migrate:fresh` to transfer existing records.
+
+Keep MySQL80 running on Windows. After changing the database settings, run `php artisan config:clear` and restart `composer dev` (including its queue workers). Existing accounts keep their passwords; users must sign in again after a transfer. Reserve `farsell_test` for automated tests, never website data.
+
+### Payouts and COD administration
+
+The [payout backend handoff](docs/payouts-backend-handoff.md) lists the implemented routes, form fields, validation and rollout checks. Admin pages cover seller payout batches, rider COD remittances and commission/delivery/hold settings. Seller and rider pages show only their own records. These pages record external cash movements; they do not transfer money or add online checkout payments.
+
 ---
 
 ## Test Accounts

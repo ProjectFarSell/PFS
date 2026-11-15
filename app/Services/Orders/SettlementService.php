@@ -14,13 +14,15 @@ class SettlementService
     {
         $policy = collect(['commission_bps', 'rider_pay_cents', 'cod_cost_cents', 'operating_cost_cents'])
             ->mapWithKeys(fn ($key) => [$key => (int) config('marketplace.'.$key)])->all();
+        $settings = app(MarketplaceSettings::class)->current();
+        $policy['commission_bps'] = $settings->commission_bps;
         foreach ($policy as $key => $amount) {
             if ($amount < 0 || $amount > ($key === 'commission_bps' ? 10000 : 100000000)) {
                 throw new \RuntimeException('Invalid marketplace fee configuration.');
             }
         }
 
-        return $policy;
+        return [...$policy, 'settings_version' => $settings->version, 'delivery_fee_cents' => $settings->delivery_fee_cents, 'payout_hold_days' => $settings->payout_hold_days];
     }
 
     public function riderPay(Fulfillment $part): float

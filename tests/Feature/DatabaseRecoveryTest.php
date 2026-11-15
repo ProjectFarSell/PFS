@@ -73,8 +73,10 @@ class DatabaseRecoveryTest extends TestCase
         $this->requireSqliteBackup();
         $root = storage_path('app/private/ops-work/test-files-'.Str::uuid());
         File::ensureDirectoryExists($root.'/private/rider-documents', 0700);
+        File::ensureDirectoryExists($root.'/private/seller-documents', 0700);
         File::ensureDirectoryExists($root.'/public/avatars', 0700);
         File::put($root.'/private/rider-documents/dummy.txt', 'Dummy private document');
+        File::put($root.'/private/seller-documents/dummy.pdf', '%PDF-1.4 Dummy seller permit');
         File::put($root.'/public/avatars/dummy.txt', 'Dummy avatar');
         config(['filesystems.disks.local.root' => $root.'/private', 'filesystems.disks.public.root' => $root.'/public']);
         try {
@@ -83,7 +85,7 @@ class DatabaseRecoveryTest extends TestCase
             $report = $service->verify($name);
             $this->assertTrue($report['local_files_included']);
             $this->assertFalse($report['cloud_storage_included']);
-            $this->assertSame(3, $report['entries_verified']);
+            $this->assertSame(4, $report['entries_verified']);
         } finally {
             $parent = realpath(storage_path('app/private/ops-work'));
             $resolved = realpath($root);

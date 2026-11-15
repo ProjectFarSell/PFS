@@ -7,6 +7,8 @@ use App\Models\Address;
 use App\Models\MobileCart;
 use App\Models\Shop;
 use App\Services\Orders\CheckoutAvailability;
+use App\Services\Orders\MarketplaceSettings;
+use App\Services\Orders\SettlementService;
 use Illuminate\Support\Collection;
 
 class MobileCheckout
@@ -18,13 +20,14 @@ class MobileCheckout
 
     public function snapshot(MobileCart $cart, Address $address, Collection $lines, ?float $shipping = null): array
     {
+        app(MarketplaceSettings::class)->current(true);
         if ($lines->isEmpty() || $lines->contains(fn ($line) => ! $line->product || (isset($line->valid) && ! $line->valid) || $line->qty > ($line->variant?->stock ?? $line->product->stock))) {
             throw new ApiFailure('stock_conflict', 'Update the unavailable items in your cart.');
         }
         app(CheckoutAvailability::class)->ensureServiceable($address, $lines);
         $shipping ??= app(DeliveryFeeService::class)->calculate($address, $lines);
 
-        return ['cart_version' => $cart->version, 'address' => $address->getAttributes(), 'lines' => $lines->map(fn ($line) => ['product_id' => $line->product->id, 'variant_id' => $line->variant?->id, 'qty' => $line->qty, 'unit_price' => MobileViews::cents($line->unit_price), 'stock' => (int) ($line->variant?->stock ?? $line->product->stock), 'options' => $line->variant_options, 'shop_id' => $line->product->shop_id, 'sku' => $line->variant?->sku ?? $line->product->sku])->values()->all(), 'shipping' => MobileViews::cents($shipping), 'methods' => $this->methods()];
+        return ['cart_version' => $cart->version, 'address' => $address->getAttributes(), 'lines' => $lines->map(fn ($line) => ['product_id' => $line->product->id, 'variant_id' => $line->variant?->id, 'qty' => $line->qty, 'unit_price' => MobileViews::cents($line->unit_price), 'stock' => (int) ($line->variant?->stock ?? $line->product->stock), 'options' => $line->variant_options, 'shop_id' => $line->product->shop_id, 'sku' => $line->variant?->sku ?? $line->product->sku])->values()->all(), 'shipping' => MobileViews::cents($shipping), 'methods' => $this->methods(), 'fee_policy' => app(SettlementService::class)->policy()];
     }
 
     public function summary(array $snapshot, Address $address, string $id, $expires): array

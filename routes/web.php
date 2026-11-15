@@ -11,16 +11,20 @@ use App\Http\Controllers\Account\SignInOtpController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MarketplaceSettingsController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OperationsController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\PayoutReviewController;
 use App\Http\Controllers\Admin\PrivacyRequestController;
 use App\Http\Controllers\Admin\ProductInventoryController;
+use App\Http\Controllers\Admin\ProductModerationController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RiderApplicationController;
 use App\Http\Controllers\Admin\RiderRecordsController;
+use App\Http\Controllers\Admin\RiderRemittanceController;
 use App\Http\Controllers\Admin\SellerApplicationController;
+use App\Http\Controllers\Admin\SellerPayoutController;
 use App\Http\Controllers\Auth\ContactVerificationController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\GuestSessionController;
@@ -42,6 +46,7 @@ use App\Http\Controllers\OrderFeedbackController;
 use App\Http\Controllers\ProductReviewMediaController;
 use App\Http\Controllers\ReplacementController;
 use App\Http\Controllers\ReturnRequestController;
+use App\Http\Controllers\Rider\CodController;
 use App\Http\Controllers\Rider\DashboardController as RiderDashboardController;
 use App\Http\Controllers\Rider\DeliveryRequestController;
 use App\Http\Controllers\Rider\EarningsController;
@@ -50,7 +55,10 @@ use App\Http\Controllers\Rider\RiderRegistrationController;
 use App\Http\Controllers\RiderDeliveryRatingController;
 use App\Http\Controllers\Seller\ApplicationController as SellerApplication;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
+use App\Http\Controllers\Seller\DocumentController;
+use App\Http\Controllers\Seller\PayoutController;
 use App\Http\Controllers\Seller\ProductController as SellerProducts;
+use App\Http\Controllers\Seller\ProductImageController;
 use App\Http\Controllers\Seller\SalesController;
 use App\Http\Controllers\SettlementController;
 use App\Http\Middleware\EnsureBuyerOrGuest;
@@ -166,6 +174,22 @@ Route::get('/admin/payouts/needs-review', PayoutReviewController::class)
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.payouts.needs-review');
 
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->group(function () {
+    Route::get('/admin/payouts', [SellerPayoutController::class, 'index'])->name('admin.payouts.index');
+    Route::get('/admin/payouts/shops/{shop}', [SellerPayoutController::class, 'show'])->name('admin.payouts.show');
+    Route::post('/admin/payouts/shops/{shop}/batches', [SellerPayoutController::class, 'store'])->middleware('throttle:15,1')->name('admin.payouts.store');
+    Route::post('/admin/payouts/batches/{payout}/cancel', [SellerPayoutController::class, 'cancel'])->middleware('throttle:15,1')->name('admin.payouts.cancel');
+    Route::post('/admin/payouts/batches/{payout}/pay', [SellerPayoutController::class, 'pay'])->middleware('throttle:15,1')->name('admin.payouts.pay');
+    Route::get('/admin/remittances', [RiderRemittanceController::class, 'index'])->name('admin.remittances.index');
+    Route::get('/admin/remittances/riders/{riderProfile}', [RiderRemittanceController::class, 'show'])->name('admin.remittances.show');
+    Route::post('/admin/remittances/riders/{riderProfile}', [RiderRemittanceController::class, 'store'])->middleware('throttle:15,1')->name('admin.remittances.store');
+    Route::post('/admin/remittances/{remittance}/void', [RiderRemittanceController::class, 'void'])->middleware('throttle:15,1')->name('admin.remittances.void');
+    Route::get('/admin/marketplace-settings', [MarketplaceSettingsController::class, 'edit'])->name('admin.marketplace-settings.edit');
+    Route::put('/admin/marketplace-settings', [MarketplaceSettingsController::class, 'update'])->middleware('throttle:15,1')->name('admin.marketplace-settings.update');
+});
+Route::get('/seller/payouts', PayoutController::class)->middleware(['auth', EnsureUserHasRole::class.':seller'])->name('seller.payouts.index');
+Route::get('/rider/cod', CodController::class)->middleware(['auth', EnsureUserHasRole::class.':rider'])->name('rider.cod.index');
+
 Route::get('/admin/buyers', [BuyerController::class, 'index'])
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.buyers.index');
@@ -225,6 +249,20 @@ Route::middleware(['auth', EnsureUserHasRole::class.':seller'])->prefix('seller/
     Route::post('/', [SellerProducts::class, 'store'])->middleware('throttle:30,1')->name('store');
     Route::get('/{product}/edit', [SellerProducts::class, 'edit'])->name('edit');
     Route::put('/{product}', [SellerProducts::class, 'update'])->middleware('throttle:30,1')->name('update');
+    Route::post('/{product}/images', [ProductImageController::class, 'store'])->middleware('throttle:20,1')->name('images.store');
+    Route::delete('/{product}/images/primary', [ProductImageController::class, 'destroyPrimary'])->middleware('throttle:20,1')->name('images.destroy-primary');
+    Route::put('/{product}/images/{image}/primary', [ProductImageController::class, 'primary'])->middleware('throttle:20,1')->name('images.primary');
+    Route::delete('/{product}/images/{image}', [ProductImageController::class, 'destroy'])->middleware('throttle:20,1')->name('images.destroy');
+});
+
+Route::middleware(['auth', EnsureUserHasRole::class.':buyer,seller'])->group(function () {
+    Route::post('/seller/application/documents', [DocumentController::class, 'store'])->middleware('throttle:10,1')->name('seller.documents.store');
+    Route::get('/seller/application/documents/{document}', [DocumentController::class, 'own'])->name('seller.documents.show');
+});
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->group(function () {
+    Route::get('/admin/sellers/{application}/documents/{document}', [DocumentController::class, 'admin'])->name('admin.sellers.documents.show');
+    Route::post('/admin/products/{product}/hide', [ProductModerationController::class, 'hide'])->middleware('throttle:20,1')->name('admin.products.hide');
+    Route::post('/admin/products/{product}/restore', [ProductModerationController::class, 'restore'])->middleware('throttle:20,1')->name('admin.products.restore');
 });
 
 Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/sellers')->name('admin.sellers.')->group(function () {

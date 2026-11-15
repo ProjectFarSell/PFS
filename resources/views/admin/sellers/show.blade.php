@@ -26,4 +26,12 @@
             @if($application->review_note)<p class="mt-2 text-sm whitespace-pre-line break-words">{{ $application->review_note }}</p>@endif
         @endif
     </section>
+    @if($application->documents->isNotEmpty())
+        <section class="fs-card mt-5 p-5">
+            <h2 class="font-semibold">Private application documents</h2>
+            @foreach($application->documents as $document)
+                <a class="mt-3 block text-accent underline" href="{{ route('admin.sellers.documents.show', [$application, $document]) }}">Download business permit</a>
+            @endforeach
+        </section>
+    @endif
 @endsection

@@ -62,6 +62,21 @@
             </form>
         @endif
     </div>
+    @if($application)
+        <section class="fs-card mt-5 space-y-4 p-5">
+            <h2 class="font-semibold">Business permit</h2>
+            <p class="text-sm text-text-muted">Uploaded permits stay private to your account and administrators.</p>
+            @foreach($application->documents as $document)
+                <a class="block text-accent underline" href="{{ route('seller.documents.show', $document) }}">Download your business permit</a>
+            @endforeach
+            @if($application->status !== 'approved')
+                <form action="{{ route('seller.documents.store') }}" method="post" enctype="multipart/form-data" class="space-y-3">@csrf
+                    <label class="block text-sm">Business permit (PDF, JPG, PNG or WebP, up to 5 MB)<input class="mt-2 block w-full" type="file" name="business_permit" accept="application/pdf,image/jpeg,image/png,image/webp" required></label>
+                    <button class="rounded-lg bg-accent px-4 py-2 text-white" type="submit">Upload permit for review</button>
+                </form>
+            @endif
+        </section>
+    @endif
 @endsection
 
 @push('scripts')

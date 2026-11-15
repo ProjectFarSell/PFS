@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -37,6 +38,8 @@ class Product extends Model
             'has_variants' => 'boolean',
             'is_flash' => 'boolean',
             'is_active' => 'boolean',
+            'admin_hidden_at' => 'datetime',
+            'admin_restore_active' => 'boolean',
         ];
     }
 
@@ -44,6 +47,11 @@ class Product extends Model
     {
         static::creating(function (Product $product) {
             $product->slug ??= Str::slug($product->name).'-'.Str::lower(Str::random(5));
+        });
+        static::saving(function (Product $product) {
+            if ($product->admin_hidden_at) {
+                $product->is_active = false;
+            }
         });
     }
 
@@ -70,6 +78,19 @@ class Product extends Model
     public function images(): HasMany
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function galleryImages(): Collection
+    {
+        $images = $this->relationLoaded('images') ? $this->images : $this->images()->orderBy('sort_order')->orderBy('id')->get();
+        $paths = collect([$this->image_path])->merge($images->pluck('path'))->filter()->unique()->values();
+
+        return $paths->map(function ($path) use ($images) {
+            $row = $images->firstWhere('path', $path);
+
+            return ['id' => $row?->id, 'url' => rtrim((string) config('filesystems.disks.r2.url'), '/').'/'.ltrim($path, '/'),
+                'alt_text' => $row?->alt_text ?: $this->name, 'is_primary' => $path === $this->image_path];
+        });
     }
 
     public function reviews(): HasMany

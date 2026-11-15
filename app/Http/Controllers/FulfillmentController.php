@@ -33,7 +33,7 @@ class FulfillmentController extends Controller
     {
         $role = $request->user()->role;
         abort_unless(in_array($role, [UserRole::Seller, UserRole::Admin, UserRole::Rider], true), 403);
-        $query = Fulfillment::query()->with(['items', 'attempts', 'events', 'shop', 'courierBooking', 'order:id,number,payment_method,ship_to,guest_name', 'rider.user']);
+        $query = Fulfillment::query()->with(['items', 'attempts', 'events', 'shop', 'courierBooking', 'order:id,number,payment_method,ship_to,guest_name,address_id', 'order.address:id,phone', 'rider.user']);
         if ($role === UserRole::Seller) {
             $query->whereHas('shop', fn ($q) => $q->where('user_id', $request->user()->id));
         } elseif ($role === UserRole::Rider) {
@@ -44,6 +44,14 @@ class FulfillmentController extends Controller
         $data = $request->validate(['status' => ['nullable', Rule::enum(FulfillmentStatus::class)]]);
         $query->when($data['status'] ?? null, fn ($q, $status) => $q->where('status', $status));
         $fulfillments = $query->latest('id')->paginate(15)->withQueryString();
+        $profileId = $role === UserRole::Rider ? $request->user()->riderProfile?->id : null;
+        $fulfillments->getCollection()->each(function ($part) use ($role, $profileId) {
+            $allowed = $role === UserRole::Rider && $part->rider_id === $profileId && ! $part->usesExternalCourier()
+                && in_array($part->status->value, ['assigned', 'in_transit', 'delivery_failed', 'returning'], true);
+            $part->setAttribute('can_contact_buyer', $allowed);
+            $part->setAttribute('can_get_directions', $allowed);
+            $part->setAttribute('buyer_contact_phone', $allowed ? $part->order->address?->phone : null);
+        });
         $riders = $role === UserRole::Admin
             ? RiderProfile::query()->where('status', 'approved')->whereHas('user', fn ($q) => $q->where('role', 'rider'))->with('user')->orderByDesc('is_available')->orderBy('id')->get()
             : collect();
