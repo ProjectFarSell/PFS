@@ -107,6 +107,7 @@
                         @if($hasApprovedShop)
                             <a class="portal-nav-link" href="{{ route('seller.products.create') }}"><x-ui.icon name="add" size="sm" class="mr-3" />Add product</a>
                             <a class="portal-nav-link" href="{{ route('fulfillments.index') }}"><x-ui.icon name="order" size="sm" class="mr-3" />Orders</a>
+                            <a class="portal-nav-link" href="{{ route('seller.vouchers.index') }}"><x-ui.icon name="payout" size="sm" class="mr-3" />Vouchers</a>
                             <a class="portal-nav-link" href="{{ route('chat.index') }}"><x-ui.icon name="chat" size="sm" class="mr-3" />Chat @if($chatUnreadCount)<span class="ml-auto badge badge-accent">{{ $chatUnreadCount }}</span>@endif</a>
                             <a class="portal-nav-link" href="{{ route('home') }}"><x-ui.icon name="browse" size="sm" class="mr-3" />View storefront</a>
                         @endif
