@@ -20,6 +20,29 @@ class CatalogFilterTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_tied_catalog_products_do_not_repeat_across_pages(): void
+    {
+        $shop = Shop::factory()->create();
+        $products = Product::factory()->count(24)->create([
+            'shop_id' => $shop->id,
+            'created_at' => '2026-10-16 17:31:37',
+            'price' => '100.00',
+        ]);
+        $expected = $products->pluck('id')->sortDesc()->values()->all();
+
+        foreach (['newest', 'relevance', 'price_asc', 'price_desc'] as $sort) {
+            $seen = [];
+            foreach ([1, 2] as $page) {
+                $response = $this->get(route('catalog.index', ['sort' => $sort, 'page' => $page]));
+                $response->assertOk();
+                $paginator = $response->viewData('products');
+                $this->assertSame(24, $paginator->total());
+                $seen = [...$seen, ...$paginator->pluck('id')->all()];
+            }
+            $this->assertSame($expected, $seen, 'Pagination must keep tied products in a consistent, unique order for '.$sort);
+        }
+    }
+
     public function test_filters_can_be_combined_and_preserve_decimal_prices(): void
     {
         $category = Category::factory()->create();

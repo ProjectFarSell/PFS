@@ -124,7 +124,8 @@ class ProductController extends Controller
             : [];
 
         return view('catalog.index', [
-            'products' => $query->paginate(16)->withQueryString(),
+            // Seeded listings can share timestamps/prices; always break ties uniquely.
+            'products' => $query->orderByDesc('products.id')->paginate(16)->withQueryString(),
             'categories' => Category::query()->orderBy('sort_order')->get(),
             'shops' => $shops,
             'searchedShop' => $matchingShops->count() === 1 ? $matchingShops->first() : null,
