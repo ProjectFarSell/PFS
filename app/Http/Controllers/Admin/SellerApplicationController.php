@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
-use App\Models\SellerApplication;
 use App\Models\Category;
+use App\Models\SellerApplication;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,7 +31,7 @@ class SellerApplicationController extends Controller
 
     public function show(SellerApplication $application): View
     {
-        $application->load(['user', 'reviewer:id,name']);
+        $application->load(['user', 'reviewer:id,name', 'documents']);
 
         return view('admin.sellers.show', [
             'application' => $application,

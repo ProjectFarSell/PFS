@@ -15,13 +15,24 @@
         $optionNames = $variantOptions->flatMap(fn ($variant) => array_keys($variant['options']))->unique()->values();
     @endphp
     <div class="grid md:grid-cols-2 gap-6">
+        <div x-data="{ selectedImage: @js($product->imageUrl()) }">
         <div class="aspect-square rounded-2xl bg-surface border border-surface-border flex items-center justify-center text-text-muted">
             @if($product->image_path)
                 <x-product-image :src="$product->imageUrl()" :alt="$product->name" width="640" height="640"
-                    :priority="true" class="h-full w-full rounded-2xl object-cover" />
+                    :priority="true" x-bind:src="selectedImage" class="h-full w-full rounded-2xl object-cover" />
             @else
                 {{ $product->category?->name }}
             @endif
+        </div>
+        @if($product->galleryImages()->count() > 1)
+            <div class="mt-3 flex flex-wrap gap-3" aria-label="Product photos">
+                @foreach($product->galleryImages() as $image)
+                    <button type="button" class="rounded-lg border p-1 focus-visible:ring-2" aria-label="View photo {{ $loop->iteration }}" @click="selectedImage = @js($image['url'])">
+                        <x-product-image :src="$image['url']" :alt="$image['alt_text']" width="72" height="72" class="h-16 w-16 rounded-md object-cover" />
+                    </button>
+                @endforeach
+            </div>
+        @endif
         </div>
         <div>
             <a href="{{ route('shops.show', $product->shop) }}" class="text-xs text-accent hover:text-accent font-medium">{{ $product->shop->name }}</a>

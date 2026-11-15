@@ -91,6 +91,7 @@ class DatabaseRecovery
             if ($includeFiles) {
                 $roots = [
                     'private/rider-documents' => config('filesystems.disks.local.root').'/rider-documents',
+                    'private/seller-documents' => config('filesystems.disks.local.root').'/seller-documents',
                     'private/delivery-proof' => config('filesystems.disks.local.root').'/delivery-proof',
                     'private/return-evidence' => config('filesystems.disks.local.root').'/return-evidence',
                     'private/product-review-media' => config('filesystems.disks.local.root').'/product-review-media',

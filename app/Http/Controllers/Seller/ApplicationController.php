@@ -9,8 +9,8 @@ use App\Models\PsgcCityMunicipality;
 use App\Models\PsgcProvince;
 use App\Models\PsgcRegion;
 use App\Models\User;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -27,7 +27,7 @@ class ApplicationController extends Controller
             return to_route('seller.dashboard');
         }
 
-        $application = $user->sellerApplication()->with('cityMunicipality.province.region')->first();
+        $application = $user->sellerApplication()->with(['cityMunicipality.province.region', 'documents'])->first();
         $selectedCategories = old('category_ids', $application?->category_ids ?? []);
         $selectedCategories = is_array($selectedCategories) ? array_map('intval', $selectedCategories) : [];
 

@@ -7,6 +7,11 @@
     <section class="fs-card mt-4 overflow-hidden" data-live-inventory data-stock-url="{{ route('admin.products.stock') }}">
         <div class="border-b border-surface-border p-5">
             <h1 class="text-xl font-semibold">Active products</h1>
+            <nav aria-label="Product visibility" class="mt-3 flex gap-4 text-sm">
+                <a class="underline" href="{{ route('admin.products.index') }}">Active</a>
+                <a class="underline" href="{{ route('admin.products.index', ['visibility' => 'hidden']) }}">Hidden by admin</a>
+                <a class="underline" href="{{ route('admin.products.index', ['visibility' => 'inactive']) }}">Unpublished</a>
+            </nav>
             <p class="mt-2 text-sm text-text-muted">Current listings and inventory. Variant products show the sum of active variant stock.</p>
             <p data-stock-refresh-status class="mt-1 text-xs text-text-muted">Stock refreshes automatically while this page is visible.</p>
         </div>
@@ -16,7 +21,13 @@
                 <tbody class="divide-y divide-surface-border/40">
                     @forelse($products as $product)
                         <tr data-inventory-product="{{ $product->id }}">
-                            <th class="px-4 py-4 font-medium">{{ $product->name }}<span class="mt-1 block text-xs font-normal text-text-muted">Product ID {{ $product->id }}</span></th>
+                            <th class="px-4 py-4 font-medium">{{ $product->name }}<span class="mt-1 block text-xs font-normal text-text-muted">Product ID {{ $product->id }}</span>
+                                @if($product->admin_hidden_at)<p class="mt-2 text-xs">Hidden: {{ $product->admin_hide_reason }}</p>@endif
+                                <form class="mt-3 space-y-2" method="post" action="{{ route($product->admin_hidden_at ? 'admin.products.restore' : 'admin.products.hide', $product) }}">@csrf
+                                    <label class="block text-xs">Reason<input class="mt-1 w-full rounded-lg" name="reason" required maxlength="1000"></label>
+                                    <button class="text-xs underline" type="submit">{{ $product->admin_hidden_at ? 'Restore listing' : 'Hide listing' }}</button>
+                                </form>
+                            </th>
                             <td class="px-4 py-4">{{ $product->shop?->name ?? 'Unavailable shop' }}<span class="mt-1 block text-xs text-text-muted">{{ $product->category?->name ?? 'No category' }}</span></td>
                             <td class="px-4 py-4">
                                 @if($product->has_variants)

@@ -80,4 +80,5 @@
             </form>
         </section>
     </div>
+    @if($product->exists) @include('seller.product-gallery') @endif
 @endsection

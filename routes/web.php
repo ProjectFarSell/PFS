@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\PayoutReviewController;
 use App\Http\Controllers\Admin\PrivacyRequestController;
 use App\Http\Controllers\Admin\ProductInventoryController;
+use App\Http\Controllers\Admin\ProductModerationController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RiderApplicationController;
 use App\Http\Controllers\Admin\RiderRecordsController;
@@ -54,8 +55,10 @@ use App\Http\Controllers\Rider\RiderRegistrationController;
 use App\Http\Controllers\RiderDeliveryRatingController;
 use App\Http\Controllers\Seller\ApplicationController as SellerApplication;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
+use App\Http\Controllers\Seller\DocumentController;
 use App\Http\Controllers\Seller\PayoutController;
 use App\Http\Controllers\Seller\ProductController as SellerProducts;
+use App\Http\Controllers\Seller\ProductImageController;
 use App\Http\Controllers\Seller\SalesController;
 use App\Http\Controllers\SettlementController;
 use App\Http\Middleware\EnsureBuyerOrGuest;
@@ -246,8 +249,21 @@ Route::middleware(['auth', EnsureUserHasRole::class.':seller'])->prefix('seller/
     Route::post('/', [SellerProducts::class, 'store'])->middleware('throttle:30,1')->name('store');
     Route::get('/{product}/edit', [SellerProducts::class, 'edit'])->name('edit');
     Route::put('/{product}', [SellerProducts::class, 'update'])->middleware('throttle:30,1')->name('update');
+    Route::post('/{product}/images', [ProductImageController::class, 'store'])->middleware('throttle:20,1')->name('images.store');
+    Route::delete('/{product}/images/primary', [ProductImageController::class, 'destroyPrimary'])->middleware('throttle:20,1')->name('images.destroy-primary');
+    Route::put('/{product}/images/{image}/primary', [ProductImageController::class, 'primary'])->middleware('throttle:20,1')->name('images.primary');
+    Route::delete('/{product}/images/{image}', [ProductImageController::class, 'destroy'])->middleware('throttle:20,1')->name('images.destroy');
 });
 
+Route::middleware(['auth', EnsureUserHasRole::class.':buyer,seller'])->group(function () {
+    Route::post('/seller/application/documents', [DocumentController::class, 'store'])->middleware('throttle:10,1')->name('seller.documents.store');
+    Route::get('/seller/application/documents/{document}', [DocumentController::class, 'own'])->name('seller.documents.show');
+});
+Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->group(function () {
+    Route::get('/admin/sellers/{application}/documents/{document}', [DocumentController::class, 'admin'])->name('admin.sellers.documents.show');
+    Route::post('/admin/products/{product}/hide', [ProductModerationController::class, 'hide'])->middleware('throttle:20,1')->name('admin.products.hide');
+    Route::post('/admin/products/{product}/restore', [ProductModerationController::class, 'restore'])->middleware('throttle:20,1')->name('admin.products.restore');
+});
 
 Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->prefix('admin/sellers')->name('admin.sellers.')->group(function () {
     Route::get('/', [SellerApplicationController::class, 'index'])->name('index');

@@ -21,7 +21,7 @@ class LogisticsController extends Controller
         $data = $request->validate([
             'provider' => ['required', Rule::in([DeliveryMethod::Lalamove->value])],
             'reference' => ['required', 'string', 'min:3', 'max:100'],
-            'tracking_url' => ['required', 'url:https', 'max:2000'],
+            'tracking_url' => ['nullable', 'url:https', 'max:2000'],
             'courier_cost' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:99999999.99'],
             'verified' => ['accepted'],
             'cod_supported' => ['nullable', 'boolean'],

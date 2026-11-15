@@ -43,7 +43,7 @@
                     <p class="mt-2 text-sm">Pickup shop: {{ $part->shop_name }}{{ $part->shop ? ' · '.$part->shop->city : '' }}</p>
                     <p class="text-sm whitespace-pre-line">{{ $part->pickup_address ?? 'Legacy shipment: ask the administrator to confirm the pickup point.' }}</p>
                     @if($part->pickup_contact)<p class="text-sm">Pickup contact: {{ $part->pickup_contact }}</p>@endif
-                    @if($role === \App\Enums\UserRole::Rider && $part->rider_id === auth()->user()->riderProfile?->id)
+                    @if($part->can_contact_buyer)
                         @php
                             preg_match('/(?<![0-9])(\+?[0-9][0-9 ()-]{5,28}[0-9])(?![0-9])/', $part->pickup_contact ?? '', $pickupMatch);
                             $pickupPhone = preg_replace('/[^0-9+]/', '', $pickupMatch[1] ?? '');
