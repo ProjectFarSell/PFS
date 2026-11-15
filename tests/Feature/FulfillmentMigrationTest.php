@@ -8,16 +8,23 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Tests\TestCase;
 
 class FulfillmentMigrationTest extends TestCase
 {
     use RefreshDatabase;
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function test_existing_orders_are_backfilled_without_changing_stock_or_totals(): void
     {
         $migration = require database_path('migrations/2026_09_22_000001_create_fulfillments.php');
-        $migration->down();
+        Schema::withoutForeignKeyConstraints(fn () => $migration->down());
         $product = Product::factory()->create(['stock' => 3]);
         foreach ([OrderStatus::Packed, OrderStatus::Delivered, OrderStatus::Cancelled] as $status) {
             $order = Order::query()->create([
@@ -41,5 +48,14 @@ class FulfillmentMigrationTest extends TestCase
                 OrderStatus::Packed => 'ready', OrderStatus::Delivered => 'delivered', OrderStatus::Cancelled => 'rejected',
             }, $part->status->value);
         }
+    }
+
+    protected function tearDown(): void
+    {
+        if (DB::getDriverName() === 'mysql') {
+            Artisan::call('migrate:fresh', ['--force' => true]);
+        }
+
+        parent::tearDown();
     }
 }

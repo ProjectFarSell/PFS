@@ -3,11 +3,14 @@
 @section('title', 'My Orders · FarSell')
 
 @section('content')
-    <a href="{{ route('returns.index') }}" class="mb-4 inline-block text-sm text-accent underline">My returns & refunds</a>
-    <a href="{{ route('replacements.index') }}" class="mb-4 ml-3 inline-block text-sm text-accent underline">My replacement requests</a>
     <a href="{{ route('account.profile') }}" class="inline-block text-sm text-accent hover:text-accent mb-3"><x-ui.icon name="previous" size="sm" class="inline-block align-text-bottom" /> My Profile</a>
     <h1 class="text-lg font-semibold mb-1">My Orders</h1>
     <p class="text-sm text-text-muted mb-4">View your purchases and their current status.</p>
+
+    <div class="mb-5 flex flex-wrap gap-2">
+        <x-ui.button variant="secondary" :href="route('returns.index')">My returns &amp; refunds</x-ui.button>
+        <x-ui.button variant="secondary" :href="route('replacements.index')">My replacement requests</x-ui.button>
+    </div>
 
     <div class="space-y-3">
         @forelse ($orders as $order)

@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\FulfillmentStatus;
 use App\Enums\OrderStatus;
+use App\Enums\PaymentMethod;
 use App\Enums\RiderStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\Fulfillment;
+use App\Models\FulfillmentEvent;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\RiderProfile;
 use App\Models\SellerApplication;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -24,6 +29,18 @@ class DashboardController extends Controller
         $selectedStatus = $validated['status'] ?? null;
 
         $stats = $this->stats();
+        $end = now();
+        $start = $end->copy()->subDays(30);
+        $ordersLast30Days = Order::query()->whereBetween('created_at', [$start, $end])->count();
+        $completion = FulfillmentEvent::query()->selectRaw('fulfillment_id, MAX(created_at) as completed_at')
+            ->where('status', FulfillmentStatus::Completed->value)->groupBy('fulfillment_id');
+        $salesLast30Days = Fulfillment::query()
+            ->join('orders', 'orders.id', '=', 'fulfillments.order_id')
+            ->leftJoinSub($completion, 'completion', 'completion.fulfillment_id', '=', 'fulfillments.id')
+            ->where('fulfillments.status', FulfillmentStatus::Completed->value)
+            ->where('orders.payment_method', PaymentMethod::Cod->value)
+            ->whereBetween(DB::raw('COALESCE(completion.completed_at, fulfillments.updated_at)'), [$start, $end])
+            ->sum('fulfillments.subtotal');
 
         $orders = Order::query()->with('buyer:id,name')
             ->when($selectedStatus, fn ($query) => $query->where('status', $selectedStatus))
@@ -36,6 +53,8 @@ class DashboardController extends Controller
         return view('admin.dashboard', [
             'pendingSellers' => SellerApplication::where('status', 'pending')->count(),
             'stats' => $stats,
+            'ordersLast30Days' => $ordersLast30Days,
+            'salesLast30Days' => $salesLast30Days,
             'orders' => $orders,
             'statuses' => OrderStatus::cases(),
             'selectedStatus' => $selectedStatus,

@@ -9,8 +9,12 @@ use App\Services\Security\AdminTwoFactor;
 use App\Support\DemoAccount;
 use Database\Seeders\DemoAccountsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Tests\TestCase;
 
 class DemoSignInSecurityTest extends TestCase
@@ -160,20 +164,29 @@ class DemoSignInSecurityTest extends TestCase
         $this->assertFalse($user->fresh()->is_demo_account);
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function test_migration_backfills_only_reserved_demo_identity_and_role_without_resetting_credentials(): void
     {
-        $legacy = User::factory()->create(['email' => 'seller@farsell.test', 'role' => 'seller', 'password' => 'changed-password']);
-        $normal = User::factory()->create(['email' => 'another@example.test']);
-        $wrongRole = User::factory()->create(['email' => 'admin@farsell.test', 'role' => 'buyer']);
-        Schema::table('users', function ($table) {
-            $table->dropIndex(['is_demo_account']);
-            $table->dropColumn('is_demo_account');
-        });
-        $migration = require database_path('migrations/2026_11_09_000002_mark_seeded_demo_accounts.php');
-        $migration->up();
-        $this->assertTrue($legacy->fresh()->is_demo_account);
-        $this->assertTrue(Hash::check('changed-password', $legacy->fresh()->password));
-        $this->assertFalse($normal->fresh()->is_demo_account);
-        $this->assertFalse($wrongRole->fresh()->is_demo_account);
+        $mysql = DB::getDriverName() === 'mysql';
+        try {
+            $legacy = User::factory()->create(['email' => 'seller@farsell.test', 'role' => 'seller', 'password' => 'changed-password']);
+            $normal = User::factory()->create(['email' => 'another@example.test']);
+            $wrongRole = User::factory()->create(['email' => 'admin@farsell.test', 'role' => 'buyer']);
+            Schema::table('users', function ($table) {
+                $table->dropIndex(['is_demo_account']);
+                $table->dropColumn('is_demo_account');
+            });
+            $migration = require database_path('migrations/2026_11_09_000002_mark_seeded_demo_accounts.php');
+            $migration->up();
+            $this->assertTrue($legacy->fresh()->is_demo_account);
+            $this->assertTrue(Hash::check('changed-password', $legacy->fresh()->password));
+            $this->assertFalse($normal->fresh()->is_demo_account);
+            $this->assertFalse($wrongRole->fresh()->is_demo_account);
+        } finally {
+            if ($mysql) {
+                Artisan::call('migrate:fresh', ['--force' => true]);
+            }
+        }
     }
 }

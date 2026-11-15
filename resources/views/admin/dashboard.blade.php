@@ -20,6 +20,7 @@
                 <a href="{{ route('returns.index') }}" class="dropdown-item">Returns & refunds</a>
                 <a href="{{ route('replacements.index') }}" class="dropdown-item">Replacement requests</a>
                 <a href="{{ route('settlements.index') }}" class="dropdown-item">Commissions & settlements</a>
+                <a href="{{ route('admin.payouts.needs-review') }}" class="dropdown-item">Payouts needing review</a>
                 <p class="border-t border-surface-border px-4 pt-2 text-xs font-semibold text-text-muted">Administration</p>
                 <a href="{{ route('admin.operations') }}" class="dropdown-item">Operations</a>
                 <a href="{{ route('admin.categories.index') }}" class="dropdown-item">Manage categories</a>
@@ -45,6 +46,18 @@
             </a>
         @endforeach
     </div>
+
+    <dl class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div class="fs-card p-4">
+            <dt class="text-xs text-text-muted">Orders placed · last 30 days</dt>
+            <dd class="mt-2 text-2xl font-semibold">{{ number_format($ordersLast30Days) }}</dd>
+        </div>
+        <div class="fs-card p-4">
+            <dt class="text-xs text-text-muted">Completed COD sales · last 30 days</dt>
+            <dd class="mt-2 text-2xl font-semibold">₱{{ number_format((float) $salesLast30Days, 2) }}</dd>
+            <dd class="mt-1 text-xs text-text-muted">Merchandise total before reimbursements.</dd>
+        </div>
+    </dl>
 
     <div class="my-7 grid gap-4 md:grid-cols-2">
     <section class="admin-action">

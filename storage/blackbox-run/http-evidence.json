@@ -1,0 +1,3001 @@
+{
+  "empty": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The name field is required. (and 2 more errors)",
+      "errors": {
+        "name": [
+          "The name field is required."
+        ],
+        "email": [
+          "The email field is required."
+        ],
+        "password": [
+          "The password field is required."
+        ]
+      }
+    }
+  },
+  "buyer_valid": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel.delacruz@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_home_unverified": {
+    "status": 200,
+    "location": null,
+    "body": null
+  },
+  "buyer_omit_name": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The name field is required.",
+      "errors": {
+        "name": [
+          "The name field is required."
+        ]
+      }
+    },
+    "input": {
+      "email": "blackbox2@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_omit_email": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field is required.",
+      "errors": {
+        "email": [
+          "The email field is required."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_omit_password": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The password field is required.",
+      "errors": {
+        "password": [
+          "The password field is required."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox4@example.com",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_omit_password_confirmation": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The password field confirmation does not match.",
+      "errors": {
+        "password": [
+          "The password field confirmation does not match."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox5@example.com",
+      "password": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_omit_phone": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox6@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_omit_date_of_birth": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox7@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "terms": "1"
+    }
+  },
+  "buyer_omit_terms": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox8@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14"
+    }
+  },
+  "buyer_name_Juan Miguel123 Dela Cruz@#": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel123 Dela Cruz@#",
+      "email": "blackbox9@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_name_Niño Angelo Peñaflor-O'Hara": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Niño Angelo Peñaflor-O'Hara",
+      "email": "blackbox10@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_name_J": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "J",
+      "email": "blackbox11@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_name_Jo": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Jo",
+      "email": "blackbox12@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_name_MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "email": "blackbox13@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_name_MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "email": "blackbox14@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_email_juanmiguel.delacruzexample.com": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel.delacruzexample.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_email_juanmiguel.delacruz@": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel.delacruz@",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_email_@example.com": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_email_juanmiguel.delacruz@example": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel.delacruz@example",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_email_juanmiguel delacruz@example.com": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel delacruz@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_email_juanmiguel.delacruz@example.com": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email has already been taken.",
+      "errors": {
+        "email": [
+          "The email has already been taken."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel.delacruz@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_email_JUANMIGUEL.DELACRUZ@EXAMPLE.COM": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "JUANMIGUEL.DELACRUZ@EXAMPLE.COM",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_email_  buyer.test01@example.com  ": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "  buyer.test01@example.com  ",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_phone_0917ABC4567": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox23@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "0917ABC4567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_phone_0917-123-456": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox24@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "0917-123-456",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_phone_12345678901": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox25@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "12345678901",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_phone_02-8123-4567": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox26@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "02-8123-4567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_phone_0917123456": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox27@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "0917123456",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_phone_09170000001": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox28@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09170000001",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_phone_091712345678": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox29@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "091712345678",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_phone_09171234567": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox30@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_phone_+639171234567": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox31@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "+639171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_password_Bili@26": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The password field must be at least 8 characters.",
+      "errors": {
+        "password": [
+          "The password field must be at least 8 characters."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox32@example.com",
+      "password": "Bili@26",
+      "password_confirmation": "Bili@26",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_password_Bili@202": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox33@example.com",
+      "password": "Bili@202",
+      "password_confirmation": "Bili@202",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_password_mamimili@2026": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox34@example.com",
+      "password": "mamimili@2026",
+      "password_confirmation": "mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_password_MAMIMILI@2026": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox35@example.com",
+      "password": "MAMIMILI@2026",
+      "password_confirmation": "MAMIMILI@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_password_Mamimili@abcd": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox36@example.com",
+      "password": "Mamimili@abcd",
+      "password_confirmation": "Mamimili@abcd",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_password_Mamimili2026": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox37@example.com",
+      "password": "Mamimili2026",
+      "password_confirmation": "Mamimili2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_mismatch": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The password field confirmation does not match.",
+      "errors": {
+        "password": [
+          "The password field confirmation does not match."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox38@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Different@2027",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_dob_2008-10-19": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox39@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "2008-10-19",
+      "terms": "1"
+    }
+  },
+  "buyer_dob_2008-10-18": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox40@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "2008-10-18",
+      "terms": "1"
+    }
+  },
+  "buyer_dob_2008-10-17": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox41@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "2008-10-17",
+      "terms": "1"
+    }
+  },
+  "buyer_dob_2026-10-19": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox42@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "buyer",
+      "phone": "09171234567",
+      "date_of_birth": "2026-10-19",
+      "terms": "1"
+    }
+  },
+  "buyer_login_unverified": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null
+  },
+  "buyer_access_/admin": {
+    "status": 403,
+    "location": null,
+    "body": null
+  },
+  "buyer_access_/admin/sellers": {
+    "status": 403,
+    "location": null,
+    "body": null
+  },
+  "buyer_access_/seller": {
+    "status": 403,
+    "location": null,
+    "body": null
+  },
+  "buyer_access_/rider/dashboard": {
+    "status": 403,
+    "location": null,
+    "body": null
+  },
+  "buyer_access_/logistics": {
+    "status": 404,
+    "location": null,
+    "body": null
+  },
+  "buyer_access_/verify-email": {
+    "status": 404,
+    "location": null,
+    "body": null
+  },
+  "seller_valid": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Maria Clara Santos",
+      "email": "mariaclara.santos@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_home_unverified": {
+    "status": 200,
+    "location": null,
+    "body": null
+  },
+  "seller_omit_name": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The name field is required.",
+      "errors": {
+        "name": [
+          "The name field is required."
+        ]
+      }
+    },
+    "input": {
+      "email": "blackbox44@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_omit_email": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field is required.",
+      "errors": {
+        "email": [
+          "The email field is required."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_omit_password": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The password field is required.",
+      "errors": {
+        "password": [
+          "The password field is required."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox46@example.com",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_omit_password_confirmation": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The password field confirmation does not match.",
+      "errors": {
+        "password": [
+          "The password field confirmation does not match."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox47@example.com",
+      "password": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_omit_phone": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox48@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_omit_date_of_birth": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox49@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "terms": "1"
+    }
+  },
+  "seller_omit_terms": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox50@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14"
+    }
+  },
+  "seller_name_Juan Miguel123 Dela Cruz@#": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel123 Dela Cruz@#",
+      "email": "blackbox51@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_name_Niño Angelo Peñaflor-O'Hara": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Niño Angelo Peñaflor-O'Hara",
+      "email": "blackbox52@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_name_J": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "J",
+      "email": "blackbox53@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_name_Jo": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Jo",
+      "email": "blackbox54@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_name_MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "email": "blackbox55@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_name_MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "email": "blackbox56@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_email_juanmiguel.delacruzexample.com": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel.delacruzexample.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_email_juanmiguel.delacruz@": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel.delacruz@",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_email_@example.com": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_email_juanmiguel.delacruz@example": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email has already been taken.",
+      "errors": {
+        "email": [
+          "The email has already been taken."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel.delacruz@example",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_email_juanmiguel delacruz@example.com": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel delacruz@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_email_mariaclara.santos@example.com": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email has already been taken.",
+      "errors": {
+        "email": [
+          "The email has already been taken."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "mariaclara.santos@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_email_MARIACLARA.SANTOS@EXAMPLE.COM": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "MARIACLARA.SANTOS@EXAMPLE.COM",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_email_  seller.test01@example.com  ": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "  seller.test01@example.com  ",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_phone_0917ABC4567": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox65@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "0917ABC4567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_phone_0917-123-456": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox66@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "0917-123-456",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_phone_12345678901": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox67@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "12345678901",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_phone_02-8123-4567": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox68@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "02-8123-4567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_phone_0917123456": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox69@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "0917123456",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_phone_09170000001": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox70@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09170000001",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_phone_091712345678": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox71@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "091712345678",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_phone_09171234567": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox72@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_phone_+639171234567": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox73@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "+639171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_password_Bili@26": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The password field must be at least 8 characters.",
+      "errors": {
+        "password": [
+          "The password field must be at least 8 characters."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox74@example.com",
+      "password": "Bili@26",
+      "password_confirmation": "Bili@26",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_password_Bili@202": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox75@example.com",
+      "password": "Bili@202",
+      "password_confirmation": "Bili@202",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_password_mamimili@2026": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox76@example.com",
+      "password": "mamimili@2026",
+      "password_confirmation": "mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_password_MAMIMILI@2026": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox77@example.com",
+      "password": "MAMIMILI@2026",
+      "password_confirmation": "MAMIMILI@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_password_Mamimili@abcd": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox78@example.com",
+      "password": "Mamimili@abcd",
+      "password_confirmation": "Mamimili@abcd",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_password_Mamimili2026": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox79@example.com",
+      "password": "Mamimili2026",
+      "password_confirmation": "Mamimili2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_mismatch": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The password field confirmation does not match.",
+      "errors": {
+        "password": [
+          "The password field confirmation does not match."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox80@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Different@2027",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_dob_2008-10-19": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox81@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "2008-10-19",
+      "terms": "1"
+    }
+  },
+  "seller_dob_2008-10-18": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox82@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "2008-10-18",
+      "terms": "1"
+    }
+  },
+  "seller_dob_2008-10-17": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox83@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "2008-10-17",
+      "terms": "1"
+    }
+  },
+  "seller_dob_2026-10-19": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox84@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "2026-10-19",
+      "terms": "1"
+    }
+  },
+  "seller_login_unverified": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null
+  },
+  "seller_access_/admin": {
+    "status": 403,
+    "location": null,
+    "body": null
+  },
+  "seller_access_/admin/sellers": {
+    "status": 403,
+    "location": null,
+    "body": null
+  },
+  "seller_access_/seller": {
+    "status": 403,
+    "location": null,
+    "body": null
+  },
+  "seller_access_/rider/dashboard": {
+    "status": 403,
+    "location": null,
+    "body": null
+  },
+  "seller_access_/logistics": {
+    "status": 404,
+    "location": null,
+    "body": null
+  },
+  "seller_access_/verify-email": {
+    "status": 404,
+    "location": null,
+    "body": null
+  },
+  "seller_shop_MC": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null
+  },
+  "seller_shop_MCH": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null
+  },
+  "seller_shop_Maria Clara Handicrafts Manila": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null
+  },
+  "seller_shop_Maria Clara Handicrafts, Manila": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null
+  },
+  "seller_shop_Maria Clara Handicrafts": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null
+  },
+  "seller_no_documents": {
+    "status": 419,
+    "location": null,
+    "body": {
+      "message": "CSRF token mismatch.",
+      "exception": "Symfony\\Component\\HttpKernel\\Exception\\HttpException",
+      "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Exceptions\\Handler.php",
+      "line": 768,
+      "trace": [
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Exceptions\\Handler.php",
+          "line": 710,
+          "function": "prepareException",
+          "class": "Illuminate\\Foundation\\Exceptions\\Handler",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Pipeline.php",
+          "line": 51,
+          "function": "render",
+          "class": "Illuminate\\Foundation\\Exceptions\\Handler",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 224,
+          "function": "handleException",
+          "class": "Illuminate\\Routing\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php",
+          "line": 48,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\View\\Middleware\\ShareErrorsFromSession",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php",
+          "line": 120,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php",
+          "line": 63,
+          "function": "handleStatefulRequest",
+          "class": "Illuminate\\Session\\Middleware\\StartSession",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Session\\Middleware\\StartSession",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php",
+          "line": 36,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php",
+          "line": 74,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Cookie\\Middleware\\EncryptCookies",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 137,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 821,
+          "function": "then",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 800,
+          "function": "runRouteWithinStack",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 764,
+          "function": "runRoute",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 753,
+          "function": "dispatchToRoute",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+          "line": 200,
+          "function": "dispatch",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 180,
+          "function": "{closure:Illuminate\\Foundation\\Http\\Kernel::dispatchToRouter():197}",
+          "class": "Illuminate\\Foundation\\Http\\Kernel",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\mcp\\src\\Server\\Middleware\\AddWwwAuthenticateHeader.php",
+          "line": 21,
+          "function": "{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Laravel\\Mcp\\Server\\Middleware\\AddWwwAuthenticateHeader",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php",
+          "line": 21,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php",
+          "line": 31,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php",
+          "line": 21,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php",
+          "line": 51,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\TrimStrings",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php",
+          "line": 27,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\ValidatePostSize",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php",
+          "line": 110,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php",
+          "line": 61,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\HandleCors",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php",
+          "line": 58,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\TrustProxies",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php",
+          "line": 22,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePathEncoding.php",
+          "line": 28,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\ValidatePathEncoding",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 137,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+          "line": 175,
+          "function": "then",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+          "line": 144,
+          "function": "sendRequestThroughRouter",
+          "class": "Illuminate\\Foundation\\Http\\Kernel",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php",
+          "line": 1227,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Kernel",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\public\\index.php",
+          "line": 20,
+          "function": "handleRequest",
+          "class": "Illuminate\\Foundation\\Application",
+          "type": "->"
+        }
+      ]
+    }
+  },
+  "seller_bad_tin_postal": {
+    "status": 419,
+    "location": null,
+    "body": {
+      "message": "CSRF token mismatch.",
+      "exception": "Symfony\\Component\\HttpKernel\\Exception\\HttpException",
+      "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Exceptions\\Handler.php",
+      "line": 768,
+      "trace": [
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Exceptions\\Handler.php",
+          "line": 710,
+          "function": "prepareException",
+          "class": "Illuminate\\Foundation\\Exceptions\\Handler",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Pipeline.php",
+          "line": 51,
+          "function": "render",
+          "class": "Illuminate\\Foundation\\Exceptions\\Handler",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 224,
+          "function": "handleException",
+          "class": "Illuminate\\Routing\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php",
+          "line": 48,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\View\\Middleware\\ShareErrorsFromSession",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php",
+          "line": 120,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php",
+          "line": 63,
+          "function": "handleStatefulRequest",
+          "class": "Illuminate\\Session\\Middleware\\StartSession",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Session\\Middleware\\StartSession",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php",
+          "line": 36,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php",
+          "line": 74,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Cookie\\Middleware\\EncryptCookies",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 137,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 821,
+          "function": "then",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 800,
+          "function": "runRouteWithinStack",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 764,
+          "function": "runRoute",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+          "line": 753,
+          "function": "dispatchToRoute",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+          "line": 200,
+          "function": "dispatch",
+          "class": "Illuminate\\Routing\\Router",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 180,
+          "function": "{closure:Illuminate\\Foundation\\Http\\Kernel::dispatchToRouter():197}",
+          "class": "Illuminate\\Foundation\\Http\\Kernel",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\mcp\\src\\Server\\Middleware\\AddWwwAuthenticateHeader.php",
+          "line": 21,
+          "function": "{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Laravel\\Mcp\\Server\\Middleware\\AddWwwAuthenticateHeader",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php",
+          "line": 21,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php",
+          "line": 31,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php",
+          "line": 21,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php",
+          "line": 51,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\TrimStrings",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php",
+          "line": 27,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\ValidatePostSize",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php",
+          "line": 110,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php",
+          "line": 61,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\HandleCors",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php",
+          "line": 58,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\TrustProxies",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php",
+          "line": 22,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePathEncoding.php",
+          "line": 28,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 219,
+          "function": "handle",
+          "class": "Illuminate\\Http\\Middleware\\ValidatePathEncoding",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+          "line": 137,
+          "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+          "line": 175,
+          "function": "then",
+          "class": "Illuminate\\Pipeline\\Pipeline",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+          "line": 144,
+          "function": "sendRequestThroughRouter",
+          "class": "Illuminate\\Foundation\\Http\\Kernel",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php",
+          "line": 1227,
+          "function": "handle",
+          "class": "Illuminate\\Foundation\\Http\\Kernel",
+          "type": "->"
+        },
+        {
+          "file": "C:\\Users\\Kazu\\PFS-main\\public\\index.php",
+          "line": 20,
+          "function": "handleRequest",
+          "class": "Illuminate\\Foundation\\Application",
+          "type": "->"
+        }
+      ]
+    }
+  },
+  "logistics_intent": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The selected intent is invalid.",
+      "errors": {
+        "intent": [
+          "The selected intent is invalid."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox85@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "logistics",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "missing_/logistics": {
+    "status": 404,
+    "location": null,
+    "body": null
+  },
+  "missing_/logistics/register": {
+    "status": 404,
+    "location": null,
+    "body": null
+  },
+  "missing_/logistics/riders/create": {
+    "status": 404,
+    "location": null,
+    "body": null
+  },
+  "missing_/admin/logistics": {
+    "status": 404,
+    "location": null,
+    "body": null
+  },
+  "missing_/verify-email": {
+    "status": 404,
+    "location": null,
+    "body": null
+  },
+  "missing_/rider/activate": {
+    "status": 404,
+    "location": null,
+    "body": null
+  },
+  "rider_self_signup": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/rider/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox86@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "rider",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "buyer_can_open_rider_form": {
+    "status": 200,
+    "location": null,
+    "body": null
+  },
+  "saved_users": [
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel.delacruz@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox6@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox7@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox8@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel123 Dela Cruz@#",
+      "email": "blackbox9@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Niño Angelo Peñaflor-O'Hara",
+      "email": "blackbox10@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "J",
+      "email": "blackbox11@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Jo",
+      "email": "blackbox12@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "email": "blackbox13@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "email": "blackbox14@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "juanmiguel.delacruz@example",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "JUANMIGUEL.DELACRUZ@EXAMPLE.COM",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "buyer.test01@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox23@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox24@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox25@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox26@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox27@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox28@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox29@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox30@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox31@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox33@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox34@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox35@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox36@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox37@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox39@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox40@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox41@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox42@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Maria Clara Santos",
+      "email": "mariaclara.santos@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox48@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox49@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox50@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel123 Dela Cruz@#",
+      "email": "blackbox51@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Niño Angelo Peñaflor-O'Hara",
+      "email": "blackbox52@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "J",
+      "email": "blackbox53@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Jo",
+      "email": "blackbox54@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "email": "blackbox55@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "email": "blackbox56@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "MARIACLARA.SANTOS@EXAMPLE.COM",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "seller.test01@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox65@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox66@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox67@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox68@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox69@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox70@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox71@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox72@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox73@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox75@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox76@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox77@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox78@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox79@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox81@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox82@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox83@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox84@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox86@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1002@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1003@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1004@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1005@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1006@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "mariaclara.santos@example",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Maria Clara99 Dela Cruz@#",
+      "email": "blackbox1011@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Niña Corazon Peñaranda-D'Souza",
+      "email": "blackbox1012@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    },
+    {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1013@example.com",
+      "phone": null,
+      "role": "buyer",
+      "email_verified_at": null
+    }
+  ],
+  "saved_seller_applications": [
+    {
+      "shop_name": "Maria Clara Handicrafts",
+      "status": "pending"
+    },
+    {
+      "shop_name": "Maria Clara Handicrafts",
+      "status": "pending"
+    }
+  ],
+  "seller_followup_login": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/home",
+    "body": null
+  },
+  "seller_exact_password_Tind@26": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The password field must be at least 8 characters.",
+      "errors": {
+        "password": [
+          "The password field must be at least 8 characters."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1001@example.com",
+      "password": "Tind@26",
+      "password_confirmation": "Tind@26",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_password_Tinda@26": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1002@example.com",
+      "password": "Tinda@26",
+      "password_confirmation": "Tinda@26",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_password_tindahan@2026": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1003@example.com",
+      "password": "tindahan@2026",
+      "password_confirmation": "tindahan@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_password_TINDAHAN@2026": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1004@example.com",
+      "password": "TINDAHAN@2026",
+      "password_confirmation": "TINDAHAN@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_password_Tindahan@abcd": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1005@example.com",
+      "password": "Tindahan@abcd",
+      "password_confirmation": "Tindahan@abcd",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_password_Tindahan2026": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1006@example.com",
+      "password": "Tindahan2026",
+      "password_confirmation": "Tindahan2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_email_mariaclara.santosexample.com": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "mariaclara.santosexample.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_email_mariaclara.santos@": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "mariaclara.santos@",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_email_mariaclara.santos@example": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "mariaclara.santos@example",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_email_mariaclara santos@example.com": {
+    "status": 422,
+    "location": null,
+    "body": {
+      "message": "The email field must be a valid email address.",
+      "errors": {
+        "email": [
+          "The email field must be a valid email address."
+        ]
+      }
+    },
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "mariaclara santos@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_name_Maria Clara99 Dela Cruz@#": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Maria Clara99 Dela Cruz@#",
+      "email": "blackbox1011@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_exact_name_Niña Corazon Peñaranda-D'Souza": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Niña Corazon Peñaranda-D'Souza",
+      "email": "blackbox1012@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_extra_No Documents Corporation": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null
+  },
+  "seller_extra_TIN Test": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null
+  },
+  "seller_second_applicant": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null,
+    "input": {
+      "name": "Juan Miguel Dela Cruz",
+      "email": "blackbox1013@example.com",
+      "password": "Mamimili@2026",
+      "password_confirmation": "Mamimili@2026",
+      "intent": "seller",
+      "phone": "09171234567",
+      "date_of_birth": "1998-05-14",
+      "terms": "1"
+    }
+  },
+  "seller_duplicate_shop_first": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null
+  },
+  "seller_duplicate_shop_second": {
+    "status": 302,
+    "location": "http://127.0.0.1:8876/seller/apply",
+    "body": null
+  }
+}

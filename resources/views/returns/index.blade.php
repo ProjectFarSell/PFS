@@ -15,7 +15,7 @@
             <p class="text-sm">Requested: PHP {{ number_format((float) $case->requested_amount, 2) }}@if($case->approved_amount !== null) · Approved: PHP {{ number_format((float) $case->approved_amount, 2) }}@endif</p>
             @if($case->return_required)<p class="text-sm">Return of goods required. Follow the handover instructions in the review below.</p>@endif
             @if($case->refunded_at)<p class="text-sm">Reimbursement recorded {{ $case->refunded_at->format('M j, Y g:i A') }} · Reference: {{ $case->refund_reference }}</p>@endif
-            @if($case->evidence_path)<x-ui.button variant="link" class="text-sm text-accent underline" :href="route('returns.evidence', $case)" target="_blank" rel="noopener">View private evidence photo</x-ui.button>@endif
+            @if($case->evidence_path)<x-ui.button variant="secondary" :href="route('returns.evidence', $case)" target="_blank" rel="noopener">View private evidence photo</x-ui.button>@endif
             <ol class="space-y-2 border-l border-surface-border pl-4 text-sm">
                 @foreach($case->events as $event)<li><time class="text-xs text-text-muted">{{ $event->created_at->format('M j, Y g:i A') }}</time><p>{{ ucfirst(str_replace('_', ' ', $event->status)) }}: {{ $event->note }}</p></li>@endforeach
             </ol>

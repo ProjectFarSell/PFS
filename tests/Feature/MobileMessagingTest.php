@@ -54,7 +54,9 @@ class MobileMessagingTest extends TestCase
         Http::assertSent(function ($request) use ($ownerDevice) {
             $body = $request->data();
             $this->assertSame($ownerDevice->fcm_token, $body['message']['token']);
-            $this->assertSame(['event_id', 'type', 'occurred_at', 'order_id'], array_keys($body['message']['data']));
+            $keys = array_keys($body['message']['data']);
+            sort($keys);
+            $this->assertSame(['event_id', 'occurred_at', 'order_id', 'type'], $keys);
             $this->assertStringNotContainsString('Private street', json_encode($body));
             $this->assertStringNotContainsString('123456', json_encode($body));
 

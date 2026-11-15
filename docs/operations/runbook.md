@@ -78,6 +78,15 @@ The built-in SQLite snapshot command intentionally refuses MySQL. Before a MySQL
 
 Cloud object recovery requires a separate versioning/backup/restore procedure with the team that owns storage. No Cloudflare settings are changed here.
 
+Schedule automated MySQL provider snapshots with point-in-time recovery, or encrypted off-server logical dumps when snapshots are unavailable. Monitor each run and failed-upload alert; keep at least seven daily and four weekly recovery points, subject to the approved business and legal retention policy. Retain encryption keys separately and test access to both backups and keys.
+
+For each scheduled restore rehearsal:
+
+1. Restore a selected recovery point to an isolated MySQL instance, never the live database.
+2. Record the backup timestamp, restore duration, MySQL version, and migration status; compare table counts and financial totals with source records.
+3. Restore the matching application key and uploads, then verify decryption, permissions, checkout, delivery, and settlement flows with authorized test accounts.
+4. Record the result, gaps, owner, and next test date; investigate any inconsistency before relying on that recovery point.
+
 ## Release, rollback, and incident handling
 
 Before release: inspect CI results and advisory audits for the exact lockfiles; record the commit; take and verify recovery points; verify staging and hosted providers; fill `launch-acceptance.md`; get approvals. Release migration changes should be backward compatible with the previous app version where possible.

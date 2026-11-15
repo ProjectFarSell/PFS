@@ -31,6 +31,9 @@
                     <x-ui.status-pill :status="$part->status->value">{{ $part->deliveryLabel() }}</x-ui.status-pill>
                 </div>
                 <p class="mt-2 text-sm">{{ $part->shop_name }}</p>
+                @if($isSeller)
+                    <x-ui.button variant="secondary" :href="route('seller.fulfillments.packing-slip', $part)" target="_blank" rel="noopener" class="mt-3">Print packing slip</x-ui.button>
+                @endif
                 <ul class="mt-3 space-y-1 text-sm">
                     @foreach($part->items as $item)<li>{{ $item->name }}@if($item->variant_options) ({{ collect($item->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $item->qty }} Â· SKU: {{ $item->product_sku ?? 'Unavailable' }} @if($isSeller || $isAdmin) · ₱{{ number_format((float) $item->line_total, 2) }} @endif</li>@endforeach
                 </ul>
@@ -40,6 +43,35 @@
                     <p class="mt-2 text-sm">Pickup shop: {{ $part->shop_name }}{{ $part->shop ? ' · '.$part->shop->city : '' }}</p>
                     <p class="text-sm whitespace-pre-line">{{ $part->pickup_address ?? 'Legacy shipment: ask the administrator to confirm the pickup point.' }}</p>
                     @if($part->pickup_contact)<p class="text-sm">Pickup contact: {{ $part->pickup_contact }}</p>@endif
+                    @if($role === \App\Enums\UserRole::Rider && $part->rider_id === auth()->user()->riderProfile?->id)
+                        @php
+                            preg_match('/(?<![0-9])(\+?[0-9][0-9 ()-]{5,28}[0-9])(?![0-9])/', $part->pickup_contact ?? '', $pickupMatch);
+                            $pickupPhone = preg_replace('/[^0-9+]/', '', $pickupMatch[1] ?? '');
+                            $deliveryParts = explode(' · ', $part->order->ship_to ?? '');
+                            $deliveryContact = count($deliveryParts) > 1 ? trim(end($deliveryParts)) : '';
+                            $deliveryPhone = preg_replace('/[^0-9+]/', '', $deliveryContact);
+                            $hasDeliveryPhone = preg_match('/^\+?[0-9][0-9 ()-]{5,28}[0-9]$/', $deliveryContact)
+                                && preg_match('/^\+?[0-9]{7,15}$/', $deliveryPhone);
+                            if ($hasDeliveryPhone) {
+                                array_pop($deliveryParts);
+                            }
+                            $deliveryAddress = implode(' · ', $deliveryParts);
+                        @endphp
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            @if(preg_match('/^\+?[0-9]{7,15}$/', $pickupPhone))
+                                <x-ui.button variant="secondary" :href="'tel:'.$pickupPhone">Call seller</x-ui.button>
+                            @endif
+                            @if($hasDeliveryPhone)
+                                <x-ui.button variant="secondary" :href="'tel:'.$deliveryPhone">Call buyer</x-ui.button>
+                            @endif
+                            @if(filled($part->pickup_address))
+                                <x-ui.button variant="secondary" :href="'https://www.google.com/maps/dir/?api=1&destination='.rawurlencode($part->pickup_address)" target="_blank" rel="noopener noreferrer">Directions to pickup</x-ui.button>
+                            @endif
+                            @if(filled($deliveryAddress))
+                                <x-ui.button variant="secondary" :href="'https://www.google.com/maps/dir/?api=1&destination='.rawurlencode($deliveryAddress)" target="_blank" rel="noopener noreferrer">Directions to drop-off</x-ui.button>
+                            @endif
+                        </div>
+                    @endif
                     <p class="mt-2 font-semibold">{{ $part->order->payment_method === \App\Enums\PaymentMethod::Cod ? 'COD for this shipment' : 'Demo prepaid shipment' }}: ₱{{ number_format($part->amount(), 2) }}</p>
                     <p class="text-xs text-text-muted">Includes ₱{{ number_format((float) $part->shipping_fee, 2) }} allocated delivery fee.</p>
                 @else
@@ -74,10 +106,10 @@
                         <label class="block" for="pickup-contact-{{ $part->id }}">Pickup contact name and phone</label>
                         <input id="pickup-contact-{{ $part->id }}" name="pickup_contact" required maxlength="255" class="w-full rounded-lg">
                         <x-ui.button variant="primary" size="lg" type="submit">{{ $part->status === \App\Enums\FulfillmentStatus::Ready ? 'Request a rider' : 'Mark ready for pickup' }}</x-ui.button>
-                        <p class="text-xs text-text-muted">FarSell riders use internal dispatch. For Lalamove, admin must arrange and verify the courier booking through Logistics.</p>
+                        <p class="text-xs text-text-muted">FarSell riders use internal dispatch. Record an existing courier booking after marking the shipment ready.</p>
                     </form>
                 @elseif($isSeller && $part->status === \App\Enums\FulfillmentStatus::Ready && $part->usesExternalCourier())
-                    <p class="mt-4 text-sm font-semibold">Waiting for admin to arrange {{ $part->delivery_method->label() }} booking.</p>
+                    <p class="mt-4 text-sm font-semibold">Ready for {{ $part->delivery_method->label() }} booking.</p>
                 @elseif($isSeller && $part->status === \App\Enums\FulfillmentStatus::Ready)
                     <p class="mt-4 text-sm font-semibold">Rider requested — waiting for acceptance</p>
                     <p class="mt-2 text-sm text-text-muted">Available approved riders in {{ ucwords($part->pickup_city) }} can accept this shipment. An administrator can also assign a rider.</p>
@@ -90,7 +122,7 @@
                             <label for="rider-{{ $part->id }}">Assign rider</label>
                             <select id="rider-{{ $part->id }}" name="rider_id" required class="rounded-lg">
                                 <option value="">Choose rider</option>
-                                @foreach($riders as $rider)<option value="{{ $rider->id }}">{{ $rider->user->name }} · {{ $rider->city }} · {{ $rider->vehicle_type }}</option>@endforeach
+                                @foreach($riders as $rider)<option value="{{ $rider->id }}">{{ $rider->user->name }} · {{ $rider->is_available ? 'Online' : 'Offline' }} · {{ $rider->city }} · {{ $rider->vehicle_type }}</option>@endforeach
                             </select><x-ui.button variant="primary" size="lg" type="submit">Assign shipment</x-ui.button>
                         </form>
                     @endif
@@ -120,8 +152,29 @@
                         </x-bottom-actions>
                     </form>
                 @endif
+                @if($isSeller && $part->status === \App\Enums\FulfillmentStatus::Ready && !$part->rider_id && !$part->courierBooking)
+                    <details class="mt-4 rounded-lg border border-surface-border p-4">
+                        <summary class="cursor-pointer font-semibold">Record courier booking</summary>
+                        <form method="post" action="{{ route('seller.fulfillments.courier', $part) }}" class="mt-3 space-y-3">
+                            @csrf
+                            <label class="block text-sm">Provider
+                                <select name="provider" required class="fs-input mt-1 w-full">
+                                    <option value="lalamove">Lalamove</option>
+                                </select>
+                            </label>
+                            <label class="block text-sm">Courier reference<input name="reference" required minlength="3" maxlength="100" class="fs-input mt-1 w-full"></label>
+                            <label class="block text-sm">Official tracking link<input name="tracking_url" type="url" required maxlength="2000" class="fs-input mt-1 w-full"></label>
+                            <label class="block text-sm">Courier cost (PHP)<input name="courier_cost" type="number" required min="0" max="99999999.99" step="0.01" class="fs-input mt-1 w-full"></label>
+                            <label class="block text-sm"><input type="checkbox" name="verified" value="1" required> I verified this booking with the courier.</label>
+                            @if($part->order->payment_method === \App\Enums\PaymentMethod::Cod)
+                                <label class="block text-sm"><input type="checkbox" name="cod_supported" value="1" required> The courier confirmed it accepts the shipment's COD amount.</label>
+                            @endif
+                            <x-ui.button variant="secondary" type="submit">Save courier booking</x-ui.button>
+                        </form>
+                    </details>
+                @endif
                 @include('fulfillments.exceptions')
-                @if($isAdmin)<a class="inline-block mt-4 text-sm text-accent underline" href="{{ route('orders.show', $part->order_id) }}">Order details and history</a>@endif
+                @if($isAdmin)<x-ui.button variant="secondary" :href="route('orders.show', $part->order_id)" class="mt-4">Order details and history</x-ui.button>@endif
             </article>
         @empty
             <p class="fs-card p-6 text-text-muted">No shipments match this view.</p>

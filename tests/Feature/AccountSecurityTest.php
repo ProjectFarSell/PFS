@@ -176,7 +176,9 @@ class AccountSecurityTest extends TestCase
         $category = Category::query()->where('name', 'Old name')->sole();
         $this->put(route('admin.categories.update', $category), ['name' => 'New name'])->assertSessionHasNoErrors();
         $event = SecurityAuditEvent::query()->where('action', 'Category.updated')->sole();
-        $this->assertSame(['before' => 'Old name', 'after' => 'New name'], $event->changes['name']);
+        $this->assertCount(2, $event->changes['name']);
+        $this->assertSame('Old name', $event->changes['name']['before']);
+        $this->assertSame('New name', $event->changes['name']['after']);
         $admin->forceFill(['password' => 'TopSecret-New-Password-123!', 'mfa_secret' => 'UNLOGGEDSECRET'])->save();
         $audit = json_encode(SecurityAuditEvent::query()->get()->toArray());
         $this->assertStringNotContainsString('UNLOGGEDSECRET', $audit);

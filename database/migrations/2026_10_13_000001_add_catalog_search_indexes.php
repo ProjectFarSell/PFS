@@ -23,6 +23,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true) && ! Schema::hasIndex('products', 'products_shop_rollback_index')) {
+            Schema::table('products', fn (Blueprint $table) => $table->index('shop_id', 'products_shop_rollback_index'));
+        }
+
         Schema::table('products', function (Blueprint $table) {
             if (DB::getDriverName() !== 'sqlite') {
                 $table->dropFullText('products_name_description_fulltext');

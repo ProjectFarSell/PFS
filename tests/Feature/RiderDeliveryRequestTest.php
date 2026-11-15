@@ -106,6 +106,52 @@ class RiderDeliveryRequestTest extends TestCase
         $this->actingAs($first->user)->get('/fulfillments')->assertSee('SECRET RECIPIENT ADDRESS');
     }
 
+    public function test_contact_and_directions_are_available_only_to_the_assigned_rider(): void
+    {
+        $rider = $this->rider();
+        $other = $this->rider();
+        $part = $this->shipment();
+        $part->order->update(['ship_to' => '456 Buyer Street, Quezon City · +63 918 123 4567']);
+        $this->actingAs($part->shop->owner)->post(route('fulfillments.update', $part), [
+            'action' => 'ready', 'pickup_address' => '123 Shop Street, Quezon City',
+            'pickup_contact' => 'Seller 0917 123 4567',
+        ])->assertSessionHasNoErrors();
+
+        $offer = $this->actingAs($rider->user)->getJson(route('rider.delivery-requests'))->assertJsonPath('count', 1)->json('html');
+        $this->assertStringNotContainsString('0917', $offer);
+        $this->assertStringNotContainsString('918', $offer);
+        $this->assertStringNotContainsString('tel:', $offer);
+        $this->assertStringNotContainsString('google.com/maps', $offer);
+        $this->get(route('fulfillments.index'))->assertOk()->assertDontSee('123 Shop Street')->assertDontSee('456 Buyer Street');
+
+        $this->claim($rider, $part)->assertSessionHasNoErrors();
+        $this->get(route('fulfillments.index'))->assertOk()
+            ->assertSee('href="tel:09171234567"', false)->assertSee('href="tel:+639181234567"', false)
+            ->assertSee('destination=123%20Shop%20Street%2C%20Quezon%20City', false)
+            ->assertSee('destination=456%20Buyer%20Street%2C%20Quezon%20City', false);
+        $this->actingAs($other->user)->get(route('fulfillments.index'))->assertOk()
+            ->assertDontSee('123 Shop Street')->assertDontSee('456 Buyer Street')
+            ->assertDontSee('09171234567')->assertDontSee('639181234567')->assertDontSee('google.com/maps');
+        $this->post(route('fulfillments.update', $part), ['action' => 'pickup'])->assertForbidden();
+    }
+
+    public function test_contact_links_are_omitted_when_a_phone_or_address_is_unavailable(): void
+    {
+        $rider = $this->rider();
+        $part = $this->shipment();
+        $this->ready($part);
+        $this->claim($rider, $part)->assertSessionHasNoErrors();
+        $this->get(route('fulfillments.index'))->assertOk()
+            ->assertDontSee('href="tel:', false)->assertSee('Directions to pickup')->assertSee('Directions to drop-off');
+        $part->order->update(['ship_to' => '456 Buyer Street · Unit 12345678']);
+        $this->get(route('fulfillments.index'))->assertOk()->assertDontSee('Call buyer')
+            ->assertSee('destination=456%20Buyer%20Street%20%C2%B7%20Unit%2012345678', false);
+        $part->update(['pickup_address' => null]);
+        $part->order->update(['ship_to' => '']);
+        $this->get(route('fulfillments.index'))->assertOk()
+            ->assertDontSee('Directions to pickup')->assertDontSee('Directions to drop-off');
+    }
+
     public function test_availability_backfills_requests_and_offline_does_not_cancel_accepted_work(): void
     {
         $rider = $this->rider(available: false);
@@ -191,6 +237,55 @@ class RiderDeliveryRequestTest extends TestCase
         $this->claim($first, $part)->assertSessionHasErrors('fulfillment');
         $this->artisan('riders:dispatch')->assertSuccessful();
         $this->actingAs($second->user)->getJson(route('rider.delivery-requests'))->assertJsonPath('count', 1);
+        $this->claim($second, $part)->assertSessionHasNoErrors();
+        $this->travelBack();
+    }
+
+    public function test_expired_offer_is_reissued_after_a_pause_and_remains_stable_when_polled(): void
+    {
+        $rider = $this->rider();
+        $part = $this->shipment();
+        $this->ready($part);
+        $original = DB::table('rider_delivery_requests')->where('fulfillment_id', $part->id)->sole();
+
+        $this->travel(121)->seconds();
+        $this->claim($rider, $part)->assertSessionHasErrors('fulfillment');
+        $this->actingAs($rider->user)->getJson(route('rider.delivery-requests'))->assertJsonPath('count', 0);
+        $this->travel(120)->seconds();
+        $this->getJson(route('rider.delivery-requests'))->assertJsonPath('count', 1);
+        $renewed = DB::table('rider_delivery_requests')->where('fulfillment_id', $part->id)->sole();
+        $this->assertNotSame($original->public_id, $renewed->public_id);
+        $this->assertGreaterThan(Carbon::parse($original->expires_at), Carbon::parse($renewed->expires_at));
+        $this->getJson(route('rider.delivery-requests'))->assertJsonPath('count', 1);
+        $this->assertSame($renewed->public_id, DB::table('rider_delivery_requests')->where('fulfillment_id', $part->id)->value('public_id'));
+        $this->claim($rider, $part)->assertSessionHasNoErrors();
+        $this->assertSame($rider->id, $part->fresh()->rider_id);
+        $this->travelBack();
+    }
+
+    public function test_declined_offer_is_not_reissued(): void
+    {
+        $rider = $this->rider();
+        $part = $this->shipment();
+        $this->ready($part);
+        $this->actingAs($rider->user)->post(route('fulfillments.update', $part), ['action' => 'decline'])->assertSessionHasNoErrors();
+        $this->travel(10)->minutes();
+        $this->getJson(route('rider.delivery-requests'))->assertJsonPath('count', 0);
+        $this->assertNotNull(DB::table('rider_delivery_requests')->where('fulfillment_id', $part->id)->value('declined_at'));
+        $this->travelBack();
+    }
+
+    public function test_untried_rider_is_offered_the_shipment_before_an_expired_offer_is_retried(): void
+    {
+        $first = $this->rider();
+        $second = $this->rider(available: false);
+        $part = $this->shipment();
+        $this->ready($part);
+        $this->travel(5)->minutes();
+
+        $this->actingAs($second->user)->post(route('rider.availability'), ['is_available' => 1])->assertSessionHasNoErrors();
+        $this->getJson(route('rider.delivery-requests'))->assertJsonPath('count', 1);
+        $this->actingAs($first->user)->getJson(route('rider.delivery-requests'))->assertJsonPath('count', 0);
         $this->claim($second, $part)->assertSessionHasNoErrors();
         $this->travelBack();
     }

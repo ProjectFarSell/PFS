@@ -13,9 +13,22 @@ use App\Services\Security\SafeImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class FulfillmentController extends Controller
 {
+    public function packingSlip(Request $request, Fulfillment $fulfillment): View
+    {
+        abort_unless($fulfillment->shop()->where('user_id', $request->user()->id)->exists(), 403);
+        $fulfillment->load(['order', 'items']);
+
+        return view('orders.print', [
+            'order' => $fulfillment->order,
+            'document' => 'packing-slip',
+            'shipment' => $fulfillment,
+        ]);
+    }
+
     public function index(Request $request)
     {
         $role = $request->user()->role;
@@ -32,7 +45,7 @@ class FulfillmentController extends Controller
         $query->when($data['status'] ?? null, fn ($q, $status) => $q->where('status', $status));
         $fulfillments = $query->latest('id')->paginate(15)->withQueryString();
         $riders = $role === UserRole::Admin
-            ? RiderProfile::query()->where('status', 'approved')->whereHas('user', fn ($q) => $q->where('role', 'rider'))->with('user')->get()
+            ? RiderProfile::query()->where('status', 'approved')->whereHas('user', fn ($q) => $q->where('role', 'rider'))->with('user')->orderByDesc('is_available')->orderBy('id')->get()
             : collect();
 
         return view('fulfillments.index', compact('fulfillments', 'role', 'riders'));

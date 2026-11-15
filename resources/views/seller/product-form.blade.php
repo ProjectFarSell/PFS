@@ -49,7 +49,7 @@
                     <input type="hidden" name="stock" value="0" x-bind:disabled="!hasVariants">
                 </div>
                 <p class="text-xs text-text-muted" x-show="!hasVariants">Available units exclude stock already reserved for orders. Enter only units still available to sell.</p>
-                <section x-show="hasVariants" class="rounded-xl border border-surface-border p-4">
+                <fieldset x-show="hasVariants" x-bind:disabled="!hasVariants" class="rounded-xl border border-surface-border p-4">
                     <div class="flex items-center justify-between gap-3"><div><h2 class="font-semibold">Options and stock</h2><p class="mt-1 text-xs text-text-muted">Add one row for each size and color combination. Each combination has its own SKU.</p></div><x-ui.button variant="secondary" type="button" @click="variantRows.push({ sku: '', size: '', color: '', other_options: '', price_override: '', stock: 0, is_active: true })">Add option</x-ui.button></div>
                     <div class="mt-3 space-y-3">
                         <template x-for="(variant, index) in variantRows" :key="variant.id ?? index">
@@ -68,7 +68,7 @@
                             </div>
                         </template>
                     </div>
-                </section>
+                </fieldset>
                 @if ($product->image_path)
                     <x-product-image :src="$product->imageUrl()" :alt="$product->name" width="160" height="160" class="h-40 w-40 rounded-lg object-cover" />
                 @endif

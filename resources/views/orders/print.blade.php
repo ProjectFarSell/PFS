@@ -21,7 +21,7 @@
 <body>
     <div class="controls">
         <x-ui.button variant="tertiary" type="button" onclick="window.print()">Print {{ $document === 'invoice' ? 'invoice' : 'packing slip' }}</x-ui.button>
-        <a href="{{ route('orders.show', $order) }}">Back to order</a>
+        <a href="{{ isset($shipment) ? route('fulfillments.index') : route('orders.show', $order) }}">{{ isset($shipment) ? 'Back to shipments' : 'Back to order' }}</a>
     </div>
 
     @if(!empty($invoiceGenerationFailed))
@@ -30,12 +30,18 @@
         <p class="muted">The PDF service is not configured yet, so this invoice is shown in the browser’s print-ready format.</p>
     @endif
 
-    @php($documentItems = $order->billableItems())
+    @php($documentItems = isset($shipment) ? $shipment->items : $order->billableItems())
     <h1>{{ $document === 'invoice' ? 'Invoice' : 'Packing slip' }}</h1>
     @if($order->status === \App\Enums\OrderStatus::Cancelled)<p><strong>Cancelled — no payment due. Do not ship.</strong></p>@endif
     @if($order->status === \App\Enums\OrderStatus::Returned)<p><strong>Returned to seller — no payment due. Do not ship.</strong></p>@endif
     <p class="muted">FarSell · Order {{ $order->number }} · {{ $order->created_at->format('M j, Y') }}</p>
     <p><strong>Ship to</strong><br>{{ $order->guest_name }}<br>{{ $order->ship_to }}</p>
+    @if(isset($shipment))
+        <p><strong>Pickup address</strong><br>{{ $shipment->pickup_address ?: 'Not provided' }}</p>
+        @if($order->payment_method === \App\Enums\PaymentMethod::Cod && !$shipment->cod_collected_at)
+            <p><strong>COD amount to collect</strong> PHP {{ number_format($shipment->amount(), 2) }}</p>
+        @endif
+    @endif
 
     <table>
         <thead>

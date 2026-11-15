@@ -49,7 +49,7 @@
             </div>
         @endif
         @if(in_array($profile->status, [\App\Enums\RiderStatus::Pending, \App\Enums\RiderStatus::Rejected], true))
-            <a href="{{ route('rider.register') }}" class="inline-block mt-4 text-sm text-accent hover:text-accent font-medium">Update application</a>
+            <x-ui.button variant="secondary" :href="route('rider.register')" class="mt-4">Update application</x-ui.button>
         @else
             <p class="mt-4 text-sm text-text-muted">Contact an administrator if your rider details need updating.</p>
         @endif

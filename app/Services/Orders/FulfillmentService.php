@@ -46,9 +46,12 @@ class FulfillmentService
 
     public function act(Fulfillment $fulfillment, User $actor, string $action, array $data): void
     {
-        DB::transaction(function () use ($fulfillment, $actor, $action, $data) {
+        app(FinancialTransaction::class)->run(function () use ($fulfillment, $actor, $action, $data) {
             // All mutations lock the parent first to serialize sibling updates and stock releases.
-            $order = Order::query()->lockForUpdate()->findOrFail($fulfillment->order_id);
+            $order = app(FinancialLocks::class)->order($fulfillment->order_id);
+            if ($action === 'complete' && $fulfillment->shop_id !== null) {
+                app(FinancialLocks::class)->shop($fulfillment->shop_id);
+            }
             $part = Fulfillment::query()->lockForUpdate()->findOrFail($fulfillment->id);
             $actor = User::query()->findOrFail($actor->id);
             $note = null;
@@ -172,7 +175,7 @@ class FulfillmentService
             }
 
             $this->recordState($order, $part, $actor, $next, $note);
-        }, 3);
+        });
     }
 
     /** Caller holds the parent order and shipment locks. */

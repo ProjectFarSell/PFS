@@ -1,0 +1,52 @@
+Initial MySQL run: 411 passed; 4 failed; 46 errors.
+
+Tests\Feature\AccountSecurityTest::test_audit_records_changes_excludes_secrets_and_is_admin_only: MySQL reordered JSON object keys; the assertion required key order.
+Tests\Feature\CatalogFilterTest::test_fulltext_search_returns_matching_product: MySQL full-text indexes do not see uncommitted fixture inserts.
+Tests\Feature\DemoSignInSecurityTest::test_registration_and_profile_cannot_set_the_demo_marker: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\MobileMessagingTest::test_push_is_generic_owner_scoped_and_deduplicated_after_success: MySQL reordered JSON object keys; the assertion required key order.
+Tests\Feature\DatabaseRecoveryTest::test_backup_is_encrypted_and_restore_check_does_not_replace_the_live_database: The encrypted backup service does not support MySQL.
+Tests\Feature\DatabaseRecoveryTest::test_wrong_backup_password_cannot_verify_or_claim_a_restore: The encrypted backup service does not support MySQL.
+Tests\Feature\DatabaseRecoveryTest::test_weak_backup_password_is_rejected: Migration rollback tried to drop an index required by a MySQL foreign key.
+Tests\Feature\DatabaseRecoveryTest::test_optional_local_files_are_encrypted_and_verified_with_the_database: The encrypted backup service does not support MySQL.
+Tests\Feature\DatabaseRecoveryTest::test_changed_archive_content_fails_the_checksum_check: The encrypted backup service does not support MySQL.
+Tests\Feature\DatabaseRecoveryTest::test_recovery_rehearsal_preserves_the_original_database: Migration rollback tried to drop an index required by a MySQL foreign key.
+Tests\Feature\DeliveryEtaTest::test_same_city_buyer_sees_two_to_four_hour_eta: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryEtaTest::test_different_city_buyer_sees_next_day_eta: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryEtaTest::test_buyer_with_no_default_address_sees_no_eta_badge: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryEtaTest::test_guest_sees_no_eta_badge: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryExceptionTest::test_failed_attempt_preserves_stock_and_records_no_cod_or_earnings: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryExceptionTest::test_only_assigned_rider_can_report_and_required_details_are_validated: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryExceptionTest::test_admin_can_schedule_retry_and_delivery_is_blocked_until_due: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryExceptionTest::test_return_requires_seller_receipt_then_restores_stock_once_and_waives_cod: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryExceptionTest::test_quarantined_return_does_not_put_damaged_goods_back_on_sale: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryExceptionTest::test_retry_limit_blocks_fourth_attempt_and_return_stays_available: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryExceptionTest::test_returned_sibling_does_not_cancel_successfully_completed_shipment_or_invoice: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DeliveryExceptionTest::test_rider_instruction_emails_skip_old_retry_and_deliver_current_return_instruction: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoAccountsSeederTest::test_demo_accounts_can_log_in_to_each_role_destination: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoAccountsSeederTest::test_demo_rider_has_usable_dashboard_and_request_panel_after_seeding: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoAccountsSeederTest::test_missing_profile_is_repaired_without_resetting_rider_credentials: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoAccountsSeederTest::test_existing_application_decisions_and_profile_details_are_not_overwritten: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoAccountsSeederTest::test_existing_non_rider_or_suspended_account_is_not_promoted_or_enabled: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoAccountsSeederTest::test_reseeding_preserves_existing_accounts_and_recreates_missing_accounts: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSellerAccountSeederTest::test_explicit_repair_replaces_unlinked_buyer_revokes_recovery_and_creates_exempt_seller_with_own_shop: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSellerAccountSeederTest::test_reruns_preserve_existing_seller_password_mfa_and_shop: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSellerAccountSeederTest::test_linked_records_prevent_deleting_or_promoting_the_reserved_buyer: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSellerAccountSeederTest::test_missing_seller_can_be_created_without_touching_other_users: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSellerAccountSeederTest::test_production_staging_suspension_and_unexpected_roles_are_refused: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSignInSecurityTest::test_all_four_seeded_demos_skip_second_factor_without_changing_real_account_policy: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSignInSecurityTest::test_regular_accounts_including_test_email_addresses_keep_their_required_second_factor: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSignInSecurityTest::test_seeded_mobile_demo_accounts_skip_web_and_api_second_factor_but_pending_riders_remain_blocked: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSignInSecurityTest::test_demo_login_discards_a_remembered_second_factor_destination: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSignInSecurityTest::test_demo_marker_alone_or_wrong_role_or_changed_email_cannot_grant_an_exemption: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSignInSecurityTest::test_demo_exemption_never_applies_in_staging_or_production: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSignInSecurityTest::test_old_demo_authenticator_is_preserved_but_demo_confirmation_uses_password_and_admin_writes_still_require_identity: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSignInSecurityTest::test_demo_accounts_still_require_correct_password_role_and_unsuspended_account: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\DemoSignInSecurityTest::test_migration_backfills_only_reserved_demo_identity_and_role_without_resetting_credentials: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\FulfillmentFlowTest::test_checkout_snapshots_shops_and_allocates_fee_without_rounding_loss: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\FulfillmentFlowTest::test_rejection_releases_only_own_stock_once_and_waives_its_fee: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\FulfillmentFlowTest::test_cod_flow_requires_collection_and_buyer_confirmation: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\FulfillmentFlowTest::test_wrong_roles_and_other_shops_cannot_mutate_shipments: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\FulfillmentFlowTest::test_invalid_or_stale_steps_and_unapproved_riders_are_blocked: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\FulfillmentFlowTest::test_demo_prepaid_delivery_does_not_record_cash_and_siblings_progress_independently: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\FulfillmentFlowTest::test_delivery_proof_requires_the_buyer_pin_and_keeps_the_photo_private: Cascading schema damage after migration rollback failed; required columns were absent.
+Tests\Feature\FulfillmentMigrationTest::test_existing_orders_are_backfilled_without_changing_stock_or_totals: MySQL prevented dropping a fulfillment table referenced by later migrations.

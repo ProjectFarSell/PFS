@@ -15,11 +15,30 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mysql, sqlite]
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test-password
+          MYSQL_DATABASE: farsell_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -ptest-password"
+          --health-interval=10s --health-timeout=5s --health-retries=12
     env:
       APP_ENV: testing
       APP_DEBUG: 'false'
-      DB_CONNECTION: sqlite
-      DB_DATABASE: ':memory:'
+      DB_CONNECTION: ${{ matrix.database }}
+      DB_DATABASE: ${{ matrix.database == 'mysql' && 'farsell_test' || ':memory:' }}
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: test-password
       DB_URL: ''
       MAIL_MAILER: array
       CACHE_STORE: array
@@ -29,7 +48,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: pdo_sqlite, mbstring, gd, zip
+          extensions: pdo_sqlite, pdo_mysql, mbstring, gd, zip
           coverage: none
           tools: composer:v2
       - uses: actions/setup-node@v4

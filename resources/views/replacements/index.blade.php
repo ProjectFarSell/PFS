@@ -14,7 +14,7 @@
         @if($case->review_note)<p class="break-words text-sm">Review: {{ $case->review_note }}</p>@endif
         @if($case->newOrder)
             <p class="text-sm">Linked order: {{ $case->newOrder->number }} · {{ $case->newOrder->status->label() }}</p>
-            @if($role !== \App\Enums\UserRole::Seller)<x-ui.button variant="link" :href="route('orders.show', $case->newOrder)" class="text-sm text-accent underline">View replacement order</x-ui.button>@endif
+            @if($role !== \App\Enums\UserRole::Seller)<x-ui.button variant="secondary" :href="route('orders.show', $case->newOrder)">View replacement order</x-ui.button>@endif
         @elseif($role === \App\Enums\UserRole::Buyer && $case->status === 'approved')
             <form method="post" action="{{ route('replacements.checkout', $case) }}">@csrf<x-ui.button variant="primary" size="lg" type="submit">Review current price & checkout</x-ui.button></form>
         @elseif($role !== \App\Enums\UserRole::Buyer && $case->status === 'pending')

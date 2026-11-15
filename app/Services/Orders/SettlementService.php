@@ -49,14 +49,14 @@ class SettlementService
         }
         $riderPay = $external ? 0 : $policy['rider_pay_cents'];
         $courierCost = $external ? $booking->cost_cents : 0;
-        $goods = (int) round((float) $part->subtotal * 100);
-        $delivery = (int) round((float) $part->shipping_fee * 100);
+        $goods = $this->cents($part->subtotal);
+        $delivery = $this->cents($part->shipping_fee);
         $commission = $this->commission($goods, $policy['commission_bps']);
         // COD handling and operating costs occur once per order, even for multi-shop orders.
         $first = ! ShipmentSettlement::whereHas('fulfillment', fn ($q) => $q->where('order_id', $part->order_id))->exists();
         $cod = $first ? $policy['cod_cost_cents'] : 0;
         $operating = $first ? $policy['operating_cost_cents'] : 0;
-        ShipmentSettlement::firstOrCreate(['fulfillment_id' => $part->id], [
+        $settlement = ShipmentSettlement::firstOrCreate(['fulfillment_id' => $part->id], [
             'goods_cents' => $goods, 'delivery_cents' => $delivery,
             'commission_bps' => $policy['commission_bps'], 'commission_cents' => $commission,
             'seller_cents' => $goods - $commission, 'rider_cents' => $riderPay, 'courier_cost_cents' => $courierCost,
@@ -64,6 +64,7 @@ class SettlementService
             'contribution_cents' => $commission + $delivery - $riderPay - $courierCost - $cod - $operating,
             'earned_at' => now(),
         ]);
+        app(SellerPayableLedger::class)->postSettlement($settlement);
         foreach (ReturnRequest::whereHas('item', fn ($q) => $q->where('fulfillment_id', $part->id))->where('status', 'refunded')->orderBy('id')->get() as $case) {
             $this->refund($case);
         }
@@ -73,24 +74,40 @@ class SettlementService
     public function refund(ReturnRequest $case): void
     {
         $settlement = ShipmentSettlement::where('fulfillment_id', $case->item->fulfillment_id)->first();
-        if (! $settlement || SettlementAdjustment::where('return_request_id', $case->id)->exists()) {
+        if (! $settlement) {
             return;
         }
-        $amount = (int) round((float) $case->approved_amount * 100);
+        $existing = SettlementAdjustment::where('return_request_id', $case->id)->first();
+        if ($existing) {
+            app(SellerPayableLedger::class)->postAdjustment($existing);
+
+            return;
+        }
+        $amount = $this->cents($case->approved_amount);
         $refunded = (int) $settlement->adjustments()->sum('refund_cents');
         if ($refunded + $amount > $settlement->goods_cents) {
             throw new \RuntimeException('Reimbursement exceeds the settled goods amount.');
         }
         $reversal = $this->commission($refunded + $amount, $settlement->commission_bps)
             - (int) $settlement->adjustments()->sum('commission_reversal_cents');
-        $settlement->adjustments()->create([
+        $adjustment = $settlement->adjustments()->create([
             'return_request_id' => $case->id, 'refund_cents' => $amount,
             'commission_reversal_cents' => $reversal, 'seller_debit_cents' => $amount - $reversal,
         ]);
+        app(SellerPayableLedger::class)->postAdjustment($adjustment);
     }
 
     private function commission(int $cents, int $bps): int
     {
         return intdiv($cents * $bps + 5000, 10000);
+    }
+
+    private function cents(string $amount): int
+    {
+        if (! preg_match('/^(\d+)(?:\.(\d{1,2}))?$/', $amount, $parts)) {
+            throw new \InvalidArgumentException('Invalid monetary amount.');
+        }
+
+        return ((int) $parts[1] * 100) + (int) str_pad($parts[2] ?? '', 2, '0');
     }
 }

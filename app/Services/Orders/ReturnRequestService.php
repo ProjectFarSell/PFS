@@ -42,8 +42,12 @@ class ReturnRequestService
 
     public function review(ReturnRequest $case, User $actor, array $data): void
     {
-        DB::transaction(function () use ($case, $actor, $data) {
-            $order = Order::query()->lockForUpdate()->findOrFail($case->item->order_id);
+        app(FinancialTransaction::class)->run(function () use ($case, $actor, $data) {
+            $order = app(FinancialLocks::class)->order($case->item->order_id);
+            $shopId = $case->item->fulfillment?->shop_id;
+            if ($data['action'] === 'refunded' && $shopId !== null) {
+                app(FinancialLocks::class)->shop($shopId);
+            }
             $case = ReturnRequest::query()->lockForUpdate()->findOrFail($case->id);
             $seller = $actor->role === UserRole::Seller && $case->item->fulfillment?->shop?->user_id === $actor->id;
             abort_unless($seller || $actor->role === UserRole::Admin, 403);
@@ -86,7 +90,7 @@ class ReturnRequestService
             }
             $event = $case->events()->create(['actor_id' => $actor->id, 'status' => $action, 'note' => $data['note']]);
             app(BuyerInbox::class)->record($order, 'return-event:'.$event->id, 'Return/refund update', $case->item->name.': '.$case->label().'.');
-        }, 3);
+        });
     }
 
     private function invalid(): never

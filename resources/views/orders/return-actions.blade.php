@@ -1,12 +1,14 @@
 @if(auth()->user()->role === \App\Enums\UserRole::Buyer)
 <section class="mt-6 space-y-3 print:hidden">
-    <a href="{{ route('returns.index') }}" class="text-accent underline text-sm">My returns & refunds</a>
-    <a href="{{ route('replacements.index') }}" class="ml-3 text-accent underline text-sm">My replacement requests</a>
+    <div class="flex flex-wrap gap-2">
+        <x-ui.button variant="secondary" :href="route('returns.index')">My returns &amp; refunds</x-ui.button>
+        <x-ui.button variant="secondary" :href="route('replacements.index')">My replacement requests</x-ui.button>
+    </div>
     @foreach($order->items as $item)
         @if($item->replacementRequest)
             <p class="text-sm">Replacement for {{ $item->name }}: {{ ucfirst($item->replacementRequest->status) }}. <x-ui.button variant="link" :href="route('replacements.index')" class="text-accent underline">View request</x-ui.button></p>
         @elseif($order->payment_method->value === 'cod' && $order->fulfillments->firstWhere('id', $item->fulfillment_id)?->status->value === 'returned')
-            <p><a href="{{ route('replacements.create', $item) }}" class="text-accent underline text-sm">Request another variant: {{ $item->name }}</a></p>
+            <x-ui.button variant="secondary" :href="route('replacements.create', $item)">Request another variant: {{ $item->name }}</x-ui.button>
         @endif
         @if($item->returnRequest)
             <p class="text-sm">{{ $item->name }}: {{ $item->returnRequest->label() }}</p>

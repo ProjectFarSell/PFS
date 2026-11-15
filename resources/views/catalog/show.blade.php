@@ -114,7 +114,7 @@
             @if(auth()->user()?->role === \App\Enums\UserRole::Buyer)
                 <form method="post" action="{{ route('chat.start', $product) }}" class="mt-3">@csrf<x-ui.button variant="secondary" type="submit">Chat with seller</x-ui.button></form>
             @elseif(!auth()->check())
-                <a href="{{ route('login') }}" class="mt-3 inline-block text-sm text-accent underline">Sign in to chat with seller</a>
+                <x-ui.button variant="secondary" icon="chat" :href="route('login')" class="mt-3">Sign in to chat with seller</x-ui.button>
             @endif
         </div>
     </div>

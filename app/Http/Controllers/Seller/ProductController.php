@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -165,7 +166,12 @@ class ProductController extends Controller
             ? Rule::unique('products', 'sku')->ignore($product->id)
             : Rule::unique('products', 'sku');
 
-        $data = $request->validate([
+        $input = $request->all();
+        if (! $request->boolean('has_variants')) {
+            unset($input['variants']);
+        }
+
+        $data = Validator::make($input, [
             'name' => ['required', 'string', 'max:150'],
             'sku' => $skuRules,
             'description' => ['required', 'string', 'max:5000'],
@@ -182,7 +188,11 @@ class ProductController extends Controller
             'variants.*.is_active' => ['nullable', 'boolean'],
             'is_active' => ['required', 'boolean'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-        ]);
+        ], [
+            'variants.required_if' => 'Add at least one product option.',
+            'variants.*.options_text.required_if' => 'Enter a size, color, or other option for each combination.',
+            'variants.*.options_text.string' => 'Enter a size, color, or other option for each combination.',
+        ])->validate();
         unset($data['image']);
 
         if (filled($data['sku'] ?? null) && ProductVariant::where('sku', $data['sku'])->exists()) {

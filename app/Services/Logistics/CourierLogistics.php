@@ -15,6 +15,27 @@ use Illuminate\Validation\ValidationException;
 
 class CourierLogistics
 {
+    public function sellerManual(Fulfillment $shipment, User $actor, array $data): void
+    {
+        DB::transaction(function () use ($shipment, $actor, $data) {
+            $actor->refresh();
+            abort_unless($actor->role === UserRole::Seller && ! $actor->suspended_at, 403);
+            Order::lockForUpdate()->findOrFail($shipment->order_id);
+            $part = Fulfillment::lockForUpdate()->findOrFail($shipment->id);
+            abort_unless($part->shop()->where('user_id', $actor->id)->exists(), 403);
+            if ($part->status !== Status::Ready || $part->rider_id || $part->courierBooking()->exists()) {
+                $this->invalid('An unassigned ready shipment without a booking is required.');
+            }
+            $part->delivery_method = DeliveryMethod::from($data['provider']);
+            $part->save();
+            DB::table('rider_delivery_requests')->where('fulfillment_id', $part->id)->delete();
+            $this->manual($part, $actor, [
+                ...$data,
+                'note' => 'Seller recorded the verified courier booking.',
+            ], sellerRequest: true);
+        }, 3);
+    }
+
     public function select(Fulfillment $shipment, User $actor, DeliveryMethod $method): void
     {
         DB::transaction(function () use ($shipment, $actor, $method) {
@@ -32,13 +53,13 @@ class CourierLogistics
         }, 3);
     }
 
-    public function manual(Fulfillment $shipment, User $actor, array $data): void
+    public function manual(Fulfillment $shipment, User $actor, array $data, bool $sellerRequest = false): void
     {
         if (! filter_var($data['verified'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
             $this->invalid('Verify an existing courier booking before recording it.');
         }
-        DB::transaction(function () use ($shipment, $actor, $data) {
-            [$order, $part] = $this->lock($shipment, $actor);
+        DB::transaction(function () use ($shipment, $actor, $data, $sellerRequest) {
+            [$order, $part] = $this->lock($shipment, $actor, allowSeller: $sellerRequest);
             $this->ready($part);
             $booking = $part->courierBooking;
             $staleSubmission = $booking?->status === 'submitting' && $booking->updated_at->lte(now()->subMinutes(2));
@@ -60,7 +81,7 @@ class CourierLogistics
                 'details' => $reconcileApi ? $booking->details : null, 'quote_expires_at' => null, 'booked_at' => now(),
             ]);
             $part->unsetRelation('courierBooking');
-            app(FulfillmentService::class)->recordState($order, $part, $actor, Status::Assigned, 'Admin verified an existing '.$part->delivery_method->label().' booking: '.$reference.'. '.$data['note']);
+            app(FulfillmentService::class)->recordState($order, $part, $actor, Status::Assigned, ucfirst($actor->role->value).' verified an existing '.$part->delivery_method->label().' booking: '.$reference.'. '.$data['note']);
         }, 3);
     }
 
@@ -181,10 +202,10 @@ class CourierLogistics
         }, 3);
     }
 
-    private function lock(Fulfillment $shipment, User $actor): array
+    private function lock(Fulfillment $shipment, User $actor, bool $allowSeller = false): array
     {
         $actor->refresh();
-        abort_unless($actor->role === UserRole::Admin && ! $actor->suspended_at, 403);
+        abort_unless(! $actor->suspended_at && ($actor->role === UserRole::Admin || ($allowSeller && $actor->role === UserRole::Seller && $shipment->shop()->where('user_id', $actor->id)->exists())), 403);
         $order = Order::lockForUpdate()->findOrFail($shipment->order_id);
         $part = Fulfillment::lockForUpdate()->findOrFail($shipment->id);
 

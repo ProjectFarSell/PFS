@@ -35,6 +35,45 @@ class SellerDashboardTest extends TestCase
             ->assertOk()->assertSee('No shop linked to your account')->assertDontSee($other->name);
     }
 
+    public function test_dashboard_sales_pending_orders_and_low_stock_are_scoped_to_the_seller(): void
+    {
+        $seller = User::factory()->seller()->create();
+        $shop = Shop::factory()->create(['user_id' => $seller->id]);
+        $otherShop = Shop::factory()->create();
+        Product::factory()->create(['shop_id' => $shop->id, 'stock' => 2, 'is_active' => true]);
+        Product::factory()->create(['shop_id' => $shop->id, 'stock' => 9, 'is_active' => true]);
+        Product::factory()->create(['shop_id' => $shop->id, 'stock' => 0, 'is_active' => false]);
+        Product::factory()->create(['shop_id' => $otherShop->id, 'stock' => 0, 'is_active' => true]);
+        $order = $this->order(User::factory()->create());
+        $order->fulfillments()->create(['shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'completed', 'subtotal' => 125.50, 'shipping_fee' => 49]);
+        $order->fulfillments()->create(['shop_id' => $otherShop->id, 'shop_name' => $otherShop->name, 'status' => 'completed', 'subtotal' => 900, 'shipping_fee' => 49]);
+        $pending = $this->order(User::factory()->create());
+        $pending->fulfillments()->create(['shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'ready', 'subtotal' => 80, 'shipping_fee' => 49]);
+        $cancelled = $this->order(User::factory()->create());
+        $cancelled->fulfillments()->create(['shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'cancelled', 'subtotal' => 700, 'shipping_fee' => 49]);
+        $demo = $this->order(User::factory()->create());
+        $demo->update(['payment_method' => PaymentMethod::GatewayStub]);
+        $demo->fulfillments()->create(['shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'completed', 'subtotal' => 600, 'shipping_fee' => 49]);
+
+        $this->actingAs($seller)->get(route('seller.dashboard', ['shop_id' => $otherShop->id]))
+            ->assertOk()->assertSee('Total completed COD sales')->assertSee('125.50')->assertSee('Pending orders')
+            ->assertViewHas('totalSales', fn ($amount) => (float) $amount === 125.50)
+            ->assertViewHas('pendingOrders', 1)
+            ->assertViewHas('stats', fn ($stats) => $stats['lowStock'] === 1);
+    }
+
+    public function test_empty_shop_dashboard_displays_zero_sales_pending_and_low_stock(): void
+    {
+        $seller = User::factory()->seller()->create();
+        Shop::factory()->create(['user_id' => $seller->id]);
+
+        $this->actingAs($seller)->get(route('seller.dashboard'))->assertOk()
+            ->assertSee('₱0.00')->assertSee('Pending orders')->assertSee('Low-stock active products')
+            ->assertViewHas('totalSales', fn ($amount) => (float) $amount === 0.0)
+            ->assertViewHas('pendingOrders', 0)
+            ->assertViewHas('stats', fn ($stats) => $stats['lowStock'] === 0);
+    }
+
     public function test_dashboard_scopes_products_and_mixed_order_items_and_omits_buyer_private_data(): void
     {
         $seller = User::factory()->seller()->create();

@@ -40,12 +40,17 @@ class DeliveryRequestService
                 }
                 DB::table('rider_delivery_requests')->where('id', $active->id)->update(['expires_at' => now(), 'updated_at' => now()]);
             }
-            $tried = DB::table('rider_delivery_requests')->where('fulfillment_id', $part->id)
-                ->whereNotNull('offered_at')->pluck('rider_id');
+            $offers = DB::table('rider_delivery_requests')->where('fulfillment_id', $part->id)
+                ->whereNotNull('offered_at')->get()->keyBy('rider_id');
+            $retryBefore = now()->subMinutes(2);
+            $excludedRiders = $offers->filter(fn ($offer) => $offer->declined_at !== null
+                || $offer->expires_at === null || $offer->expires_at > $retryBefore->toDateTimeString())->keys();
             $riders = RiderProfile::query()->where('status', 'approved')->where('is_available', true)
-                ->whereNotIn('id', $tried)->whereHas('user', fn ($q) => $q->where('role', 'rider'))->get()
+                ->whereNotIn('id', $excludedRiders)->whereHas('user', fn ($q) => $q->where('role', 'rider'))->get()
                 ->filter(fn ($rider) => self::city($rider->city) === $part->pickup_city)
                 ->sortBy(fn ($rider) => [
+                    $offers->has($rider->id) ? 1 : 0,
+                    $offers->get($rider->id)?->expires_at ?? '',
                     Fulfillment::where('rider_id', $rider->id)->whereIn('status', ['assigned', 'in_transit', 'delivery_failed', 'returning'])->count()
                     + $rider->deliveries()->whereDoesntHave('fulfillments')->whereIn('status', ['assigned', 'in_transit'])->count()
                     + DB::table('rider_delivery_requests')->where('rider_id', $rider->id)

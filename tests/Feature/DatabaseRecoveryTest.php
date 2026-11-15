@@ -34,6 +34,7 @@ class DatabaseRecoveryTest extends TestCase
 
     public function test_backup_is_encrypted_and_restore_check_does_not_replace_the_live_database(): void
     {
+        $this->requireSqliteBackup();
         $user = User::factory()->create();
         $service = app(DatabaseRecovery::class);
         $name = $this->backups[] = $service->create();
@@ -51,6 +52,7 @@ class DatabaseRecoveryTest extends TestCase
 
     public function test_wrong_backup_password_cannot_verify_or_claim_a_restore(): void
     {
+        $this->requireSqliteBackup();
         $service = app(DatabaseRecovery::class);
         $name = $this->backups[] = $service->create();
         config(['operations.backup_password' => 'Different-Dummy-Password-12345']);
@@ -68,6 +70,7 @@ class DatabaseRecoveryTest extends TestCase
 
     public function test_optional_local_files_are_encrypted_and_verified_with_the_database(): void
     {
+        $this->requireSqliteBackup();
         $root = storage_path('app/private/ops-work/test-files-'.Str::uuid());
         File::ensureDirectoryExists($root.'/private/rider-documents', 0700);
         File::ensureDirectoryExists($root.'/public/avatars', 0700);
@@ -92,6 +95,7 @@ class DatabaseRecoveryTest extends TestCase
 
     public function test_changed_archive_content_fails_the_checksum_check(): void
     {
+        $this->requireSqliteBackup();
         $service = app(DatabaseRecovery::class);
         $name = $this->backups[] = $service->create();
         $zip = new \ZipArchive;
@@ -113,5 +117,23 @@ class DatabaseRecoveryTest extends TestCase
         $this->assertSame($original, DB::getDefaultConnection());
         $this->assertSame('Keep original database', $user->fresh()->name);
         $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_mysql_backup_requires_the_provider_snapshot_procedure(): void
+    {
+        if (DB::getDriverName() !== 'mysql') {
+            $this->markTestSkipped('The provider snapshot rejection applies to MySQL only.');
+        }
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Use the documented MySQL/provider snapshot procedure for this database; the built-in encrypted backup command supports SQLite.');
+        app(DatabaseRecovery::class)->create();
+    }
+
+    private function requireSqliteBackup(): void
+    {
+        if (DB::getDriverName() !== 'sqlite') {
+            $this->markTestSkipped('Encrypted backup and restore verification are supported only for SQLite.');
+        }
     }
 }

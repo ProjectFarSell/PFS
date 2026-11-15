@@ -156,6 +156,30 @@ class SellerProductManagementTest extends TestCase
         $this->assertSame([], Storage::disk('r2')->allFiles());
     }
 
+    public function test_disabled_options_do_not_block_listing_creation_or_update(): void
+    {
+        $seller = $this->seller();
+        $hiddenOptions = ['has_variants' => 0, 'variants' => [['options_text' => null, 'sku' => 'bad', 'stock' => null]]];
+
+        $this->actingAs($seller)->post(route('seller.products.store'), $this->data($hiddenOptions))->assertSessionHasNoErrors();
+        $product = Product::sole();
+        $this->assertFalse($product->has_variants);
+        $this->assertCount(0, $product->variants);
+        $this->put(route('seller.products.update', $product), $this->data([...$hiddenOptions, 'version' => $product->editVersion()]))->assertSessionHasNoErrors();
+        $this->assertFalse($product->fresh()->has_variants);
+    }
+
+    public function test_enabled_options_require_a_readable_option_description(): void
+    {
+        $this->actingAs($this->seller())->postJson(route('seller.products.store'), $this->data([
+            'has_variants' => 1,
+            'variants' => [['options_text' => null, 'stock' => 1]],
+        ]))->assertUnprocessable()->assertJsonValidationErrors([
+            'variants.0.options_text' => 'Enter a size, color, or other option for each combination.',
+        ]);
+        $this->assertDatabaseCount('products', 0);
+    }
+
     public function test_hidden_shop_products_are_blocked_in_public_catalog_cart_and_stale_checkout(): void
     {
         $seller = $this->seller(false);

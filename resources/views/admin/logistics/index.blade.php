@@ -13,7 +13,7 @@
         <form method="get" class="flex flex-wrap items-end gap-3 pb-3">
         <label class="text-sm">Order number<input name="q" value="{{ request('q') }}" maxlength="60" class="mt-1 block rounded-lg"></label>
         <label class="text-sm">Method<select name="method" class="mt-1 block rounded-lg"><option value="">All methods</option>@foreach(\App\Enums\DeliveryMethod::cases() as $method)<option value="{{ $method->value }}" @selected(request('method') === $method->value)>{{ $method->label() }}</option>@endforeach</select></label>
-        <label class="text-sm">Status<select name="status" class="mt-1 block rounded-lg"><option value="">All statuses</option>@foreach(\App\Enums\FulfillmentStatus::cases() as $status)<option value="{{ $status->value }}" @selected(request('status') === $status->value)>{{ $status->label() }}</option>@endforeach</select></label>
+        <label class="text-sm">Status<select name="status" class="mt-1 block rounded-lg"><option value="">All statuses</option><option value="ready_unassigned" @selected(request('status') === 'ready_unassigned')>Ready / Unassigned</option>@foreach(\App\Enums\FulfillmentStatus::cases() as $status)<option value="{{ $status->value }}" @selected(request('status') === $status->value)>{{ $status->label() }}</option>@endforeach</select></label>
         <x-ui.button variant="primary" size="lg" type="submit">Apply filters</x-ui.button>
         </form>
     </details>

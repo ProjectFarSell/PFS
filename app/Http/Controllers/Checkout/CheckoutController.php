@@ -113,7 +113,7 @@ class CheckoutController extends Controller
 
     public function print(Order $order, string $document, InvoiceGeneratorApi $invoiceGenerator): View|Response
     {
-        abort_unless(in_array($document, ['invoice', 'packing-slip'], true), 404);
+        abort_unless($document === 'invoice', 404);
         $this->authorize('view', $order);
         $order->load('items');
 

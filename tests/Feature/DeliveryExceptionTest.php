@@ -117,7 +117,8 @@ class DeliveryExceptionTest extends TestCase
         $this->assertSame('completed', $order->status->value);
         $this->assertCount(1, $order->billableItems());
         $this->assertEquals(10, $order->billableShipping());
-        $this->actingAs($s['buyer'])->get(route('orders.print', ['order' => $order, 'document' => 'packing-slip']))->assertOk()->assertSee('Retained purchase')->assertDontSee('Scenario Shirt');
+        config(['services.invoice_generator.api_key' => '']);
+        $this->actingAs($s['buyer'])->get(route('orders.print', ['order' => $order, 'document' => 'invoice']))->assertOk()->assertSee('Retained purchase')->assertDontSee('Scenario Shirt');
     }
 
     public function test_rider_instruction_emails_skip_old_retry_and_deliver_current_return_instruction(): void

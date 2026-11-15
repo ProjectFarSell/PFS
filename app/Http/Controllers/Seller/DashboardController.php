@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Seller;
 
+use App\Enums\FulfillmentStatus;
+use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
@@ -27,6 +29,12 @@ class DashboardController extends Controller
             'lowStock' => $shop->products()->lowStock()->count(),
             'orderItems' => (clone $itemsQuery)->count(),
         ];
+        $totalSales = $shop->fulfillments()->where('status', FulfillmentStatus::Completed)
+            ->whereHas('order', fn ($query) => $query->where('payment_method', PaymentMethod::Cod))
+            ->sum('subtotal');
+        $pendingOrders = $shop->fulfillments()
+            ->whereNotIn('status', [FulfillmentStatus::Completed->value, FulfillmentStatus::Rejected->value, FulfillmentStatus::Cancelled->value, FulfillmentStatus::Returned->value])
+            ->distinct()->count('order_id');
 
         $products = $shop->products()->withAvailableStock()->latest()->orderByDesc('id')
             ->paginate(10, ['*'], 'products_page')->withQueryString();
@@ -36,6 +44,6 @@ class DashboardController extends Controller
             ->with('order:id,number,status,created_at')
             ->orderByDesc('id')->paginate(10, ['*'], 'items_page')->withQueryString();
 
-        return view('seller.dashboard', compact('shop', 'stats', 'products', 'items'));
+        return view('seller.dashboard', compact('shop', 'stats', 'products', 'items', 'totalSales', 'pendingOrders'));
     }
 }

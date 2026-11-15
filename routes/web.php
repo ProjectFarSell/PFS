@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OperationsController;
 use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\PayoutReviewController;
 use App\Http\Controllers\Admin\PrivacyRequestController;
 use App\Http\Controllers\Admin\ProductInventoryController;
 use App\Http\Controllers\Admin\ReviewController;
@@ -161,6 +162,10 @@ Route::get('/admin/dashboard/summary', [DashboardController::class, 'summary'])
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.dashboard.summary');
 
+Route::get('/admin/payouts/needs-review', PayoutReviewController::class)
+    ->middleware(['auth', EnsureUserHasRole::class.':admin'])
+    ->name('admin.payouts.needs-review');
+
 Route::get('/admin/buyers', [BuyerController::class, 'index'])
     ->middleware(['auth', EnsureUserHasRole::class.':admin'])
     ->name('admin.buyers.index');
@@ -235,6 +240,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/{fulfillment}', [LogisticsController::class, 'update'])->middleware('throttle:15,1')->name('update');
     });
     Route::get('/seller/inventory/stock', [InventoryRefreshController::class, 'seller'])->middleware([EnsureUserHasRole::class.':seller', 'throttle:60,1'])->name('seller.inventory.stock');
+    Route::get('/seller/fulfillments/{fulfillment}/packing-slip', [FulfillmentController::class, 'packingSlip'])->middleware(EnsureUserHasRole::class.':seller')->name('seller.fulfillments.packing-slip');
+    Route::post('/seller/fulfillments/{fulfillment}/courier', [LogisticsController::class, 'sellerManual'])->middleware([EnsureUserHasRole::class.':seller', 'throttle:15,1'])->name('seller.fulfillments.courier');
     Route::get('/admin/products/stock', [InventoryRefreshController::class, 'admin'])->middleware([EnsureUserHasRole::class.':admin', 'throttle:60,1'])->name('admin.products.stock');
     Route::middleware(EnsureUserHasRole::class.':buyer,seller,admin')->group(function () {
         Route::get('/replacements', [ReplacementController::class, 'index'])->name('replacements.index');
@@ -287,7 +294,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer')->name('orders.index');
     Route::post('/orders/{order}/cancel', CancelOrderController::class)->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('orders.cancel');
     Route::get('/orders/{order}', [CheckoutController::class, 'show'])->middleware(EnsureUserHasRole::class.':buyer,admin')->name('orders.show');
-    Route::get('/orders/{order}/print/{document}', [CheckoutController::class, 'print'])->middleware(EnsureUserHasRole::class.':buyer,admin')->whereIn('document', ['invoice', 'packing-slip'])->name('orders.print');
+    Route::get('/orders/{order}/print/{document}', [CheckoutController::class, 'print'])->middleware(EnsureUserHasRole::class.':buyer,admin')->whereIn('document', ['invoice'])->name('orders.print');
 
     Route::get('/account/saved', [SavedItemController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer')->name('account.saved.index');
     Route::post('/account/saved/{product}', [SavedItemController::class, 'store'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:30,1'])->name('account.saved.store');

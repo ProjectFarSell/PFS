@@ -8,6 +8,7 @@ use App\Enums\RiderStatus;
 use App\Enums\UserRole;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,6 +16,48 @@ use Tests\TestCase;
 class AdminDashboardTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_last_30_days_metrics_count_orders_and_completed_cod_merchandise(): void
+    {
+        $this->travelTo(now()->startOfDay()->addHours(12));
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $buyer = User::factory()->create();
+        $recent = $this->order($buyer, ['created_at' => now()->subDays(2)]);
+        $old = $this->order($buyer, ['created_at' => now()->subDays(31)]);
+        $this->order($buyer, ['created_at' => now()->subDays(1), 'status' => OrderStatus::Cancelled]);
+        $future = $this->order($buyer, ['created_at' => now()->addDay()]);
+        $old->forceFill(['created_at' => now()->subDays(31)])->save();
+        $future->forceFill(['created_at' => now()->addDay()])->save();
+        $shop = Shop::factory()->create();
+        $completed = $recent->fulfillments()->create(['shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'completed', 'subtotal' => 125.50, 'shipping_fee' => 49]);
+        $completed->events()->create(['status' => 'completed', 'created_at' => now()->subDays(1)]);
+        $oldCompleted = $old->fulfillments()->create(['shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'completed', 'subtotal' => 75, 'shipping_fee' => 49]);
+        $oldCompleted->events()->create(['status' => 'completed', 'created_at' => now()->subDays(31)]);
+        $otherShop = Shop::factory()->create();
+        $pending = $recent->fulfillments()->create(['shop_id' => $otherShop->id, 'shop_name' => $otherShop->name, 'status' => 'ready', 'subtotal' => 500, 'shipping_fee' => 0]);
+        $legacy = $old->fulfillments()->create(['shop_id' => $otherShop->id, 'shop_name' => $otherShop->name, 'status' => 'completed', 'subtotal' => 20, 'shipping_fee' => 49]);
+        $legacy->forceFill(['updated_at' => now()->subDay()])->save();
+        $futureCompleted = $future->fulfillments()->create(['shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'completed', 'subtotal' => 300, 'shipping_fee' => 0]);
+        $futureCompleted->events()->create(['status' => 'completed', 'created_at' => now()->addDay()]);
+        $demo = $this->order($buyer, ['payment_method' => PaymentMethod::GatewayStub]);
+        $demoPart = $demo->fulfillments()->create(['shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'completed', 'subtotal' => 400, 'shipping_fee' => 0]);
+        $demoPart->events()->create(['status' => 'completed', 'created_at' => now()->subDay()]);
+
+        $this->actingAs($admin)->get(route('admin.dashboard'))->assertOk()
+            ->assertSee('Orders placed · last 30 days')->assertSee('Completed COD sales · last 30 days')->assertSee('145.50')
+            ->assertViewHas('ordersLast30Days', 3)
+            ->assertViewHas('salesLast30Days', fn ($amount) => (float) $amount === 145.50);
+        $this->assertSame('ready', $pending->fresh()->status->value);
+        $this->travelBack();
+    }
+
+    public function test_empty_dashboard_displays_zero_for_last_30_days(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Admin]))
+            ->get(route('admin.dashboard'))->assertOk()->assertSee('₱0.00')
+            ->assertViewHas('ordersLast30Days', 0)
+            ->assertViewHas('salesLast30Days', fn ($amount) => (float) $amount === 0.0);
+    }
 
     public function test_guests_must_log_in_and_non_admin_roles_are_forbidden(): void
     {

@@ -23,7 +23,6 @@
     @if(auth()->user()->role === \App\Enums\UserRole::Buyer)
         <div class="mt-3 flex flex-wrap gap-2 print:hidden">
             <x-ui.button variant="secondary" :href="route('orders.print', ['order' => $order, 'document' => 'invoice'])" target="_blank" rel="noopener">Print invoice</x-ui.button>
-            <x-ui.button variant="secondary" :href="route('orders.print', ['order' => $order, 'document' => 'packing-slip'])" target="_blank" rel="noopener">Print packing slip</x-ui.button>
         </div>
     @endif
     @if($order->fulfillments->isNotEmpty())

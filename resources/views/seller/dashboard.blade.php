@@ -53,6 +53,17 @@
             </div>
         </section>
     @else
+        <dl class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="fs-card p-4">
+                <dt class="text-xs text-text-muted">Total completed COD sales</dt>
+                <dd class="mt-2 text-2xl font-semibold">₱{{ number_format((float) $totalSales, 2) }}</dd>
+                <dd class="mt-1 text-xs text-text-muted">Merchandise total before reimbursements.</dd>
+            </div>
+            <div class="fs-card p-4">
+                <dt class="text-xs text-text-muted">Pending orders</dt>
+                <dd class="mt-2 text-2xl font-semibold">{{ number_format($pendingOrders) }}</dd>
+            </div>
+        </dl>
         <dl class="my-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
             @foreach(['products' => 'Your products', 'active' => 'Active products', 'lowStock' => 'Low-stock active products', 'orderItems' => 'Linked order items'] as $key => $label)
                 <div class="fs-card p-4">

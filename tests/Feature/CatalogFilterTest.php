@@ -10,6 +10,10 @@ use App\Models\SavedItem;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Tests\TestCase;
 
 class CatalogFilterTest extends TestCase
@@ -136,6 +140,8 @@ class CatalogFilterTest extends TestCase
         $this->assertEquals($sorted, $prices);
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function test_fulltext_search_returns_matching_product(): void
     {
         $shop = Shop::factory()->create();
@@ -154,10 +160,21 @@ class CatalogFilterTest extends TestCase
             'price' => 50.00,
         ]);
 
-        $this->get(route('catalog.index', ['q' => 'Mango']))
-            ->assertOk()
-            ->assertSee($matching->name)
-            ->assertDontSee('Unrelated Item');
+        $mysql = DB::getDriverName() === 'mysql';
+        if ($mysql) {
+            DB::commit();
+        }
+
+        try {
+            $this->get(route('catalog.index', ['q' => 'Mango']))
+                ->assertOk()
+                ->assertSee($matching->name)
+                ->assertDontSee('Unrelated Item');
+        } finally {
+            if ($mysql) {
+                Artisan::call('migrate:fresh', ['--force' => true]);
+            }
+        }
     }
 
     public function test_city_filter_returns_only_products_from_shops_in_that_city(): void

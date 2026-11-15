@@ -8,18 +8,46 @@ use App\Models\Fulfillment;
 use App\Services\Logistics\CourierLogistics;
 use App\Services\Logistics\LalamoveClient;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class LogisticsController extends Controller
 {
+    public function sellerManual(Request $request, Fulfillment $fulfillment, CourierLogistics $service): RedirectResponse
+    {
+        abort_unless($fulfillment->shop()->where('user_id', $request->user()->id)->exists(), 403);
+        $data = $request->validate([
+            'provider' => ['required', Rule::in([DeliveryMethod::Lalamove->value])],
+            'reference' => ['required', 'string', 'min:3', 'max:100'],
+            'tracking_url' => ['required', 'url:https', 'max:2000'],
+            'courier_cost' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:99999999.99'],
+            'verified' => ['accepted'],
+            'cod_supported' => ['nullable', 'boolean'],
+        ]);
+        try {
+            $service->sellerManual($fulfillment, $request->user(), $data);
+        } catch (UniqueConstraintViolationException) {
+            throw ValidationException::withMessages(['reference' => 'Courier reference is already linked. Check the existing booking.']);
+        }
+
+        return back()->with('status', 'Courier booking recorded.');
+    }
+
     public function index(Request $request, LalamoveClient $client)
     {
-        $data = $request->validate(['method' => ['nullable', Rule::enum(DeliveryMethod::class)], 'status' => ['nullable', Rule::enum(FulfillmentStatus::class)], 'q' => ['nullable', 'string', 'max:60']]);
+        $data = $request->validate(['method' => ['nullable', Rule::enum(DeliveryMethod::class)], 'status' => ['nullable', Rule::in([...array_column(FulfillmentStatus::cases(), 'value'), 'ready_unassigned'])], 'q' => ['nullable', 'string', 'max:60']]);
         $shipments = Fulfillment::query()->with(['order:id,number,payment_method,ship_to,guest_name', 'items', 'rider.user', 'courierBooking'])
             ->when($data['method'] ?? null, fn ($q, $method) => $q->where('delivery_method', $method))
-            ->when($data['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
+            ->when($data['status'] ?? null, function ($q, $status) {
+                if ($status === 'ready_unassigned') {
+                    $q->where('status', FulfillmentStatus::Ready->value)->whereNull('rider_id')
+                        ->whereDoesntHave('courierBooking', fn ($booking) => $booking->whereIn('status', ['booked', 'submitting', 'unknown']));
+                } else {
+                    $q->where('status', $status);
+                }
+            })
             ->when($data['q'] ?? null, fn ($q, $search) => $q->whereHas('order', fn ($q) => $q->where('number', 'like', '%'.$search.'%')))
             ->latest('id')->paginate(10)->withQueryString();
 

@@ -80,6 +80,146 @@ class CourierLogisticsTest extends TestCase
             'priceBreakdown' => ['total' => '80', 'currency' => 'PHP']]];
     }
 
+    public function test_logistics_ready_unassigned_filter_excludes_assigned_or_booked_shipments_and_paginates(): void
+    {
+        $s = $this->external('internal');
+        $ready = collect([$s['part']]);
+        for ($index = 0; $index < 10; $index++) {
+            $shop = Shop::factory()->create();
+            $ready->push($s['order']->fulfillments()->create([
+                'shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'ready',
+                'subtotal' => 10, 'shipping_fee' => 0,
+            ]));
+        }
+        $rider = RiderProfile::create(['user_id' => User::factory()->rider()->create()->id,
+            'status' => 'approved', 'city' => 'Quezon City', 'vehicle_type' => 'motorcycle', 'license_no' => 'FILTER']);
+        $shop = Shop::factory()->create();
+        $assigned = $s['order']->fulfillments()->create([
+            'shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'ready',
+            'rider_id' => $rider->id, 'subtotal' => 10, 'shipping_fee' => 0,
+        ]);
+        $shop = Shop::factory()->create();
+        $booked = $s['order']->fulfillments()->create([
+            'shop_id' => $shop->id, 'shop_name' => $shop->name, 'status' => 'ready',
+            'delivery_method' => 'lalamove', 'subtotal' => 10, 'shipping_fee' => 0,
+        ]);
+        $booked->courierBooking()->create(['provider' => 'lalamove', 'status' => 'booked']);
+
+        $this->actingAs($s['admin'])->get(route('admin.logistics.index', ['status' => 'ready_unassigned']))
+            ->assertOk()->assertSee('Ready / Unassigned')
+            ->assertViewHas('shipments', fn ($rows) => $rows->total() === 11
+                && ! $rows->contains('id', $assigned->id) && ! $rows->contains('id', $booked->id)
+                && str_contains($rows->nextPageUrl(), 'status=ready_unassigned'));
+        $this->get(route('admin.logistics.index', ['status' => 'ready_unassigned', 'page' => 2]))
+            ->assertOk()->assertViewHas('shipments', fn ($rows) => $rows->contains('id', $ready->first()->id));
+        $this->getJson(route('admin.logistics.index', ['status' => 'invalid']))->assertUnprocessable()->assertJsonValidationErrors('status');
+    }
+
+    public function test_dispatch_picker_lists_online_riders_first_and_labels_availability(): void
+    {
+        $s = $this->external('internal');
+        $offline = RiderProfile::create(['user_id' => User::factory()->rider()->create(['name' => 'Offline Rider'])->id,
+            'status' => 'approved', 'city' => 'Quezon City', 'vehicle_type' => 'motorcycle', 'license_no' => 'OFFLINE']);
+        $offline->forceFill(['is_available' => false])->save();
+        $online = RiderProfile::create(['user_id' => User::factory()->rider()->create(['name' => 'Online Rider'])->id,
+            'status' => 'approved', 'city' => 'Quezon City', 'vehicle_type' => 'motorcycle', 'license_no' => 'ONLINE']);
+        $online->forceFill(['is_available' => true])->save();
+
+        $this->actingAs($s['admin'])->get(route('fulfillments.index'))->assertOk()
+            ->assertSeeInOrder(['Online Rider · Online', 'Offline Rider · Offline']);
+    }
+
+    public function test_seller_packing_slip_is_scoped_to_the_owned_shipment(): void
+    {
+        $s = $this->external();
+        $otherSeller = User::factory()->seller()->create();
+        $otherShop = Shop::factory()->create(['user_id' => $otherSeller->id]);
+        $other = $s['order']->fulfillments()->create([
+            'shop_id' => $otherShop->id, 'shop_name' => $otherShop->name,
+            'status' => 'pending', 'subtotal' => 100, 'shipping_fee' => 0,
+        ]);
+        $s['order']->items()->create(['fulfillment_id' => $other->id, 'name' => 'Other seller item', 'qty' => 1, 'unit_price' => 100, 'line_total' => 100]);
+        $url = route('seller.fulfillments.packing-slip', $s['part']);
+
+        $this->actingAs($s['seller'])->get($url)->assertOk()
+            ->assertSee($s['order']->number)->assertSee($s['product']->name)
+            ->assertSee($s['order']->guest_name)->assertSee($s['order']->ship_to)
+            ->assertSee('123 Shop Street')->assertSee('COD amount to collect')
+            ->assertDontSee('Other seller item')->assertDontSee('Unit price')->assertDontSee('Line total');
+        $this->actingAs($otherSeller)->get($url)->assertForbidden();
+        $this->actingAs(User::factory()->rider()->create())->get($url)->assertForbidden();
+        $this->actingAs($s['buyer'])->get($url)->assertForbidden();
+        $this->actingAs($s['admin'])->get($url)->assertForbidden();
+        auth()->logout();
+        $this->get($url)->assertRedirect(route('login'));
+
+        $this->actingAs($otherSeller)->get(route('seller.fulfillments.packing-slip', $other))
+            ->assertOk()->assertSee('Other seller item')->assertDontSee($s['product']->name);
+
+        foreach ([$s['buyer'], $s['admin']] as $viewer) {
+            $this->actingAs($viewer)->get(route('orders.print', ['order' => $s['order'], 'document' => 'packing-slip']))
+                ->assertNotFound();
+            $this->get(route('orders.print', ['order' => $s['order'], 'document' => 'invoice']))
+                ->assertOk()->assertSee($s['product']->name)->assertSee('Other seller item');
+        }
+        $this->actingAs($s['buyer'])->get(route('orders.show', $s['order']))->assertDontSee('Print packing slip')->assertSee('Print invoice');
+    }
+
+    public function test_seller_can_record_courier_booking_and_settle_without_rider_credit(): void
+    {
+        $s = $this->external('internal');
+        $url = route('seller.fulfillments.courier', $s['part']);
+        $data = [
+            'provider' => 'lalamove', 'reference' => 'SELLER-BOOKING',
+            'tracking_url' => 'https://share.lalamove.com/seller-booking',
+            'courier_cost' => '80.00', 'verified' => 1, 'cod_supported' => 1,
+        ];
+        $this->actingAs($s['seller'])->get(route('fulfillments.index'))->assertOk()
+            ->assertSee($url, false)->assertSee('Record courier booking');
+        $this->post($url, $data)->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('courier_bookings', ['fulfillment_id' => $s['part']->id, 'reference' => 'SELLER-BOOKING', 'cost_cents' => 8000]);
+        $this->assertSame('assigned', $s['part']->fresh()->status->value);
+        $this->assertSame(DeliveryMethod::Lalamove, $s['part']->fresh()->delivery_method);
+        $this->actingAs($s['admin'])->get(route('admin.logistics.index'))->assertOk()->assertSee('SELLER-BOOKING')->assertSee('Lalamove');
+        $this->actingAs($s['seller'])->post($url, $data)->assertSessionHasErrors('logistics');
+        $this->assertDatabaseCount('courier_bookings', 1);
+
+        $this->scenarioAction($s['admin'], $s['part'], 'pickup', ['courier_verified' => 1])->assertSessionHasNoErrors();
+        $this->scenarioAction($s['admin'], $s['part'], 'deliver', ['courier_verified' => 1,
+            'delivery_recipient_name' => 'Buyer', 'delivery_note' => 'Courier proof verified.', 'cod_collected' => 1])->assertSessionHasNoErrors();
+        $this->scenarioAction($s['buyer'], $s['part'], 'complete')->assertSessionHasNoErrors();
+        $row = ShipmentSettlement::sole();
+        $this->assertEquals(8000, $row->courier_cost_cents);
+        $this->assertEquals(0, $row->rider_cents);
+        $this->assertDatabaseCount('rider_earnings', 0);
+    }
+
+    public function test_seller_courier_booking_validates_fields_and_authorization(): void
+    {
+        $s = $this->external();
+        $url = route('seller.fulfillments.courier', $s['part']);
+        $data = [
+            'provider' => 'lalamove', 'reference' => 'SELLER-BOOKING',
+            'tracking_url' => 'https://share.lalamove.com/seller-booking',
+            'courier_cost' => '80.00', 'verified' => 1, 'cod_supported' => 1,
+        ];
+        foreach (['provider' => '', 'reference' => '', 'tracking_url' => 'invalid'] as $field => $invalid) {
+            $this->actingAs($s['seller'])->post($url, [...$data, $field => $invalid])->assertSessionHasErrors($field);
+        }
+        $this->actingAs($s['seller'])->post($url, [...$data, 'courier_cost' => '-1'])->assertSessionHasErrors('courier_cost');
+        $this->post($url, [...$data, 'tracking_url' => 'https://example.com/tracking'])->assertSessionHasErrors('logistics');
+        $this->actingAs(User::factory()->seller()->create())->post($url, $data)->assertForbidden();
+        $this->actingAs(User::factory()->rider()->create())->post($url, $data)->assertForbidden();
+        $this->actingAs($s['buyer'])->post($url, $data)->assertForbidden();
+        $this->actingAs($s['admin'])->post($url, $data)->assertForbidden();
+        auth()->logout();
+        $this->post($url, $data)->assertRedirect(route('login'));
+
+        $s['part']->update(['status' => 'accepted']);
+        $this->actingAs($s['seller'])->post($url, $data)->assertSessionHasErrors('logistics');
+        $this->assertDatabaseCount('courier_bookings', 0);
+    }
+
     public function test_manual_external_cod_flow_preserves_buyer_charge_and_records_actual_cost_without_rider_credit(): void
     {
         $s = $this->external();
@@ -125,7 +265,7 @@ class CourierLogisticsTest extends TestCase
     public function test_admin_can_switch_only_unbooked_unassigned_shipments_and_seller_controls_are_visible(): void
     {
         $s = $this->external();
-        $this->actingAs($s['seller'])->get('/fulfillments')->assertOk()->assertSee('Waiting for admin to arrange');
+        $this->actingAs($s['seller'])->get('/fulfillments')->assertOk()->assertSee('Record courier booking');
         $this->logistics($s, 'select', ['delivery_method' => 'jt_express'])->assertSessionHasErrors('delivery_method');
         $this->logistics($s, 'select', ['delivery_method' => 'internal'])->assertSessionHasNoErrors();
         $this->assertEquals(DeliveryMethod::Internal, $s['part']->fresh()->delivery_method);
