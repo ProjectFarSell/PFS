@@ -15,6 +15,7 @@ use App\Models\RiderProfile;
 use App\Models\User;
 use App\Services\Logistics\ExternalDeliveryService;
 use App\Services\Notifications\OrderNotificationService;
+use App\Support\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -26,7 +27,7 @@ class FulfillmentService
     {
         $groups = $order->items()->with('product.shop')->orderBy('id')->get()->groupBy('product.shop_id');
         $deliveryBarangayId = $order->address()->value('psgc_barangay_id');
-        $fee = (int) round((float) $order->shipping_fee * 100);
+        $fee = Money::cents($order->shipping_fee);
         $index = 0;
         foreach ($groups as $shopId => $items) {
             $fulfillment = $order->fulfillments()->create([
@@ -34,9 +35,9 @@ class FulfillmentService
                 'shop_name' => $items->first()->product->shop->name,
                 'delivery_barangay_id' => $deliveryBarangayId,
                 'status' => Status::Pending,
-                'subtotal' => $items->sum('line_total'),
-                'shipping_fee' => (intdiv($fee, $groups->count()) + ($index++ < $fee % $groups->count() ? 1 : 0)) / 100,
-                'fee_policy' => app(SettlementService::class)->policy(),
+                'subtotal' => Money::decimal($items->sum(fn ($item) => Money::cents($item->line_total))),
+                'shipping_fee' => Money::decimal(intdiv($fee, $groups->count()) + ($index++ < $fee % $groups->count() ? 1 : 0)),
+                'fee_policy' => $order->fee_policy ?? app(SettlementService::class)->policy(),
                 ...$this->deliveryPin(),
             ]);
             $order->items()->whereIn('id', $items->pluck('id'))->update(['fulfillment_id' => $fulfillment->id]);

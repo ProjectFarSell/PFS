@@ -3,8 +3,10 @@
 namespace App\Services\Orders;
 
 use App\Enums\UserRole;
+use App\Models\SellerPayout;
 use App\Models\Shop;
 use App\Models\User;
+use App\Services\Security\AuditTrail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use LogicException;
@@ -18,9 +20,11 @@ class CreateSellerPayoutBatch
     ) {}
 
     /** @return array{id: int, created: bool} */
-    public function create(Shop $shop, User $admin, int $holdDays = 7): array
+    public function create(Shop $shop, User $admin, ?int $holdDays = null): array
     {
-        abort_unless($admin->role === UserRole::Admin && ! $admin->suspended_at, 403);
+        $current = $admin->fresh();
+        abort_unless($current?->role === UserRole::Admin && ! $current->suspended_at, 403);
+        $holdDays ??= app(MarketplaceSettings::class)->current()->payout_hold_days;
 
         return $this->transactions->run(function () use ($shop, $admin, $holdDays): array {
             $this->locks->shop($shop->id);
@@ -45,6 +49,7 @@ class CreateSellerPayoutBatch
             if ((int) DB::table('seller_payout_items')->where('seller_payout_id', $payoutId)->sum('amount_cents') !== $total) {
                 throw new LogicException('Payout amount does not match its items.');
             }
+            app(AuditTrail::class)->record('seller_payout.created', SellerPayout::findOrFail($payoutId), ['shop_id' => $shop->id, 'amount_cents' => $total], $admin);
 
             return ['id' => (int) $payoutId, 'created' => true];
         });

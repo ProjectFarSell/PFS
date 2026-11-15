@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class AuditTrail
 {
-    public function record(string $action, Model $target, array $changes = []): void
+    public function record(string $action, Model $target, array $changes = [], ?User $actor = null): void
     {
+        $actorId = $actor?->id ?? auth()->id();
         SecurityAuditEvent::query()->create([
-            'actor_id' => auth()->id() && User::query()->whereKey(auth()->id())->exists() ? auth()->id() : null, 'action' => $action,
+            'actor_id' => $actorId && User::query()->whereKey($actorId)->exists() ? $actorId : null, 'action' => $action,
             'target_type' => class_basename($target), 'target_id' => $target->getKey(),
             'changes' => $changes, 'created_at' => now(),
         ]);

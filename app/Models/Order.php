@@ -31,6 +31,7 @@ class Order extends Model
         'total',
         'stock_reserved_at',
         'stock_released_at',
+        'fee_policy',
     ];
 
     protected function casts(): array
@@ -44,6 +45,7 @@ class Order extends Model
             'stock_reserved_at' => 'datetime',
             'stock_released_at' => 'datetime',
             'cancelled_at' => 'datetime',
+            'fee_policy' => 'array',
         ];
     }
 

@@ -31,6 +31,9 @@
                 @if($portalRole === \App\Enums\UserRole::Admin)
                     <a href="{{ route('admin.dashboard') }}" class="portal-nav-link" @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif>Dashboard</a>
                     <a href="{{ route('admin.logistics.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.logistics.*')) aria-current="page" @endif>Logistics</a>
+                    <a href="{{ route('admin.payouts.index') }}" class="portal-nav-link">Payouts</a>
+                    <a href="{{ route('admin.remittances.index') }}" class="portal-nav-link">COD remittances</a>
+                    <a href="{{ route('admin.marketplace-settings.edit') }}" class="portal-nav-link">Fees</a>
                     <a href="{{ route('admin.products.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.products.*')) aria-current="page" @endif>Products</a>
                     <a href="{{ route('admin.categories.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.categories.*')) aria-current="page" @endif>Categories</a>
                     <a href="{{ route('admin.partners.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.partners.*', 'admin.sellers.*') || (request()->routeIs('admin.riders.*') && !request()->routeIs('admin.riders.barangays.*'))) aria-current="page" @endif>Partners</a>
@@ -42,6 +45,7 @@
                 @elseif($portalRole === \App\Enums\UserRole::Seller)
                     <a href="{{ route('seller.dashboard') }}" class="portal-nav-link">Dashboard</a>
                     <a href="{{ route('seller.products.create') }}" class="portal-nav-link">Add Product</a>
+                    <a href="{{ route('seller.payouts.index') }}" class="portal-nav-link">Payout history</a>
                     <a href="{{ route('fulfillments.index') }}" class="portal-nav-link" @if(request()->routeIs('fulfillments.*')) aria-current="page" @endif>Orders</a>
                     <a href="{{ route('chat.index') }}" class="portal-nav-link">Chat @if($chatUnreadCount)<span class="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[10px] text-white">{{ $chatUnreadCount > 99 ? '99+' : $chatUnreadCount }}</span>@endif</a>
                     <a href="{{ route('home') }}" class="portal-nav-link">View Storefront</a>
@@ -49,6 +53,7 @@
                     <a href="{{ route('rider.dashboard') }}" class="portal-nav-link">Dashboard</a>
                     <a href="{{ route('rider.dashboard') }}#delivery-requests" class="portal-nav-link">Delivery Requests</a>
                     <a href="{{ route('rider.earnings.index') }}" class="portal-nav-link" @if(request()->routeIs('rider.earnings.*')) aria-current="page" @endif>Earnings</a>
+                    <a href="{{ route('rider.cod.index') }}" class="portal-nav-link">COD owed</a>
                     <a href="{{ route('rider.history.index') }}" class="portal-nav-link" @if(request()->routeIs('rider.history.*')) aria-current="page" @endif>History</a>
                     <a href="{{ route('fulfillments.index') }}" class="portal-nav-link" @if(request()->routeIs('fulfillments.*')) aria-current="page" @endif>Deliveries</a>
                     <a href="{{ route('rider.profile') }}" class="portal-nav-link">Rider Profile</a>

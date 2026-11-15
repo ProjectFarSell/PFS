@@ -15,6 +15,7 @@ use App\Models\Product;
 use App\Models\RiderProfile;
 use App\Models\SellerApplication;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +56,7 @@ class DashboardController extends Controller
             'stats' => $stats,
             'ordersLast30Days' => $ordersLast30Days,
             'salesLast30Days' => $salesLast30Days,
+            'salesLast30DaysCents' => Money::cents((string) $salesLast30Days),
             'orders' => $orders,
             'statuses' => OrderStatus::cases(),
             'selectedStatus' => $selectedStatus,

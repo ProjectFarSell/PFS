@@ -41,9 +41,7 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(DeliveryFeeService::class, fn () => new FlatRateDeliveryFeeService(
-            (float) config('commerce.delivery_fee', 49.00)
-        ));
+        $this->app->bind(DeliveryFeeService::class, FlatRateDeliveryFeeService::class);
 
         $this->app->bind(DeliveryEtaService::class, CityBasedDeliveryEtaService::class);
         $this->app->bind(OrderNotificationSender::class, MailOrderNotificationSender::class);
