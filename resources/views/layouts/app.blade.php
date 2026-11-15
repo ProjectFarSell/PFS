@@ -88,11 +88,21 @@
                              x-transition:leave-end="opacity-0"
                              class="dropdown-panel w-56"
                              style="display:none;">
-                            @foreach ($navCategories as $cat)
-                                <a href="{{ route('catalog.index', ['category' => $cat->id]) }}"
+                            @php
+                                $navInterests = [
+                                    ['Trading Cards',    'trading card'],
+                                    ['Figures & Models', 'figure'],
+                                    ['Custom Keyboards', 'keyboard'],
+                                    ['Gaming & Audio',   'gaming'],
+                                    ['Anime Merch',      'anime'],
+                                    ['Desk Accessories', 'desk'],
+                                ];
+                            @endphp
+                            @foreach ($navInterests as [$label, $query])
+                                <a href="{{ route('catalog.index', ['q' => $query]) }}"
                                    class="dropdown-item">
                                     <x-ui.icon name="browse" size="sm" />
-                                    {{ $cat->name }}
+                                    {{ $label }}
                                 </a>
                             @endforeach
                         </div>
