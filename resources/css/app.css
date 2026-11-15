@@ -480,7 +480,7 @@
     .product-save { @apply relative z-10 flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-accent shadow-sm backdrop-blur-sm; }
     .product-save:disabled { @apply opacity-60 cursor-wait; }
     .product-media { @apply relative overflow-hidden bg-surface-muted text-text-muted; }
-    .product-media img { @apply absolute inset-0 h-full w-full object-cover; }
+    .product-media img { @apply absolute inset-0 h-full w-full object-contain object-center; }
     .product-placeholder { @apply absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center text-xs; }
     .collection-card {
         @apply fs-card block overflow-hidden;

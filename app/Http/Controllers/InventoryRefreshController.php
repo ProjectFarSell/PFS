@@ -17,7 +17,7 @@ class InventoryRefreshController extends Controller
             'available' => true,
             'has_variants' => $product->has_variants,
             'stock' => $product->availableStock(),
-            'variants' => $product->variants->map(fn ($variant) => [
+            'variants' => ($product->has_variants ? $product->variants : collect())->map(fn ($variant) => [
                 'id' => $variant->id, 'sku' => $variant->sku, 'stock' => (int) $variant->stock,
                 'price' => $variant->effectivePrice(),
                 'options' => $variant->options ?: array_filter([$variant->option_name => $variant->option_value]),

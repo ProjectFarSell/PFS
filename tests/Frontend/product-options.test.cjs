@@ -90,3 +90,18 @@ test('plain products update quantity limits and retain the 99-unit cap', async (
     component.applyAvailability({ available: true, has_variants: false, stock: 0, variants: [] });
     assert.equal(component.canPurchase(), false);
 });
+
+test('plain products ignore leftover option rows on load and stock refresh', async () => {
+    const { default: productOptions } = await import('../../resources/js/product-options.js');
+    const staleVariants = [{ id: 1, stock: 5, options: { Color: 'Black' } }];
+    const component = productOptions(staleVariants, ['Color'], { stock: 100, hasVariants: false });
+    assert.equal(component.canPurchase(), true);
+    assert.deepEqual(component.optionNames, []);
+    component.applyAvailability({ available: true, has_variants: false, stock: 100, variants: staleVariants });
+    assert.equal(component.optionsChanged, false);
+    assert.equal(component.canPurchase(), true);
+    assert.equal(component.quantityLimit(), 99);
+    component.applyAvailability({ available: true, has_variants: true, stock: 5, variants: staleVariants });
+    assert.equal(component.optionsChanged, true);
+    assert.equal(component.canPurchase(), false);
+});

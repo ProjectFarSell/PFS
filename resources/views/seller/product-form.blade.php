@@ -72,7 +72,7 @@
                     </div>
                 </fieldset>
                 @if ($product->image_path)
-                    <x-product-image :src="$product->imageUrl()" :alt="$product->name" width="160" height="160" class="h-40 w-40 rounded-lg object-cover" />
+                    <x-product-image :src="$product->imageUrl()" :alt="$product->name" width="160" height="160" class="h-40 w-40 rounded-lg" />
                 @endif
                 <label class="block text-sm">Product photo (optional)<input type="file" name="image" accept="image/jpeg,image/png,image/webp" class="mt-2 block w-full text-sm"></label>
                 <p class="text-xs text-text-muted">JPG, PNG or WebP, up to 4 MB. Uploading a new photo replaces the displayed image.</p>

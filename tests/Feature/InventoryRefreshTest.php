@@ -42,6 +42,25 @@ class InventoryRefreshTest extends TestCase
         $this->getJson(route('products.availability', $product))->assertNotFound();
     }
 
+    public function test_plain_product_with_leftover_variants_remains_purchasable(): void
+    {
+        [, , $product] = $this->product();
+        $product->update(['has_variants' => false, 'stock' => 100]);
+
+        $this->getJson(route('products.availability', $product))->assertOk()
+            ->assertJsonPath('has_variants', false)->assertJsonPath('stock', 100)
+            ->assertJsonCount(0, 'variants');
+        $this->get(route('products.show', $product))->assertOk()
+            ->assertSee('productOptions([], [],', false);
+
+        $this->post(route('cart.store'), ['product_id' => $product->id, 'qty' => 1])
+            ->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertSame(1, Cart::lines()[Cart::lineKey($product->id)]);
+        $this->post(route('cart.buy-now'), ['product_id' => $product->id, 'qty' => 1])
+            ->assertRedirect(route('checkout.create'))->assertSessionHasNoErrors();
+        $this->assertSame(2, $product->variants()->count());
+    }
+
     public function test_seller_inventory_scopes_ids_and_stats_and_uses_active_variant_stock(): void
     {
         [$seller, , $product] = $this->product();

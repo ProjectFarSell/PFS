@@ -8,7 +8,7 @@
 
 @section('content')
     @php
-        $variantOptions = $product->variants->map(function ($variant) {
+        $variantOptions = ($product->has_variants ? $product->variants : collect())->map(function ($variant) {
             $options = $variant->options ?: array_filter([$variant->option_name => $variant->option_value]);
             return ['id' => $variant->id, 'sku' => $variant->sku, 'stock' => (int) $variant->stock, 'price' => $variant->effectivePrice(), 'options' => $options];
         })->values();
@@ -19,7 +19,7 @@
         <div class="aspect-square rounded-2xl bg-surface border border-surface-border flex items-center justify-center text-text-muted">
             @if($product->image_path)
                 <x-product-image :src="$product->imageUrl()" :alt="$product->name" width="640" height="640"
-                    :priority="true" x-bind:src="selectedImage" class="h-full w-full rounded-2xl object-cover" />
+                    :priority="true" x-bind:src="selectedImage" class="h-full w-full rounded-2xl" />
             @else
                 {{ $product->category?->name }}
             @endif
@@ -28,7 +28,7 @@
             <div class="mt-3 flex flex-wrap gap-3" aria-label="Product photos">
                 @foreach($product->galleryImages() as $image)
                     <button type="button" class="rounded-lg border p-1 focus-visible:ring-2" aria-label="View photo {{ $loop->iteration }}" @click="selectedImage = @js($image['url'])">
-                        <x-product-image :src="$image['url']" :alt="$image['alt_text']" width="72" height="72" class="h-16 w-16 rounded-md object-cover" />
+                        <x-product-image :src="$image['url']" :alt="$image['alt_text']" width="72" height="72" class="h-16 w-16 rounded-md" />
                     </button>
                 @endforeach
             </div>

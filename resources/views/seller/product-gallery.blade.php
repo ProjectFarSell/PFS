@@ -5,7 +5,7 @@
     <div class="grid gap-4 sm:grid-cols-2">
         @foreach($product->galleryImages() as $image)
             <article class="rounded-lg border p-3">
-                <x-product-image :src="$image['url']" :alt="$image['alt_text']" width="160" height="160" class="h-40 w-full rounded-lg object-cover" />
+                <x-product-image :src="$image['url']" :alt="$image['alt_text']" width="160" height="160" class="h-40 w-full rounded-lg" />
                 @if($image['is_primary'])<p class="mt-2 text-sm font-semibold">Primary photo</p>@endif
                 @if($image['id'] && !$image['is_primary'])
                     <form class="mt-2" method="post" action="{{ route('seller.products.images.primary', [$product, $image['id']]) }}">@csrf @method('PUT')<button class="text-sm underline" type="submit">Set as primary</button></form>

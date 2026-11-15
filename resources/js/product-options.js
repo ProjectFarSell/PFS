@@ -1,6 +1,10 @@
 import { createStockPoller } from './stock-poller.js';
 
 export default function productOptions(variants = [], optionNames = [], availability = {}) {
+    if (availability.hasVariants === false) {
+        variants = [];
+        optionNames = [];
+    }
     return {
         qty: 1,
         variants,
@@ -57,14 +61,15 @@ export default function productOptions(variants = [], optionNames = [], availabi
                 || !Array.isArray(data.variants) || data.variants.some(variant => !Number.isInteger(variant.stock) || variant.stock < 0 || !variant.options)) {
                 throw new Error('Invalid availability response');
             }
-            const names = [...new Set(data.variants.flatMap(variant => Object.keys(variant.options)))];
+            const activeVariants = data.has_variants ? data.variants : [];
+            const names = [...new Set(activeVariants.flatMap(variant => Object.keys(variant.options)))];
             // Structural changes need a fresh form; never silently buy a different option.
             this.optionsChanged = data.has_variants !== (availability.hasVariants ?? this.optionNames.length > 0)
-                || (data.variants.length > 0 && names.slice().sort().join('\0') !== this.optionNames.slice().sort().join('\0'));
+                || (activeVariants.length > 0 && names.slice().sort().join('\0') !== this.optionNames.slice().sort().join('\0'));
             this.listingAvailable = data.available === true;
             this.baseStock = data.stock;
             if (!this.optionsChanged) {
-                this.variants = data.variants;
+                this.variants = activeVariants;
                 this.choices = Object.fromEntries(this.optionNames.map(name => [name, this.valuesFor(name).includes(this.choices[name]) ? this.choices[name] : '']));
             }
             const previousQty = this.qty;
