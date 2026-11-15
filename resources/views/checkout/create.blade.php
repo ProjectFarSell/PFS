@@ -81,6 +81,9 @@
                 <span>Total</span>
                 <span>PHP {{ \App\Support\Money::decimal($totalCents) }}</span>
             </div>
+            @foreach($lines->groupBy(fn ($line) => $line->product->shop_id) as $shopId => $shopLines)
+                <section class="mt-4"><h2 class="text-sm font-medium">{{ $shopLines->first()->product->shop->name }}</h2><x-shipping-package :package="$shippingPackages[$shopId] ?? null" /></section>
+            @endforeach
         </div>
     </div>
 @endsection

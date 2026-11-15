@@ -5250,9 +5250,115 @@ components:
         - options
         - unit_price
         - stock
+    HandlingFlag:
+      type: string
+      enum: [fragile, perishable, liquid, keep_upright, keep_dry, keep_cold, flammable, heavy]
+    ShippingPackage:
+      type: object
+      nullable: true
+      description: Per-seller item-volume estimate snapshotted at checkout. Existing flat fee remains; no distance pricing, carrier booking or Flutter UI is implied.
+      properties:
+        calculation_version:
+          type: integer
+          enum: [1]
+        total_quantity:
+          type: integer
+          minimum: 0
+        volumetric_divisor:
+          type: integer
+          enum: [3500, 5000]
+        actual_weight_kg:
+          type: number
+          nullable: true
+          minimum: 0
+        volumetric_weight_kg:
+          type: number
+          nullable: true
+          minimum: 0
+        chargeable_weight_kg:
+          type: number
+          nullable: true
+          minimum: 0
+        max_single_item_dimension_cm:
+          type: number
+          nullable: true
+          minimum: 0
+        vehicle_tier:
+          type: string
+          nullable: true
+          enum: [motorcycle, sedan_mpv, van_light_truck, null]
+        status:
+          type: string
+          enum: [ready, needs_shipping_details]
+        missing_details_item_count:
+          type: integer
+          minimum: 0
+        handling_flags:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/HandlingFlag'
+        packaging_basis:
+          type: string
+          enum: [sum_of_item_volumes]
+        pricing_basis:
+          type: string
+          enum: [existing_flat_fee]
+      additionalProperties: false
+    ShippingDetails:
+      type: object
+      nullable: true
+      description: Packaged measurements per purchased item. Null on legacy order items; never falls back to current product data. Flutter display is not implemented yet.
+      properties:
+        length_cm:
+          type: number
+          nullable: true
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 1000
+          multipleOf: 0.01
+        width_cm:
+          type: number
+          nullable: true
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 1000
+          multipleOf: 0.01
+        height_cm:
+          type: number
+          nullable: true
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 1000
+          multipleOf: 0.01
+        weight_kg:
+          type: number
+          nullable: true
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 1000
+          multipleOf: 0.001
+        handling_flags:
+          type: array
+          nullable: true
+          uniqueItems: true
+          maxItems: 8
+          items:
+            $ref: '#/components/schemas/HandlingFlag'
+      additionalProperties: false
     Product:
       type: object
       properties:
+        length_cm:
+          $ref: '#/components/schemas/ShippingDetails/properties/length_cm'
+        width_cm:
+          $ref: '#/components/schemas/ShippingDetails/properties/width_cm'
+        height_cm:
+          $ref: '#/components/schemas/ShippingDetails/properties/height_cm'
+        weight_kg:
+          $ref: '#/components/schemas/ShippingDetails/properties/weight_kg'
+        handling_flags:
+          $ref: '#/components/schemas/ShippingDetails/properties/handling_flags'
         id:
           $ref: '#/components/schemas/OpaqueId'
         name:
@@ -5689,6 +5795,8 @@ components:
             properties:
               shop_id:
                 $ref: '#/components/schemas/OpaqueId'
+              shipping_package:
+                $ref: '#/components/schemas/ShippingPackage'
               subtotal:
                 $ref: '#/components/schemas/Money'
               shipping_fee:
@@ -5740,6 +5848,8 @@ components:
     PurchasedLine:
       type: object
       properties:
+        shipping_details:
+          $ref: '#/components/schemas/ShippingDetails'
         id:
           $ref: '#/components/schemas/OpaqueId'
         name:
@@ -5813,6 +5923,14 @@ components:
     BuyerShipment:
       type: object
       properties:
+        required_vehicle_tier:
+          type: string
+          nullable: true
+          enum: [motorcycle, sedan_mpv, van_light_truck, null]
+        vehicle_review_pending:
+          type: boolean
+        shipping_package:
+          $ref: '#/components/schemas/ShippingPackage'
         discount:
           $ref: '#/components/schemas/Money'
         shipping_discount:
@@ -6110,6 +6228,14 @@ components:
         shipment:
           type: object
           properties:
+            required_vehicle_tier:
+              type: string
+              nullable: true
+              enum: [motorcycle, sedan_mpv, van_light_truck, null]
+            vehicle_review_pending:
+              type: boolean
+            shipping_package:
+              $ref: '#/components/schemas/ShippingPackage'
             id:
               $ref: '#/components/schemas/OpaqueId'
             order_number:
@@ -6190,6 +6316,14 @@ components:
     RiderShipment:
       type: object
       properties:
+        required_vehicle_tier:
+          type: string
+          nullable: true
+          enum: [motorcycle, sedan_mpv, van_light_truck, null]
+        vehicle_review_pending:
+          type: boolean
+        shipping_package:
+          $ref: '#/components/schemas/ShippingPackage'
         id:
           $ref: '#/components/schemas/OpaqueId'
         order_number:
@@ -6475,6 +6609,16 @@ components:
     LegacyCatalogItem:
       type: object
       properties:
+        length_cm:
+          $ref: '#/components/schemas/ShippingDetails/properties/length_cm'
+        width_cm:
+          $ref: '#/components/schemas/ShippingDetails/properties/width_cm'
+        height_cm:
+          $ref: '#/components/schemas/ShippingDetails/properties/height_cm'
+        weight_kg:
+          $ref: '#/components/schemas/ShippingDetails/properties/weight_kg'
+        handling_flags:
+          $ref: '#/components/schemas/ShippingDetails/properties/handling_flags'
         id:
           type: integer
         name:

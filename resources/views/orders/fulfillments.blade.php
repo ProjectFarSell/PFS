@@ -7,6 +7,12 @@
         <section class="fs-card p-5">
             <div class="flex flex-wrap justify-between gap-3"><h2 class="font-semibold">{{ $part->shop_name }} · Shipment #{{ $part->id }}</h2><x-ui.status-pill :status="$part->status->value">{{ $part->deliveryLabel() }}</x-ui.status-pill></div>
             @include('fulfillments.courier')
+            <x-shipping-package :package="$part->shipping_package" />
+            @if(auth()->user()->role === \App\Enums\UserRole::Admin)
+                @foreach($part->items as $item)
+                    @if($item->shipping_details)<div class="mt-3 text-sm"><span>{{ $item->name }} — shipping details</span><x-shipping-details :details="$item->shipping_details" /></div>@endif
+                @endforeach
+            @endif
             <ul class="mt-3 text-sm space-y-2">@foreach($part->items as $item)<li class="flex justify-between gap-3"><span>{{ $item->name }}@if($item->variant_options) ({{ collect($item->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $item->qty }}<span class="mt-0.5 block text-xs text-text-muted">SKU: {{ $item->product_sku ?? 'Unavailable' }}</span></span><span>₱{{ number_format((float) $item->line_total, 2) }}</span></li>@endforeach</ul>
             <p class="mt-3 text-sm">Shipment total: ₱{{ number_format($part->amount(), 2) }} (delivery allocation ₱{{ number_format((float) $part->shipping_fee, 2) }})</p>
             @if($part->rider)<p class="mt-2 text-sm">Rider: {{ $part->rider->user?->name ?? 'Unavailable account' }}</p>@endif

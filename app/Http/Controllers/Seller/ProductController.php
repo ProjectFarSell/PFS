@@ -10,6 +10,7 @@ use App\Models\ProductVariant;
 use App\Models\Shop;
 use App\Services\Products\ProductGallery;
 use App\Services\Security\SafeImage;
+use App\Support\ProductShippingDetails;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -166,11 +167,15 @@ class ProductController extends Controller
             : Rule::unique('products', 'sku');
 
         $input = $request->all();
+        if ($request->boolean('shipping_details_present') && ! $request->has('handling_flags')) {
+            $input['handling_flags'] = [];
+        }
         if (! $request->boolean('has_variants')) {
             unset($input['variants']);
         }
 
         $data = Validator::make($input, [
+            ...ProductShippingDetails::rules(),
             'name' => ['required', 'string', 'max:150'],
             'sku' => $skuRules,
             'description' => ['required', 'string', 'max:5000'],

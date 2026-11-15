@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\DeliveryMethod;
 use App\Enums\FulfillmentStatus;
+use App\Enums\ShippingVehicleTier;
 use App\Enums\UserRole;
 use App\Models\Fulfillment;
 use App\Models\RiderProfile;
@@ -62,7 +63,10 @@ class FulfillmentController extends Controller
     public function update(Request $request, Fulfillment $fulfillment, FulfillmentService $service)
     {
         $data = $request->validate([
-            'action' => ['required', Rule::in(['accept', 'reject', 'ready', 'request_rider', 'assign', 'claim', 'decline', 'pickup', 'deliver', 'complete', 'fail', 'retry', 'return_to_seller', 'receive_return'])],
+            'action' => ['required', Rule::in(['accept', 'reject', 'ready', 'request_rider', 'assign', 'claim', 'decline', 'pickup', 'deliver', 'complete', 'fail', 'retry', 'return_to_seller', 'receive_return', 'request_vehicle_upgrade', 'review_vehicle_upgrade'])],
+            'requested_vehicle_tier' => ['required_if:action,request_vehicle_upgrade', 'nullable', Rule::enum(ShippingVehicleTier::class)],
+            'vehicle_upgrade_reason' => ['required_with:requested_vehicle_tier', 'required_if:action,review_vehicle_upgrade', 'nullable', 'string', 'min:10', 'max:1000'],
+            'vehicle_upgrade_decision' => ['required_if:action,review_vehicle_upgrade', 'nullable', 'in:approved,rejected'],
             'delivery_method' => ['nullable', Rule::enum(DeliveryMethod::class)],
             'courier_verified' => ['nullable', 'boolean'],
             'failure_reason' => ['required_if:action,fail', 'nullable', Rule::in(DeliveryExceptionService::REASONS)],

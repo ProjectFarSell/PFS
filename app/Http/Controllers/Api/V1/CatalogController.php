@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Support\ProductShippingDetails;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -75,6 +76,7 @@ class CatalogController extends Controller
             'compare_at_price' => $product->compare_at_price ? (float) $product->compare_at_price : null,
             'stock' => $product->availableStock(),
             'image_url' => $product->imageUrl(),
+            ...ProductShippingDetails::api($product->shippingDetails()),
             'shop' => [
                 'name' => $product->shop->name,
                 'slug' => $product->shop->slug,

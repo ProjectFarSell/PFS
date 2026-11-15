@@ -28,6 +28,7 @@ class Product extends Model
         'image_path',
         'is_flash',
         'is_active',
+        'length_cm', 'width_cm', 'height_cm', 'weight_kg', 'handling_flags',
     ];
 
     protected function casts(): array
@@ -40,6 +41,11 @@ class Product extends Model
             'is_active' => 'boolean',
             'admin_hidden_at' => 'datetime',
             'admin_restore_active' => 'boolean',
+            'length_cm' => 'decimal:2',
+            'width_cm' => 'decimal:2',
+            'height_cm' => 'decimal:2',
+            'weight_kg' => 'decimal:3',
+            'handling_flags' => 'array',
         ];
     }
 
@@ -58,6 +64,11 @@ class Product extends Model
     public function shop(): BelongsTo
     {
         return $this->belongsTo(Shop::class);
+    }
+
+    public function shippingDetails(): array
+    {
+        return $this->only(['length_cm', 'width_cm', 'height_cm', 'weight_kg', 'handling_flags']);
     }
 
     public function category(): BelongsTo

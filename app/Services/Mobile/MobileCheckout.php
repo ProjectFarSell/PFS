@@ -7,6 +7,7 @@ use App\Models\Address;
 use App\Models\MobileCart;
 use App\Models\Shop;
 use App\Models\User;
+use App\Services\Checkout\ShippingPackageCalculator;
 use App\Services\Orders\CheckoutAvailability;
 use App\Services\Orders\MarketplaceSettings;
 use App\Services\Orders\SettlementService;
@@ -31,7 +32,7 @@ class MobileCheckout
         $shipping ??= app(DeliveryFeeService::class)->calculate($address, $lines);
         $voucher = app(VoucherService::class)->quote($voucherCode, User::findOrFail($cart->user_id), $lines, MobileViews::cents($shipping), DB::transactionLevel() > 0);
 
-        return ['cart_version' => $cart->version, 'address' => $address->getAttributes(), 'lines' => $lines->map(fn ($line) => ['product_id' => $line->product->id, 'variant_id' => $line->variant?->id, 'qty' => $line->qty, 'unit_price' => MobileViews::cents($line->unit_price), 'stock' => (int) ($line->variant?->stock ?? $line->product->stock), 'options' => $line->variant_options, 'shop_id' => $line->product->shop_id, 'sku' => $line->variant?->sku ?? $line->product->sku])->values()->all(), 'shipping' => MobileViews::cents($shipping), 'methods' => $this->methods(), 'fee_policy' => app(SettlementService::class)->policy(), 'voucher' => $voucher];
+        return ['cart_version' => $cart->version, 'address' => $address->getAttributes(), 'lines' => $lines->map(fn ($line) => ['product_id' => $line->product->id, 'variant_id' => $line->variant?->id, 'qty' => $line->qty, 'unit_price' => MobileViews::cents($line->unit_price), 'stock' => (int) ($line->variant?->stock ?? $line->product->stock), 'options' => $line->variant_options, 'shop_id' => $line->product->shop_id, 'sku' => $line->variant?->sku ?? $line->product->sku, 'shipping_details' => $line->product->shippingDetails()])->values()->all(), 'shipping' => MobileViews::cents($shipping), 'methods' => $this->methods(), 'fee_policy' => app(SettlementService::class)->policy(), 'voucher' => $voucher, 'packages' => app(ShippingPackageCalculator::class)->forLines($lines)];
     }
 
     public function summary(array $snapshot, Address $address, string $id, $expires): array
@@ -40,7 +41,7 @@ class MobileCheckout
         $shops = Shop::whereIn('id', $groups->keys())->get()->keyBy('id');
         $index = 0;
         $parts = $groups->map(function ($lines, $shopId) use ($groups, &$index, $snapshot, $shops) {
-            return ['shop_id' => PublicIds::id($shops[$shopId]), 'subtotal' => $lines->sum(fn ($line) => $line['qty'] * $line['unit_price']), 'shipping_fee' => intdiv($snapshot['shipping'], $groups->count()) + ($index++ < $snapshot['shipping'] % $groups->count() ? 1 : 0)];
+            return ['shop_id' => PublicIds::id($shops[$shopId]), 'subtotal' => $lines->sum(fn ($line) => $line['qty'] * $line['unit_price']), 'shipping_fee' => intdiv($snapshot['shipping'], $groups->count()) + ($index++ < $snapshot['shipping'] % $groups->count() ? 1 : 0), 'shipping_package' => app(ShippingPackageCalculator::class)->api($snapshot['packages'][$shopId] ?? null)];
         })->values()->all();
         $subtotal = array_sum(array_column($parts, 'subtotal'));
 

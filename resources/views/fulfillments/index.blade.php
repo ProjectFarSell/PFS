@@ -35,8 +35,14 @@
                     <x-ui.button variant="secondary" :href="route('seller.fulfillments.packing-slip', $part)" target="_blank" rel="noopener" class="mt-3">Print packing slip</x-ui.button>
                 @endif
                 <ul class="mt-3 space-y-1 text-sm">
-                    @foreach($part->items as $item)<li>{{ $item->name }}@if($item->variant_options) ({{ collect($item->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $item->qty }} Â· SKU: {{ $item->product_sku ?? 'Unavailable' }} @if($isSeller || $isAdmin) · ₱{{ number_format((float) $item->line_total, 2) }} @endif</li>@endforeach
+                    @foreach($part->items as $item)
+                        <li>{{ $item->name }}@if($item->variant_options) ({{ collect($item->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $item->qty }} · SKU: {{ $item->product_sku ?? 'Unavailable' }} @if($isSeller || $isAdmin) · ₱{{ number_format((float) $item->line_total, 2) }} @endif
+                            <x-shipping-details :details="$item->shipping_details" />
+                        </li>
+                    @endforeach
                 </ul>
+                <x-shipping-package :package="$part->shipping_package" />
+                @include('fulfillments.vehicle-review')
                 @if(!$isSeller)
                     <p class="mt-3 text-sm font-semibold">Recipient: {{ $part->order->guest_name }}</p>
                     <p class="text-sm whitespace-pre-line">{{ $part->order->ship_to }}</p>
@@ -105,6 +111,7 @@
                         <textarea id="pickup-address-{{ $part->id }}" name="pickup_address" required maxlength="1000" class="w-full rounded-lg"></textarea>
                         <label class="block" for="pickup-contact-{{ $part->id }}">Pickup contact name and phone</label>
                         <input id="pickup-contact-{{ $part->id }}" name="pickup_contact" required maxlength="255" class="w-full rounded-lg">
+                        @include('fulfillments.vehicle-upgrade-fields')
                         <x-ui.button variant="primary" size="lg" type="submit">{{ $part->status === \App\Enums\FulfillmentStatus::Ready ? 'Request a rider' : 'Mark ready for pickup' }}</x-ui.button>
                         <p class="text-xs text-text-muted">FarSell riders use internal dispatch. Record an existing courier booking after marking the shipment ready.</p>
                     </form>
@@ -122,7 +129,7 @@
                             <label for="rider-{{ $part->id }}">Assign rider</label>
                             <select id="rider-{{ $part->id }}" name="rider_id" required class="rounded-lg">
                                 <option value="">Choose rider</option>
-                                @foreach($riders as $rider)<option value="{{ $rider->id }}">{{ $rider->user->name }} · {{ $rider->is_available ? 'Online' : 'Offline' }} · {{ $rider->city }} · {{ $rider->vehicle_type }}</option>@endforeach
+                                @foreach($riders as $rider)@if(app(\App\Services\Orders\DispatchVehicleEligibility::class)->allows($part, $rider))<option value="{{ $rider->id }}">{{ $rider->user->name }} · {{ $rider->is_available ? 'Online' : 'Offline' }} · {{ $rider->city }} · {{ $rider->vehicle_type }}</option>@endif @endforeach
                             </select><x-ui.button variant="primary" size="lg" type="submit">Assign shipment</x-ui.button>
                         </form>
                     @endif

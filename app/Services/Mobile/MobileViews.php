@@ -8,6 +8,8 @@ use App\Models\Address;
 use App\Models\Fulfillment;
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\Checkout\ShippingPackageCalculator;
+use App\Support\ProductShippingDetails;
 
 class MobileViews
 {
@@ -23,7 +25,7 @@ class MobileViews
 
     public static function product(Product $product): array
     {
-        return ['id' => PublicIds::id($product), 'name' => $product->name, 'slug' => $product->slug, 'description' => $product->description ?? '', 'sku' => $product->sku, 'unit_price' => self::cents($product->price), 'stock' => $product->availableStock(), 'has_variants' => $product->has_variants, 'image_url' => $product->imageUrl(), 'shop' => ['id' => PublicIds::id($product->shop), 'name' => $product->shop->name, 'slug' => $product->shop->slug], 'category' => ['id' => PublicIds::id($product->category), 'name' => $product->category->name, 'slug' => $product->category->slug], 'variants' => $product->variants->where('is_active', true)->map(fn ($v) => ['id' => PublicIds::id($v), 'sku' => $v->sku, 'options' => (object) ($v->options ?: array_filter([$v->option_name => $v->option_value])), 'unit_price' => self::cents($v->price_override ?? $product->price), 'stock' => (int) $v->stock])->values()->all()];
+        return ['id' => PublicIds::id($product), 'name' => $product->name, 'slug' => $product->slug, 'description' => $product->description ?? '', 'sku' => $product->sku, 'unit_price' => self::cents($product->price), 'stock' => $product->availableStock(), 'has_variants' => $product->has_variants, 'image_url' => $product->imageUrl(), 'shop' => ['id' => PublicIds::id($product->shop), 'name' => $product->shop->name, 'slug' => $product->shop->slug], 'category' => ['id' => PublicIds::id($product->category), 'name' => $product->category->name, 'slug' => $product->category->slug], 'variants' => $product->variants->where('is_active', true)->map(fn ($v) => ['id' => PublicIds::id($v), 'sku' => $v->sku, 'options' => (object) ($v->options ?: array_filter([$v->option_name => $v->option_value])), 'unit_price' => self::cents($v->price_override ?? $product->price), 'stock' => (int) $v->stock])->values()->all(), ...ProductShippingDetails::api($product->shippingDetails())];
     }
 
     public static function address(Address $address): array
@@ -62,15 +64,18 @@ class MobileViews
         } elseif ($part->status === FulfillmentStatus::Delivered && (! $part->usesExternalCourier() || $part->order->payment_method !== PaymentMethod::Cod || $part->cod_collected_at || $part->courierBooking?->isSandbox())) {
             $actions = ['confirm_receipt'];
         }
-        $items = $part->items->map(fn ($item) => ['id' => PublicIds::id($item), 'name' => $item->name, 'sku' => $item->product_sku, 'options' => (object) ($item->variant_options ?? []), 'qty' => (int) $item->qty, 'unit_price' => self::cents($item->unit_price), 'line_total' => self::cents($item->line_total)])->all();
+        $items = $part->items->map(fn ($item) => ['id' => PublicIds::id($item), 'name' => $item->name, 'sku' => $item->product_sku, 'options' => (object) ($item->variant_options ?? []), 'qty' => (int) $item->qty, 'unit_price' => self::cents($item->unit_price), 'line_total' => self::cents($item->line_total), 'shipping_details' => ProductShippingDetails::api($item->shipping_details)])->all();
         $events = $part->events->map(fn ($event) => ['id' => PublicIds::id($event), 'status' => $event->status, 'occurred_at' => self::time($event->created_at), 'message' => FulfillmentStatus::from($event->status)->label()])->all();
         if ($rider) {
             $operational = in_array($part->status->value, ['assigned', 'in_transit', 'delivery_failed', 'returning'], true);
+            $dispatch = ['required_vehicle_tier' => $part->required_vehicle_tier ?? $part->shipping_package['vehicle_tier'] ?? null, 'vehicle_review_pending' => (bool) $part->vehicle_review_pending];
 
-            return ['id' => PublicIds::id($part), 'order_number' => $part->order->number, 'status' => $part->status->value, 'shop_name' => $part->shop_name, 'pickup_address' => $operational ? (string) $part->pickup_address : '', 'pickup_contact' => $operational ? (string) $part->pickup_contact : '', 'dropoff_address' => $operational ? (string) $part->order->ship_to : '', 'recipient_name' => $operational ? (string) $part->order->guest_name : '', 'recipient_phone' => null, 'payment_method' => $part->order->payment_method->value, 'cod_amount_due' => $part->order->payment_method === PaymentMethod::Cod && ! $part->cod_collected_at ? self::cents($part->amount()) : 0, 'items' => $items, 'events' => $events, 'retry_at' => self::time($part->retry_at), 'allowed_actions' => $actions, 'return_instructions' => $part->status === FulfillmentStatus::Returning ? 'Return the shipment to the seller as instructed by dispatch. Do not collect COD.' : ($part->status === FulfillmentStatus::DeliveryFailed ? 'Wait for dispatch to review the failed attempt.' : null)];
+            return [...$dispatch, 'id' => PublicIds::id($part), 'order_number' => $part->order->number, 'status' => $part->status->value, 'shop_name' => $part->shop_name, 'pickup_address' => $operational ? (string) $part->pickup_address : '', 'pickup_contact' => $operational ? (string) $part->pickup_contact : '', 'dropoff_address' => $operational ? (string) $part->order->ship_to : '', 'recipient_name' => $operational ? (string) $part->order->guest_name : '', 'recipient_phone' => null, 'payment_method' => $part->order->payment_method->value, 'cod_amount_due' => $part->order->payment_method === PaymentMethod::Cod && ! $part->cod_collected_at ? self::cents($part->amount()) : 0, 'items' => $items, 'events' => $events, 'retry_at' => self::time($part->retry_at), 'allowed_actions' => $actions, 'shipping_package' => app(ShippingPackageCalculator::class)->api($part->shipping_package), 'return_instructions' => $part->status === FulfillmentStatus::Returning ? 'Return the shipment to the seller as instructed by dispatch. Do not collect COD.' : ($part->status === FulfillmentStatus::DeliveryFailed ? 'Wait for dispatch to review the failed attempt.' : null)];
         }
         $data = ['id' => PublicIds::id($part), 'status' => $part->status->value, 'shop_name' => $part->shop_name, 'delivery_method' => $part->delivery_method?->value ?? 'internal', 'subtotal' => self::cents($part->subtotal), 'shipping_fee' => self::cents($part->shipping_fee), 'cod_amount_due' => $part->order->payment_method === PaymentMethod::Cod && ! $part->cod_collected_at ? self::cents($part->amount()) : 0, 'items' => $items, 'events' => $events, 'tracking_url' => $part->courierBooking?->tracking_url, 'proof' => $part->delivery_recipient_name ? ['recipient_name' => $part->delivery_recipient_name, 'delivery_note' => (string) $part->delivery_note, 'delivered_at' => self::time($part->events->firstWhere('status', 'delivered')?->created_at ?? $part->updated_at), 'has_photo' => filled($part->delivery_photo_path), 'cod_collected_at' => self::time($part->cod_collected_at)] : null, 'allowed_actions' => $actions];
         $data += ['discount' => (int) $part->discount_cents, 'shipping_discount' => (int) $part->shipping_discount_cents];
+        $data['shipping_package'] = app(ShippingPackageCalculator::class)->api($part->shipping_package);
+        $data += ['required_vehicle_tier' => $part->required_vehicle_tier ?? $part->shipping_package['vehicle_tier'] ?? null, 'vehicle_review_pending' => (bool) $part->vehicle_review_pending];
         if ($part->status === FulfillmentStatus::InTransit) {
             $data['delivery_pin'] = $part->delivery_pin;
         }

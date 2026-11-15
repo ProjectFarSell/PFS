@@ -33,6 +33,7 @@
                     @method('PUT')
                     <input type="hidden" name="version" value="{{ old('version', $product->editVersion()) }}">
                     <p class="rounded-lg bg-surface-muted px-3 py-2 text-sm">Product ID: <strong>#{{ $product->id }}</strong></p>
+                    <x-shipping-details :details="$product->shippingDetails()" />
                 @else
                     <p class="rounded-lg bg-surface-muted px-3 py-2 text-sm">Product ID will be assigned after the listing is created.</p>
                 @endif
@@ -41,6 +42,7 @@
                 @if($categories->isEmpty())<p class="text-sm text-error">No categories are configured. Ask an administrator to set up categories first.</p>@endif
                 <label class="block text-sm">Description<textarea name="description" required maxlength="5000" rows="5" class="mt-1 w-full rounded-lg">{{ old('description', $product->description) }}</textarea></label>
                 <input type="hidden" name="has_variants" :value="hasVariants ? 1 : 0">
+                @include('seller.product-shipping-details')
                 <label class="flex items-center gap-2 text-sm"><input type="checkbox" x-model="hasVariants" class="rounded"> This product has options (size, color, etc.)</label>
                 <label class="block text-sm" x-show="!hasVariants">SKU<input name="sku" minlength="8" maxlength="12" value="{{ old('sku', $product->sku) }}" x-bind:disabled="hasVariants" placeholder="8–12 characters; blank generates one" class="mt-1 w-full rounded-lg"><span class="mt-1 block text-xs text-text-muted">Use 8–12 characters. Leave blank to generate a compact code.</span></label>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">

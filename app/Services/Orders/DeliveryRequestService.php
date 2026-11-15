@@ -22,7 +22,7 @@ class DeliveryRequestService
         DB::transaction(function () use ($part) {
             Order::query()->whereKey($part->order_id)->lockForUpdate()->firstOrFail();
             $part = Fulfillment::query()->lockForUpdate()->findOrFail($part->id);
-            if ($part->usesExternalCourier() || $part->status->value !== 'ready' || $part->rider_id || ! $part->pickup_city) {
+            if ($part->usesExternalCourier() || $part->status->value !== 'ready' || $part->rider_id || ! $part->pickup_city || $part->vehicle_review_pending) {
                 return;
             }
             // Barangay-covered shipments are reserved for their designated rider.
@@ -35,7 +35,7 @@ class DeliveryRequestService
             if ($active) {
                 $rider = RiderProfile::find($active->rider_id);
                 if ($rider && $rider->isApproved() && $rider->is_available
-                    && $rider->user?->role->value === 'rider' && self::city($rider->city) === $part->pickup_city) {
+                    && $rider->user?->role->value === 'rider' && self::city($rider->city) === $part->pickup_city && app(DispatchVehicleEligibility::class)->allows($part, $rider)) {
                     return;
                 }
                 DB::table('rider_delivery_requests')->where('id', $active->id)->update(['expires_at' => now(), 'updated_at' => now()]);
@@ -48,6 +48,7 @@ class DeliveryRequestService
             $riders = RiderProfile::query()->where('status', 'approved')->where('is_available', true)
                 ->whereNotIn('id', $excludedRiders)->whereHas('user', fn ($q) => $q->where('role', 'rider'))->get()
                 ->filter(fn ($rider) => self::city($rider->city) === $part->pickup_city)
+                ->filter(fn ($rider) => app(DispatchVehicleEligibility::class)->allows($part, $rider))
                 ->sortBy(fn ($rider) => [
                     $offers->has($rider->id) ? 1 : 0,
                     $offers->get($rider->id)?->expires_at ?? '',
@@ -60,7 +61,7 @@ class DeliveryRequestService
                 ]);
             foreach ($riders as $candidate) {
                 $rider = RiderProfile::query()->lockForUpdate()->find($candidate->id);
-                if ($rider && $rider->isApproved() && $rider->is_available && $rider->user?->role->value === 'rider' && self::city($rider->city) === $part->pickup_city) {
+                if ($rider && $rider->isApproved() && $rider->is_available && $rider->user?->role->value === 'rider' && self::city($rider->city) === $part->pickup_city && app(DispatchVehicleEligibility::class)->allows($part, $rider)) {
                     DB::table('rider_delivery_requests')->updateOrInsert(
                         ['fulfillment_id' => $part->id, 'rider_id' => $rider->id],
                         ['public_id' => (string) Str::uuid(), 'offered_at' => now(), 'expires_at' => now()->addMinutes(2), 'declined_at' => null, 'created_at' => now(), 'updated_at' => now()]
@@ -94,7 +95,7 @@ class DeliveryRequestService
 
     public function requests(RiderProfile $rider)
     {
-        return Fulfillment::query()->select(['id', 'shop_name', 'pickup_city', 'created_at'])
+        $query = Fulfillment::query()->select(['id', 'shop_name', 'pickup_city', 'created_at'])
             ->addSelect(['offer_expires_at' => DB::table('rider_delivery_requests')->select('expires_at')
                 ->whereColumn('fulfillment_id', 'fulfillments.id')->where('rider_id', $rider->id)->limit(1)])
             ->where('status', 'ready')->where('delivery_method', 'internal')->whereNull('rider_id')
@@ -104,5 +105,7 @@ class DeliveryRequestService
                 ->whereNull('declined_at')->where('expires_at', '>', now()))
             ->when(! $rider->is_available, fn ($q) => $q->whereRaw('1 = 0'))
             ->oldest('id');
+
+        return app(DispatchVehicleEligibility::class)->constrain($query, $rider);
     }
 }

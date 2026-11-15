@@ -13,6 +13,7 @@ use App\Models\RiderBarangayAssignment;
 use App\Models\RiderEarning;
 use App\Models\RiderProfile;
 use App\Models\User;
+use App\Services\Checkout\ShippingPackageCalculator;
 use App\Services\Logistics\ExternalDeliveryService;
 use App\Services\Notifications\OrderNotificationService;
 use App\Support\Money;
@@ -32,6 +33,7 @@ class FulfillmentService
         $shippingDiscounts = app(VoucherService::class)->allocate((int) $order->shipping_discount_cents, $shippingParts);
         $index = 0;
         foreach ($groups as $shopId => $items) {
+            $package = app(ShippingPackageCalculator::class)->forItems($items);
             $fulfillment = $order->fulfillments()->create([
                 'shop_id' => $shopId,
                 'shop_name' => $items->first()->product->shop->name,
@@ -42,6 +44,8 @@ class FulfillmentService
                 'shipping_discount_cents' => $shippingDiscounts[$index],
                 'shipping_fee' => Money::decimal($shippingParts[$index++]),
                 'fee_policy' => $order->fee_policy ?? app(SettlementService::class)->policy(),
+                'shipping_package' => $package,
+                'required_vehicle_tier' => $package['vehicle_tier'],
                 ...$this->deliveryPin(),
             ]);
             $order->items()->whereIn('id', $items->pluck('id'))->update(['fulfillment_id' => $fulfillment->id]);
@@ -90,6 +94,9 @@ class FulfillmentService
                         ]);
                     }
                     $part->pickup_city = $shopCity === '' ? null : DeliveryRequestService::city($shopCity);
+                    if (filled($data['requested_vehicle_tier'] ?? null)) {
+                        app(VehicleUpgradeService::class)->request($part, $actor, $data['requested_vehicle_tier'], $data['vehicle_upgrade_reason'] ?? '');
+                    }
                     $note = $shopCity === ''
                         ? 'Shipment is ready for its designated barangay rider.'
                         : 'Rider request published for '.$shopCity.'.';
@@ -124,6 +131,7 @@ class FulfillmentService
 
                     return;
                 }
+                app(DispatchVehicleEligibility::class)->ensure($part, $rider);
                 $part->rider_id = $rider->id;
                 $next = Status::Assigned;
                 $note = 'Delivery request accepted by '.$actor->name;
@@ -135,9 +143,22 @@ class FulfillmentService
                 if (! $rider || ! $rider->isApproved() || $rider->user?->role !== UserRole::Rider) {
                     throw ValidationException::withMessages(['rider_id' => 'Choose an approved rider with an active rider account.']);
                 }
+                app(DispatchVehicleEligibility::class)->ensure($part, $rider);
                 $part->rider_id = $rider->id;
                 $next = Status::Assigned;
                 $note = 'Rider assigned: '.$rider->user->name;
+            } elseif ($action === 'request_vehicle_upgrade') {
+                abort_unless($actor->role === UserRole::Seller && $part->shop()->where('user_id', $actor->id)->exists(), 403);
+                $this->expect($part, Status::Ready);
+                app(VehicleUpgradeService::class)->request($part, $actor, $data['requested_vehicle_tier'], $data['vehicle_upgrade_reason']);
+                $next = Status::Ready;
+                $note = 'Seller requested a vehicle upgrade; dispatch paused for Admin review.';
+            } elseif ($action === 'review_vehicle_upgrade') {
+                abort_unless($actor->role === UserRole::Admin, 403);
+                $this->expect($part, Status::Ready);
+                app(VehicleUpgradeService::class)->review($part, $actor, $data['vehicle_upgrade_decision'], $data['vehicle_upgrade_reason']);
+                $next = Status::Ready;
+                $note = 'Admin '.$data['vehicle_upgrade_decision'].' the vehicle upgrade: '.$data['vehicle_upgrade_reason'];
             } elseif (in_array($action, ['fail', 'retry', 'return_to_seller', 'receive_return'], true)) {
                 [$next, $note] = app(DeliveryExceptionService::class)->transition($order, $part, $actor, $action, $data);
             } elseif (in_array($action, ['pickup', 'deliver'], true) && $part->usesExternalCourier()) {
@@ -188,7 +209,7 @@ class FulfillmentService
     {
         if ($next === Status::Ready && ! $part->usesExternalCourier()) {
             $rider = $this->barangayRider($part);
-            if ($rider) {
+            if ($rider && app(DispatchVehicleEligibility::class)->allows($part, $rider)) {
                 $part->rider_id = $rider->id;
                 $next = Status::Assigned;
                 $note = 'Automatically assigned to '.$rider->user->name.' for the delivery barangay.';

@@ -115,6 +115,7 @@
                                     @else
                                         {{ $product->name }}
                                     @endif
+                                    <x-shipping-details :details="$product->shippingDetails()" />
                                 </th>
                                 <td class="px-4 py-3"><x-ui.status-pill data-inventory-listing :status="$product->is_active ? 'active' : 'inactive'" /></td>
                                 <td class="px-4 py-3 text-right whitespace-nowrap">₱{{ number_format((float) $product->price, 2) }}</td>

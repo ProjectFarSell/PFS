@@ -23,6 +23,7 @@ class OrderItem extends Model
         'qty',
         'unit_price',
         'line_total',
+        'shipping_details',
     ];
 
     protected function casts(): array
@@ -32,6 +33,7 @@ class OrderItem extends Model
             'line_total' => 'decimal:2',
             'variant_options' => 'array',
             'discount_cents' => 'integer',
+            'shipping_details' => 'array',
         ];
     }
 

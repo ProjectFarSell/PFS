@@ -115,6 +115,9 @@
                     <article class="rounded-xl border border-surface-border p-4">
                         <h3 class="font-semibold">{{ $shipment->order->number }} · {{ $shipment->shop_name }}</h3>
                         <p class="mt-2 text-sm">{{ $shipment->status->label() }}</p>
+                        @foreach($shipment->items as $item)
+                            @if($item->shipping_details)<div class="mt-2 text-sm">{{ $item->name }}<x-shipping-details :details="$item->shipping_details" /></div>@endif
+                        @endforeach
                         <x-ui.button variant="link" :href="route('fulfillments.index')">Open pickup and delivery controls</x-ui.button>
                     </article>
                 @endforeach

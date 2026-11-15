@@ -7,6 +7,7 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\Checkout\ShippingPackageCalculator;
 use App\Services\Invoices\InvoiceGeneratorApi;
 use App\Services\Orders\CheckoutAvailability;
 use App\Services\Orders\PlaceOrder;
@@ -70,6 +71,7 @@ class CheckoutController extends Controller
             'subtotal' => (float) $lines->sum('line_total'),
             'shipping' => $shipping,
             'voucher' => $voucher,
+            'shippingPackages' => app(ShippingPackageCalculator::class)->forLines($lines),
             'voucherError' => $voucherError,
             'totalCents' => $lines->sum(fn ($line) => Money::cents((string) $line->unit_price) * (int) $line->qty) + Money::cents((string) $shipping) - ($voucher['discount_cents'] ?? 0) - ($voucher['shipping_discount_cents'] ?? 0),
         ]);

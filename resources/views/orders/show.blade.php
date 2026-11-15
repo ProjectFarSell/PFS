@@ -28,6 +28,11 @@
     @if($order->fulfillments->isNotEmpty())
         @include('orders.fulfillments')
     @else
+    @if(auth()->user()->role === \App\Enums\UserRole::Admin)
+        @foreach($order->items as $item)
+            @if($item->shipping_details)<div class="mt-3 text-sm">{{ $item->name }} — shipping details<x-shipping-details :details="$item->shipping_details" /></div>@endif
+        @endforeach
+    @endif
     <ul class="mt-4 rounded-xl bg-surface border border-surface-border divide-y">
         @foreach ($order->items as $item)
             <li class="px-3 py-2 text-sm flex justify-between">

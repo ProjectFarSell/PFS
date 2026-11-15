@@ -50,7 +50,7 @@ class DashboardController extends Controller
         $shipments = Fulfillment::query()->where('rider_id', $profile->id)
             ->whereIn('status', $activeStatuses)
             ->when($selectedStatus, fn ($q) => $q->where('status', $selectedStatus))
-            ->with('order:id,number')->oldest()->paginate(10, ['*'], 'shipments_page')->withQueryString();
+            ->with(['order:id,number', 'items'])->oldest()->paginate(10, ['*'], 'shipments_page')->withQueryString();
 
         $deliveries = $profile->deliveries()
             ->whereDoesntHave('fulfillments')

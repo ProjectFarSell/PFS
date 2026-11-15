@@ -36,6 +36,8 @@
         $canRecord = $part->usesExternalCourier() && $part->status->value === 'ready' && (!$booking || in_array($booking->status, ['draft', 'quoted', 'unknown']) || $stale);
     @endphp
     <article class="fs-card space-y-4 p-5">
+        <x-shipping-package :package="$part->shipping_package" />
+        @include('fulfillments.vehicle-review', ['isAdmin' => true, 'isSeller' => false])
         <div class="flex flex-wrap justify-between gap-3"><h2 class="font-semibold">{{ $part->order->number }} · {{ $part->shop_name }} · Shipment #{{ $part->id }}</h2><x-ui.status-pill :status="$part->status->value">{{ $part->deliveryLabel() }}</x-ui.status-pill></div>
         <p class="text-sm"><strong>{{ $part->delivery_method->label() }}</strong> · Buyer-agreed delivery allocation: PHP {{ number_format((float) $part->shipping_fee, 2) }} · Shipment amount: PHP {{ number_format($part->amount(), 2) }}</p>
         <p class="whitespace-pre-line text-sm">Pickup: {{ $part->pickup_address ?? 'Seller must mark ready and provide pickup details.' }}@if($part->pickup_contact) · {{ $part->pickup_contact }}@endif</p>

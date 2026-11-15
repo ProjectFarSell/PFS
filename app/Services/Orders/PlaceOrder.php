@@ -46,7 +46,7 @@ class PlaceOrder
                 'voucher_snapshot' => $voucher, 'total' => Money::decimal($subtotalCents + $shippingCents - $discount - $shippingDiscount)])->save();
             $allocations = $vouchers->allocate($discount, $locked->map(fn ($line) => isset($voucher['shop_id']) && (int) $voucher['shop_id'] !== (int) $line->product->shop_id ? 0 : Money::cents((string) $line->unit_price) * (int) $line->qty)->values()->all());
             foreach ($locked as $line) {
-                $order->items()->create(['product_id' => $line->product->id, 'product_variant_id' => $line->variant?->id, 'name' => $line->product->name, 'product_sku' => $line->variant?->sku ?? $line->product->sku, 'variant_options' => $line->variant_options, 'qty' => $line->qty, 'unit_price' => $line->unit_price, 'line_total' => $line->line_total]);
+                $order->items()->create(['product_id' => $line->product->id, 'product_variant_id' => $line->variant?->id, 'name' => $line->product->name, 'product_sku' => $line->variant?->sku ?? $line->product->sku, 'variant_options' => $line->variant_options, 'qty' => $line->qty, 'unit_price' => $line->unit_price, 'line_total' => $line->line_total, 'shipping_details' => $line->product->shippingDetails()]);
             }
             foreach ($order->items()->orderBy('id')->get() as $index => $item) {
                 $item->forceFill(['discount_cents' => $allocations[$index]])->save();

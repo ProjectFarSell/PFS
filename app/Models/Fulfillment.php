@@ -28,6 +28,9 @@ class Fulfillment extends Model
             'retry_at' => 'datetime',
             'returned_at' => 'datetime',
             'fee_policy' => 'array',
+            'shipping_package' => 'array',
+            'vehicle_upgrade' => 'array',
+            'vehicle_review_pending' => 'boolean',
             'delivery_method' => DeliveryMethod::class,
         ];
     }
