@@ -202,6 +202,14 @@ The [payout backend handoff](docs/payouts-backend-handoff.md) lists the implemen
 
 Admin and Sellers can create vouchers from their **Vouchers** pages. Buyers apply one code at checkout; FarSell and shop vouchers cannot stack. Shop vouchers apply only to their owner's merchandise and reduce that Seller's payout before commission. FarSell vouchers are funded by the platform. Both support validity dates, minimum spend, discount caps and usage limits. See [voucher calculations, testing and mobile API support](docs/vouchers.md).
 
+### Product shipping details
+
+Seller listings support optional packaged dimensions (cm), weight (kg), and fixed handling flags. Measurements accept positive numbers only; flags are predefined checkboxes. Checkout snapshots these details on purchased items for Seller/Admin/Rider handling views. See [validation limits, snapshots and API fields](docs/product-shipping-details.md). No Flutter display is implemented yet.
+
+Checkout also [aggregates package estimates per Seller](docs/shipping-aggregation.md), compares actual and volumetric weight, and recommends a vehicle tier. `SHIPPING_VOLUMETRIC_DIVISOR` defaults to 5000 (3500 is also supported). Missing measurements require review; the current flat delivery fee remains unchanged until a vehicle/distance rate card is approved.
+
+[Vehicle-aware dispatch](docs/vehicle-dispatch.md) restricts measured internal jobs to the required vehicle tier or higher. Sellers can request upgrades for awkward packed orders, with dispatch paused until Admin review. Editable pouch/box presets help fill listing measurements; they do not change handling flags or bypass validation.
+
 ---
 
 ## Test Accounts
