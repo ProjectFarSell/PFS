@@ -33,7 +33,7 @@ class OrderController extends Controller
             $cart = $carts->get($request->user());
             $carts->version($cart, $data['cart_version']);
             $address = $request->user()->addresses()->where('public_id', $data['address_id'])->lockForUpdate()->firstOrFail();
-            $snapshot = $checkout->snapshot($cart, $address, $carts->hydrate($cart));
+            $snapshot = $checkout->snapshot($cart, $address, $carts->hydrate($cart), voucherCode: $data['voucher_code'] ?? null);
             $quote = MobileQuote::create(['public_id' => (string) Str::uuid(), 'user_id' => $request->user()->id, 'address_id' => $address->id, 'snapshot' => $snapshot, 'expires_at' => now()->addMinutes(config('mobile.quote_minutes'))]);
 
             return Reply::data($checkout->summary($snapshot, $address, $quote->public_id, $quote->expires_at), 201);
@@ -57,17 +57,28 @@ class OrderController extends Controller
                 throw ValidationException::withMessages(['payment_method' => 'Only cash on delivery is available.']);
             }
             $address = $request->user()->addresses()->whereKey($quote->address_id)->lockForUpdate()->firstOrFail();
-            $current = $checkout->snapshot($cart, $address, $carts->hydrate($cart));
+            $voucherCode = $quote->snapshot['voucher']['code'] ?? null;
+            try {
+                $current = $checkout->snapshot($cart, $address, $carts->hydrate($cart), voucherCode: $voucherCode);
+            } catch (ValidationException $exception) {
+                if (isset($exception->errors()['voucher_code'])) {
+                    throw new ApiFailure('quote_stale', 'Your voucher is no longer available. Request another quote.');
+                }
+                throw $exception;
+            }
             if ($current !== $quote->snapshot) {
                 throw new ApiFailure('quote_stale', 'Your cart, address, price or stock changed. Request another quote.');
             }
             try {
                 $order = app(PlaceOrder::class)->handle($request->user(), $address, $carts->hydrate($cart), PaymentMethod::from($data['payment_method']), verify: function ($locked, $shipping) use ($cart, $address, $checkout, $quote) {
-                    if ($quote->expires_at->lte(now()) || $checkout->snapshot($cart, $address, $locked, $shipping) !== $quote->snapshot) {
+                    if ($quote->expires_at->lte(now()) || $checkout->snapshot($cart, $address, $locked, $shipping, $quote->snapshot['voucher']['code'] ?? null) !== $quote->snapshot) {
                         throw new ApiFailure('quote_stale', 'Stock or pricing changed. Request another quote.');
                     }
-                });
+                }, voucherCode: $voucherCode);
             } catch (ValidationException $exception) {
+                if (array_key_exists('voucher_code', $exception->errors())) {
+                    throw new ApiFailure('quote_stale', 'Your voucher changed. Request another quote.');
+                }
                 if (array_key_exists('cart', $exception->errors())) {
                     throw new ApiFailure('stock_conflict', 'Stock changed. Request another quote.');
                 }

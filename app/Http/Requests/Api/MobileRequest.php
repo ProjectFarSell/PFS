@@ -61,7 +61,7 @@ class MobileRequest extends FormRequest
             'api.mobile.cart.quantity' => ['qty' => ['required', 'integer', 'min:0', 'max:99'], 'cart_version' => ['required', 'integer', 'min:0']],
             'api.mobile.cart.merge' => ['merge_id' => $id, 'cart_version' => ['required', 'integer', 'min:0'], 'lines' => ['required', 'array', 'max:100'], 'lines.*.product_id' => $id, 'lines.*.variant_id' => ['nullable', 'uuid'], 'lines.*.qty' => ['required', 'integer', 'min:1', 'max:99']],
             'api.mobile.addresses.store', 'api.mobile.addresses.update' => ['label' => ['nullable', 'string', 'max:60'], 'line1' => ['required', 'string', 'max:255'], 'region_id' => $id, 'province_id' => $id, 'city_id' => $id, 'barangay_id' => $id, 'postal_code' => ['nullable', 'string', 'max:20'], 'phone' => ['nullable', 'string', 'max:40'], 'is_default' => ['required', 'boolean']],
-            'api.mobile.quotes' => ['address_id' => $id, 'cart_version' => ['required', 'integer', 'min:0']],
+            'api.mobile.quotes' => ['address_id' => $id, 'cart_version' => ['required', 'integer', 'min:0'], 'voucher_code' => ['nullable', 'string', 'max:32']],
             'api.mobile.orders.store' => ['quote_id' => $id, 'cart_version' => ['required', 'integer', 'min:0'], 'payment_method' => ['required', 'in:cod,gateway_stub']],
             'api.mobile.rider.availability' => ['is_available' => ['required', 'boolean']],
             'api.mobile.rider.decision' => ['decision' => ['required', 'in:accept,decline']],

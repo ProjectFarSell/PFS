@@ -5641,6 +5641,11 @@ components:
     QuoteInput:
       type: object
       properties:
+        voucher_code:
+          type: string
+          nullable: true
+          maxLength: 32
+          description: One FarSell or seller voucher; vouchers cannot stack.
         address_id:
           $ref: '#/components/schemas/OpaqueId'
         cart_version:
@@ -5653,6 +5658,13 @@ components:
     Quote:
       type: object
       properties:
+        discount:
+          $ref: '#/components/schemas/Money'
+        shipping_discount:
+          $ref: '#/components/schemas/Money'
+        voucher_code:
+          type: string
+          nullable: true
         id:
           $ref: '#/components/schemas/OpaqueId'
         cart_version:
@@ -5801,6 +5813,10 @@ components:
     BuyerShipment:
       type: object
       properties:
+        discount:
+          $ref: '#/components/schemas/Money'
+        shipping_discount:
+          $ref: '#/components/schemas/Money'
         id:
           $ref: '#/components/schemas/OpaqueId'
         status:
@@ -5884,6 +5900,13 @@ components:
     OrderSummary:
       type: object
       properties:
+        discount:
+          $ref: '#/components/schemas/Money'
+        shipping_discount:
+          $ref: '#/components/schemas/Money'
+        voucher_code:
+          type: string
+          nullable: true
         id:
           $ref: '#/components/schemas/OpaqueId'
         number:
@@ -5921,6 +5944,13 @@ components:
     Order:
       type: object
       properties:
+        discount:
+          $ref: '#/components/schemas/Money'
+        shipping_discount:
+          $ref: '#/components/schemas/Money'
+        voucher_code:
+          type: string
+          nullable: true
         id:
           $ref: '#/components/schemas/OpaqueId'
         number:

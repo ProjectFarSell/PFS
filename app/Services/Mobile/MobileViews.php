@@ -34,6 +34,7 @@ class MobileViews
     public static function order(Order $order, bool $detail = true): array
     {
         $data = ['id' => PublicIds::id($order), 'number' => $order->number, 'status' => $order->status->value, 'payment_method' => $order->payment_method->value, 'currency' => 'PHP', 'subtotal' => self::cents($order->subtotal), 'shipping_fee' => self::cents($order->shipping_fee), 'total' => self::cents($order->total), 'created_at' => self::time($order->created_at)];
+        $data += ['discount' => (int) $order->discount_cents, 'shipping_discount' => (int) $order->shipping_discount_cents, 'voucher_code' => $order->voucher_snapshot['code'] ?? null];
         if ($detail) {
             $order->loadMissing(['fulfillments.items', 'fulfillments.events', 'fulfillments.courierBooking']);
             $data['ship_to'] = $order->ship_to;
@@ -69,6 +70,7 @@ class MobileViews
             return ['id' => PublicIds::id($part), 'order_number' => $part->order->number, 'status' => $part->status->value, 'shop_name' => $part->shop_name, 'pickup_address' => $operational ? (string) $part->pickup_address : '', 'pickup_contact' => $operational ? (string) $part->pickup_contact : '', 'dropoff_address' => $operational ? (string) $part->order->ship_to : '', 'recipient_name' => $operational ? (string) $part->order->guest_name : '', 'recipient_phone' => null, 'payment_method' => $part->order->payment_method->value, 'cod_amount_due' => $part->order->payment_method === PaymentMethod::Cod && ! $part->cod_collected_at ? self::cents($part->amount()) : 0, 'items' => $items, 'events' => $events, 'retry_at' => self::time($part->retry_at), 'allowed_actions' => $actions, 'return_instructions' => $part->status === FulfillmentStatus::Returning ? 'Return the shipment to the seller as instructed by dispatch. Do not collect COD.' : ($part->status === FulfillmentStatus::DeliveryFailed ? 'Wait for dispatch to review the failed attempt.' : null)];
         }
         $data = ['id' => PublicIds::id($part), 'status' => $part->status->value, 'shop_name' => $part->shop_name, 'delivery_method' => $part->delivery_method?->value ?? 'internal', 'subtotal' => self::cents($part->subtotal), 'shipping_fee' => self::cents($part->shipping_fee), 'cod_amount_due' => $part->order->payment_method === PaymentMethod::Cod && ! $part->cod_collected_at ? self::cents($part->amount()) : 0, 'items' => $items, 'events' => $events, 'tracking_url' => $part->courierBooking?->tracking_url, 'proof' => $part->delivery_recipient_name ? ['recipient_name' => $part->delivery_recipient_name, 'delivery_note' => (string) $part->delivery_note, 'delivered_at' => self::time($part->events->firstWhere('status', 'delivered')?->created_at ?? $part->updated_at), 'has_photo' => filled($part->delivery_photo_path), 'cod_collected_at' => self::time($part->cod_collected_at)] : null, 'allowed_actions' => $actions];
+        $data += ['discount' => (int) $part->discount_cents, 'shipping_discount' => (int) $part->shipping_discount_cents];
         if ($part->status === FulfillmentStatus::InTransit) {
             $data['delivery_pin'] = $part->delivery_pin;
         }
