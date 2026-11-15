@@ -258,4 +258,38 @@ class VoucherTest extends TestCase
         $this->assertSame(1933, $item->refundableCents(2));
         $this->assertSame(2900, $item->refundableCents(3));
     }
+
+    public function test_unused_vouchers_can_be_deleted_only_by_authorized_roles_with_current_version(): void
+    {
+        $platform = $this->voucher();
+        $seller = User::factory()->seller()->create();
+        $shop = Shop::factory()->create(['user_id' => $seller->id]);
+        $own = $this->voucher(['code' => 'OWN50', 'shop_id' => $shop->id]);
+        $foreign = $this->voucher(['code' => 'OTHER50', 'shop_id' => Shop::factory()->create()->id]);
+        $this->actingAs(User::factory()->create())->delete(route('seller.vouchers.destroy', $own), ['version' => 1])->assertForbidden();
+        $this->delete(route('admin.vouchers.destroy', $platform), ['version' => 1])->assertForbidden();
+        $this->actingAs($seller)->delete(route('seller.vouchers.destroy', $platform), ['version' => 1])->assertNotFound();
+        $this->delete(route('seller.vouchers.destroy', $foreign), ['version' => 1])->assertNotFound();
+        $own->update(['version' => 2]);
+        $this->delete(route('seller.vouchers.destroy', $own), ['version' => 1])->assertSessionHasErrors('version');
+        $this->delete(route('seller.vouchers.destroy', $own), ['version' => 2])->assertRedirect(route('seller.vouchers.index'))->assertSessionHasNoErrors();
+        $this->assertDatabaseMissing('vouchers', ['id' => $own->id]);
+        $this->assertDatabaseHas('security_audit_events', ['action' => 'voucher.deleted', 'actor_id' => $seller->id, 'target_id' => $own->id]);
+        $this->actingAs(User::findOrFail($platform->created_by))->delete(route('admin.vouchers.destroy', $platform), ['version' => 1])->assertSessionHasNoErrors();
+        $this->assertDatabaseMissing('vouchers', ['id' => $platform->id]);
+    }
+
+    public function test_used_voucher_deletion_is_rejected_even_from_a_stale_unused_list(): void
+    {
+        $voucher = $this->voucher();
+        $admin = User::findOrFail($voucher->created_by);
+        $this->actingAs($admin)->get(route('admin.vouchers.index'))->assertOk()->assertSee('Delete voucher');
+        $order = $this->purchase($voucher);
+        $this->actingAs($admin)->delete(route('admin.vouchers.destroy', $voucher), ['version' => 1])->assertSessionHasErrors('voucher');
+        $this->assertDatabaseHas('vouchers', ['id' => $voucher->id]);
+        $this->assertDatabaseHas('voucher_redemptions', ['order_id' => $order->id, 'voucher_id' => $voucher->id]);
+        $this->assertSame('499.00', $order->fresh()->total);
+        $this->assertSame(0, DB::table('security_audit_events')->where('action', 'voucher.deleted')->count());
+        $this->get(route('admin.vouchers.index'))->assertOk()->assertDontSee('Delete voucher')->assertSee('Disable to stop new uses.');
+    }
 }

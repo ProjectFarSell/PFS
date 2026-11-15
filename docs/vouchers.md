@@ -15,7 +15,7 @@ Admin and Seller voucher management is available from **Vouchers** in their web 
 - Codes are unique, case-insensitive uppercase identifiers, 3–32 characters (letters, digits, hyphens, underscores).
 - Configure name, type/value, minimum merchandise spend, optional maximum saving, total-use limit, per-buyer limit, start/expiry, and enabled status. Dates use the timezone shown on the form.
 - Admin can manage platform vouchers and oversee shop vouchers. Sellers can read/edit only vouchers belonging to their own active shop; posted owner IDs cannot change funding or ownership.
-- Vouchers are disabled rather than deleted, preserving redemption history. Edits are audited and checked against a version to prevent overwriting another editor's changes.
+- Unused vouchers can be deleted from the list after confirmation. A locked server check rejects deletion if a checkout has redeemed the voucher, even when the list was opened before that purchase. Used vouchers can be disabled, preserving redemption history. Edits and deletions are audited and checked against a version to prevent acting on another editor's changes.
 - Expired, future, disabled, exhausted, wrong-shop and insufficient-spend codes are rejected on the server. All conditions are checked again when placing the order.
 - Redemption is recorded in the same transaction as the order and stock reservation. A locked voucher row prevents simultaneous purchases from exceeding a use limit. A failed checkout consumes nothing.
 - Cancelled/rejected/returned purchases **continue counting as uses**; this prevents repeatedly reclaiming one-use offers. An Admin/Seller can deliberately change limits for another promotion.
@@ -30,7 +30,7 @@ Merchandise refund requests are capped at the amount paid after the item discoun
 
 ## Backend routes and mobile contract
 
-- Admin: `/admin/vouchers` and Seller: `/seller/vouchers`, with index/create/store/edit/update. Existing role checks, CSRF, throttling and Admin sensitive-action confirmation apply.
+- Admin: `/admin/vouchers` and Seller: `/seller/vouchers`, with index/create/store/edit/update/destroy. `DELETE /{voucher}` requires the displayed `version` and is restricted to unused vouchers. Existing role checks, CSRF, throttling and Admin sensitive-action confirmation apply.
 - Buyer web preview: `POST /checkout/voucher` with a single nullable `voucher_code`; final `/checkout` accepts that same field and independently recalculates it. Client-supplied discount amounts are ignored.
 - Buyer API: `POST /api/v1/buyer/checkout/quotes` accepts optional `voucher_code`. Quote responses add integer `discount` and `shipping_discount`, nullable `voucher_code`, and a discounted `total`. Quote shipment subtotals/shipping remain gross; the order-level discount is shown separately.
 - Order responses expose the same discount fields; Buyer shipment responses expose their own allocations. Rider `cod_amount_due` already uses the net amount. Internal funding/shop/database identifiers stay in the server snapshot rather than the public response.

@@ -146,7 +146,7 @@ Route::middleware('auth')->prefix('account/security')->name('security.')->group(
 });
 
 Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->group(function () {
-    Route::resource('/admin/vouchers', VoucherController::class)->only(['index', 'create', 'store', 'edit', 'update'])->names('admin.vouchers')->middleware('throttle:30,1');
+    Route::resource('/admin/vouchers', VoucherController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->names('admin.vouchers')->middleware('throttle:30,1');
     Route::get('/admin/security/accounts', [App\Http\Controllers\Admin\SecurityController::class, 'index'])->name('admin.security.accounts');
     Route::get('/admin/security/accounts/suspended', [App\Http\Controllers\Admin\SecurityController::class, 'suspended'])->name('admin.security.accounts.suspended');
     Route::get('/admin/security/accounts/restore', [App\Http\Controllers\Admin\SecurityController::class, 'restoration'])->name('admin.security.accounts.restore');
@@ -190,7 +190,7 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->group(function (
     Route::put('/admin/marketplace-settings', [MarketplaceSettingsController::class, 'update'])->middleware('throttle:15,1')->name('admin.marketplace-settings.update');
 });
 Route::get('/seller/payouts', PayoutController::class)->middleware(['auth', EnsureUserHasRole::class.':seller'])->name('seller.payouts.index');
-Route::resource('/seller/vouchers', VoucherController::class)->only(['index', 'create', 'store', 'edit', 'update'])->names('seller.vouchers')->middleware(['auth', EnsureUserHasRole::class.':seller', 'throttle:30,1']);
+Route::resource('/seller/vouchers', VoucherController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->names('seller.vouchers')->middleware(['auth', EnsureUserHasRole::class.':seller', 'throttle:30,1']);
 Route::get('/rider/cod', CodController::class)->middleware(['auth', EnsureUserHasRole::class.':rider'])->name('rider.cod.index');
 
 Route::get('/admin/buyers', [BuyerController::class, 'index'])

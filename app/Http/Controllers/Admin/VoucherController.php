@@ -44,6 +44,26 @@ class VoucherController extends Controller
         return $this->save($request, $voucher);
     }
 
+    public function destroy(Request $request, Voucher $voucher)
+    {
+        $this->owned($voucher);
+        $data = $request->validate(['version' => ['required', 'integer', 'min:1']]);
+        DB::transaction(function () use ($voucher, $data) {
+            $row = Voucher::whereKey($voucher->id)->lockForUpdate()->firstOrFail();
+            $this->owned($row);
+            if ($row->version !== (int) $data['version']) {
+                throw ValidationException::withMessages(['version' => 'This voucher changed. Reload before deleting.']);
+            }
+            if (DB::table('voucher_redemptions')->where('voucher_id', $row->id)->lockForUpdate()->first(['id'])) {
+                throw ValidationException::withMessages(['voucher' => 'This voucher has been used in an order. Disable it instead to retain its history.']);
+            }
+            app(AuditTrail::class)->record('voucher.deleted', $row, ['before' => $row->getAttributes()]);
+            $row->delete();
+        }, 3);
+
+        return redirect()->route($request->user()->role === UserRole::Seller ? 'seller.vouchers.index' : 'admin.vouchers.index')->with('status', 'Voucher deleted.');
+    }
+
     private function save(Request $request, Voucher $voucher)
     {
         if ($voucher->exists) {
