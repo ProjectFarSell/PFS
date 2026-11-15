@@ -198,6 +198,10 @@ Keep MySQL80 running on Windows. After changing the database settings, run `php 
 
 The [payout backend handoff](docs/payouts-backend-handoff.md) lists the implemented routes, form fields, validation and rollout checks. Admin pages cover seller payout batches, rider COD remittances and commission/delivery/hold settings. Seller and rider pages show only their own records. These pages record external cash movements; they do not transfer money or add online checkout payments.
 
+### Vouchers
+
+Admin and Sellers can create vouchers from their **Vouchers** pages. Buyers apply one code at checkout; FarSell and shop vouchers cannot stack. Shop vouchers apply only to their owner's merchandise and reduce that Seller's payout before commission. FarSell vouchers are funded by the platform. Both support validity dates, minimum spend, discount caps and usage limits. See [voucher calculations, testing and mobile API support](docs/vouchers.md).
+
 ---
 
 ## Test Accounts
