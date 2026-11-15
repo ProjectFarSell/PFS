@@ -1,0 +1,83 @@
+x-app-env: &app-env
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_URL: "https://farsell.bid"
+  DB_CONNECTION: mysql
+  DB_HOST: mysql
+  DB_PORT: "3306"
+  DB_DATABASE: "${DB_DATABASE:-farsell}"
+  DB_USERNAME: "${DB_USERNAME:-farsell}"
+  DB_PASSWORD: "${DB_PASSWORD:-secret}"
+  MAIL_MAILER: log
+
+services:
+  app:
+    image: farsell-app
+    restart: unless-stopped
+    command: ["sh", "-ec", "runuser -u www-data -- php artisan view:cache --no-interaction && exec apache2-foreground"]
+    ports: !override
+      - "127.0.0.1:${APP_PORT:-8080}:80"
+    environment: *app-env
+    volumes:
+      - type: volume
+        source: farsell-blade-views
+        target: /var/www/html/storage/framework/views
+        volume:
+          nocopy: true
+    depends_on:
+      vite:
+        condition: service_completed_successfully
+
+  vite:
+    image: node:22-alpine
+    command: ["sh", "-ec", "npm ci && npm run build && rm -f public/hot"]
+    ports: !reset []
+    volumes:
+      - farsell-node-modules:/var/www/html/node_modules
+
+  mysql:
+    restart: unless-stopped
+    command: --log-bin-trust-function-creators=1
+    ports: !override
+      - "127.0.0.1:3307:3306"
+
+  queue:
+    image: farsell-app
+    entrypoint: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+    environment: *app-env
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - farsell
+    restart: unless-stopped
+
+  scheduler:
+    image: farsell-app
+    entrypoint: ["php", "artisan", "schedule:work"]
+    environment: *app-env
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - farsell
+    restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: "${CLOUDFLARE_TUNNEL_TOKEN}"
+    depends_on:
+      - app
+    networks:
+      - farsell
+    restart: unless-stopped
+
+volumes:
+  farsell-blade-views:
+  farsell-node-modules:
