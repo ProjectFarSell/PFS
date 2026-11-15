@@ -47,13 +47,13 @@
             }
         }">
         <p class="fs-label mb-2">Price range</p>
-        <div class="flex gap-2">
+        <div class="grid grid-cols-2 gap-2">
             <input type="number" name="price_min" x-model="minText" @input="setMin($event.target.value)" value="{{ $priceMin }}"
                    placeholder="Min" aria-label="Minimum price" min="0" step="0.01"
-                   class="fs-input w-full">
+                   class="fs-input min-w-0 w-full">
             <input type="number" name="price_max" x-model="maxText" @input="setMax($event.target.value)" value="{{ $priceMax }}"
                    placeholder="Max" aria-label="Maximum price" min="0" step="0.01"
-                   class="fs-input w-full">
+                   class="fs-input min-w-0 w-full">
         </div>
         <div class="fs-range-control mt-3" aria-label="Adjust price range">
             <div class="fs-range-track"><span :style="'left:' + (min / ceiling * 100) + '%;width:' + ((max - min) / ceiling * 100) + '%'" class="fs-range-selected"></span></div>
@@ -113,7 +113,7 @@
 
     <x-ui.button variant="primary" size="lg" type="submit" class="w-full">Apply filters</x-ui.button>
 
-    @if ($q || $activeCategory || $priceMin !== '' || $priceMax !== '' || !empty($activeShops) || $shopSearch || $activeCityId)
+    @if ($q || $activeCategory || $priceMin !== '' || $priceMax !== '' || !empty($activeShops) || $shopSearch || $activeCityId || $sameDay)
         <x-ui.button variant="link" :href="route('catalog.index', $activeCityId ? ['clear_city' => 1] : [])"
            class="block text-center text-sm transition-colors hover:underline"
            style="color:rgb(var(--color-text-muted));">

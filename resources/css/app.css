@@ -195,6 +195,7 @@
         appearance: none;
         background: transparent;
         height: 28px;
+        left: 0;
         margin: 0;
         pointer-events: none;
         position: absolute;

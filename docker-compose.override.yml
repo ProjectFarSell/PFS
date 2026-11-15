@@ -2,13 +2,21 @@ x-app-env: &app-env
   APP_ENV: production
   APP_DEBUG: "false"
   APP_URL: "https://farsell.bid"
+  TRUSTED_PROXIES: "${TRUSTED_PROXIES:-}"
   DB_CONNECTION: mysql
   DB_HOST: mysql
   DB_PORT: "3306"
   DB_DATABASE: "${DB_DATABASE:-farsell}"
   DB_USERNAME: "${DB_USERNAME:-farsell}"
   DB_PASSWORD: "${DB_PASSWORD:-secret}"
-  MAIL_MAILER: log
+  MAIL_MAILER: "${MAIL_MAILER:-log}"
+  MAIL_SCHEME: "${MAIL_SCHEME:-smtp}"
+  MAIL_HOST: "${MAIL_HOST:-127.0.0.1}"
+  MAIL_PORT: "${MAIL_PORT:-587}"
+  MAIL_USERNAME: "${MAIL_USERNAME:-}"
+  MAIL_PASSWORD: "${MAIL_PASSWORD:-}"
+  MAIL_FROM_ADDRESS: "${MAIL_FROM_ADDRESS:-hello@example.com}"
+  MAIL_FROM_NAME: "${MAIL_FROM_NAME:-FarSell}"
 
 services:
   app:

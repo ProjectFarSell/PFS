@@ -13,11 +13,10 @@
       style="background-color: rgb(var(--color-surface-muted)); color: rgb(var(--color-text-base));">
     @php($portalRole = auth()->user()->role)
     @php($hasApprovedShop = $hasApprovedShop ?? ($portalRole === \App\Enums\UserRole::Seller && auth()->user()->shop !== null))
-    @php($dashboardWorkspace = request()->routeIs('admin.dashboard', 'seller.dashboard', 'rider.dashboard'))
 
     <header class="sticky top-0 z-40 border-b"
             style="background-color: rgb(var(--color-surface)); border-color: rgb(var(--color-surface-border));">
-        <div class="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
+        <div class="mx-auto flex min-h-16 w-full max-w-screen-2xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6 lg:px-8">
             <a href="{{ match ($portalRole) {
                     \App\Enums\UserRole::Admin => route('admin.dashboard'),
                     \App\Enums\UserRole::Seller => route('seller.dashboard'),
@@ -28,7 +27,7 @@
                 <span>FarSell <span class="hidden sm:inline">{{ ucfirst($portalRole->value) }}</span></span>
             </a>
 
-            <nav class="portal-navigation order-last flex w-full gap-2 overflow-visible text-sm xl:order-none xl:ml-auto xl:w-auto {{ $dashboardWorkspace ? 'xl:hidden' : '' }}" aria-label="Portal navigation">
+            <nav class="portal-navigation order-last flex w-full flex-wrap gap-1 text-sm xl:order-none xl:ml-auto xl:w-auto" aria-label="Portal navigation">
                 @if($portalRole === \App\Enums\UserRole::Admin)
                     <a href="{{ route('admin.dashboard') }}" class="portal-nav-link" @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif>Dashboard</a>
                     <a href="{{ route('admin.logistics.index') }}" class="portal-nav-link" @if(request()->routeIs('admin.logistics.*')) aria-current="page" @endif>Logistics</a>
@@ -74,7 +73,7 @@
                 @endif
 
             </nav>
-            <div class="ml-auto flex shrink-0 items-center gap-2 xl:ml-1">
+            <div class="ml-auto flex shrink-0 items-center gap-2">
                 <a href="{{ route('account.profile') }}" class="portal-nav-link" aria-label="My account" title="My account"><x-ui.icon name="account" class="sm:hidden" /><span class="hidden sm:inline">My account</span></a>
                 <x-theme-toggle />
                 <form method="post" action="{{ route('logout') }}">
@@ -85,45 +84,7 @@
         </div>
     </header>
 
-    <div class="{{ $dashboardWorkspace ? 'mx-auto flex w-full max-w-screen-2xl gap-6 xl:px-6' : '' }}">
-    @if($dashboardWorkspace)
-        <aside class="hidden w-56 shrink-0 py-7 xl:block" aria-label="Dashboard navigation">
-            <div class="sticky top-24 rounded-2xl border border-surface-border bg-surface p-3">
-                <p class="px-3 pb-3 pt-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Workspace</p>
-                <nav class="grid gap-1" aria-label="Workspace pages">
-                    @if($portalRole === \App\Enums\UserRole::Admin)
-                        <a class="portal-nav-link" aria-current="page" href="{{ route('admin.dashboard') }}"><x-ui.icon name="home" size="sm" class="mr-3" />Dashboard</a>
-                        <a class="portal-nav-link" href="{{ route('admin.logistics.index') }}"><x-ui.icon name="delivery" size="sm" class="mr-3" />Logistics</a>
-                        <a class="portal-nav-link" href="{{ route('admin.products.index') }}"><x-ui.icon name="product" size="sm" class="mr-3" />Products</a>
-                        <a class="portal-nav-link" href="{{ route('admin.categories.index') }}"><x-ui.icon name="browse" size="sm" class="mr-3" />Categories</a>
-                        <a class="portal-nav-link" href="{{ route('admin.partners.index') }}"><x-ui.icon name="buyers" size="sm" class="mr-3" />Partners</a>
-                        <a class="portal-nav-link" href="{{ route('admin.notifications.index') }}"><x-ui.icon name="notification" size="sm" class="mr-3" />Notifications</a>
-                        <a class="portal-nav-link" href="{{ route('admin.riders.barangays.index') }}">Barangay assignments</a>
-                        <a class="portal-nav-link" href="{{ route('admin.rider-records.index') }}">Rider records</a>
-                        <a class="portal-nav-link" href="{{ route('admin.reviews.index') }}">Reviews</a>
-                        <a class="portal-nav-link" href="{{ route('fulfillments.index') }}">Dispatch</a>
-                    @elseif($portalRole === \App\Enums\UserRole::Seller)
-                        <a class="portal-nav-link" aria-current="page" href="{{ route('seller.dashboard') }}"><x-ui.icon name="home" size="sm" class="mr-3" />Dashboard</a>
-                        @if($hasApprovedShop)
-                            <a class="portal-nav-link" href="{{ route('seller.products.create') }}"><x-ui.icon name="add" size="sm" class="mr-3" />Add product</a>
-                            <a class="portal-nav-link" href="{{ route('fulfillments.index') }}"><x-ui.icon name="order" size="sm" class="mr-3" />Orders</a>
-                            <a class="portal-nav-link" href="{{ route('seller.vouchers.index') }}"><x-ui.icon name="payout" size="sm" class="mr-3" />Vouchers</a>
-                            <a class="portal-nav-link" href="{{ route('chat.index') }}"><x-ui.icon name="chat" size="sm" class="mr-3" />Chat @if($chatUnreadCount)<span class="ml-auto badge badge-accent">{{ $chatUnreadCount }}</span>@endif</a>
-                            <a class="portal-nav-link" href="{{ route('home') }}"><x-ui.icon name="browse" size="sm" class="mr-3" />View storefront</a>
-                        @endif
-                    @else
-                        <a class="portal-nav-link" aria-current="page" href="{{ route('rider.dashboard') }}"><x-ui.icon name="home" size="sm" class="mr-3" />Dashboard</a>
-                        <a class="portal-nav-link" href="{{ route('rider.dashboard') }}#delivery-requests"><x-ui.icon name="delivery" size="sm" class="mr-3" />Delivery requests</a>
-                        <a class="portal-nav-link" href="{{ route('rider.earnings.index') }}">Earnings</a>
-                        <a class="portal-nav-link" href="{{ route('rider.history.index') }}">History</a>
-                        <a class="portal-nav-link" href="{{ route('fulfillments.index') }}">Deliveries</a>
-                        <a class="portal-nav-link" href="{{ route('rider.profile') }}">Rider profile</a>
-                    @endif
-                </nav>
-            </div>
-        </aside>
-    @endif
-    <main class="{{ $dashboardWorkspace ? 'min-w-0 flex-1' : 'mx-auto w-full max-w-7xl' }} px-4 py-6 sm:py-8">
+    <main class="mx-auto w-full max-w-7xl px-4 py-6 sm:py-8">
         @if(session('status'))
             <div data-flash-message role="status" class="mb-5 rounded-xl border px-4 py-3 text-sm"
                  style="background-color: rgb(var(--color-surface)); border-color: rgb(var(--color-surface-border));">
@@ -132,7 +93,6 @@
         @endif
         @yield('content')
     </main>
-    </div>
 
     @stack('scripts')
     @if ($portalRole === \App\Enums\UserRole::Buyer || ($portalRole === \App\Enums\UserRole::Seller && $hasApprovedShop))

@@ -216,7 +216,7 @@ Checkout also [aggregates package estimates per Seller](docs/shipping-aggregatio
 
 The local demo accounts use the password `password`. Existing accounts keep their current password when the seeder is rerun.
 
-The four reserved demo accounts below are marked `is_demo_account` by the trusted seeders (and the additive migration for existing local demo records). In **local/testing only**, they sign in with their password and skip email/phone OTP and authenticator setup. Regular registered/provisioned accounts still use buyer/rider OTP or seller/admin authenticators. This exemption never applies in staging/production, and it does not apply to arbitrary `.test` emails or a demo flag submitted through signup/profile forms.
+The four reserved local demo accounts below are marked `is_demo_account` by the trusted seeders (and the additive migration for existing local demo records). Marked demo accounts whose email and role match the reserved list skip email/phone OTP and authenticator setup, including when the app runs in production mode. Regular registered/provisioned accounts still use buyer/rider OTP or seller/admin authenticators. Arbitrary `.test` emails and a demo flag submitted through signup/profile forms do not qualify.
 
 After pulling this change, run `php artisan migrate`; for a missing demo account run `php artisan db:seed --class=DemoAccountsSeeder`. Neither resets existing passwords, roles, stock or authenticator secrets. Existing reserved accounts are classified only when their email and expected demo role match. Do not convert these reserved identities into real accounts; create a separate account for real use. Admin demo actions still require recent password confirmation when the five-minute confirmation expires. The Account security page labels the local demo exemption.
 
@@ -258,6 +258,19 @@ The synthetic demo rider starts unavailable. Turn on availability in the rider d
 > `db:seed` uses existing-record checks, but `migrate:fresh` **drops every table**. Never use it for a normal update or a database containing records you need. Back up data before any deliberate reset.
 
 The local demo admin also accepts username **admin**, password **password**, and opens `/admin`. This alias still verifies the stored password and administrator role. Do not deploy default demo credentials.
+
+### Docker demo accounts
+
+The current Docker database has separate demo accounts. Sign in using the full email address and password `password`.
+
+| Role | Email |
+| --- | --- |
+| Admin | `docker-admin@farsell.test` |
+| Buyer | `docker-buyer@farsell.test` |
+| Seller | `docker-seller@farsell.test` |
+| Rider | `docker-rider@farsell.test` |
+
+These accounts were created directly in the current Docker database. The local demo seeder does not create them in a fresh Docker database. The `admin` shorthand points to `admin@farsell.test`, so use the full Docker admin email. The Docker demo accounts bypass 2FA, and the admin account has administrative access. Restrict access to this demo deployment.
 
 ### Registering a new account
 

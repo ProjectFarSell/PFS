@@ -11,6 +11,10 @@ class DemoAccount
         'buyer@farsell.test' => 'buyer',
         'seller@farsell.test' => 'seller',
         'rider@farsell.test' => 'rider',
+        'docker-admin@farsell.test' => 'admin',
+        'docker-buyer@farsell.test' => 'buyer',
+        'docker-seller@farsell.test' => 'seller',
+        'docker-rider@farsell.test' => 'rider',
         'mobile-admin@farsell.test' => 'admin',
         'mobile-buyer@farsell.test' => 'buyer',
         'mobile-seller@farsell.test' => 'seller',
@@ -28,7 +32,7 @@ class DemoAccount
 
     public static function exempt(User $user): bool
     {
-        return app()->environment(['local', 'testing']) && $user->is_demo_account
+        return $user->is_demo_account
             && (self::ROLES[$user->email] ?? null) === $user->role->value;
     }
 }

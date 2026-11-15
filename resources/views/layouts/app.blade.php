@@ -323,8 +323,7 @@
                 {{-- Brand --}}
                 <div class="col-span-2 md:col-span-1 lg:col-span-1">
                     <a href="{{ route('home') }}" class="flex items-center gap-2 mb-3">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-black"
-                              style="background-color: rgb(var(--color-accent)); color: rgb(var(--color-accent-text));">F</span>
+                        <img src="{{ asset('images/brand/farsell-dark.png') }}" alt="" width="32" height="32" style="width: 32px; height: 32px; object-fit: contain; flex-shrink: 0;">
                         <span class="text-lg font-bold text-white">FarSell</span>
                     </a>
                     <p class="text-xs leading-relaxed" style="color: rgb(var(--color-footer-text) / 0.7);">

@@ -78,8 +78,8 @@ class DemoSignInSecurityTest extends TestCase
         foreach (['staging', 'production'] as $environment) {
             $this->app->detectEnvironment(fn () => $environment);
             foreach (User::where('email', 'like', 'mobile-%@farsell.test')->get() as $demo) {
-                $this->assertFalse(DemoAccount::exempt($demo));
-                $this->assertTrue($demo->usesAuthenticator()
+                $this->assertTrue(DemoAccount::exempt($demo));
+                $this->assertFalse($demo->usesAuthenticator()
                     ? app(AccountSecurity::class)->requiresAuthenticator($demo)
                     : app(AccountSecurity::class)->requiresOtp($demo));
             }
@@ -108,16 +108,16 @@ class DemoSignInSecurityTest extends TestCase
         $this->assertTrue(app(AccountSecurity::class)->requiresAuthenticator($user));
     }
 
-    public function test_demo_exemption_never_applies_in_staging_or_production(): void
+    public function test_demo_exemption_applies_in_staging_and_production(): void
     {
         $this->seed(DemoAccountsSeeder::class);
         $admin = User::where('email', 'admin@farsell.test')->sole();
         $buyer = User::where('email', 'buyer@farsell.test')->sole();
         foreach (['staging', 'production'] as $environment) {
             $this->app->detectEnvironment(fn () => $environment);
-            $this->assertFalse(DemoAccount::exempt($admin));
-            $this->assertTrue(app(AccountSecurity::class)->requiresAuthenticator($admin));
-            $this->assertTrue(app(AccountSecurity::class)->requiresOtp($buyer));
+            $this->assertTrue(DemoAccount::exempt($admin));
+            $this->assertFalse(app(AccountSecurity::class)->requiresAuthenticator($admin));
+            $this->assertFalse(app(AccountSecurity::class)->requiresOtp($buyer));
         }
     }
 
