@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $shop = $request->user()->shop()->first();
 
         if (! $shop) {
-            return view('seller.dashboard', ['shop' => null]);
+            return view('seller.dashboard', ['shop' => null, 'application' => $request->user()->sellerApplication]);
         }
 
         $itemsQuery = OrderItem::query()

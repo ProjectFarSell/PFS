@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\UserRole;
 use App\Models\Product;
+use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -96,6 +97,9 @@ class RoleIsolationTest extends TestCase
             ->assertOk()->assertSee('Delivery Requests')->assertDontSee('href="'.route('home').'"', false);
 
         $seller = User::factory()->seller()->create();
+        $this->actingAs($seller)->get(route('seller.dashboard'))->assertOk()->assertDontSee('href="'.route('home').'"', false);
+        Shop::factory()->create(['user_id' => $seller->id]);
+        $seller->unsetRelation('shop');
         $this->actingAs($seller)->get(route('seller.dashboard'))
             ->assertOk()->assertSee('View Storefront')->assertSee('href="'.route('home').'"', false)
             ->assertDontSee('href="'.route('cart.index').'"', false);

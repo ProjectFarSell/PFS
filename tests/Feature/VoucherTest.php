@@ -91,6 +91,8 @@ class VoucherTest extends TestCase
 
     public function test_web_preview_discounted_cod_invoice_and_snapshot_are_consistent(): void
     {
+        // Exercise the printable fallback independently of a developer's provider key.
+        config(['services.invoice_generator.api_key' => null]);
         $voucher = $this->voucher();
         $buyer = User::factory()->create();
         $address = Address::factory()->create(['user_id' => $buyer->id]);

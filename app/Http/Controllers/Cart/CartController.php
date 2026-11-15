@@ -23,7 +23,7 @@ class CartController extends Controller
         return view('cart.index', [
             'lines' => $lines,
             'groups' => app(CartDisplay::class)->groups($lines),
-            'subtotal' => Cart::subtotal(),
+            'subtotal' => Cart::subtotal($lines),
         ]);
     }
 

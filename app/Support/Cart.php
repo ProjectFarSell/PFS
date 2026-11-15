@@ -137,8 +137,8 @@ class Cart
         })->filter()->values();
     }
 
-    public static function subtotal(): float
+    public static function subtotal(?Collection $lines = null): string
     {
-        return (float) self::hydrated()->sum('line_total');
+        return app(CartDisplay::class)->subtotal($lines ?? self::hydrated());
     }
 }

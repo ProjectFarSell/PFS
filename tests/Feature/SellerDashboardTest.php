@@ -32,7 +32,7 @@ class SellerDashboardTest extends TestCase
         $other = Shop::factory()->create(['name' => 'Unrelated shop']);
         $seller = User::factory()->seller()->create();
         $this->actingAs($seller)->get(route('seller.dashboard', ['shop_id' => $other->id]))
-            ->assertOk()->assertSee('No shop linked to your account')->assertDontSee($other->name);
+            ->assertOk()->assertSee('Open your shop')->assertSee('Apply to open a shop')->assertDontSee($other->name);
     }
 
     public function test_dashboard_sales_pending_orders_and_low_stock_are_scoped_to_the_seller(): void
