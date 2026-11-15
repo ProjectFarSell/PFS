@@ -20,6 +20,7 @@
     }
     $overflow = $admin ? [
         ['Seller payouts', 'order', 'admin.payouts.index', request()->routeIs('admin.payouts.*')],
+        ['Vouchers', 'product', 'admin.vouchers.index', request()->routeIs('admin.vouchers.*')],
         ['COD remittances', 'delivery', 'admin.remittances.index', request()->routeIs('admin.remittances.*')],
         ['Marketplace fees', 'product', 'admin.marketplace-settings.edit', request()->routeIs('admin.marketplace-settings.*')],
         ['Barangay assignments', 'location', 'admin.riders.barangays.index', request()->routeIs('admin.riders.barangays.*')],
@@ -28,6 +29,7 @@
         ['Dispatch', 'delivery', 'fulfillments.index', request()->routeIs('fulfillments.*')],
     ] : [
         ['Payout history', 'order', 'seller.payouts.index', request()->routeIs('seller.payouts.*')],
+        ['Vouchers', 'product', 'seller.vouchers.index', request()->routeIs('seller.vouchers.*')],
     ];
     $overflowActive = in_array(true, array_column($overflow, 3), true);
     $notificationsActive = $admin && request()->routeIs('admin.notifications.*');

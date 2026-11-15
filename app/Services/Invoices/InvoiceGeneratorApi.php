@@ -58,10 +58,12 @@ class InvoiceGeneratorApi
             'theme' => 'classic',
             'fields' => [
                 'tax' => false,
-                'discounts' => false,
+                'discounts' => $order->billableDiscountCents() > 0,
                 'shipping' => true,
             ],
             'shipping' => $order->billableShipping(),
+            'discounts' => $order->billableDiscountCents() / 100,
+            'discounts_title' => 'Voucher saving',
             'items' => $order->billableItems()->map(function ($item): array {
                 $options = collect($item->variant_options ?? [])
                     ->map(fn ($value, $name) => $name.': '.$value)

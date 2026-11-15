@@ -13,12 +13,14 @@
         $refund = $row->adjustments->sum('refund_cents');
         $reversal = $row->adjustments->sum('commission_reversal_cents');
         $sellerDebit = $row->adjustments->sum('seller_debit_cents');
+        $voucherReversal = $row->adjustments->sum('voucher_reversal_cents');
     @endphp
     <article class="fs-card space-y-3 p-5">
         <h2 class="font-semibold">{{ $row->fulfillment->order->number }} · {{ $row->fulfillment->shop_name }} · Shipment #{{ $row->fulfillment_id }}</h2>
         <p class="text-xs text-text-muted">Recorded {{ $row->earned_at->format('M j, Y g:i A') }}</p>
         <dl class="grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
             <div><dt>Goods amount</dt><dd>PHP {{ number_format($row->goods_cents / 100, 2) }}</dd></div>
+            <div><dt>Seller-funded voucher deduction</dt><dd>PHP {{ \App\Support\Money::decimal((int) $row->seller_discount_cents) }}</dd></div>
             <div><dt>Goods commission ({{ number_format($row->commission_bps / 100, 2) }}%)</dt><dd>PHP {{ number_format($row->commission_cents / 100, 2) }}</dd></div>
             <div><dt>Seller amount before reimbursements</dt><dd>PHP {{ number_format($row->seller_cents / 100, 2) }}</dd></div>
             <div><dt>Goods reimbursed</dt><dd>PHP {{ number_format($refund / 100, 2) }}</dd></div>
@@ -30,7 +32,8 @@
             <div><dt>External courier cost</dt><dd>PHP {{ number_format($row->courier_cost_cents / 100, 2) }}</dd></div>
             <div><dt>COD handling cost</dt><dd>PHP {{ number_format($row->cod_cost_cents / 100, 2) }}</dd></div>
             <div><dt>Operating cost allocation</dt><dd>PHP {{ number_format($row->operating_cost_cents / 100, 2) }}</dd></div>
-            <div><dt>Platform contribution after reversals</dt><dd class="font-semibold">PHP {{ number_format(($row->contribution_cents - $reversal) / 100, 2) }}</dd></div>
+            <div><dt>Platform-funded voucher</dt><dd>PHP {{ \App\Support\Money::decimal((int) $row->voucher_cents) }}</dd></div>
+            <div><dt>Platform contribution after reversals</dt><dd class="font-semibold">PHP {{ number_format(($row->contribution_cents - $reversal + $voucherReversal) / 100, 2) }}</dd></div>
             @endif
         </dl>
         @if($refund)<p class="text-xs text-text-muted">Goods commission is reversed proportionally when reimbursement is recorded. Completed delivery and operating costs remain incurred.</p>@endif

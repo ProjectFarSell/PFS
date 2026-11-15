@@ -28,6 +28,8 @@ class FulfillmentService
         $groups = $order->items()->with('product.shop')->orderBy('id')->get()->groupBy('product.shop_id');
         $deliveryBarangayId = $order->address()->value('psgc_barangay_id');
         $fee = Money::cents($order->shipping_fee);
+        $shippingParts = array_map(fn ($i) => intdiv($fee, $groups->count()) + ($i < $fee % $groups->count() ? 1 : 0), range(0, $groups->count() - 1));
+        $shippingDiscounts = app(VoucherService::class)->allocate((int) $order->shipping_discount_cents, $shippingParts);
         $index = 0;
         foreach ($groups as $shopId => $items) {
             $fulfillment = $order->fulfillments()->create([
@@ -36,7 +38,9 @@ class FulfillmentService
                 'delivery_barangay_id' => $deliveryBarangayId,
                 'status' => Status::Pending,
                 'subtotal' => Money::decimal($items->sum(fn ($item) => Money::cents($item->line_total))),
-                'shipping_fee' => Money::decimal(intdiv($fee, $groups->count()) + ($index++ < $fee % $groups->count() ? 1 : 0)),
+                'discount_cents' => $items->sum('discount_cents'),
+                'shipping_discount_cents' => $shippingDiscounts[$index],
+                'shipping_fee' => Money::decimal($shippingParts[$index++]),
                 'fee_policy' => $order->fee_policy ?? app(SettlementService::class)->policy(),
                 ...$this->deliveryPin(),
             ]);

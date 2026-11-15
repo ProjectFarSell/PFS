@@ -13,10 +13,10 @@ class RiderCodBalance
     {
         $collected = 0;
         Fulfillment::where('rider_id', $rider->id)->where('delivery_method', 'internal')->whereNotNull('cod_collected_at')
-            ->whereHas('order', fn ($query) => $query->where('payment_method', 'cod'))->select(['id', 'subtotal', 'shipping_fee'])
+            ->whereHas('order', fn ($query) => $query->where('payment_method', 'cod'))->select(['id', 'subtotal', 'shipping_fee', 'discount_cents', 'shipping_discount_cents'])
             ->orderBy('id')->chunkById(200, function ($parts) use (&$collected) {
                 foreach ($parts as $part) {
-                    $collected += Money::cents($part->subtotal) + Money::cents($part->shipping_fee);
+                    $collected += Money::cents($part->subtotal) + Money::cents($part->shipping_fee) - $part->discount_cents - $part->shipping_discount_cents;
                 }
             });
         $remitted = (int) RiderCodRemittance::where('rider_profile_id', $rider->id)->whereNull('voided_at')->sum('amount_cents');

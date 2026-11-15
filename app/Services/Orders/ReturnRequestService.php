@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\ReturnRequest;
 use App\Models\User;
 use App\Services\Notifications\BuyerInbox;
+use App\Support\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -31,7 +32,7 @@ class ReturnRequestService
             $case = ReturnRequest::query()->create([
                 'order_item_id' => $item->id, 'quantity' => $data['quantity'], 'reason' => $data['reason'],
                 'details' => $data['details'], 'evidence_path' => $data['evidence_path'] ?? null,
-                'requested_amount' => (int) round((float) $item->unit_price * 100) * $data['quantity'] / 100,
+                'requested_amount' => Money::decimal($item->refundableCents((int) $data['quantity'])),
             ]);
             $case->events()->create(['actor_id' => $buyer->id, 'status' => 'pending', 'note' => 'Buyer submitted a return/refund request.']);
             app(BuyerInbox::class)->record($order, 'return:'.$case->id.':submitted', 'Return/refund request submitted', 'Your request for '.$item->name.' is awaiting review. Open Returns & refunds from your order to follow its progress.');

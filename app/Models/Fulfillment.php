@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\DeliveryMethod;
 use App\Enums\FulfillmentStatus;
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,6 +20,8 @@ class Fulfillment extends Model
             'status' => FulfillmentStatus::class,
             'subtotal' => 'decimal:2',
             'shipping_fee' => 'decimal:2',
+            'discount_cents' => 'integer',
+            'shipping_discount_cents' => 'integer',
             'cod_collected_at' => 'datetime',
             'stock_released_at' => 'datetime',
             'delivery_pin' => 'encrypted',
@@ -76,7 +79,8 @@ class Fulfillment extends Model
 
     public function amount(): float
     {
-        return in_array($this->status, [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled, FulfillmentStatus::Returned], true) ? 0 : (float) $this->subtotal + (float) $this->shipping_fee;
+        return in_array($this->status, [FulfillmentStatus::Rejected, FulfillmentStatus::Cancelled, FulfillmentStatus::Returned], true) ? 0
+            : (Money::cents($this->subtotal) + Money::cents($this->shipping_fee) - $this->discount_cents - $this->shipping_discount_cents) / 100;
     }
 
     public function attempts(): HasMany

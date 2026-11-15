@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,12 +31,23 @@ class OrderItem extends Model
             'unit_price' => 'decimal:2',
             'line_total' => 'decimal:2',
             'variant_options' => 'array',
+            'discount_cents' => 'integer',
         ];
     }
 
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function refundableCents(int $quantity): int
+    {
+        if ($quantity < 1 || $quantity > $this->qty) {
+            throw new \InvalidArgumentException('Invalid purchased quantity.');
+        }
+        $discount = intdiv($this->discount_cents, $this->qty) * $quantity + min($this->discount_cents % $this->qty, $quantity);
+
+        return Money::cents($this->unit_price) * $quantity - $discount;
     }
 
     public function product(): BelongsTo

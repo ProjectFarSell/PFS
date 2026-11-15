@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\RiderRecordsController;
 use App\Http\Controllers\Admin\RiderRemittanceController;
 use App\Http\Controllers\Admin\SellerApplicationController;
 use App\Http\Controllers\Admin\SellerPayoutController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Auth\ContactVerificationController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\GuestSessionController;
@@ -145,6 +146,7 @@ Route::middleware('auth')->prefix('account/security')->name('security.')->group(
 });
 
 Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->group(function () {
+    Route::resource('/admin/vouchers', VoucherController::class)->only(['index', 'create', 'store', 'edit', 'update'])->names('admin.vouchers')->middleware('throttle:30,1');
     Route::get('/admin/security/accounts', [App\Http\Controllers\Admin\SecurityController::class, 'index'])->name('admin.security.accounts');
     Route::get('/admin/security/accounts/suspended', [App\Http\Controllers\Admin\SecurityController::class, 'suspended'])->name('admin.security.accounts.suspended');
     Route::get('/admin/security/accounts/restore', [App\Http\Controllers\Admin\SecurityController::class, 'restoration'])->name('admin.security.accounts.restore');
@@ -188,6 +190,7 @@ Route::middleware(['auth', EnsureUserHasRole::class.':admin'])->group(function (
     Route::put('/admin/marketplace-settings', [MarketplaceSettingsController::class, 'update'])->middleware('throttle:15,1')->name('admin.marketplace-settings.update');
 });
 Route::get('/seller/payouts', PayoutController::class)->middleware(['auth', EnsureUserHasRole::class.':seller'])->name('seller.payouts.index');
+Route::resource('/seller/vouchers', VoucherController::class)->only(['index', 'create', 'store', 'edit', 'update'])->names('seller.vouchers')->middleware(['auth', EnsureUserHasRole::class.':seller', 'throttle:30,1']);
 Route::get('/rider/cod', CodController::class)->middleware(['auth', EnsureUserHasRole::class.':rider'])->name('rider.cod.index');
 
 Route::get('/admin/buyers', [BuyerController::class, 'index'])
@@ -329,6 +332,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/account/profile', [ProfileController::class, 'destroy'])->middleware('throttle:5,1')->name('account.profile.destroy');
     Route::get('/checkout', [CheckoutController::class, 'create'])->middleware(EnsureUserHasRole::class.':buyer')->name('checkout.create');
     Route::post('/checkout', [CheckoutController::class, 'store'])->middleware(EnsureUserHasRole::class.':buyer')->name('checkout.store');
+    Route::post('/checkout/voucher', [CheckoutController::class, 'voucher'])->middleware([EnsureUserHasRole::class.':buyer', 'throttle:20,1'])->name('checkout.voucher');
     Route::get('/orders', [OrderController::class, 'index'])->middleware(EnsureUserHasRole::class.':buyer')->name('orders.index');
     Route::post('/orders/{order}/cancel', CancelOrderController::class)->middleware([EnsureUserHasRole::class.':buyer', 'throttle:10,1'])->name('orders.cancel');
     Route::get('/orders/{order}', [CheckoutController::class, 'show'])->middleware(EnsureUserHasRole::class.':buyer,admin')->name('orders.show');

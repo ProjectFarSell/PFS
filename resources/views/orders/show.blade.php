@@ -37,6 +37,7 @@
         @endforeach
     </ul>
     @endif
+    @if($order->voucher_snapshot)<p class="mt-3 text-sm">Voucher {{ $order->voucher_snapshot['code'] }}: saved PHP {{ \App\Support\Money::decimal($order->discount_cents + $order->shipping_discount_cents) }} on this order.</p>@endif
     <p class="mt-3 font-semibold">Original total ₱{{ number_format((float) $order->total, 2) }}</p>
     <p class="text-xs text-text-muted mt-2">Ship to {{ $order->ship_to }}</p>
     @include('orders.return-actions')

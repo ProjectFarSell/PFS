@@ -32,6 +32,7 @@
 
 <p>Subtotal: PHP {{ number_format((float) $order->subtotal, 2) }}<br>
 Shipping: PHP {{ number_format((float) $order->shipping_fee, 2) }}<br>
+@if($order->voucher_snapshot)Voucher {{ $order->voucher_snapshot['code'] }}: -PHP {{ \App\Support\Money::decimal($order->discount_cents + $order->shipping_discount_cents) }}<br>@endif
 <strong>Total: PHP {{ number_format((float) $order->total, 2) }}</strong></p>
 <p>Payment method: {{ $order->payment_method === \App\Enums\PaymentMethod::Cod ? 'Cash on delivery' : 'Card / e-wallet (demo)' }}</p>
 <p><a href="{{ route('orders.show', $order) }}">View order and print invoice or packing slip</a></p>

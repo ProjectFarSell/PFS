@@ -71,7 +71,8 @@
         <div class="totals">
             <p><span>Subtotal</span><span>PHP {{ number_format((float) $documentItems->sum('line_total'), 2) }}</span></p>
             <p><span>Shipping</span><span>PHP {{ number_format($order->billableShipping(), 2) }}</span></p>
-            <p><strong>Total</strong><strong>PHP {{ number_format((float) $documentItems->sum('line_total') + $order->billableShipping(), 2) }}</strong></p>
+            @if($order->billableDiscountCents())<p><span>Voucher {{ $order->voucher_snapshot['code'] ?? '' }}</span><span>-PHP {{ \App\Support\Money::decimal($order->billableDiscountCents()) }}</span></p>@endif
+            <p><strong>Total</strong><strong>PHP {{ number_format((float) $documentItems->sum('line_total') + $order->billableShipping() - $order->billableDiscountCents() / 100, 2) }}</strong></p>
         </div>
     @endif
 </body>

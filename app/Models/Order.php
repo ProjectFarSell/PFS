@@ -46,6 +46,9 @@ class Order extends Model
             'stock_released_at' => 'datetime',
             'cancelled_at' => 'datetime',
             'fee_policy' => 'array',
+            'voucher_snapshot' => 'array',
+            'discount_cents' => 'integer',
+            'shipping_discount_cents' => 'integer',
         ];
     }
 
@@ -88,6 +91,18 @@ class Order extends Model
         }
 
         return (float) $this->fulfillments->reject(fn ($part) => in_array($part->status->value, ['rejected', 'cancelled', 'returned'], true))->sum('shipping_fee');
+    }
+
+    public function billableDiscountCents(): int
+    {
+        $this->loadMissing('fulfillments');
+        if (in_array($this->status, [OrderStatus::Cancelled, OrderStatus::Returned], true)) {
+            return 0;
+        }
+
+        return $this->fulfillments->isEmpty() ? (int) $this->discount_cents + (int) $this->shipping_discount_cents
+            : (int) $this->fulfillments->reject(fn ($part) => in_array($part->status->value, ['rejected', 'cancelled', 'returned'], true))
+                ->sum(fn ($part) => $part->discount_cents + $part->shipping_discount_cents);
     }
 
     public function rider(): BelongsTo

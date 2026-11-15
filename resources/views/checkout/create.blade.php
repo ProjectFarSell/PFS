@@ -14,6 +14,7 @@
     <div class="grid md:grid-cols-2 gap-6">
         <form id="checkout-form" method="post" action="{{ route('checkout.store') }}" class="space-y-4 rounded-2xl bg-surface border border-surface-border p-4">
             @csrf
+            <input type="hidden" name="voucher_code" value="{{ $voucher['code'] ?? '' }}">
             <fieldset>
                 <legend class="text-sm font-medium mb-2">Delivery address</legend>
                 <div class="space-y-2">
@@ -52,6 +53,17 @@
         </form>
 
         <div>
+            <form method="post" action="{{ route('checkout.voucher') }}" class="mb-5 rounded-xl border border-surface-border bg-surface p-4">
+                @csrf
+                <label class="block text-sm font-semibold" for="voucher-code">Voucher code</label>
+                <div class="mt-2 flex gap-2">
+                    <input id="voucher-code" name="voucher_code" maxlength="32" value="{{ old('voucher_code', $voucher['code'] ?? '') }}" placeholder="Enter a code" class="min-w-0 flex-1 rounded-lg border-surface-border uppercase" autocomplete="off">
+                    <x-ui.button type="submit">Apply</x-ui.button>
+                </div>
+                <p class="mt-2 text-xs text-text-muted">Use one FarSell or shop voucher per checkout. Vouchers cannot be combined. Clear the code and apply to remove it.</p>
+                @if($voucher)<p class="mt-2 text-sm text-success">{{ $voucher['code'] }} applied: {{ $voucher['name'] }}</p>@endif
+                @if($voucherError)<p role="alert" class="mt-2 text-sm text-error">{{ $voucherError }}</p>@endif
+            </form>
             @foreach ($lines as $line)
                 <div class="flex justify-between text-sm py-1">
                     <span>{{ $line->product->name }}@if($line->variant_options) ({{ collect($line->variant_options)->map(fn($value, $name) => $name.': '.$value)->join(', ') }})@endif × {{ $line->qty }}<span class="mt-0.5 block text-xs text-text-muted">SKU: {{ $line->variant?->sku ?? $line->product->sku ?? 'Unavailable' }}</span></span>
@@ -63,8 +75,11 @@
                 <span>₱{{ number_format($shipping, 2) }}</span>
             </div>
             <div class="flex justify-between font-semibold mt-2">
+                @if($voucher)<span>Voucher saving</span><span>-PHP {{ \App\Support\Money::decimal($voucher['discount_cents'] + $voucher['shipping_discount_cents']) }}</span>@endif
+            </div>
+            <div class="flex justify-between font-semibold mt-2">
                 <span>Total</span>
-                <span>₱{{ number_format($subtotal + $shipping, 2) }}</span>
+                <span>PHP {{ \App\Support\Money::decimal($totalCents) }}</span>
             </div>
         </div>
     </div>

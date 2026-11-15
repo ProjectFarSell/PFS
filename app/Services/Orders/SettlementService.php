@@ -7,6 +7,7 @@ use App\Models\Fulfillment;
 use App\Models\ReturnRequest;
 use App\Models\SettlementAdjustment;
 use App\Models\ShipmentSettlement;
+use Brick\Math\BigInteger;
 
 class SettlementService
 {
@@ -53,17 +54,21 @@ class SettlementService
         $courierCost = $external ? $booking->cost_cents : 0;
         $goods = $this->cents($part->subtotal);
         $delivery = $this->cents($part->shipping_fee);
-        $commission = $this->commission($goods, $policy['commission_bps']);
+        $sellerDiscount = ($part->order->voucher_snapshot['funded_by'] ?? null) === 'seller' ? (int) $part->discount_cents : 0;
+        $commission = $this->commission($goods - $sellerDiscount, $policy['commission_bps']);
         // COD handling and operating costs occur once per order, even for multi-shop orders.
         $first = ! ShipmentSettlement::whereHas('fulfillment', fn ($q) => $q->where('order_id', $part->order_id))->exists();
         $cod = $first ? $policy['cod_cost_cents'] : 0;
         $operating = $first ? $policy['operating_cost_cents'] : 0;
+        $voucher = $sellerDiscount > 0 ? 0 : (int) $part->discount_cents + (int) $part->shipping_discount_cents;
         $settlement = ShipmentSettlement::firstOrCreate(['fulfillment_id' => $part->id], [
             'goods_cents' => $goods, 'delivery_cents' => $delivery,
             'commission_bps' => $policy['commission_bps'], 'commission_cents' => $commission,
-            'seller_cents' => $goods - $commission, 'rider_cents' => $riderPay, 'courier_cost_cents' => $courierCost,
+            'seller_cents' => $goods - $sellerDiscount - $commission, 'seller_discount_cents' => $sellerDiscount,
+            'rider_cents' => $riderPay, 'courier_cost_cents' => $courierCost,
             'cod_cost_cents' => $cod, 'operating_cost_cents' => $operating,
-            'contribution_cents' => $commission + $delivery - $riderPay - $courierCost - $cod - $operating,
+            'voucher_cents' => $voucher,
+            'contribution_cents' => $commission + $delivery - $riderPay - $courierCost - $cod - $operating - $voucher,
             'earned_at' => now(),
         ]);
         app(SellerPayableLedger::class)->postSettlement($settlement);
@@ -86,15 +91,28 @@ class SettlementService
             return;
         }
         $amount = $this->cents($case->approved_amount);
-        $refunded = (int) $settlement->adjustments()->sum('refund_cents');
-        if ($refunded + $amount > $settlement->goods_cents) {
+        $requested = $case->item->refundableCents((int) $case->quantity);
+        $grossRequested = $this->cents($case->item->unit_price) * (int) $case->quantity;
+        if (($case->item->order->voucher_snapshot['funded_by'] ?? null) === 'seller') {
+            $grossRequested = $requested;
+        }
+        if ($amount > $requested || $requested <= 0) {
+            throw new \RuntimeException('Reimbursement exceeds the buyer’s discounted merchandise payment.');
+        }
+        // The platform-funded portion reverses with a merchandise reimbursement. Seller
+        // debits use gross goods, while refund_cents remains the actual cash paid back.
+        $gross = BigInteger::of($grossRequested)->multipliedBy($amount)->quotient($requested)->toInt();
+        $voucherReversal = $gross - $amount;
+        $refunded = (int) $settlement->adjustments()->sum('refund_cents') + (int) $settlement->adjustments()->sum('voucher_reversal_cents');
+        if ($refunded + $gross > $settlement->goods_cents - $settlement->seller_discount_cents) {
             throw new \RuntimeException('Reimbursement exceeds the settled goods amount.');
         }
-        $reversal = $this->commission($refunded + $amount, $settlement->commission_bps)
+        $reversal = $this->commission($refunded + $gross, $settlement->commission_bps)
             - (int) $settlement->adjustments()->sum('commission_reversal_cents');
         $adjustment = $settlement->adjustments()->create([
             'return_request_id' => $case->id, 'refund_cents' => $amount,
-            'commission_reversal_cents' => $reversal, 'seller_debit_cents' => $amount - $reversal,
+            'voucher_reversal_cents' => $voucherReversal,
+            'commission_reversal_cents' => $reversal, 'seller_debit_cents' => $gross - $reversal,
         ]);
         app(SellerPayableLedger::class)->postAdjustment($adjustment);
     }

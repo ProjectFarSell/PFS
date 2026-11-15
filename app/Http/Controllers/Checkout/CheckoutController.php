@@ -12,7 +12,9 @@ use App\Services\Orders\CheckoutAvailability;
 use App\Services\Orders\PlaceOrder;
 use App\Services\Orders\ReplacementService;
 use App\Services\Orders\StockReservationService;
+use App\Services\Orders\VoucherService;
 use App\Support\Cart;
+use App\Support\Money;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -53,13 +55,38 @@ class CheckoutController extends Controller
 
         $lines = Cart::forCheckout();
         $shipping = $this->deliveryFees->calculate($addresses->first(), $lines);
+        $voucher = null;
+        $voucherError = null;
+        try {
+            $voucher = app(VoucherService::class)->quote($request->session()->get('checkout.voucher_code'), $request->user(), $lines, Money::cents((string) $shipping));
+        } catch (ValidationException $exception) {
+            $voucherError = $exception->errors()['voucher_code'][0];
+            $request->session()->forget('checkout.voucher_code');
+        }
 
         return view('checkout.create', [
             'addresses' => $addresses,
             'lines' => $lines,
             'subtotal' => (float) $lines->sum('line_total'),
             'shipping' => $shipping,
+            'voucher' => $voucher,
+            'voucherError' => $voucherError,
+            'totalCents' => $lines->sum(fn ($line) => Money::cents((string) $line->unit_price) * (int) $line->qty) + Money::cents((string) $shipping) - ($voucher['discount_cents'] ?? 0) - ($voucher['shipping_discount_cents'] ?? 0),
         ]);
+    }
+
+    public function voucher(Request $request): RedirectResponse
+    {
+        $data = $request->validate(['voucher_code' => ['nullable', 'string', 'max:32']]);
+        $code = strtoupper(trim($data['voucher_code'] ?? ''));
+        if ($code !== '') {
+            $address = $request->user()->addresses()->orderByDesc('is_default')->latest()->firstOrFail();
+            $lines = Cart::forCheckout();
+            app(VoucherService::class)->quote($code, $request->user(), $lines, Money::cents((string) $this->deliveryFees->calculate($address, $lines)));
+        }
+        $request->session()->put('checkout.voucher_code', $code);
+
+        return redirect()->route('checkout.create')->with('status', $code === '' ? 'Voucher removed.' : 'Voucher applied. One voucher per checkout.');
     }
 
     public function store(Request $request): RedirectResponse
@@ -76,6 +103,7 @@ class CheckoutController extends Controller
                 Rule::exists('addresses', 'id')->where('user_id', $request->user()->id),
             ],
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
+            'voucher_code' => ['nullable', 'string', 'max:32'],
         ]);
 
         $address = $request->user()->addresses()
@@ -90,15 +118,16 @@ class CheckoutController extends Controller
             : OrderStatus::Paid;
         $lines = Cart::forCheckout();
 
-        $order = DB::transaction(function () use ($request, $address, $lines, $paymentMethod) {
+        $order = DB::transaction(function () use ($request, $address, $lines, $paymentMethod, $data) {
             $replacement = session()->has(ReplacementService::SESSION_KEY)
                 ? app(ReplacementService::class)->forCheckout((int) session(ReplacementService::SESSION_KEY), auth()->user(), $lines)
                 : null;
 
-            return app(PlaceOrder::class)->handle($request->user(), $address, $lines, $paymentMethod, $replacement);
+            return app(PlaceOrder::class)->handle($request->user(), $address, $lines, $paymentMethod, $replacement, voucherCode: $data['voucher_code'] ?? null);
         }, 3);
 
         Cart::clearCheckout();
+        $request->session()->forget('checkout.voucher_code');
 
         return redirect()->route('orders.show', $order)->with('status', 'Order placed.');
     }
