@@ -24,10 +24,12 @@ class DemoCatalogProductsSeeder extends Seeder
         }
 
         foreach ($products as $data) {
+            unset($data['category_slug']);
             $shop->products()->firstOrCreate(
                 ['slug' => $data['slug']],
                 [...$data, 'category_id' => $category->id]
             );
         }
+        $this->call(DemoProductCategoriesSeeder::class);
     }
 }

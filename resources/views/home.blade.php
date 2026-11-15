@@ -8,7 +8,7 @@
         ['eyebrow' => 'Make room for your next obsession', 'title' => 'Small upgrades. Big personality.', 'subtitle' => 'From custom keyboards to collectible figures, find the pieces that make a space yours.', 'cta_text' => 'Explore gadgets', 'cta_href' => route('catalog.index', ['q' => 'keyboard']), 'art' => 'keyboard', 'tag' => 'For your happy place'],
         ['eyebrow' => 'Meet your next favorite shop', 'title' => 'Good finds have good neighbors.', 'subtitle' => 'Explore local shops and get to know the people behind your next great find.', 'cta_text' => 'Explore shops', 'cta_href' => route('shops.index'), 'art' => 'cards', 'tag' => 'Discover local'],
     ];
-    $interests = [['Trading Cards', 'trading card'], ['Figures & Models', 'figure'], ['Custom Keyboards', 'keyboard'], ['Gaming & Audio', 'gaming'], ['Anime Merch', 'anime'], ['Desk Accessories', 'desk']];
+    $interests = \App\Support\CatalogSections::links();
     $collections = [
         ['title' => 'Build your happy place', 'copy' => 'Keyboards, desk finds, and the little details.', 'query' => 'keyboard', 'label' => 'For your setup', 'symbol' => 'keyboard'],
         ['title' => 'One more for the collection', 'copy' => 'Discover figures with a little personality.', 'query' => 'figure', 'label' => 'For your shelf', 'symbol' => 'figure'],
@@ -24,8 +24,8 @@
             <x-ui.button variant="link" :href="route('catalog.index')" class="discovery-link">Browse all <x-ui.icon name="next" size="sm" /></x-ui.button>
         </div>
         <nav class="scroll-x pt-1" aria-label="Explore interests">
-            @foreach ($interests as [$label, $query])
-                <x-ui.button variant="link" :href="route('catalog.index', ['q' => $query])" class="interest-pill">{{ $label }} <x-ui.icon name="next" size="sm" class="text-accent" /></x-ui.button>
+            @foreach ($interests as $interest)
+                <x-ui.button variant="link" :href="route('catalog.index', $interest['filter'])" class="interest-pill">{{ $interest['label'] }} <x-ui.icon name="next" size="sm" class="text-accent" /></x-ui.button>
             @endforeach
         </nav>
         @if ($categories->isNotEmpty())

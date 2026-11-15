@@ -49,6 +49,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call(DemoCatalogProductsSeeder::class);
         $this->call(SellerDemoProductsSeeder::class);
+        $this->call(DemoProductCategoriesSeeder::class);
+        $this->call(AdditionalDemoProductsSeeder::class);
 
         if ($buyer->addresses()->count() === 0) {
             $barangay = PsgcBarangay::query()

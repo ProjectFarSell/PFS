@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Wooting 60HE+ Analog Mechanical Gaming Keyboard",
+        "slug": "demo-wooting-60he-keyboard",
+        "price": "10912.53",
+        "sku": "WOOT-60HE",
+        "image_path": "products/e265fe7b-4310-402e-8fad-000448ea4a4f.webp",
+        "stock": 100,
+        "has_variants": false,
+        "is_active": true,
+        "is_flash": false,
+        "category_slug": "custom-keyboards"
+    },
+    {
+        "name": "Good Smile Company POP UP PARADE L OMGkawaiiAngel (Hoodie Ver.)",
+        "slug": "demo-blonde-ribbon-figure",
+        "price": "5655.09",
+        "sku": "FIGR-PKBL",
+        "image_path": "products/456ce026-fd86-4166-880e-1de2b70073a0.webp",
+        "stock": 100,
+        "has_variants": false,
+        "is_active": true,
+        "is_flash": false,
+        "category_slug": "figures-models"
+    }
+]

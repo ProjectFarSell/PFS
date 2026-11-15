@@ -16,31 +16,16 @@
 </div>
 
 {{-- ── Category pill strip ─────────────────────────────────────────────────── --}}
-<div class="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-1 px-1"
+<nav class="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-1 px-1" aria-label="Explore interests"
      style="scrollbar-width:none; -ms-overflow-style:none;">
-    <a href="{{ route('catalog.index', request()->except(['category', 'page'])) }}"
-       class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors
-              {{ !$activeCategory
-                  ? 'text-accent-text'
-                  : 'border text-text-muted hover:text-accent' }}"
-       style="{{ !$activeCategory
-                  ? 'background-color:rgb(var(--color-accent));'
-                  : 'border-color:rgb(var(--color-surface-border));' }}">
-        All
-    </a>
-    @foreach ($categories as $cat)
-    <a href="{{ route('catalog.index', array_merge(request()->except(['category', 'page']), ['category' => $cat->id])) }}"
-       class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors
-              {{ $activeCategory === $cat->id
-                  ? 'text-accent-text'
-                  : 'border text-text-muted hover:text-accent' }}"
-       style="{{ $activeCategory === $cat->id
-                  ? 'background-color:rgb(var(--color-accent));'
-                  : 'border-color:rgb(var(--color-surface-border));' }}">
-        {{ $cat->name }}
-    </a>
+    @foreach (\App\Support\CatalogSections::links() as $interest)
+        @php($selectedInterest = isset($interest['filter']['category']) ? $activeCategory === $interest['filter']['category'] : $q === $interest['filter']['q'])
+        <a href="{{ route('catalog.index', array_merge(request()->except(['q', 'category', 'page']), $interest['filter'])) }}"
+           class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors {{ $selectedInterest ? 'text-accent-text' : 'border text-text-muted hover:text-accent' }}"
+           style="{{ $selectedInterest ? 'background-color:rgb(var(--color-accent));' : 'border-color:rgb(var(--color-surface-border));' }}"
+           @if ($selectedInterest) aria-current="true" @endif>{{ $interest['label'] }}</a>
     @endforeach
-</div>
+</nav>
 
 {{-- ── Main layout: filter sidebar + product grid ──────────────────────────── --}}
 <div x-data="{

@@ -20,7 +20,7 @@ class SellerDemoProductsSeeder extends Seeder
         $products = [
             [
                 'slug' => 'demo-aga',
-                'name' => 'aga',
+                'name' => 'Pokémon TCG: Sun & Moon Booster Display Box (36 Packs)',
                 'category' => "Men's",
                 'description' => 'Seller demo listing for trying variant selection, SKU display, and stock tracking.',
                 'price' => 123.00,
@@ -60,7 +60,8 @@ class SellerDemoProductsSeeder extends Seeder
                 ->first();
 
             if ($existingVariant) {
-                if ($existingVariant->product?->name !== $data['name'] || $existingVariant->options !== $data['options']) {
+                $allowedNames = $data['sku'] === 'AGAP-BKXLS' ? [$data['name'], 'aga'] : [$data['name']];
+                if (! in_array($existingVariant->product?->name, $allowedNames, true) || $existingVariant->options !== $data['options']) {
                     throw new RuntimeException("Demo SKU {$data['sku']} is already assigned to a different product or option set.");
                 }
 
@@ -82,7 +83,8 @@ class SellerDemoProductsSeeder extends Seeder
                 ]
             );
 
-            if ($product->name !== $data['name']) {
+            $allowedNames = $data['sku'] === 'AGAP-BKXLS' ? [$data['name'], 'aga'] : [$data['name']];
+            if (! in_array($product->name, $allowedNames, true)) {
                 throw new RuntimeException("Demo slug {$data['slug']} is already assigned to a different product.");
             }
 

@@ -89,20 +89,13 @@
                              class="dropdown-panel w-56"
                              style="display:none;">
                             @php
-                                $navInterests = [
-                                    ['Trading Cards',    'trading card'],
-                                    ['Figures & Models', 'figure'],
-                                    ['Custom Keyboards', 'keyboard'],
-                                    ['Gaming & Audio',   'gaming'],
-                                    ['Anime Merch',      'anime'],
-                                    ['Desk Accessories', 'desk'],
-                                ];
+                                $navInterests = \App\Support\CatalogSections::links();
                             @endphp
-                            @foreach ($navInterests as [$label, $query])
-                                <a href="{{ route('catalog.index', ['q' => $query]) }}"
+                            @foreach ($navInterests as $interest)
+                                <a href="{{ route('catalog.index', $interest['filter']) }}"
                                    class="dropdown-item">
                                     <x-ui.icon name="browse" size="sm" />
-                                    {{ $label }}
+                                    {{ $interest['label'] }}
                                 </a>
                             @endforeach
                         </div>
