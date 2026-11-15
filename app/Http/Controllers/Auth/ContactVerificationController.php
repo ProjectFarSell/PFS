@@ -94,7 +94,18 @@ class ContactVerificationController extends Controller
             return to_route('contact-verification.show')->withErrors(['code' => 'That code is invalid, expired, or has already been used.']);
         }
 
-        return to_route('contact-verification.show')->with('status', ucfirst($channel).' verified.');
+        $intent = $request->session()->pull('registration_intent');
+        $status = ucfirst($channel).' verified.';
+
+        if ($intent === 'seller') {
+            return to_route('seller.apply')->with('status', $status.' Please complete your seller application to start selling.');
+        }
+
+        if ($intent === 'rider') {
+            return to_route('rider.register')->with('status', $status.' Please complete your rider application to start delivering.');
+        }
+
+        return to_route('contact-verification.show')->with('status', $status);
     }
 
     public function verifyFirebasePhone(Request $request, FirebasePhoneVerificationService $firebase): RedirectResponse|JsonResponse
@@ -121,9 +132,24 @@ class ContactVerificationController extends Controller
 
         $user->forceFill(['phone_verified_at' => now()])->save();
 
+        $intent = $request->session()->pull('registration_intent');
+        $status = 'Phone verified.';
+
+        if ($intent === 'seller') {
+            return $request->expectsJson()
+                ? response()->json(['verified' => true, 'redirect' => route('seller.apply')])
+                : to_route('seller.apply')->with('status', $status.' Please complete your seller application to start selling.');
+        }
+
+        if ($intent === 'rider') {
+            return $request->expectsJson()
+                ? response()->json(['verified' => true, 'redirect' => route('rider.register')])
+                : to_route('rider.register')->with('status', $status.' Please complete your rider application to start delivering.');
+        }
+
         return $request->expectsJson()
             ? response()->json(['verified' => true])
-            : to_route('contact-verification.show')->with('status', 'Phone verified.');
+            : to_route('contact-verification.show')->with('status', $status);
     }
 
     private function validateChannel(string $channel): void

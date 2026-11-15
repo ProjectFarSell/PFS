@@ -8,6 +8,11 @@
         ? route('register', ['intent' => 'rider'])
         : ($storefrontUser->riderProfile ? route('rider.profile') : route('rider.register'));
     $riderApplicationLabel = $storefrontUser?->riderProfile ? 'Rider Application' : 'Become a Rider';
+    $canApplyAsSeller = $storefrontUser === null || $storefrontUser->role === \App\Enums\UserRole::Buyer;
+    $sellerApplicationUrl = $storefrontUser === null
+        ? route('register', ['intent' => 'seller'])
+        : route('seller.apply');
+    $sellerApplicationLabel = $storefrontUser?->sellerApplication ? 'Seller Application' : 'Become a Seller';
 @endphp
 <!DOCTYPE html>
 <html lang="en" class="h-full">
@@ -88,14 +93,11 @@
                              x-transition:leave-end="opacity-0"
                              class="dropdown-panel w-56"
                              style="display:none;">
-                            @php
-                                $navInterests = \App\Support\CatalogSections::links();
-                            @endphp
-                            @foreach ($navInterests as $interest)
-                                <a href="{{ route('catalog.index', $interest['filter']) }}"
+                            @foreach ($navCategories as $cat)
+                                <a href="{{ route('catalog.index', ['category' => $cat->id]) }}"
                                    class="dropdown-item">
                                     <x-ui.icon name="browse" size="sm" />
-                                    {{ $interest['label'] }}
+                                    {{ $cat->name }}
                                 </a>
                             @endforeach
                         </div>
@@ -104,6 +106,13 @@
                     {{-- Shops --}}
                     <a href="{{ route('shops.index') }}"
                        class="nav-link px-3 py-1" @if(request()->routeIs('shops.*')) aria-current="page" @endif>Shops</a>
+
+                    @if($canApplyAsSeller)
+                        <a href="{{ $sellerApplicationUrl }}" class="nav-link px-3 py-1"
+                           @if(request()->routeIs('seller.apply')) aria-current="page" @endif>
+                            {{ $sellerApplicationLabel }}
+                        </a>
+                    @endif
 
                     @if($canApplyAsRider)
                         <a href="{{ $riderApplicationUrl }}" class="nav-link px-3 py-1"
@@ -250,6 +259,15 @@
                 </a>
                 @endif
 
+                @if($canApplyAsSeller)
+                    <a href="{{ $sellerApplicationUrl }}" class="dropdown-item rounded-xl"
+                       @if(request()->routeIs('seller.apply')) aria-current="page" @endif>{{ $sellerApplicationLabel }}</a>
+                @endif
+                @if($canApplyAsRider)
+                    <a href="{{ $riderApplicationUrl }}" class="dropdown-item rounded-xl"
+                       @if(request()->routeIs('rider.*')) aria-current="page" @endif>{{ $riderApplicationLabel }}</a>
+                @endif
+
                 @auth
                                 @if(in_array(auth()->user()->role, [\App\Enums\UserRole::Buyer, \App\Enums\UserRole::Seller], true))
                                     <a href="{{ route('chat.index') }}" class="dropdown-item rounded-xl" @if(request()->routeIs('chat.*')) aria-current="page" @endif>Chat @if($chatUnreadCount)<span class="ml-auto rounded-full bg-accent px-2 py-0.5 text-[10px] text-white">{{ $chatUnreadCount > 99 ? '99+' : $chatUnreadCount }}</span>@endif</a>
@@ -372,10 +390,12 @@
                 <div>
                     <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-3">Services</h3>
                     <ul class="space-y-2 text-sm">
+                        @if($canApplyAsSeller)
+                            <li><a href="{{ $sellerApplicationUrl }}" class="hover:text-white transition-colors">{{ $sellerApplicationLabel }}</a></li>
+                        @endif
                         @if($canApplyAsRider)
                             <li><a href="{{ $riderApplicationUrl }}" class="hover:text-white transition-colors">{{ $riderApplicationLabel }}</a></li>
                         @endif
-                            <li><a href="{{ auth()->check() ? (auth()->user()->role === \App\Enums\UserRole::Seller ? route('seller.dashboard') : route('account.profile')) : route('register', ['intent' => 'seller']) }}" class="hover:text-white transition-colors">Sell on FarSell</a></li>
                     </ul>
                 </div>
 
@@ -549,6 +569,17 @@
                        onmouseout="this.style.backgroundColor=''">
                         <x-ui.icon name="location" size="sm" />
                         <span class="text-sm">Saved Addresses</span>
+                    </a>
+
+                    {{-- Become a Seller / Seller Application --}}
+                    <a href="{{ route('seller.apply') }}"
+                       @click="closeDrawer()"
+                       class="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors"
+                       style="color: rgb(var(--color-text-base));"
+                       onmouseover="this.style.backgroundColor='rgb(var(--color-surface-muted))'"
+                       onmouseout="this.style.backgroundColor=''">
+                        <x-ui.icon name="browse" size="sm" />
+                        <span class="text-sm">{{ auth()->user()->sellerApplication ? 'Seller Application' : 'Become a Seller' }}</span>
                     </a>
                     @endif
 

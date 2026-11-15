@@ -15,7 +15,7 @@ class DemoCatalogProductsSeeder extends Seeder
     {
         DevelopmentData::assertAllowed();
         $shop = Shop::query()->where('slug', 'metro-surplus')->firstOrFail();
-        $category = Category::query()->where('name', "Women's")->firstOrFail();
+        $category = Category::query()->where('slug', 'trading-cards')->firstOrFail();
         $path = database_path('seeders/demo-catalog-products.json');
         $products = json_decode(file_get_contents($path), true, flags: JSON_THROW_ON_ERROR);
 

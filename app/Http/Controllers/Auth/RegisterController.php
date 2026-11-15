@@ -39,6 +39,7 @@ class RegisterController extends Controller
         // Role stays Buyer at registration. Seller/Rider access is granted only
         // after the relevant application is actually approved, not on signup intent.
         $intent = $data['intent'] ?? 'buyer';
+        $request->session()->put('registration_intent', $intent);
 
         $user = User::query()->create([
             'name' => $data['name'],

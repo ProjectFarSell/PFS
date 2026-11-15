@@ -21,7 +21,7 @@ class SellerDemoProductsSeeder extends Seeder
             [
                 'slug' => 'demo-aga',
                 'name' => 'Pokémon TCG: Sun & Moon Booster Display Box (36 Packs)',
-                'category' => "Men's",
+                'category' => 'Trading Cards',
                 'description' => 'Seller demo listing for trying variant selection, SKU display, and stock tracking.',
                 'price' => 123.00,
                 'stock' => 99,
@@ -32,7 +32,7 @@ class SellerDemoProductsSeeder extends Seeder
             [
                 'slug' => 'demo-borg',
                 'name' => 'borg',
-                'category' => 'Home',
+                'category' => 'Desk Accessories',
                 'description' => 'Seller demo listing for trying color and size options during checkout.',
                 'price' => 140.00,
                 'stock' => 100,
@@ -43,7 +43,7 @@ class SellerDemoProductsSeeder extends Seeder
             [
                 'slug' => 'demo-balls',
                 'name' => 'balls',
-                'category' => 'Surplus',
+                'category' => 'Gaming & Audio',
                 'description' => 'Seller demo listing for tracing SKU, inventory, and a checkout order.',
                 'price' => 200.00,
                 'stock' => 131,

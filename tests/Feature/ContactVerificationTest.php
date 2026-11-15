@@ -148,4 +148,48 @@ class ContactVerificationTest extends TestCase
             'channel' => VerificationChallenge::EMAIL,
         ]);
     }
+
+    public function test_registration_with_seller_intent_redirects_to_seller_apply_after_verification(): void
+    {
+        Mail::fake();
+        $code = null;
+
+        $response = $this->post(route('register'), [
+            'name' => 'Seller Hopeful',
+            'email' => 'seller-hopeful@example.com',
+            'password' => 'Password123!@#',
+            'password_confirmation' => 'Password123!@#',
+            'intent' => 'seller',
+            'privacy_consent' => '1',
+        ]);
+        $response->assertRedirect('/account/verify');
+        $this->assertSame('seller', session('registration_intent'));
+
+        $user = User::where('email', 'seller-hopeful@example.com')->firstOrFail();
+        $this->actingAs($user)->post(route('contact-verification.choose'), ['channel' => 'email']);
+
+        Mail::assertSent(OneTimePasscodeMail::class, function (OneTimePasscodeMail $mail) use (&$code): bool {
+            $code = $mail->code;
+
+            return true;
+        });
+
+        $this->actingAs($user)->post(route('contact-verification.verify', 'email'), ['code' => $code])
+            ->assertRedirect(route('seller.apply'))
+            ->assertSessionHas('status');
+
+        $this->assertNotNull($user->fresh()->email_verified_at);
+    }
+
+    public function test_verification_page_shows_seller_application_button_with_seller_intent(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => null, 'verification_channel' => 'email']);
+
+        $this->actingAs($user)
+            ->withSession(['registration_intent' => 'seller'])
+            ->get(route('contact-verification.show'))
+            ->assertOk()
+            ->assertSee('Continue to Seller Application')
+            ->assertSee(route('seller.apply'));
+    }
 }

@@ -23,14 +23,12 @@ class DatabaseSeeder extends Seeder
         $seller = User::query()->where('email', 'seller@farsell.test')->firstOrFail();
 
         $categories = collect([
-            ['name' => "Women's", 'icon' => 'W', 'sort_order' => 1],
-            ['name' => "Men's", 'icon' => 'M', 'sort_order' => 2],
-            ['name' => 'Kids', 'icon' => 'K', 'sort_order' => 3],
-            ['name' => 'Home', 'icon' => 'H', 'sort_order' => 4],
-            ['name' => 'Beauty', 'icon' => 'B', 'sort_order' => 5],
-            ['name' => 'Sports', 'icon' => 'S', 'sort_order' => 6],
-            ['name' => 'Gadgets', 'icon' => 'G', 'sort_order' => 7],
-            ['name' => 'Surplus', 'icon' => 'X', 'sort_order' => 8],
+            ['name' => 'Trading Cards', 'icon' => 'cards', 'sort_order' => 1],
+            ['name' => 'Figures & Models', 'icon' => 'figure', 'sort_order' => 2],
+            ['name' => 'Custom Keyboards', 'icon' => 'keyboard', 'sort_order' => 3],
+            ['name' => 'Gaming & Audio', 'icon' => 'gaming', 'sort_order' => 4],
+            ['name' => 'Anime Merch', 'icon' => 'anime', 'sort_order' => 5],
+            ['name' => 'Desk Accessories', 'icon' => 'desk', 'sort_order' => 6],
         ])->map(fn (array $row) => Category::query()->firstOrCreate(
             ['slug' => Str::slug($row['name'])],
             $row

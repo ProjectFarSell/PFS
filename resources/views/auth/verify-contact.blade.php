@@ -20,7 +20,9 @@
                 <x-ui.button variant="primary" size="lg" type="submit" class="min-h-11 w-full">Continue</x-ui.button>
             </form>
         @else
-            @php($verifiedAt = $channel === 'email' ? $user->email_verified_at : $user->phone_verified_at)
+            @php
+                $verifiedAt = $channel === 'email' ? $user->email_verified_at : $user->phone_verified_at;
+            @endphp
             <section class="mt-6">
             <div class="flex items-start justify-between gap-4">
                 <div>
@@ -63,7 +65,27 @@
             </section>
         @endif
 
-        <x-ui.button variant="link" :href="route('home')" class="mt-6">Continue to FarSell</x-ui.button>
+        @php
+            $intent = session('registration_intent');
+            $continueRoute = match ($intent) {
+                'seller' => route('seller.apply'),
+                'rider' => route('rider.register'),
+                default => route('home'),
+            };
+            $continueLabel = match ($intent) {
+                'seller' => 'Continue to Seller Application',
+                'rider' => 'Continue to Rider Application',
+                default => 'Continue to FarSell',
+            };
+        @endphp
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+            @if ($intent && $intent !== 'buyer')
+                <x-ui.button variant="primary" :href="$continueRoute">{{ $continueLabel }}</x-ui.button>
+                <x-ui.button variant="tertiary" :href="route('home')">Skip for now</x-ui.button>
+            @else
+                <x-ui.button variant="link" :href="route('home')">Continue to FarSell</x-ui.button>
+            @endif
+        </div>
     </div>
 @endsection
 
@@ -132,7 +154,12 @@
                             body: JSON.stringify({ id_token: idToken }),
                         });
                         if (! response.ok) throw new Error('Phone verification failed.');
-                        window.location.reload();
+                        const data = await response.json();
+                        if (data && data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            window.location.reload();
+                        }
                     } catch (_) {
                         setMessage('Firebase could not verify that code. Please try again.', true);
                     } finally {

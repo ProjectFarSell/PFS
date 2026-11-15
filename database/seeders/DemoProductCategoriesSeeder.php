@@ -17,10 +17,9 @@ class DemoProductCategoriesSeeder extends Seeder
         DevelopmentData::assertAllowed();
         DB::transaction(function (): void {
             $ids = [];
+            $order = 1;
             foreach (CatalogSections::SECTIONS as $slug => [$name]) {
-                if (! in_array($slug, ['anime-merch', 'desk-accessories'], true)) {
-                    $ids[$slug] = Category::firstOrCreate(['slug' => $slug], ['name' => $name, 'sort_order' => 10 + count($ids)])->id;
-                }
+                $ids[$slug] = Category::firstOrCreate(['slug' => $slug], ['name' => $name, 'sort_order' => $order++])->id;
             }
 
             $rows = json_decode(file_get_contents(database_path('seeders/demo-catalog-products.json')), true, flags: JSON_THROW_ON_ERROR);
