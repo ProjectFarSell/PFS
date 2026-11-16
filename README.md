@@ -658,3 +658,7 @@ npm run build
 ```
 
 Manually verify both themes on desktop/mobile: login (including Google sign-in when configured), seller product options, variant selection through cart and checkout, buyer/seller messages, Profile -> My Orders, PSGC address cascade, and the read-only admin dashboard. Checkout reserves the selected variant's stock when applicable and uses a flat delivery-fee service; card/e-wallet payments are demo-only, not a live gateway.
+
+### Bundled Metro Surplus image catalog
+
+The repository includes 238 additional demo products and normalized local images for the Metro Surplus seller. See [catalog setup](docs/metro-surplus-catalog.md).

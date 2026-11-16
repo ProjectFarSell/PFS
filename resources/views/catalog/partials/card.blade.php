@@ -5,7 +5,7 @@
 @endphp
 <article class="fs-card product-card {{ $compact ? 'w-36 shrink-0' : '' }}">
     <a href="{{ route('products.show', $product) }}" class="product-card-link">
-        <div class="product-media {{ $heroVariant ? 'aspect-[2/1]' : 'aspect-square' }}"
+        <div class="product-media aspect-square"
              @if ($product->image_path) x-data="{ failed: false }" @endif>
             <div class="product-placeholder">
                 <x-ui.icon name="product" size="lg" class="text-accent" />
@@ -14,7 +14,7 @@
             </div>
             @if ($product->image_path)
                 <x-product-image :src="$product->imageUrl()" :alt="$product->name"
-                    width="640" :height="$heroVariant ? 320 : 640" :priority="$priorityImage"
+                    width="640" height="640" :priority="$priorityImage"
                     x-show="!failed" x-on:error="failed = true" />
             @endif
         </div>

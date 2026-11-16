@@ -1,0 +1,3180 @@
+[
+  {
+    "name": "Beauty Products 001",
+    "slug": "metro-catalog-26a4ab33821c2c29",
+    "sku": "METRO-26A4AB33821C",
+    "description": "Beauty Products 001 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/26a4ab33821c2c290d7c82e27653c7fe4408ceec77dad355d02902c904ac2706.jpg"
+  },
+  {
+    "name": "Beauty Products 002",
+    "slug": "metro-catalog-4637b2ce261bdb53",
+    "sku": "METRO-4637B2CE261B",
+    "description": "Beauty Products 002 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/4637b2ce261bdb53fbaa5daef0e246d5d8078b045926017f73d4b3ef8350ef10.jpg"
+  },
+  {
+    "name": "Beauty Products 003",
+    "slug": "metro-catalog-b92c4fc17320036b",
+    "sku": "METRO-B92C4FC17320",
+    "description": "Beauty Products 003 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/b92c4fc17320036b22e34e1b28fd1954ace291253e79512e3f1730c981012133.jpg"
+  },
+  {
+    "name": "Beauty Products 004",
+    "slug": "metro-catalog-8f8cc11fec5f6026",
+    "sku": "METRO-8F8CC11FEC5F",
+    "description": "Beauty Products 004 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/8f8cc11fec5f602674020e25c123dfd0aecd654673c4817d52b92adb143a58e5.jpg"
+  },
+  {
+    "name": "Beauty Products 005",
+    "slug": "metro-catalog-a456d639a2430f44",
+    "sku": "METRO-A456D639A243",
+    "description": "Beauty Products 005 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/a456d639a2430f445c18f5745f5f44123d6b21499ace917569285300f43d7089.jpg"
+  },
+  {
+    "name": "Beauty Products 006",
+    "slug": "metro-catalog-01355ae38fe76cfd",
+    "sku": "METRO-01355AE38FE7",
+    "description": "Beauty Products 006 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/01355ae38fe76cfd90a6798d562ad0572c5188adf2694dec7ed781c31a2d3a8b.jpg"
+  },
+  {
+    "name": "Beauty Products 007",
+    "slug": "metro-catalog-d6f1dda2cff739e7",
+    "sku": "METRO-D6F1DDA2CFF7",
+    "description": "Beauty Products 007 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/d6f1dda2cff739e7e84896095b5b491eb21a1e8fb7adce92437c009b8c753224.jpg"
+  },
+  {
+    "name": "Beauty Products 008",
+    "slug": "metro-catalog-7e5f3f5b294f9419",
+    "sku": "METRO-7E5F3F5B294F",
+    "description": "Beauty Products 008 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/7e5f3f5b294f94195f1ec9dfae42b10dd27426d191e80081607ba634478522ba.jpg"
+  },
+  {
+    "name": "Beauty Products 009",
+    "slug": "metro-catalog-da003cd99955fd43",
+    "sku": "METRO-DA003CD99955",
+    "description": "Beauty Products 009 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/da003cd99955fd4358d60048531a6d826623a10d7d427f72978bd01565af0b0c.jpg"
+  },
+  {
+    "name": "Beauty Products 010",
+    "slug": "metro-catalog-319fcda8ce400a55",
+    "sku": "METRO-319FCDA8CE40",
+    "description": "Beauty Products 010 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/319fcda8ce400a551a20a05067808fd7b6d2fb8ca5a19678c2482d3c6e11556d.jpg"
+  },
+  {
+    "name": "Beauty Products 011",
+    "slug": "metro-catalog-3492847aafc07fce",
+    "sku": "METRO-3492847AAFC0",
+    "description": "Beauty Products 011 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/3492847aafc07fce8f7e04cdcafb091e89ed75322edfd2eb365a480f70f5e81b.jpg"
+  },
+  {
+    "name": "Beauty Products 012",
+    "slug": "metro-catalog-b355fe4382603389",
+    "sku": "METRO-B355FE438260",
+    "description": "Beauty Products 012 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/b355fe43826033892e2d6ab5fcdb2d20a211cb650b4a0bebb2ed9b20fe7830fd.jpg"
+  },
+  {
+    "name": "Beauty Products 013",
+    "slug": "metro-catalog-38f97ca2b1a519e6",
+    "sku": "METRO-38F97CA2B1A5",
+    "description": "Beauty Products 013 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/38f97ca2b1a519e63ffcb7c49e7482ee235986e91385ce097d27be7c25a6dbaf.jpg"
+  },
+  {
+    "name": "Beauty Products 014",
+    "slug": "metro-catalog-9bb12abb6408c8e2",
+    "sku": "METRO-9BB12ABB6408",
+    "description": "Beauty Products 014 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/9bb12abb6408c8e232a7ea6d38a96237af2a236d7c149a29431450b49c737e02.jpg"
+  },
+  {
+    "name": "Beauty Products 015",
+    "slug": "metro-catalog-dada8ca52282b413",
+    "sku": "METRO-DADA8CA52282",
+    "description": "Beauty Products 015 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/dada8ca52282b4139e397dad2c066a40b79b12772c8c4afd2767dc2f22636fcd.jpg"
+  },
+  {
+    "name": "Beauty Products 016",
+    "slug": "metro-catalog-f1dd4a18cb208a09",
+    "sku": "METRO-F1DD4A18CB20",
+    "description": "Beauty Products 016 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/f1dd4a18cb208a096ac32e24bd89eda993bb6ae43c0d4d66324b6cf38266eb0a.jpg"
+  },
+  {
+    "name": "Beauty Products 017",
+    "slug": "metro-catalog-0ec1eec1b7bf71d8",
+    "sku": "METRO-0EC1EEC1B7BF",
+    "description": "Beauty Products 017 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/0ec1eec1b7bf71d8522f8f9f709fc4339a69578d51b2580d6a67f4fd67afb3b5.jpg"
+  },
+  {
+    "name": "Beauty Products 018",
+    "slug": "metro-catalog-8cf4effea1c00cfc",
+    "sku": "METRO-8CF4EFFEA1C0",
+    "description": "Beauty Products 018 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/8cf4effea1c00cfce2ab9b75fa4548b31c9334649ee3e758f8ecebf669491c8a.jpg"
+  },
+  {
+    "name": "Beauty Products 019",
+    "slug": "metro-catalog-f481c12c06790dc5",
+    "sku": "METRO-F481C12C0679",
+    "description": "Beauty Products 019 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/f481c12c06790dc5173db2211788ebabe588188754e3286b65bd06baaf0df9f4.jpg"
+  },
+  {
+    "name": "Beauty Products 020",
+    "slug": "metro-catalog-7c7bc4a9498cd1c7",
+    "sku": "METRO-7C7BC4A9498C",
+    "description": "Beauty Products 020 from Metro Surplus Co.",
+    "category": "beauty",
+    "categories": [
+      "beauty"
+    ],
+    "price": 149,
+    "stock": 10,
+    "image_path": "metro-catalog/7c7bc4a9498cd1c71b1df15f452dd3338ddc472ad56b5651dde5f693e8c08492.jpg"
+  },
+  {
+    "name": "Clothing Men pants 001",
+    "slug": "metro-catalog-6102ba882fc8f5b6",
+    "sku": "METRO-6102BA882FC8",
+    "description": "Clothing Men pants 001 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/6102ba882fc8f5b60588b76bbd3c219ba637901cedc6d1918182a2e5b2965d57.jpg"
+  },
+  {
+    "name": "Clothing Men pants 002",
+    "slug": "metro-catalog-bbf3a6771390a244",
+    "sku": "METRO-BBF3A6771390",
+    "description": "Clothing Men pants 002 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/bbf3a6771390a2449b18506316931c67ac11338b32b779ec4a925e519d0a7525.jpg"
+  },
+  {
+    "name": "Clothing Men pants 003",
+    "slug": "metro-catalog-e9dd44a8642770a2",
+    "sku": "METRO-E9DD44A86427",
+    "description": "Clothing Men pants 003 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/e9dd44a8642770a264af7b374996a9c0e5eefd5b753c54e98f18782915025490.jpg"
+  },
+  {
+    "name": "Clothing Men pants 004",
+    "slug": "metro-catalog-41b9dc63e5d14909",
+    "sku": "METRO-41B9DC63E5D1",
+    "description": "Clothing Men pants 004 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/41b9dc63e5d14909690ea8d8704b1b039c55be7c4f9495237eb0d8b17beae595.jpg"
+  },
+  {
+    "name": "Clothing Men pants 005",
+    "slug": "metro-catalog-6eed15c3319fabd1",
+    "sku": "METRO-6EED15C3319F",
+    "description": "Clothing Men pants 005 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/6eed15c3319fabd153fccbe75f582c7446f91cfdb69f8f383182d7e1d1ce0cc8.jpg"
+  },
+  {
+    "name": "Clothing Men pants 006",
+    "slug": "metro-catalog-49b41b27c2b315f2",
+    "sku": "METRO-49B41B27C2B3",
+    "description": "Clothing Men pants 006 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/49b41b27c2b315f2bcf316fd1bc6897ceb2c60487c448d2929d4cb75e7e74b6a.jpg"
+  },
+  {
+    "name": "Clothing Men pants 007",
+    "slug": "metro-catalog-382b629cff9b6f42",
+    "sku": "METRO-382B629CFF9B",
+    "description": "Clothing Men pants 007 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/382b629cff9b6f42c3a6ee8afda6051ec79492dfde5eb8136d4d44b775fe66b3.jpg"
+  },
+  {
+    "name": "Clothing Men pants 008",
+    "slug": "metro-catalog-34ec73ede63cd149",
+    "sku": "METRO-34EC73EDE63C",
+    "description": "Clothing Men pants 008 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/34ec73ede63cd149caf6b0983ef82dbd3d4903f74873a06b78358909cfe234d4.jpg"
+  },
+  {
+    "name": "Clothing Men pants 009",
+    "slug": "metro-catalog-5970c6e3222c004b",
+    "sku": "METRO-5970C6E3222C",
+    "description": "Clothing Men pants 009 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/5970c6e3222c004b5f13abcdc09aad602bbd9fd33f03b3af2b3b2a9c4440d766.jpg"
+  },
+  {
+    "name": "Clothing Men pants 010",
+    "slug": "metro-catalog-17c86a34b7c6f1cc",
+    "sku": "METRO-17C86A34B7C6",
+    "description": "Clothing Men pants 010 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/17c86a34b7c6f1cc267f22fca91651e3d35995fc8641591b1af307873cbd1875.jpg"
+  },
+  {
+    "name": "Clothing Men pants 011",
+    "slug": "metro-catalog-b18e60c3450fae7e",
+    "sku": "METRO-B18E60C3450F",
+    "description": "Clothing Men pants 011 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/b18e60c3450fae7e04728713dbedb2399bb3685b8c7cae026244ead01b925af3.jpg"
+  },
+  {
+    "name": "Clothing Men pants 012",
+    "slug": "metro-catalog-a4862dccff163167",
+    "sku": "METRO-A4862DCCFF16",
+    "description": "Clothing Men pants 012 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/a4862dccff163167bfbeeac46b9d497588365cc99b5dcc7dc2d60bb1f1da6c94.jpg"
+  },
+  {
+    "name": "Clothing Men pants 013",
+    "slug": "metro-catalog-0384c774580099e9",
+    "sku": "METRO-0384C7745800",
+    "description": "Clothing Men pants 013 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/0384c774580099e9ba56235e621f5e350b67af0847e590d04f7ad2749c2f1a3a.jpg"
+  },
+  {
+    "name": "Clothing Men pants 014",
+    "slug": "metro-catalog-6603ae1b2edd8bd9",
+    "sku": "METRO-6603AE1B2EDD",
+    "description": "Clothing Men pants 014 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/6603ae1b2edd8bd9129cca6c90313ec49fbf336fe6e2f3f4b1dc1e3c1981708e.jpg"
+  },
+  {
+    "name": "Clothing Men pants 015",
+    "slug": "metro-catalog-3c23b78cf9ee26f5",
+    "sku": "METRO-3C23B78CF9EE",
+    "description": "Clothing Men pants 015 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/3c23b78cf9ee26f5892dd6fa93251ffaaddc6bdc441782ae49e116f18587355d.jpg"
+  },
+  {
+    "name": "Clothing Men pants 016",
+    "slug": "metro-catalog-0eecf3c1a7bad437",
+    "sku": "METRO-0EECF3C1A7BA",
+    "description": "Clothing Men pants 016 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/0eecf3c1a7bad437f500be2d5f934d5a0373273c4dac5e0c648c8694bfbe0c00.jpg"
+  },
+  {
+    "name": "Clothing Men pants 017",
+    "slug": "metro-catalog-d336b0e1ad73d229",
+    "sku": "METRO-D336B0E1AD73",
+    "description": "Clothing Men pants 017 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/d336b0e1ad73d229cb736bd68f48020bbbeb9cd756a2fa1b826bb411a983b2a4.jpg"
+  },
+  {
+    "name": "Clothing Men pants 018",
+    "slug": "metro-catalog-86fe8ec63807728d",
+    "sku": "METRO-86FE8EC63807",
+    "description": "Clothing Men pants 018 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/86fe8ec63807728d6dfa2b3bf3da51eb487cf1dbd65bd5e3ff61aa39d30f7c8e.jpg"
+  },
+  {
+    "name": "Clothing Men pants 019",
+    "slug": "metro-catalog-2144425092ed2b6e",
+    "sku": "METRO-2144425092ED",
+    "description": "Clothing Men pants 019 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/2144425092ed2b6eb675894717f87ce87e343788d9a2858061d0882eb2cc65a9.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 001",
+    "slug": "metro-catalog-4882d233e221f04c",
+    "sku": "METRO-4882D233E221",
+    "description": "Clothing Men shirt 001 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/4882d233e221f04cbc2f94924b2aea39b14f22a43636466545ded02fae17eee0.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 002",
+    "slug": "metro-catalog-e18f513dc05c1b0b",
+    "sku": "METRO-E18F513DC05C",
+    "description": "Clothing Men shirt 002 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/e18f513dc05c1b0bd7748207ff639b6bf4bb73e52e1b07d8c7ee2c7e4019572d.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 003",
+    "slug": "metro-catalog-15691c3eebc293aa",
+    "sku": "METRO-15691C3EEBC2",
+    "description": "Clothing Men shirt 003 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/15691c3eebc293aa9859bc7e31a10c00e789254f21fd3c506c5a022cb75890f0.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 004",
+    "slug": "metro-catalog-56273a907a4b92f5",
+    "sku": "METRO-56273A907A4B",
+    "description": "Clothing Men shirt 004 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/56273a907a4b92f5df09b5c46534149596a342a4f460bf1af3296afc4977afa0.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 005",
+    "slug": "metro-catalog-73b64774316a08ae",
+    "sku": "METRO-73B64774316A",
+    "description": "Clothing Men shirt 005 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/73b64774316a08aeeb38a676b54d238181741c02efa82e45222892649835100e.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 006",
+    "slug": "metro-catalog-89024fb250d04c5e",
+    "sku": "METRO-89024FB250D0",
+    "description": "Clothing Men shirt 006 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/89024fb250d04c5e4224657539880a9dd24bed922c9715b7f0865c55193b3418.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 007",
+    "slug": "metro-catalog-edff306348dee1a7",
+    "sku": "METRO-EDFF306348DE",
+    "description": "Clothing Men shirt 007 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/edff306348dee1a7b9175eb1d167e261829a3e65ad825d4a0cce8f3cd31cee1b.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 008",
+    "slug": "metro-catalog-6ce3df6638032de2",
+    "sku": "METRO-6CE3DF663803",
+    "description": "Clothing Men shirt 008 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/6ce3df6638032de226ebb4477e4128ddf1faa767bedfff394bfbcfdb1d037848.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 009",
+    "slug": "metro-catalog-0d62cf1b7c7b64f5",
+    "sku": "METRO-0D62CF1B7C7B",
+    "description": "Clothing Men shirt 009 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/0d62cf1b7c7b64f564daf7616467c5012bd9be67d41257197de9d68b9db4481f.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 010",
+    "slug": "metro-catalog-3520ba8c982671b9",
+    "sku": "METRO-3520BA8C9826",
+    "description": "Clothing Men shirt 010 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/3520ba8c982671b9001f4000a9596e43dcc80a3ab7416ab3989114ea3da5d61f.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 011",
+    "slug": "metro-catalog-61d5628cbbe371b1",
+    "sku": "METRO-61D5628CBBE3",
+    "description": "Clothing Men shirt 011 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/61d5628cbbe371b12180506c07bee4ecf5e5d99366b7492174c90504137d9099.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 012",
+    "slug": "metro-catalog-060c1ec26b7dd242",
+    "sku": "METRO-060C1EC26B7D",
+    "description": "Clothing Men shirt 012 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/060c1ec26b7dd24213b227f603d61eb922543bd283e71feebb53fce7b08e8061.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 013",
+    "slug": "metro-catalog-9ddd8a591fffabf0",
+    "sku": "METRO-9DDD8A591FFF",
+    "description": "Clothing Men shirt 013 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/9ddd8a591fffabf0ce2bb153f2018774a86485dc14c0f1c6d4d8cfb6c6747a63.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 014",
+    "slug": "metro-catalog-bf1b6241d8fa486b",
+    "sku": "METRO-BF1B6241D8FA",
+    "description": "Clothing Men shirt 014 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/bf1b6241d8fa486bfd7e1e08dfe367305e9cc1cf526e2a3dba861c7d38af6b9a.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 015",
+    "slug": "metro-catalog-6af36ff050cd0f57",
+    "sku": "METRO-6AF36FF050CD",
+    "description": "Clothing Men shirt 015 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/6af36ff050cd0f579f8154784380702a1e5e8ef1a7a58062d8c44d991e38016f.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 016",
+    "slug": "metro-catalog-433324666dbe30a7",
+    "sku": "METRO-433324666DBE",
+    "description": "Clothing Men shirt 016 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/433324666dbe30a7bd57b1fefdd9b31a58090baea531b9769042900ba01ec6a2.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 017",
+    "slug": "metro-catalog-3b8d0b6f1212264b",
+    "sku": "METRO-3B8D0B6F1212",
+    "description": "Clothing Men shirt 017 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/3b8d0b6f1212264bc5bea0a7ae6595370de0b2148bb1b6fac6714a95d1b70516.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 018",
+    "slug": "metro-catalog-7a80fee608f7d222",
+    "sku": "METRO-7A80FEE608F7",
+    "description": "Clothing Men shirt 018 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/7a80fee608f7d222e34698c0da260d07f41e8943e74e62feb40176fa57bfe2b3.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 019",
+    "slug": "metro-catalog-c55d1562ee0de35f",
+    "sku": "METRO-C55D1562EE0D",
+    "description": "Clothing Men shirt 019 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/c55d1562ee0de35f6f31894b1812d26c0a99e59db6fcbee049531ed7b007191c.jpg"
+  },
+  {
+    "name": "Clothing Men shirt 020",
+    "slug": "metro-catalog-038cd3428ce66945",
+    "sku": "METRO-038CD3428CE6",
+    "description": "Clothing Men shirt 020 from Metro Surplus Co.",
+    "category": "mens",
+    "categories": [
+      "mens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/038cd3428ce6694583d4b7a88433fe0af75b953fef6b903a68647684599e9436.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 001",
+    "slug": "metro-catalog-8daa839d1d9f2018",
+    "sku": "METRO-8DAA839D1D9F",
+    "description": "Clothing Women T shirt 001 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/8daa839d1d9f2018a3b54ff38c371faa8ba2359374749121d20965529ccf368d.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 002",
+    "slug": "metro-catalog-d9fa1eebb21d87c6",
+    "sku": "METRO-D9FA1EEBB21D",
+    "description": "Clothing Women T shirt 002 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/d9fa1eebb21d87c69441f2c6c0a23c4a10877799fbbd97aa3a36e398eb354269.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 003",
+    "slug": "metro-catalog-582622c2dc7e98cd",
+    "sku": "METRO-582622C2DC7E",
+    "description": "Clothing Women T shirt 003 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/582622c2dc7e98cdb1a71bee934cd641478d3cb8a14b8f17719c6556194f595b.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 004",
+    "slug": "metro-catalog-09d7d4315cf00b8a",
+    "sku": "METRO-09D7D4315CF0",
+    "description": "Clothing Women T shirt 004 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/09d7d4315cf00b8a3b3f76fb7b7fe016ef392581987150aef2a49887155b1608.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 005",
+    "slug": "metro-catalog-f5fa11b76ccb5e6b",
+    "sku": "METRO-F5FA11B76CCB",
+    "description": "Clothing Women T shirt 005 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/f5fa11b76ccb5e6ba3c9bc34edf8fbd6cd2b89e658098ab7ea8c2a0ea527db37.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 006",
+    "slug": "metro-catalog-bef94938120721c8",
+    "sku": "METRO-BEF949381207",
+    "description": "Clothing Women T shirt 006 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/bef94938120721c8b0fd5548498a6e8cde1e0cafade451eb63e698ee4bc4a4e6.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 007",
+    "slug": "metro-catalog-313d77ddb6e85a16",
+    "sku": "METRO-313D77DDB6E8",
+    "description": "Clothing Women T shirt 007 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/313d77ddb6e85a1681906bc3caae421d261a94f4d915e77f7cddd9773f7c9755.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 008",
+    "slug": "metro-catalog-2c809964a78ae981",
+    "sku": "METRO-2C809964A78A",
+    "description": "Clothing Women T shirt 008 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/2c809964a78ae981b1b1fcf2db5e729e7a9397360cc35ae4836175e233e047c3.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 009",
+    "slug": "metro-catalog-5c9c7d9319d180a8",
+    "sku": "METRO-5C9C7D9319D1",
+    "description": "Clothing Women T shirt 009 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/5c9c7d9319d180a88f0b38f1aad86e898417ac15d6156d50f5de726527c1f3bf.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 010",
+    "slug": "metro-catalog-724dba1bb85028c1",
+    "sku": "METRO-724DBA1BB850",
+    "description": "Clothing Women T shirt 010 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/724dba1bb85028c17a1faf532589292c7a954c269bfc94d62f1e6ee06bc1e426.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 011",
+    "slug": "metro-catalog-33c5a82e40ded397",
+    "sku": "METRO-33C5A82E40DE",
+    "description": "Clothing Women T shirt 011 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/33c5a82e40ded39791aa20987f307f2042d14de13f0a3c91e90003789cc13438.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 012",
+    "slug": "metro-catalog-b8b34c701a558ee4",
+    "sku": "METRO-B8B34C701A55",
+    "description": "Clothing Women T shirt 012 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/b8b34c701a558ee436d718b306f576bea068ec949096b2bfa0f99d7a48b42faf.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 013",
+    "slug": "metro-catalog-fd8d2f870462bfa1",
+    "sku": "METRO-FD8D2F870462",
+    "description": "Clothing Women T shirt 013 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/fd8d2f870462bfa12a296708da16e0be464ca9ffb5ba382f09582739c089cffc.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 014",
+    "slug": "metro-catalog-587ded96110b7dfa",
+    "sku": "METRO-587DED96110B",
+    "description": "Clothing Women T shirt 014 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/587ded96110b7dfac5a7a9b7d57fdc7b02469daf89261f6493fa42a7fa5142d5.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 015",
+    "slug": "metro-catalog-418f1cc6eaad0fcc",
+    "sku": "METRO-418F1CC6EAAD",
+    "description": "Clothing Women T shirt 015 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/418f1cc6eaad0fcc8ad9941369452956107221abaf9ea98e281a12ae9c6f480f.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 016",
+    "slug": "metro-catalog-20cdb6c5d6156cbd",
+    "sku": "METRO-20CDB6C5D615",
+    "description": "Clothing Women T shirt 016 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/20cdb6c5d6156cbdbd0ec51b2d2c8a018a2f8fbffb9cba3f85d48ffd0b8603b5.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 017",
+    "slug": "metro-catalog-c828a742e00cdb1a",
+    "sku": "METRO-C828A742E00C",
+    "description": "Clothing Women T shirt 017 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/c828a742e00cdb1a7641934bb4f83c6dea4993b63b0508061eef522a30713b38.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 018",
+    "slug": "metro-catalog-18376711c28f5c0b",
+    "sku": "METRO-18376711C28F",
+    "description": "Clothing Women T shirt 018 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/18376711c28f5c0b6addf037887d90532609ae71d2b109a729913379b0636899.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 019",
+    "slug": "metro-catalog-a44047f89b63ddcb",
+    "sku": "METRO-A44047F89B63",
+    "description": "Clothing Women T shirt 019 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/a44047f89b63ddcb653fdb838de2ac045f708b5a8d0d6f511e97290769e60ad3.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 020",
+    "slug": "metro-catalog-d3aeba9872c5787f",
+    "sku": "METRO-D3AEBA9872C5",
+    "description": "Clothing Women T shirt 020 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/d3aeba9872c5787f367ec945f5dedd01376c8a2d55c0ec33a2a06d6ad2cdba02.jpg"
+  },
+  {
+    "name": "Clothing Women T shirt 021",
+    "slug": "metro-catalog-947eaca172cd6041",
+    "sku": "METRO-947EACA172CD",
+    "description": "Clothing Women T shirt 021 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/947eaca172cd60414bafc07152d819ba6784505555c88050cdda30b987cd7254.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 001",
+    "slug": "metro-catalog-e4d7dc1276306a45",
+    "sku": "METRO-E4D7DC127630",
+    "description": "Clothing Women dresses 001 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/e4d7dc1276306a456e9d24a0011c29e585e8060963702584fbd2f638c815b693.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 002",
+    "slug": "metro-catalog-a604bc00e478102c",
+    "sku": "METRO-A604BC00E478",
+    "description": "Clothing Women dresses 002 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/a604bc00e478102cf92c6bd0f0543b01a44605779e5694c35dd64be68a72acb2.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 003",
+    "slug": "metro-catalog-62ffe4067f44b41b",
+    "sku": "METRO-62FFE4067F44",
+    "description": "Clothing Women dresses 003 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/62ffe4067f44b41bef42c9d80c931b696582e39f6a87f9e580249d39ec90742c.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 004",
+    "slug": "metro-catalog-f849b002f4151df4",
+    "sku": "METRO-F849B002F415",
+    "description": "Clothing Women dresses 004 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/f849b002f4151df40e76e781ee559096e844a128d78a7b56898e8990ecab9ca2.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 005",
+    "slug": "metro-catalog-bfc1e7c5035784ee",
+    "sku": "METRO-BFC1E7C50357",
+    "description": "Clothing Women dresses 005 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/bfc1e7c5035784ee9f51962f2130faa466d77fed9c256be57c51235a941e5e6a.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 006",
+    "slug": "metro-catalog-b67b5f3991ebca4c",
+    "sku": "METRO-B67B5F3991EB",
+    "description": "Clothing Women dresses 006 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/b67b5f3991ebca4ce6f62c8b4a2d22cacd7b129b55cc7497201c3b03c9138cf5.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 007",
+    "slug": "metro-catalog-e0153b2aba98a411",
+    "sku": "METRO-E0153B2ABA98",
+    "description": "Clothing Women dresses 007 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/e0153b2aba98a411c1490d1f8f0c7520485d5d3c12c5aef20b67f354f8fc84c7.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 008",
+    "slug": "metro-catalog-9c7c9b98cbccbf76",
+    "sku": "METRO-9C7C9B98CBCC",
+    "description": "Clothing Women dresses 008 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/9c7c9b98cbccbf764196c162c2bf3f8f1897f702e9b78e427c4877a45c425b68.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 009",
+    "slug": "metro-catalog-bfc515922491ffd9",
+    "sku": "METRO-BFC515922491",
+    "description": "Clothing Women dresses 009 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/bfc515922491ffd93cdb05bc1988381c1eced5c0b8001f1b2045ac0f18a985c6.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 010",
+    "slug": "metro-catalog-0fdcd7d0a9504f8b",
+    "sku": "METRO-0FDCD7D0A950",
+    "description": "Clothing Women dresses 010 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/0fdcd7d0a9504f8b9b1b20a85e351a7487f08e92a34459d19d68afd9c3aec3f2.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 011",
+    "slug": "metro-catalog-2fceca688b9063ad",
+    "sku": "METRO-2FCECA688B90",
+    "description": "Clothing Women dresses 011 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/2fceca688b9063ad2a0b9897991d064ef5e423e4bf7ace11e56dbee80caea0c2.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 012",
+    "slug": "metro-catalog-d4352e8f81d6daf7",
+    "sku": "METRO-D4352E8F81D6",
+    "description": "Clothing Women dresses 012 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/d4352e8f81d6daf7cc9439dda5df320da6a8fb2a41e0960ce896580f40182146.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 013",
+    "slug": "metro-catalog-bdd4fabab706e896",
+    "sku": "METRO-BDD4FABAB706",
+    "description": "Clothing Women dresses 013 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/bdd4fabab706e8964a5fa9a93cdb0e605ca7efa9584f159386846094d5558b7f.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 014",
+    "slug": "metro-catalog-4a0a6f53e3dda656",
+    "sku": "METRO-4A0A6F53E3DD",
+    "description": "Clothing Women dresses 014 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/4a0a6f53e3dda656fa261129b6c23afcd639629f21536c0a148e62f8efe3fc17.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 015",
+    "slug": "metro-catalog-9533b24adb72f945",
+    "sku": "METRO-9533B24ADB72",
+    "description": "Clothing Women dresses 015 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/9533b24adb72f9452d4fd70c458837cef22a2108b60ebad62517e93c0d0363df.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 016",
+    "slug": "metro-catalog-293607f1bb0fb14a",
+    "sku": "METRO-293607F1BB0F",
+    "description": "Clothing Women dresses 016 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/293607f1bb0fb14a5d5f1a1b96543289a49bedc935ce96a5f952b44d90afbebb.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 017",
+    "slug": "metro-catalog-aea17805fbf0580b",
+    "sku": "METRO-AEA17805FBF0",
+    "description": "Clothing Women dresses 017 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/aea17805fbf0580bd44c2de0afd5359bfc5ebc09ad38a071e49cf698d85a858c.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 018",
+    "slug": "metro-catalog-247dbab208222107",
+    "sku": "METRO-247DBAB20822",
+    "description": "Clothing Women dresses 018 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/247dbab208222107c28a70fac4590365e0d99dec8154ff338d4e84f1948068b1.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 019",
+    "slug": "metro-catalog-06972ee8fbad67f6",
+    "sku": "METRO-06972EE8FBAD",
+    "description": "Clothing Women dresses 019 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/06972ee8fbad67f657a03a867d24dd020f10afcd2d83140447cd432329025880.jpg"
+  },
+  {
+    "name": "Clothing Women dresses 020",
+    "slug": "metro-catalog-2fd01791a69fc236",
+    "sku": "METRO-2FD01791A69F",
+    "description": "Clothing Women dresses 020 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/2fd01791a69fc236e2a0bfcd6086712ecc866579887366ebefe6ab91f6a3f894.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 001",
+    "slug": "metro-catalog-ce130187665339c8",
+    "sku": "METRO-CE1301876653",
+    "description": "Clothing Women shorts 001 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/ce130187665339c8d6c8d60498e2ab72aa9acbede4f3f7d3295329adfec4daf5.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 002",
+    "slug": "metro-catalog-51271d4c159c3ab5",
+    "sku": "METRO-51271D4C159C",
+    "description": "Clothing Women shorts 002 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/51271d4c159c3ab559cbc27ff6d3680fd9561ccff55b068811c61db3cd7ff70e.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 003",
+    "slug": "metro-catalog-b94d8df877c706bd",
+    "sku": "METRO-B94D8DF877C7",
+    "description": "Clothing Women shorts 003 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/b94d8df877c706bdcadd939531355ed208574369954ed96af4dd6287029e886b.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 004",
+    "slug": "metro-catalog-5535b499b84a48ad",
+    "sku": "METRO-5535B499B84A",
+    "description": "Clothing Women shorts 004 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/5535b499b84a48ad3ece5b64ff1c2127938dfa67478c41fdb3319eeee7c7e864.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 005",
+    "slug": "metro-catalog-08d13f15d3cad358",
+    "sku": "METRO-08D13F15D3CA",
+    "description": "Clothing Women shorts 005 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/08d13f15d3cad358fc9ec03a193a523b35ab22133a9b9db15a19d15fa71a8dba.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 006",
+    "slug": "metro-catalog-f62ed2086cffc1f7",
+    "sku": "METRO-F62ED2086CFF",
+    "description": "Clothing Women shorts 006 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/f62ed2086cffc1f70483fa41aff1ccf06651ae5a97d5155489bbaacbcb28e143.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 007",
+    "slug": "metro-catalog-007ce03a52d3a133",
+    "sku": "METRO-007CE03A52D3",
+    "description": "Clothing Women shorts 007 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/007ce03a52d3a1330053818224bb3a5563ae69df18fe1fbf3182abbc789ff9e2.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 008",
+    "slug": "metro-catalog-c9a938916771c21b",
+    "sku": "METRO-C9A938916771",
+    "description": "Clothing Women shorts 008 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/c9a938916771c21b30f12b6fb033d1fb9c5ac932a42bd8aca8c66f4e6af579a7.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 009",
+    "slug": "metro-catalog-9dd843d800eaf52e",
+    "sku": "METRO-9DD843D800EA",
+    "description": "Clothing Women shorts 009 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/9dd843d800eaf52e1013be437a21c53e541415feb50884ff97aa5d6cbf8d8fba.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 010",
+    "slug": "metro-catalog-1bc62b4fe02f45bf",
+    "sku": "METRO-1BC62B4FE02F",
+    "description": "Clothing Women shorts 010 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/1bc62b4fe02f45bf42f87b28315a1f155648db554468ead4942df833933c4fe4.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 011",
+    "slug": "metro-catalog-e93c5078f63b2746",
+    "sku": "METRO-E93C5078F63B",
+    "description": "Clothing Women shorts 011 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/e93c5078f63b2746265b76d7a1850563f91a95489465f166547ff28effc5c593.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 012",
+    "slug": "metro-catalog-ab52d54ee70ca7c1",
+    "sku": "METRO-AB52D54EE70C",
+    "description": "Clothing Women shorts 012 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/ab52d54ee70ca7c1fa53dd49699d3e4573f747cccbf5e8eaef9a994dd9b96485.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 013",
+    "slug": "metro-catalog-2005ccc7f6585fa3",
+    "sku": "METRO-2005CCC7F658",
+    "description": "Clothing Women shorts 013 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/2005ccc7f6585fa3a81a7bfc8887c285ebf84006af6bd55047e088a4cdb7adb4.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 014",
+    "slug": "metro-catalog-db2049b8a666dacc",
+    "sku": "METRO-DB2049B8A666",
+    "description": "Clothing Women shorts 014 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/db2049b8a666daccc9ee2b747461453f35e8e9bf7b0ecb0786c0397bf4c57baf.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 015",
+    "slug": "metro-catalog-143e80be562c519c",
+    "sku": "METRO-143E80BE562C",
+    "description": "Clothing Women shorts 015 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/143e80be562c519c3531238932cd2544edd2eb97e82c379f2fa6828d9844fa37.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 016",
+    "slug": "metro-catalog-546dc7b83a6e9125",
+    "sku": "METRO-546DC7B83A6E",
+    "description": "Clothing Women shorts 016 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/546dc7b83a6e91255dc11c2f7113410b9dc2c2a84b4b44145a8c4510141df7ad.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 017",
+    "slug": "metro-catalog-d295703a7da9a647",
+    "sku": "METRO-D295703A7DA9",
+    "description": "Clothing Women shorts 017 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/d295703a7da9a647c52eb15c892bed2034f95874b04ca20580863c1cecde5a84.jpg"
+  },
+  {
+    "name": "Clothing Women shorts 018",
+    "slug": "metro-catalog-25c3f1887880a0fe",
+    "sku": "METRO-25C3F1887880",
+    "description": "Clothing Women shorts 018 from Metro Surplus Co.",
+    "category": "womens",
+    "categories": [
+      "womens"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/25c3f1887880a0fefc74cf6974e2cdc2086c6f63a6110f64f2bcd926ce0ac1f1.jpg"
+  },
+  {
+    "name": "Figurines 001",
+    "slug": "metro-catalog-a81b838f2256c7ef",
+    "sku": "METRO-A81B838F2256",
+    "description": "Figurines 001 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/a81b838f2256c7efe5edd07e0515cc8f0be852a4bd90a1308698b58e9eddfee4.jpg"
+  },
+  {
+    "name": "Figurines 002",
+    "slug": "metro-catalog-a5c9821ebe34238a",
+    "sku": "METRO-A5C9821EBE34",
+    "description": "Figurines 002 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/a5c9821ebe34238abf93fe8880ae7190bf66950b221ec8b4647fd99da41e7020.jpg"
+  },
+  {
+    "name": "Figurines 003",
+    "slug": "metro-catalog-ff8e4156c91275d7",
+    "sku": "METRO-FF8E4156C912",
+    "description": "Figurines 003 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/ff8e4156c91275d787311e53d8d84b817b1e8a5c21f68c5246b6675bbebcb4bd.jpg"
+  },
+  {
+    "name": "Figurines 004",
+    "slug": "metro-catalog-8393835c418538e7",
+    "sku": "METRO-8393835C4185",
+    "description": "Figurines 004 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/8393835c418538e76989102f54f8428886becdab2013bf42bb92b90cc7ea55dd.jpg"
+  },
+  {
+    "name": "Figurines 005",
+    "slug": "metro-catalog-12a360e71fa555f0",
+    "sku": "METRO-12A360E71FA5",
+    "description": "Figurines 005 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/12a360e71fa555f014156bdd8df8188391e451b2ef5ef13ef4eaed68d1dab883.jpg"
+  },
+  {
+    "name": "Figurines 006",
+    "slug": "metro-catalog-e1615501c65ca73f",
+    "sku": "METRO-E1615501C65C",
+    "description": "Figurines 006 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/e1615501c65ca73f3a5d85725677cb93b107165eb819558dfc8eb37fc7fd48d3.jpg"
+  },
+  {
+    "name": "Figurines 007",
+    "slug": "metro-catalog-3cc72c7996dff26a",
+    "sku": "METRO-3CC72C7996DF",
+    "description": "Figurines 007 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/3cc72c7996dff26ab9c6eb96d7288dd6e7a81a8bc9692642604e63302371faf8.jpg"
+  },
+  {
+    "name": "Figurines 008",
+    "slug": "metro-catalog-b53339f6c39e767b",
+    "sku": "METRO-B53339F6C39E",
+    "description": "Figurines 008 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/b53339f6c39e767b1f6c688ef8e96eefec5a5f7f0355ec54a67a08eb2cb13284.jpg"
+  },
+  {
+    "name": "Figurines 009",
+    "slug": "metro-catalog-17f23b39d6c3a303",
+    "sku": "METRO-17F23B39D6C3",
+    "description": "Figurines 009 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/17f23b39d6c3a303106bee0efed6b0698f3ba55c3a03f5c1d960bd0a082281ef.jpg"
+  },
+  {
+    "name": "Figurines 010",
+    "slug": "metro-catalog-586a9887531c8d86",
+    "sku": "METRO-586A9887531C",
+    "description": "Figurines 010 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/586a9887531c8d865d7ffaa0d9bc10f1d3920dd9ad0cb6d50c2a3cdefdc8df12.jpg"
+  },
+  {
+    "name": "Figurines 011",
+    "slug": "metro-catalog-baea7a6864706d1c",
+    "sku": "METRO-BAEA7A686470",
+    "description": "Figurines 011 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/baea7a6864706d1ca0b40ea03dd8131d9e5034865560383a865e5a90e2e7ab5d.jpg"
+  },
+  {
+    "name": "Figurines 012",
+    "slug": "metro-catalog-aff7ec1f73173a7f",
+    "sku": "METRO-AFF7EC1F7317",
+    "description": "Figurines 012 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/aff7ec1f73173a7f94b13c330a69b002676830375b218672fe5e3ecb1f314a18.jpg"
+  },
+  {
+    "name": "Figurines 013",
+    "slug": "metro-catalog-baa11149a3774e28",
+    "sku": "METRO-BAA11149A377",
+    "description": "Figurines 013 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/baa11149a3774e28726e530f852d9952cd7522fd3934dadc92c9a8bcb76b1bd7.jpg"
+  },
+  {
+    "name": "Figurines 014",
+    "slug": "metro-catalog-ac924f3832f1f510",
+    "sku": "METRO-AC924F3832F1",
+    "description": "Figurines 014 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/ac924f3832f1f510132b84a6d09631b839dccf617a584516e20f0b7504d8ad07.jpg"
+  },
+  {
+    "name": "Figurines 015",
+    "slug": "metro-catalog-037d3f8f3832032d",
+    "sku": "METRO-037D3F8F3832",
+    "description": "Figurines 015 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/037d3f8f3832032dae0ffa0c69c910a0579e6c489ee89b089b9c9de1f5dac9e7.jpg"
+  },
+  {
+    "name": "Figurines 016",
+    "slug": "metro-catalog-3467b711694f718f",
+    "sku": "METRO-3467B711694F",
+    "description": "Figurines 016 from Metro Surplus Co.",
+    "category": "figures-models",
+    "categories": [
+      "figures-models"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/3467b711694f718f6d68fb127c603ff817094a71cc5ca06516e181e3edc4eef0.jpg"
+  },
+  {
+    "name": "Keyboard 001",
+    "slug": "metro-catalog-55e23c49571ee12a",
+    "sku": "METRO-55E23C49571E",
+    "description": "Keyboard 001 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/55e23c49571ee12abee0c58f4a19afccd66be191d4dfb2637cf6c69ab81b15a8.jpg"
+  },
+  {
+    "name": "Keyboard 002",
+    "slug": "metro-catalog-c0258a5fc5c1e9de",
+    "sku": "METRO-C0258A5FC5C1",
+    "description": "Keyboard 002 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/c0258a5fc5c1e9de5b458caa334e821b2f37026205dbd346db59558f97a5708f.jpg"
+  },
+  {
+    "name": "Keyboard 003",
+    "slug": "metro-catalog-f1ee8876ec7a4ee1",
+    "sku": "METRO-F1EE8876EC7A",
+    "description": "Keyboard 003 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/f1ee8876ec7a4ee1a45edbfd3af4fa06e17a5170a45aba3a9ebd6ca5309e3660.jpg"
+  },
+  {
+    "name": "Keyboard 004",
+    "slug": "metro-catalog-e29eb7bbe1d1b726",
+    "sku": "METRO-E29EB7BBE1D1",
+    "description": "Keyboard 004 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/e29eb7bbe1d1b7261a68c556aff1316306f8b2b9b38fca9920ea7c8e37e1dc2f.jpg"
+  },
+  {
+    "name": "Keyboard 005",
+    "slug": "metro-catalog-58a87c4d0f7156bc",
+    "sku": "METRO-58A87C4D0F71",
+    "description": "Keyboard 005 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/58a87c4d0f7156bc06176920d2435cc36e4d25071e7198f099275724048d3952.jpg"
+  },
+  {
+    "name": "Keyboard 006",
+    "slug": "metro-catalog-b31f7fbb89deda5c",
+    "sku": "METRO-B31F7FBB89DE",
+    "description": "Keyboard 006 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/b31f7fbb89deda5c2b4155b7279dde8b9bb641d1965e80e22359a0f9efdf9893.jpg"
+  },
+  {
+    "name": "Keyboard 007",
+    "slug": "metro-catalog-3626c806689be871",
+    "sku": "METRO-3626C806689B",
+    "description": "Keyboard 007 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/3626c806689be871f92d2eb66cfc72e5d7ac72ac9e36c5be3686824de4f02a7d.jpg"
+  },
+  {
+    "name": "Keyboard 008",
+    "slug": "metro-catalog-d5735a3b8a573e99",
+    "sku": "METRO-D5735A3B8A57",
+    "description": "Keyboard 008 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/d5735a3b8a573e99e955f8dfe418bb9189cfed4b9fb6e4de2544afa077f1395a.jpg"
+  },
+  {
+    "name": "Keyboard 009",
+    "slug": "metro-catalog-12e01465709d12c8",
+    "sku": "METRO-12E01465709D",
+    "description": "Keyboard 009 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/12e01465709d12c8fcde81f25aa03f3c4bbaaa3302c5d75c0b4b92f5f74f8b1d.jpg"
+  },
+  {
+    "name": "Keyboard 010",
+    "slug": "metro-catalog-22f63a5372e4b46a",
+    "sku": "METRO-22F63A5372E4",
+    "description": "Keyboard 010 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/22f63a5372e4b46a08965aaa95f6209879365058d2d338273a93401ebb746537.jpg"
+  },
+  {
+    "name": "Keyboard 011",
+    "slug": "metro-catalog-bc806add53d88f2d",
+    "sku": "METRO-BC806ADD53D8",
+    "description": "Keyboard 011 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/bc806add53d88f2d231a3672502caf6d3773a19c9abf5cf3fe2d75d57e3e867d.jpg"
+  },
+  {
+    "name": "Keyboard 012",
+    "slug": "metro-catalog-7342f54cdce62d6e",
+    "sku": "METRO-7342F54CDCE6",
+    "description": "Keyboard 012 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/7342f54cdce62d6ea29e8ea955e21291e0081dd639bbd9e4117e7e68869084d1.jpg"
+  },
+  {
+    "name": "Keyboard 013",
+    "slug": "metro-catalog-28fc52a8920758eb",
+    "sku": "METRO-28FC52A89207",
+    "description": "Keyboard 013 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/28fc52a8920758eb9a4df80ff377310b97209400469f63d8fe8d6ff6add6e3a5.jpg"
+  },
+  {
+    "name": "Keyboard 014",
+    "slug": "metro-catalog-ec8ce5fab1726de7",
+    "sku": "METRO-EC8CE5FAB172",
+    "description": "Keyboard 014 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/ec8ce5fab1726de721ced133e3a36a9210f33a9bbcb9c761fd8ab3e7d58f34d0.jpg"
+  },
+  {
+    "name": "Keyboard 015",
+    "slug": "metro-catalog-0f7293067c4822c9",
+    "sku": "METRO-0F7293067C48",
+    "description": "Keyboard 015 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/0f7293067c4822c9606a0c9f0bac16704eca7f068637f131dab11d418c5bbefc.jpg"
+  },
+  {
+    "name": "Keyboard 016",
+    "slug": "metro-catalog-b1ab661cd2b33987",
+    "sku": "METRO-B1AB661CD2B3",
+    "description": "Keyboard 016 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/b1ab661cd2b3398702ea32372b69c39ac94a39f5522d7be9e98f9890f43dd396.jpg"
+  },
+  {
+    "name": "Keyboard 017",
+    "slug": "metro-catalog-a94af1670fb5e7f0",
+    "sku": "METRO-A94AF1670FB5",
+    "description": "Keyboard 017 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/a94af1670fb5e7f04af14dedd17d1aac5074a16ef7d9cc03b2023a1ac98532a6.jpg"
+  },
+  {
+    "name": "Keyboard 018",
+    "slug": "metro-catalog-82b83eff6c053cf8",
+    "sku": "METRO-82B83EFF6C05",
+    "description": "Keyboard 018 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/82b83eff6c053cf8a8758e606cb75763a2c11a73ae5d26769529863064798a0f.jpg"
+  },
+  {
+    "name": "Keyboard 019",
+    "slug": "metro-catalog-2f44426732c14471",
+    "sku": "METRO-2F44426732C1",
+    "description": "Keyboard 019 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/2f44426732c1447190ff55d12e4dee26196c2d45eae74628a561ce18fb379f81.jpg"
+  },
+  {
+    "name": "Keyboard 020",
+    "slug": "metro-catalog-167ecb86d7f33e46",
+    "sku": "METRO-167ECB86D7F3",
+    "description": "Keyboard 020 from Metro Surplus Co.",
+    "category": "keyboards",
+    "categories": [
+      "gadgets",
+      "gaming-audio",
+      "keyboards",
+      "custom-keyboards"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/167ecb86d7f33e4607415c42ba6de1273a689c311dba3d98033c07cdd9b40309.jpg"
+  },
+  {
+    "name": "Posters 001",
+    "slug": "metro-catalog-95e7855fdee93aa9",
+    "sku": "METRO-95E7855FDEE9",
+    "description": "Posters 001 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/95e7855fdee93aa9ea267cc7ad2fa25114b041a7d4bd8d5a8465e40244233794.jpg"
+  },
+  {
+    "name": "Posters 002",
+    "slug": "metro-catalog-f21ef83a8fbbabdb",
+    "sku": "METRO-F21EF83A8FBB",
+    "description": "Posters 002 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/f21ef83a8fbbabdb7159774087bcb8b20c431d0a1afe256b190304d0c0f17d9b.jpg"
+  },
+  {
+    "name": "Posters 003",
+    "slug": "metro-catalog-f0df01e3beade84f",
+    "sku": "METRO-F0DF01E3BEAD",
+    "description": "Posters 003 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/f0df01e3beade84ff58e37f6017cdfedd5439b5487a04a1f7ad57b12f4edf79a.jpg"
+  },
+  {
+    "name": "Posters 004",
+    "slug": "metro-catalog-9208035e50684841",
+    "sku": "METRO-9208035E5068",
+    "description": "Posters 004 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/9208035e50684841cfc245f17c88f957c3d33a0e21baf939e8b68449082c0eb4.jpg"
+  },
+  {
+    "name": "Posters 005",
+    "slug": "metro-catalog-1ff8777574c7ab88",
+    "sku": "METRO-1FF8777574C7",
+    "description": "Posters 005 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/1ff8777574c7ab8843bff35070a57fe4bc7d93a8fb7cd3101b240f3335d01e7d.jpg"
+  },
+  {
+    "name": "Posters 006",
+    "slug": "metro-catalog-f6471a415111f898",
+    "sku": "METRO-F6471A415111",
+    "description": "Posters 006 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/f6471a415111f898f1e6c40718f59de623cde110eae49bbc83ed0a158a5e26e9.jpg"
+  },
+  {
+    "name": "Posters 007",
+    "slug": "metro-catalog-d44f5d585df343b4",
+    "sku": "METRO-D44F5D585DF3",
+    "description": "Posters 007 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/d44f5d585df343b444277a11b04b22710a1ee7efb166165f345ef007cbb8c450.jpg"
+  },
+  {
+    "name": "Posters 008",
+    "slug": "metro-catalog-5a952b48d839c48e",
+    "sku": "METRO-5A952B48D839",
+    "description": "Posters 008 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/5a952b48d839c48ea9934fd1b188c4d148bc9493eb4f0b75d2ed0948ec308443.jpg"
+  },
+  {
+    "name": "Posters 009",
+    "slug": "metro-catalog-cb59c5c8238ab328",
+    "sku": "METRO-CB59C5C8238A",
+    "description": "Posters 009 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/cb59c5c8238ab328df83d56363553d7532669582aff1836b850c0421b34bb01c.jpg"
+  },
+  {
+    "name": "Posters 010",
+    "slug": "metro-catalog-91874373d443fa29",
+    "sku": "METRO-91874373D443",
+    "description": "Posters 010 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/91874373d443fa2917f8b63ef8dba2883a370377b15863eb6ed9c3014957df63.jpg"
+  },
+  {
+    "name": "Posters 011",
+    "slug": "metro-catalog-547193d547f6496c",
+    "sku": "METRO-547193D547F6",
+    "description": "Posters 011 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/547193d547f6496cf9b11c57d1876f07b298173b22fe4ec0cbcbbced52d3472f.jpg"
+  },
+  {
+    "name": "Posters 012",
+    "slug": "metro-catalog-48d30d4a5a09c0f1",
+    "sku": "METRO-48D30D4A5A09",
+    "description": "Posters 012 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/48d30d4a5a09c0f1c8d82be88d22213703e90a048a221a13b722a9abc83a104f.jpg"
+  },
+  {
+    "name": "Posters 013",
+    "slug": "metro-catalog-d4af35477ed31e04",
+    "sku": "METRO-D4AF35477ED3",
+    "description": "Posters 013 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/d4af35477ed31e0436da191208ba3ddd0aaafe9dac627bf0ffb64d7303734b0d.jpg"
+  },
+  {
+    "name": "Posters 014",
+    "slug": "metro-catalog-78b355c1f6be9de2",
+    "sku": "METRO-78B355C1F6BE",
+    "description": "Posters 014 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/78b355c1f6be9de298dfb073418ed4fe29487fae544ab58f8507832e911d2419.jpg"
+  },
+  {
+    "name": "Posters 015",
+    "slug": "metro-catalog-ddcf89b3b9e59818",
+    "sku": "METRO-DDCF89B3B9E5",
+    "description": "Posters 015 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/ddcf89b3b9e59818f0fc1568d5cc3e3e514c1e78ce2a869a3f58ff246e7a3087.jpg"
+  },
+  {
+    "name": "Posters 016",
+    "slug": "metro-catalog-419d43308357573a",
+    "sku": "METRO-419D43308357",
+    "description": "Posters 016 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/419d43308357573afc4029489e5e1f6c8ba023e570364589474536c742c4119c.jpg"
+  },
+  {
+    "name": "Posters 017",
+    "slug": "metro-catalog-53b1b84ec33a4bb8",
+    "sku": "METRO-53B1B84EC33A",
+    "description": "Posters 017 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/53b1b84ec33a4bb8f48a02145b611274a95f23e9195a0b70ddc472faa1b517c0.jpg"
+  },
+  {
+    "name": "Posters 018",
+    "slug": "metro-catalog-138b9e44e8f6f879",
+    "sku": "METRO-138B9E44E8F6",
+    "description": "Posters 018 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/138b9e44e8f6f879ce7ee715498ff696c1a6826e768a02af6b01780f20a3c1aa.jpg"
+  },
+  {
+    "name": "Posters 019",
+    "slug": "metro-catalog-d1fa4bd2af2de4b1",
+    "sku": "METRO-D1FA4BD2AF2D",
+    "description": "Posters 019 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/d1fa4bd2af2de4b1b7c0d049db020af8dfdd2ffd95a4a14c848717af2da30322.jpg"
+  },
+  {
+    "name": "Sports 001",
+    "slug": "metro-catalog-123a6cee9839bc39",
+    "sku": "METRO-123A6CEE9839",
+    "description": "Sports 001 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/123a6cee9839bc3986c1a74dca7cd53229762b2e55093526bf6577f36c014a8b.jpg"
+  },
+  {
+    "name": "Sports 002",
+    "slug": "metro-catalog-e5120742785eed24",
+    "sku": "METRO-E5120742785E",
+    "description": "Sports 002 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/e5120742785eed2403fb0e51300c6650ad57489555a8c4d89d05e0323d945582.jpg"
+  },
+  {
+    "name": "Sports 003",
+    "slug": "metro-catalog-8ece5dbbee0b1452",
+    "sku": "METRO-8ECE5DBBEE0B",
+    "description": "Sports 003 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/8ece5dbbee0b145219a1e1e3f493ad6bd48d45cd04bea57a562e20be57f90abb.jpg"
+  },
+  {
+    "name": "Sports 004",
+    "slug": "metro-catalog-eae1c38973a25ca9",
+    "sku": "METRO-EAE1C38973A2",
+    "description": "Sports 004 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/eae1c38973a25ca92603aa55a4e0a973c99896376e2f0154506082a965b4b6f2.jpg"
+  },
+  {
+    "name": "Sports 005",
+    "slug": "metro-catalog-ca41bd2c90bd0104",
+    "sku": "METRO-CA41BD2C90BD",
+    "description": "Sports 005 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/ca41bd2c90bd0104e75e10c8211a1781bf9f68876297e11b97cf62422b9c139b.jpg"
+  },
+  {
+    "name": "Sports 006",
+    "slug": "metro-catalog-4d28b87aed82ba45",
+    "sku": "METRO-4D28B87AED82",
+    "description": "Sports 006 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/4d28b87aed82ba456ad88b38fb4e7b56e4be5bcba571914dd95ca3405f8f0f8d.jpg"
+  },
+  {
+    "name": "Sports 007",
+    "slug": "metro-catalog-f718c9c8f39d83f9",
+    "sku": "METRO-F718C9C8F39D",
+    "description": "Sports 007 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/f718c9c8f39d83f9b6fc2cd45c5fbbefc0e8f154990fa2fc517a20763d88b6de.jpg"
+  },
+  {
+    "name": "Sports 008",
+    "slug": "metro-catalog-ea1eec419064b365",
+    "sku": "METRO-EA1EEC419064",
+    "description": "Sports 008 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/ea1eec419064b3658adb7d87511e10a472f7659008a26b9f457de28f6e3826c0.jpg"
+  },
+  {
+    "name": "Sports 009",
+    "slug": "metro-catalog-f5712eacaab9ff1f",
+    "sku": "METRO-F5712EACAAB9",
+    "description": "Sports 009 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/f5712eacaab9ff1fcde10578fb6f9c46b3ac8d6b0f6276d4e1bd460a19aba9f1.jpg"
+  },
+  {
+    "name": "Sports 010",
+    "slug": "metro-catalog-11df4189141af214",
+    "sku": "METRO-11DF4189141A",
+    "description": "Sports 010 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/11df4189141af21416a5edd89dfde436e6b1e17b3f702361314ab1758444f11e.jpg"
+  },
+  {
+    "name": "Sports 011",
+    "slug": "metro-catalog-5f58b8c1fb2c1163",
+    "sku": "METRO-5F58B8C1FB2C",
+    "description": "Sports 011 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/5f58b8c1fb2c1163ff1ab26201a5e34f9841d500c8858d6894a2d08de073e608.png"
+  },
+  {
+    "name": "Sports 012",
+    "slug": "metro-catalog-27b1c412275a926b",
+    "sku": "METRO-27B1C412275A",
+    "description": "Sports 012 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/27b1c412275a926b2293eba99b83905ee80b315f176858a741d77300fb4bd6b9.jpg"
+  },
+  {
+    "name": "Sports 013",
+    "slug": "metro-catalog-cbae4c4e6cb3bfcf",
+    "sku": "METRO-CBAE4C4E6CB3",
+    "description": "Sports 013 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/cbae4c4e6cb3bfcfa48c5e399cdecf71a0aa9e8c91855877ef69d812b287a9b3.jpg"
+  },
+  {
+    "name": "Sports 014",
+    "slug": "metro-catalog-f6e8b19725280f24",
+    "sku": "METRO-F6E8B1972528",
+    "description": "Sports 014 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/f6e8b19725280f24d84441fdc5007fd6af484f9b6c9a715a8e5dbe3f88f219df.jpg"
+  },
+  {
+    "name": "Sports 015",
+    "slug": "metro-catalog-4f54af052c0c35e8",
+    "sku": "METRO-4F54AF052C0C",
+    "description": "Sports 015 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/4f54af052c0c35e8b6e3c3e0ac7181d0d3c98484a8bc89d7c7c7bd55d34c443a.jpg"
+  },
+  {
+    "name": "Sports 016",
+    "slug": "metro-catalog-96178a3bf0ec715a",
+    "sku": "METRO-96178A3BF0EC",
+    "description": "Sports 016 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/96178a3bf0ec715a1b535332025c4eb973e1fc76a5cb974464a2d7a1fe81b004.jpg"
+  },
+  {
+    "name": "Sports 017",
+    "slug": "metro-catalog-c17e7adfdda137a4",
+    "sku": "METRO-C17E7ADFDDA1",
+    "description": "Sports 017 from Metro Surplus Co.",
+    "category": "sports",
+    "categories": [
+      "sports"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/c17e7adfdda137a444576f02af8654ba9c1b582cb070ffbc4304f47a9127f063.jpg"
+  },
+  {
+    "name": "Trading Cards 001",
+    "slug": "metro-catalog-a009bce9c57635f9",
+    "sku": "METRO-A009BCE9C576",
+    "description": "Trading Cards 001 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/a009bce9c57635f92e1f33421d0c17c4ebc5757ee13fade800fad6fe2a38b38a.webp"
+  },
+  {
+    "name": "Trading Cards 002",
+    "slug": "metro-catalog-11305ddd6001efa8",
+    "sku": "METRO-11305DDD6001",
+    "description": "Trading Cards 002 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/11305ddd6001efa862daf949bec25c8134d6c19dc9d4b51923da629ac86eca91.webp"
+  },
+  {
+    "name": "Trading Cards 003",
+    "slug": "metro-catalog-fafe1e3350abd862",
+    "sku": "METRO-FAFE1E3350AB",
+    "description": "Trading Cards 003 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/fafe1e3350abd862f0c1737dc2eba9425c125a0f1c94f24db61e723364a34ad1.webp"
+  },
+  {
+    "name": "Trading Cards 004",
+    "slug": "metro-catalog-84f42ae333108bd6",
+    "sku": "METRO-84F42AE33310",
+    "description": "Trading Cards 004 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/84f42ae333108bd6833fbd0bd3ee0ab1d7b5c17195552f75d94f7968b6f1a8ce.webp"
+  },
+  {
+    "name": "Trading Cards 005",
+    "slug": "metro-catalog-fdf1a14907e73265",
+    "sku": "METRO-FDF1A14907E7",
+    "description": "Trading Cards 005 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/fdf1a14907e73265341256b45f1b3ec0e8931bd85bd8f70204b0dd69f81ce4d8.webp"
+  },
+  {
+    "name": "Trading Cards 006",
+    "slug": "metro-catalog-dcb7ab7dad934d90",
+    "sku": "METRO-DCB7AB7DAD93",
+    "description": "Trading Cards 006 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/dcb7ab7dad934d902bd93e5978691819b2b12c3e4490eeea8d9b1628e4205f08.webp"
+  },
+  {
+    "name": "Trading Cards 007",
+    "slug": "metro-catalog-19080697b941c95e",
+    "sku": "METRO-19080697B941",
+    "description": "Trading Cards 007 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/19080697b941c95e9f169d09a8d7f9669c067840469b0249aaf3742b11f42f8d.webp"
+  },
+  {
+    "name": "Trading Cards 008",
+    "slug": "metro-catalog-c1760deb7940a418",
+    "sku": "METRO-C1760DEB7940",
+    "description": "Trading Cards 008 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/c1760deb7940a418819404f7922a63e9ba33b6f774df1754cdf5311b2013fa50.webp"
+  },
+  {
+    "name": "Trading Cards 009",
+    "slug": "metro-catalog-ba9d33c505f7bd60",
+    "sku": "METRO-BA9D33C505F7",
+    "description": "Trading Cards 009 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/ba9d33c505f7bd601bc7bd97c4dd3c5929c94397852469c1ce4cc0b18c423010.webp"
+  },
+  {
+    "name": "Trading Cards 010",
+    "slug": "metro-catalog-fee8667585b35db2",
+    "sku": "METRO-FEE8667585B3",
+    "description": "Trading Cards 010 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/fee8667585b35db2b89f6e76411e5c84a1374e083bbf8a86f6d476a98cc20a57.webp"
+  },
+  {
+    "name": "Trading Cards 011",
+    "slug": "metro-catalog-295ab1c0ae9ba632",
+    "sku": "METRO-295AB1C0AE9B",
+    "description": "Trading Cards 011 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/295ab1c0ae9ba632fa4f34a61ca1610c5c373e7283e88629f0274a447e8fce4f.webp"
+  },
+  {
+    "name": "Trading Cards 012",
+    "slug": "metro-catalog-1bd99c015af14cae",
+    "sku": "METRO-1BD99C015AF1",
+    "description": "Trading Cards 012 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/1bd99c015af14caec6925f60a854681cf2cab39a76dba014b47dc7ded1a2e476.webp"
+  },
+  {
+    "name": "Trading Cards 013",
+    "slug": "metro-catalog-4e7dad212320131d",
+    "sku": "METRO-4E7DAD212320",
+    "description": "Trading Cards 013 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/4e7dad212320131dda0c957b8eb860b94b753289bae818e0f952a90dfe578d43.webp"
+  },
+  {
+    "name": "Trading Cards 014",
+    "slug": "metro-catalog-2d754da3066820e6",
+    "sku": "METRO-2D754DA30668",
+    "description": "Trading Cards 014 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/2d754da3066820e6cd3b4cf638fde455a073db628ca1870d1be09006c15072d6.webp"
+  },
+  {
+    "name": "Trading Cards 015",
+    "slug": "metro-catalog-321c95f3de1cf9d0",
+    "sku": "METRO-321C95F3DE1C",
+    "description": "Trading Cards 015 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/321c95f3de1cf9d00348acb86deb1a141af5161c7c1bf8e5b4e57bfdfa177f0a.webp"
+  },
+  {
+    "name": "Trading Cards 016",
+    "slug": "metro-catalog-bd975b63fcfa767f",
+    "sku": "METRO-BD975B63FCFA",
+    "description": "Trading Cards 016 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/bd975b63fcfa767fa44964ee2100209b968a953cde57e600970d159dab92271a.webp"
+  },
+  {
+    "name": "Trading Cards 017",
+    "slug": "metro-catalog-0caa28e78265bcbf",
+    "sku": "METRO-0CAA28E78265",
+    "description": "Trading Cards 017 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/0caa28e78265bcbff23b367bd0dee696969a7e093815854f7217e5690b4854ec.webp"
+  },
+  {
+    "name": "Trading Cards 018",
+    "slug": "metro-catalog-b69f5133941529a6",
+    "sku": "METRO-B69F51339415",
+    "description": "Trading Cards 018 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/b69f5133941529a60e7ed5198997a158406421e7c32cf2a1d8c276e31ef7edd5.webp"
+  },
+  {
+    "name": "Trading Cards 019",
+    "slug": "metro-catalog-c01ad20577c1137c",
+    "sku": "METRO-C01AD20577C1",
+    "description": "Trading Cards 019 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/c01ad20577c1137c5120db763bec8633aec18a3590b83e99cffa7f4e92843b67.webp"
+  },
+  {
+    "name": "Trading Cards 020",
+    "slug": "metro-catalog-0363cf2480ef505f",
+    "sku": "METRO-0363CF2480EF",
+    "description": "Trading Cards 020 from Metro Surplus Co.",
+    "category": "surplus",
+    "categories": [
+      "surplus"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/0363cf2480ef505f5e96bf680d02cf2200bcc05e0734dbd9a12f264f353e2b45.webp"
+  },
+  {
+    "name": "Desk Accessories 001",
+    "slug": "metro-catalog-160a1232119a5c2e",
+    "sku": "METRO-160A1232119A",
+    "description": "Desk Accessories 001 from Metro Surplus Co.",
+    "category": "desk-accessories",
+    "categories": [
+      "desk-accessories"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/160a1232119a5c2e540aad3cb25e53bb01740897ec2cd3a2b5c2fb70acb5e87e.webp"
+  },
+  {
+    "name": "Desk Accessories 002",
+    "slug": "metro-catalog-7547c57aafff9c66",
+    "sku": "METRO-7547C57AAFFF",
+    "description": "Desk Accessories 002 from Metro Surplus Co.",
+    "category": "desk-accessories",
+    "categories": [
+      "desk-accessories"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/7547c57aafff9c66a3f765e8b64b8ed190ddba02b10da18dd50acab567efb996.webp"
+  },
+  {
+    "name": "Desk Accessories 003",
+    "slug": "metro-catalog-9aede940b7eeff52",
+    "sku": "METRO-9AEDE940B7EE",
+    "description": "Desk Accessories 003 from Metro Surplus Co.",
+    "category": "desk-accessories",
+    "categories": [
+      "desk-accessories"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/9aede940b7eeff52e5ff8fcb7610eafc107ac799512f5ce2802a5d6ac64388b5.webp"
+  },
+  {
+    "name": "Desk Accessories 004",
+    "slug": "metro-catalog-53527d40ba6d61ae",
+    "sku": "METRO-53527D40BA6D",
+    "description": "Desk Accessories 004 from Metro Surplus Co.",
+    "category": "desk-accessories",
+    "categories": [
+      "desk-accessories"
+    ],
+    "price": 199,
+    "stock": 10,
+    "image_path": "metro-catalog/53527d40ba6d61ae3032eb46112cec5bb6b7ba9fe8731c7c531fbaad6858fdcc.webp"
+  },
+  {
+    "name": "Controller 001",
+    "slug": "metro-catalog-c6c5c0d1b4c8e075",
+    "sku": "METRO-C6C5C0D1B4C8",
+    "description": "Controller 001 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/c6c5c0d1b4c8e075778899e43f876d00e6fb3c1d26cb3e802b53fa263322db35.jpg"
+  },
+  {
+    "name": "Controller 002",
+    "slug": "metro-catalog-d33a29bd319546d7",
+    "sku": "METRO-D33A29BD3195",
+    "description": "Controller 002 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/d33a29bd319546d75d3a298862db45a010b23cc1716f387178adb8da7e0d3868.jpg"
+  },
+  {
+    "name": "Controller 003",
+    "slug": "metro-catalog-c59e82a864faf29d",
+    "sku": "METRO-C59E82A864FA",
+    "description": "Controller 003 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/c59e82a864faf29d79e1cb08efd0955c0c41e1149c210eaf7e79124073495c26.jpg"
+  },
+  {
+    "name": "Controller 004",
+    "slug": "metro-catalog-c6bcd6ff68eb8f30",
+    "sku": "METRO-C6BCD6FF68EB",
+    "description": "Controller 004 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/c6bcd6ff68eb8f30d4080a0dc5d09ef25d672e8c22b49b8b4fedf8a22db2c11f.jpg"
+  },
+  {
+    "name": "Controller 005",
+    "slug": "metro-catalog-42947fd1da6a1376",
+    "sku": "METRO-42947FD1DA6A",
+    "description": "Controller 005 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/42947fd1da6a137618ece4b5304e50e06ec922616277c0996b7aa872766c8f33.jpg"
+  },
+  {
+    "name": "Controller 006",
+    "slug": "metro-catalog-7ebbd6e5bba3cd92",
+    "sku": "METRO-7EBBD6E5BBA3",
+    "description": "Controller 006 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/7ebbd6e5bba3cd92561eb6227df3a8863644d2f4a778991035fd1f8961327557.jpg"
+  },
+  {
+    "name": "Controller 007",
+    "slug": "metro-catalog-dd0b280697bb8c9a",
+    "sku": "METRO-DD0B280697BB",
+    "description": "Controller 007 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/dd0b280697bb8c9a6f9b7c90057ba8e4100c6e894514988e111dd65667f8a3e8.jpg"
+  },
+  {
+    "name": "Controller 008",
+    "slug": "metro-catalog-9c79074204274576",
+    "sku": "METRO-9C7907420427",
+    "description": "Controller 008 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/9c79074204274576461c5469723b5334c22ae05044fd5063c8f0864f34eab4c9.jpg"
+  },
+  {
+    "name": "Controller 009",
+    "slug": "metro-catalog-192e57cc18dcfe09",
+    "sku": "METRO-192E57CC18DC",
+    "description": "Controller 009 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/192e57cc18dcfe09ec5e0c19173a48fecbe50fe6710ac38cbe43c717d7b26fb7.jpg"
+  },
+  {
+    "name": "Gadget 001",
+    "slug": "metro-catalog-2daf802504a78a5f",
+    "sku": "METRO-2DAF802504A7",
+    "description": "Gadget 001 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/2daf802504a78a5f78025fc351075e72395606f5d51a129dd617bfae1bde0643.jpg"
+  },
+  {
+    "name": "Gadget 002",
+    "slug": "metro-catalog-8745644ef3f19d8a",
+    "sku": "METRO-8745644EF3F1",
+    "description": "Gadget 002 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/8745644ef3f19d8ab7d81d8e49681203914a323ced49907707ec7832bc964e5b.jpg"
+  },
+  {
+    "name": "Gadget 003",
+    "slug": "metro-catalog-20148a32b6c09801",
+    "sku": "METRO-20148A32B6C0",
+    "description": "Gadget 003 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/20148a32b6c098013200f26d86300383858be93d6e8433aa9105e2b0fb1e140a.jpg"
+  },
+  {
+    "name": "Gadget 004",
+    "slug": "metro-catalog-372f8f11710dbfac",
+    "sku": "METRO-372F8F11710D",
+    "description": "Gadget 004 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/372f8f11710dbfac86fd5353f9635813c2a24705950abcd0fffc8458155d502e.jpg"
+  },
+  {
+    "name": "Gadget 005",
+    "slug": "metro-catalog-3d563fececbecc7b",
+    "sku": "METRO-3D563FECECBE",
+    "description": "Gadget 005 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/3d563fececbecc7b616a4b5ad4c3887a2acf0db69fc6c641ff9ad4b97311fa9f.jpg"
+  },
+  {
+    "name": "Gadget 006",
+    "slug": "metro-catalog-edb7d680eafe68df",
+    "sku": "METRO-EDB7D680EAFE",
+    "description": "Gadget 006 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/edb7d680eafe68df680405298d37f841759ee742be7d7aeba75a75609148d410.jpg"
+  },
+  {
+    "name": "Gadget 007",
+    "slug": "metro-catalog-77a02e769b1f5366",
+    "sku": "METRO-77A02E769B1F",
+    "description": "Gadget 007 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/77a02e769b1f5366e9a72d07e25538343ea32b3613ebc30ac90110769773c3b4.jpg"
+  },
+  {
+    "name": "Gadget 008",
+    "slug": "metro-catalog-5912c24d471ce19b",
+    "sku": "METRO-5912C24D471C",
+    "description": "Gadget 008 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/5912c24d471ce19b8f0b9e57a55f97164d780974a0502f37344b62f28a3095c4.jpg"
+  },
+  {
+    "name": "Gadget 009",
+    "slug": "metro-catalog-b63fb7a9209c20fc",
+    "sku": "METRO-B63FB7A9209C",
+    "description": "Gadget 009 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/b63fb7a9209c20fce7d0ec598cd71dbc09ff84d347a87099139a654a385153f4.jpg"
+  },
+  {
+    "name": "Gadget 010",
+    "slug": "metro-catalog-231b5c7621cd3d70",
+    "sku": "METRO-231B5C7621CD",
+    "description": "Gadget 010 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/231b5c7621cd3d70ed11a6599e2b0c33cdef2c6a3e1e00039623fadca3c5f37d.jpg"
+  },
+  {
+    "name": "Gadget 011",
+    "slug": "metro-catalog-cb904edcc04da72f",
+    "sku": "METRO-CB904EDCC04D",
+    "description": "Gadget 011 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/cb904edcc04da72fbaf1ee630620025b64c1047a07b0e91455c4d16d81c3e274.jpg"
+  },
+  {
+    "name": "Gadget 012",
+    "slug": "metro-catalog-c9f3b4521cb6f0f2",
+    "sku": "METRO-C9F3B4521CB6",
+    "description": "Gadget 012 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/c9f3b4521cb6f0f24cb57e6ccea8e869f86c22895e8f614f3f8080169565d7a6.jpg"
+  },
+  {
+    "name": "Gadget 013",
+    "slug": "metro-catalog-e91cb1f5fb388e28",
+    "sku": "METRO-E91CB1F5FB38",
+    "description": "Gadget 013 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/e91cb1f5fb388e28878d8955f58b2d43e4d3d4cdc6ba93501d5a6345c5731be4.jpg"
+  },
+  {
+    "name": "Gadget 014",
+    "slug": "metro-catalog-d9d77dbd6f929e61",
+    "sku": "METRO-D9D77DBD6F92",
+    "description": "Gadget 014 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/d9d77dbd6f929e61dda398ebf1e281e682255129c47f53eaa46883273bd14e38.jpg"
+  },
+  {
+    "name": "Gadget 015",
+    "slug": "metro-catalog-5dbcb17d5bcf0eec",
+    "sku": "METRO-5DBCB17D5BCF",
+    "description": "Gadget 015 from Metro Surplus Co.",
+    "category": "gadgets",
+    "categories": [
+      "gadgets",
+      "gaming-audio"
+    ],
+    "price": 999,
+    "stock": 10,
+    "image_path": "metro-catalog/5dbcb17d5bcf0eecfb17e76f3b2a9ac34d23fccfe8d197a6aaa9ab8fe0ce35ad.jpg"
+  }
+]

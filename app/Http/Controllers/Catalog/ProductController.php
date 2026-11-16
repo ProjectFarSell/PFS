@@ -74,7 +74,7 @@ class ProductController extends Controller
         }
 
         if ($categoryId !== null) {
-            $query->where('category_id', $categoryId);
+            $query->whereHas('categories', fn ($categories) => $categories->where('categories.id', $categoryId));
         }
 
         // Shop filter — array of shop IDs from the filter sidebar

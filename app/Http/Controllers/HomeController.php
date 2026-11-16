@@ -14,7 +14,7 @@ class HomeController extends Controller
     public function __invoke(): View
     {
         $categories = Category::query()
-            ->withCount(['products' => fn (Builder $query) => $query->visible()])
+            ->withCount(['catalogProducts as products_count' => fn (Builder $query) => $query->visible()])
             ->orderBy('sort_order')
             ->get();
 

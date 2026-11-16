@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class Product extends Model
@@ -54,6 +56,16 @@ class Product extends Model
         static::creating(function (Product $product) {
             $product->slug ??= Str::slug($product->name).'-'.Str::lower(Str::random(5));
         });
+        static::saved(function (Product $product) {
+            if (! Schema::hasTable('catalog_category_product')) {
+                return;
+            }
+            if ($product->wasChanged('category_id') && $product->getRawOriginal('category_id') != $product->category_id) {
+                $product->categories()->detach($product->getRawOriginal('category_id'));
+            }
+            $product->categories()->syncWithoutDetaching([$product->category_id]);
+        });
+
         static::saving(function (Product $product) {
             if ($product->admin_hidden_at) {
                 $product->is_active = false;
@@ -74,6 +86,11 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'catalog_category_product');
     }
 
     public function variants(): HasMany
@@ -99,7 +116,7 @@ class Product extends Model
         return $paths->map(function ($path) use ($images) {
             $row = $images->firstWhere('path', $path);
 
-            return ['id' => $row?->id, 'url' => rtrim((string) config('filesystems.disks.r2.url'), '/').'/'.ltrim($path, '/'),
+            return ['id' => $row?->id, 'url' => self::catalogImageUrl($path),
                 'alt_text' => $row?->alt_text ?: $this->name, 'is_primary' => $path === $this->image_path];
         });
     }
@@ -123,9 +140,16 @@ class Product extends Model
             return null;
         }
 
-        $baseUrl = rtrim(config('filesystems.disks.r2.url'), '/');
+        return self::catalogImageUrl($this->image_path);
+    }
 
-        return $baseUrl.'/'.ltrim($this->image_path, '/');
+    private static function catalogImageUrl(string $path): string
+    {
+        if (str_starts_with($path, 'metro-catalog/')) {
+            return asset($path).'?size=640-v1';
+        }
+
+        return rtrim((string) config('filesystems.disks.r2.url'), '/').'/'.ltrim($path, '/');
     }
 
     public function availableStock(): int
